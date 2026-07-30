@@ -1,0 +1,110 @@
+/* Humanized visual pass: restrained hierarchy, conventional business layout. */
+:root {
+  --paper: #fafaf8;
+  --paper-2: #f2f3f2;
+  --ink: #17171a;
+  --muted: #5c5c63;
+  --rule: #dedfdd;
+  --coral: #1b3a5b;
+  --coral-dark: #163653;
+  --serif: 'Newsreader', Georgia, serif;
+  --sans: 'IBM Plex Sans', Arial, sans-serif;
+}
+
+body { background: var(--paper); }
+h1 { font-family: var(--sans) !important; font-size: clamp(40px, 4.5vw, 60px) !important; line-height: 1.06 !important; letter-spacing: -.035em !important; font-weight: 600 !important; }
+h2 { font-family: var(--sans) !important; font-size: clamp(28px, 3vw, 38px) !important; line-height: 1.15 !important; letter-spacing: -.025em !important; font-weight: 600 !important; }
+.product-grid h3, .product-index h3 { font-family: var(--sans); font-size: 19px; font-weight: 600; letter-spacing: -.01em; }
+.eyebrow, .mono-label { color: var(--coral-dark); letter-spacing: .09em; }
+
+.site-nav { height: 68px; background: var(--paper); }
+.workbench .site-nav { backdrop-filter: none; }
+.brand-mark { border-radius: 3px; font-family: var(--sans); font-weight: 600; font-size: 16px; }
+.button { border-radius: 3px; background: var(--coral-dark); border-color: var(--coral-dark); padding: 12px 16px; }
+.button:hover { transform: none; background: #102c45; }
+.button-outline { background: transparent; color: var(--ink); border-color: #bfc1bf; }
+
+.w-hero { padding-top: 88px; padding-bottom: 72px; gap: 70px; }
+.w-hero h1 { margin: 18px 0 24px; max-width: 620px; }
+.w-hero > div:first-child > p { font-size: 18px; max-width: 560px; }
+.w-hero small { font-size: 14px; }
+.live-phone-widget { border-radius: 4px; box-shadow: none; transform: none; }
+.contact-card { padding: 26px; }
+.contact-card h2 { font-size: 24px !important; margin: 26px 0 18px; }
+.contact-card ul { list-style: none; margin: 0 0 24px; padding: 0; }
+.contact-card li { display: flex; align-items: center; gap: 9px; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 14px; }
+.contact-card li svg { width: 16px; color: var(--coral-dark); }
+.contact-card .text-button { color: var(--coral-dark); }
+.assistant-row { border-radius: 3px; background: #eef2f5; }
+.booking-row button { border-radius: 3px; }
+
+.demo-shelf { margin-bottom: 72px; }
+.demo-shelf article { border-radius: 4px; padding: 26px; }
+.demo-shelf article:before, .product-grid article:before { display: none; }
+.demo-shelf h2 { margin-top: 28px; font-family: var(--sans); font-size: 26px !important; }
+.demo-shelf .arrow-link { margin-top: 18px; }
+.mini-wave, .waveform, .audio-wave { display: none; }
+
+.product-grid-section { padding-top: 80px; padding-bottom: 80px; background: #f1f2f1; }
+.product-grid-section h2, .service-grid-section h2 { font-size: 36px !important; }
+.filter-pills button { border-radius: 3px; font-size: 12px; background: #fff; }
+.filter-pills button.active { background: var(--coral-dark); }
+.product-grid { grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
+.product-grid article { min-height: 230px; border-radius: 0; border: 0; border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 24px; }
+.product-mark { border-radius: 3px; filter: saturate(.5); }
+
+.service-grid-section { padding-top: 88px; padding-bottom: 88px; }
+.service-grid-section > div { gap: 0; border-top: 1px solid var(--rule); }
+.service-grid-section article { min-height: 260px; border-radius: 0; border-width: 0 0 1px; padding: 28px 18px; }
+.service-grid-section article > svg { margin: 28px 0 16px; }
+
+.learning-split article, .workbench .learning-split article { border-radius: 0; padding: 44px; }
+.section-icon { border-radius: 3px; margin-bottom: 30px; }
+.books-card { background: #f1f2f1; }
+.book-spines { display: none; }
+.about-band { padding-top: 88px; padding-bottom: 88px; }
+.faq-section { margin-top: 88px; margin-bottom: 88px; }
+.footer-cta { padding-top: 88px; padding-bottom: 88px; }
+
+.floating-chat { display: none; }
+.phone-modal, .chat-panel { border-radius: 4px; box-shadow: 0 12px 35px rgba(20, 24, 28, .16); }
+.phone-orb, .chat-panel form button, .online-dot { border-radius: 3px; }
+.call-transcript, .call-outcomes span, .chat-messages p, .chat-chips button { border-radius: 3px; }
+
+.b-hero { padding-top: 88px; padding-bottom: 72px; }
+.b-hero h1 { max-width: 850px; margin-bottom: 40px; }
+.editorial-callout { padding-top: 56px; padding-bottom: 56px; grid-template-columns: 160px 1fr; }
+.editorial-callout .quote { font-size: 28px; max-width: 800px; }
+.indexed-section, .service-table { padding-top: 88px; padding-bottom: 88px; }
+
+.c-hero { text-align: left; padding: 96px max(24px, calc((100vw - 920px)/2)); background: #f1f2f1; }
+.c-hero h1 { margin-bottom: 20px; }
+.c-hero .lede { max-width: 680px; font-family: var(--sans); font-size: 18px; }
+.call-company { width: min(620px, 100%); margin-top: 36px; border: 1px solid #bfc1bf; background: #fff; padding: 16px; display: grid; grid-template-columns: 42px 1fr 22px; gap: 14px; align-items: center; text-align: left; }
+.call-company > span { display: grid; place-items: center; width: 42px; height: 42px; background: var(--coral-dark); color: #fff; }
+.call-company div { display: flex; flex-direction: column; gap: 3px; }
+.call-company small { color: var(--muted); }
+.story-intro { padding-top: 88px; padding-bottom: 88px; }
+.story-intro p { font-size: 30px; text-align: left; }
+.conversation-moments article { margin-bottom: 96px; }
+.exchange p { border-radius: 4px; }
+.exchange .reply { background: #e8eef3; }
+
+.design-switcher { top: 78px; bottom: auto; border-radius: 3px; box-shadow: none; background: #17171a; }
+.design-switcher button { border-radius: 2px; }
+
+* { scroll-behavior: auto; }
+.button, .product-index article, .demo-shelf article { transition: color 120ms ease-out, background 120ms ease-out, border-color 120ms ease-out; }
+
+@media (max-width: 900px) {
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+  .w-hero { padding-top: 64px; }
+  .c-hero { padding-top: 72px; padding-bottom: 72px; }
+}
+
+@media (max-width: 560px) {
+  h1 { font-size: 40px !important; }
+  .product-grid { grid-template-columns: 1fr; }
+  .call-company { grid-template-columns: 38px 1fr 18px; }
+  .call-company small { font-size: 11px; }
+}
