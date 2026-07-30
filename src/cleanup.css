@@ -1303,3 +1303,108 @@ button.product-card {
   .felican-site .all-products-grid .product-card { min-height: 290px; }
   .book-cover { height: 420px; }
 }
+
+/* Larger type and product-first scale */
+.felican-site p {
+  font-size: 16px;
+}
+
+.fs-kicker,
+.section-heading > span,
+.fs-about > div:first-child > span,
+.fs-contact > div:first-child > span,
+.solutions-panel > span,
+.training-panel > span,
+.product-group-heading small,
+.home-routes small,
+.product-modal > small,
+.book-cover span {
+  font-size: 14px;
+}
+
+.fs-header nav {
+  font-size: 15px;
+}
+
+.section-heading > p {
+  font-size: 17px;
+}
+
+.felican-site .all-products-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.felican-site .all-products-grid .product-card {
+  min-height: 350px;
+}
+
+.all-products-grid .product-card-body {
+  padding: 36px;
+}
+
+.all-products-grid .product-card h3 {
+  margin: 8px 0 18px;
+  font-size: 36px;
+}
+
+.all-products-grid .product-card p {
+  max-width: 470px;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.all-products-grid .product-card footer {
+  font-size: 16px;
+}
+
+.all-products-grid .product-card footer svg {
+  width: 20px;
+}
+
+.service-list h3 {
+  font-size: 24px;
+}
+
+.service-list p {
+  font-size: 16px;
+}
+
+.books-heading > p {
+  font-size: 17px;
+}
+
+.book-card small {
+  min-height: 42px;
+  font-size: 14px;
+}
+
+.book-card h3 {
+  font-size: 27px;
+}
+
+.book-card b {
+  font-size: 15px;
+}
+
+.fs-footer {
+  font-size: 13px;
+}
+
+.contact-actions small,
+.fs-chat small,
+.quick-asks button {
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .all-products-grid .product-card-body { padding: 28px; }
+  .all-products-grid .product-card h3 { font-size: 31px; }
+  .all-products-grid .product-card p { font-size: 17px; }
+}
+
+@media (max-width: 620px) {
+  .felican-site .all-products-grid { grid-template-columns: 1fr; }
+  .felican-site .all-products-grid .product-card { min-height: 330px; }
+  .all-products-grid .product-card h3 { font-size: 32px; }
+}
