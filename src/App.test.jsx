@@ -10,7 +10,9 @@ describe('Felican AI company site', () => {
   it('renders the Signal direction by default without review controls', () => {
     render(<App />);
     expect(screen.getByText(/Practical AI for the work that runs your business/i)).toBeInTheDocument();
-    expect(screen.getAllByText('Relay').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Felican Auto').length).toBeGreaterThan(0);
+    expect(screen.queryByText('Relay')).not.toBeInTheDocument();
+    expect(screen.queryByText('CasaSuite')).not.toBeInTheDocument();
     expect(screen.queryByText('Design review')).not.toBeInTheDocument();
   });
 
@@ -33,24 +35,30 @@ describe('Felican AI company site', () => {
     render(<App />);
     fireEvent.click(screen.getByText('Talk to Felican AI'));
     fireEvent.click(screen.getByText('What products do you have?'));
-    expect(screen.getByText(/Felican products include Relay/i)).toBeInTheDocument();
+    expect(screen.getByText(/Felican products include Felican Auto/i)).toBeInTheDocument();
     expect(screen.getByText(/World of Agents, BookMaker, and Marketer/i)).toBeInTheDocument();
   });
 
-  it('organizes the current seven-product portfolio into two clear groups', () => {
+  it('organizes the current five-product portfolio and opens product details', () => {
+    window.history.replaceState({}, '', '/products');
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: 'Business systems' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Five products. Built for real work.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Business software' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'AI products' })).toBeInTheDocument();
     ['Felican Auto', 'World of Agents', 'BookMaker', 'Marketer'].forEach(name => {
       expect(screen.getByRole('heading', { name })).toBeInTheDocument();
     });
-    ['LeadConcierge AI', 'InvestorHQ', 'ThreadPilot', 'AdPulse', 'FrameFire', 'Lumina', 'Dendrite', 'Ora', 'Quorum'].forEach(name => {
+    ['Relay', 'CasaSuite', 'LeadConcierge AI', 'InvestorHQ', 'ThreadPilot', 'AdPulse', 'FrameFire', 'Lumina', 'Dendrite', 'Ora', 'Quorum'].forEach(name => {
       expect(screen.queryByText(name)).not.toBeInTheDocument();
     });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Explore BookMaker' }));
+    expect(screen.getByRole('dialog')).toHaveTextContent('Draft organization');
   });
 
   it('shows Lee Felican Jr.\'s four books with official resource links', () => {
+    window.history.replaceState({}, '', '/books');
     render(<App />);
 
     const titles = [
@@ -73,5 +81,22 @@ describe('Felican AI company site', () => {
       'src',
       '/book-big-ballas.jpg',
     );
+  });
+
+  it('renders dedicated services, about, and contact pages', () => {
+    window.history.replaceState({}, '', '/services');
+    const { unmount } = render(<App />);
+    expect(screen.getByRole('heading', { name: 'AI systems designed around your business.' })).toBeInTheDocument();
+    unmount();
+
+    window.history.replaceState({}, '', '/about');
+    const about = render(<App />);
+    expect(screen.getByRole('heading', { name: 'A family-built AI company.' })).toBeInTheDocument();
+    about.unmount();
+
+    window.history.replaceState({}, '', '/contact');
+    render(<App />);
+    expect(screen.getByRole('heading', { name: 'Let’s talk about what needs to work better.' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Call Felican AI/i })).toHaveAttribute('href', 'tel:+13465150361');
   });
 });
