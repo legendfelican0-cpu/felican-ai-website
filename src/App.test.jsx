@@ -9,6 +9,7 @@ afterEach(() => { cleanup(); window.history.replaceState({}, '', '/'); });
 describe('Felican AI company site', () => {
   it('renders the Signal direction by default without review controls', () => {
     render(<App />);
+    expect(screen.getAllByRole('link', { name: 'Home' })[0]).toHaveAttribute('href', '/');
     expect(screen.getByText(/We build useful AI for the way your business works/i)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /AI that fits your business/i })).toBeInTheDocument();
     expect(screen.getAllByText('Felican Auto').length).toBeGreaterThan(0);

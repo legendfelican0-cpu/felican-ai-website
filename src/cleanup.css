@@ -1408,3 +1408,223 @@ button.product-card {
   .felican-site .all-products-grid .product-card { min-height: 330px; }
   .all-products-grid .product-card h3 { font-size: 32px; }
 }
+
+/* Established company direction */
+.felican-site,
+.felican-site.variant-catalog,
+.felican-site.variant-network {
+  --bg: #f6f4ee;
+  --surface: #ffffff;
+  --ink: #17211d;
+  --muted: #5f6863;
+  --line: #d8dbd5;
+  --brand: #245746;
+  --brand-dark: #173f32;
+  --brand2: #e5bd52;
+  --soft: #e8f0eb;
+  background: var(--bg);
+}
+
+.felican-site h1,
+.felican-site h2,
+.felican-site h3,
+.felican-site.variant-catalog h1,
+.felican-site.variant-catalog h2,
+.felican-site.variant-catalog h3,
+.felican-site.variant-network h1,
+.felican-site.variant-network h2,
+.felican-site.variant-network h3 {
+  font-family: 'Manrope', Arial, sans-serif !important;
+  letter-spacing: -.045em;
+}
+
+.fs-header,
+.variant-catalog .fs-header,
+.variant-network .fs-header {
+  max-width: none;
+  height: 84px;
+  padding-left: max(24px, calc((100vw - 1240px) / 2));
+  padding-right: max(24px, calc((100vw - 1240px) / 2));
+  border-bottom: 1px solid var(--line);
+  background: rgba(246, 244, 238, .94);
+  backdrop-filter: blur(12px);
+}
+
+.fs-mark > span {
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.fs-mark b {
+  font-size: 20px;
+  letter-spacing: -.02em;
+}
+
+.fs-header nav { gap: 30px; }
+.fs-header nav > a { color: var(--ink); font-weight: 600; }
+.fs-header nav > a.active { border-bottom-color: var(--brand); }
+.fs-header nav > a.contact-link {
+  padding: 11px 17px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+}
+.fs-header nav > a.contact-link:hover,
+.fs-header nav > a.contact-link.active { background: var(--ink); color: #fff; }
+
+.fs-hero.simple-hero,
+.variant-catalog .fs-hero.simple-hero,
+.variant-network .fs-hero.simple-hero {
+  max-width: 1240px;
+  padding: 92px 24px 88px;
+  display: grid;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 76px;
+  align-items: center;
+}
+
+.simple-hero h1 {
+  max-width: 760px;
+  margin: 20px 0 28px;
+  font-size: clamp(54px, 6vw, 82px);
+  line-height: .98;
+}
+
+.simple-hero .hero-copy > p {
+  max-width: 680px;
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+.hero-actions { margin-top: 34px; }
+.fs-primary,
+.fs-secondary { min-height: 52px; padding: 0 22px; border-radius: 999px; }
+
+.hero-process {
+  padding: 38px;
+  border-radius: 22px;
+  background: var(--brand);
+  color: #fff;
+  box-shadow: 14px 14px 0 var(--brand2);
+}
+
+.hero-process-intro { padding-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,.24); }
+.hero-process-intro > span { display: block; margin-bottom: 12px; color: #cbe0d6; font-size: 14px; font-weight: 700; }
+.hero-process-intro > strong { display: block; font-size: 27px; line-height: 1.25; letter-spacing: -.03em; }
+.hero-process ol { margin: 0; padding: 8px 0 0; list-style: none; }
+.hero-process li { padding: 20px 0; display: grid; grid-template-columns: 42px 1fr; gap: 14px; border-bottom: 1px solid rgba(255,255,255,.18); }
+.hero-process li:last-child { border-bottom: 0; padding-bottom: 0; }
+.hero-process li > b { color: var(--brand2); font-size: 15px; }
+.hero-process li > span { display: flex; flex-direction: column; gap: 5px; }
+.hero-process li strong { font-size: 17px; }
+.hero-process li small { color: #d9e6e1; font-size: 14px; line-height: 1.5; }
+
+.what-we-do { max-width: 1192px; padding: 84px 0; }
+.variant-catalog .what-we-do { padding: 72px; border-radius: 20px; background: #e8eee9; }
+.what-we-do h2 { font-size: 46px; }
+.what-we-do-links { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 10px; }
+.what-we-do-links span { padding: 11px 15px; border: 1px solid #bfcac3; border-radius: 999px; background: rgba(255,255,255,.55); font-size: 15px; font-weight: 700; }
+
+.fs-products,
+.fs-services,
+.fs-faq { max-width: 1192px; }
+.section-heading h2 { font-size: 50px; }
+
+.felican-site .all-products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.felican-site .all-products-grid .product-card {
+  min-height: 480px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(33, 48, 41, .04);
+}
+.product-card-visual {
+  height: 160px;
+  padding: 28px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.product-card-visual span { font-size: 42px; }
+.product-card-visual small { position: relative; z-index: 1; color: rgba(255,255,255,.88); font-size: 15px; font-weight: 700; }
+.all-products-grid .product-card-body { padding: 34px; }
+.all-products-grid .product-card h3 { font-size: 36px; }
+.all-products-grid .product-card p { font-size: 18px; }
+.all-products-grid .product-card footer { padding-top: 22px; border-top: 1px solid var(--line); }
+.all-products-grid .product-card:hover { transform: translateY(-7px); box-shadow: 0 24px 50px rgba(33, 48, 41, .12); }
+
+.service-list { gap: 14px; border: 0; }
+.service-list article,
+.variant-catalog .service-list article {
+  min-height: 285px;
+  padding: 30px;
+  border: 1px solid var(--line) !important;
+  border-radius: 14px;
+  background: #fff;
+}
+.service-list article > svg { width: 42px; height: 42px; margin: 0 0 38px; padding: 9px; border-radius: 50%; background: var(--soft); }
+.service-list h3 { font-size: 25px; }
+.service-list p { font-size: 16px; }
+
+.books-section { background: #fff; }
+.books-grid { gap: 22px; }
+.book-cover { border-radius: 12px !important; }
+
+.company-preview {
+  padding: 100px max(24px, calc((100vw - 1192px) / 2));
+  display: grid;
+  grid-template-columns: .95fr 1.05fr;
+  gap: 90px;
+  background: #e8eee9;
+}
+.company-preview h2 { margin: 18px 0 0; max-width: 550px; font-size: 49px; line-height: 1.08; }
+.company-preview p { margin-top: 0; font-size: 18px; }
+.text-link { padding: 10px 0; display: inline-flex; align-items: center; gap: 9px; border: 0; background: transparent; color: var(--brand)!important; font-weight: 800; }
+.text-link svg { width: 18px; }
+
+.home-contact {
+  padding: 72px max(24px, calc((100vw - 1192px) / 2));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 34px;
+  background: var(--ink);
+  color: #fff;
+}
+.home-contact span { color: #bed1c9; font-size: 15px; font-weight: 700; }
+.home-contact h2 { margin: 8px 0 0; font-size: 46px; }
+.home-contact button { min-height: 54px; padding: 0 22px; display: flex; align-items: center; gap: 10px; border: 0; border-radius: 999px; background: var(--brand2); color: var(--ink); font-weight: 800; }
+.home-contact button svg { width: 18px; }
+
+.fs-footer { min-height: 150px; }
+
+@media (max-width: 900px) {
+  .fs-header nav { gap: 15px; }
+  .fs-hero.simple-hero,
+  .variant-catalog .fs-hero.simple-hero,
+  .variant-network .fs-hero.simple-hero { grid-template-columns: 1fr; padding-top: 68px; gap: 48px; }
+  .hero-process { max-width: 680px; }
+  .what-we-do { margin-left: 20px; margin-right: 20px; }
+  .variant-catalog .what-we-do { padding: 42px; }
+  .company-preview { grid-template-columns: 1fr; gap: 34px; padding-top: 72px; padding-bottom: 72px; }
+}
+
+@media (max-width: 720px) {
+  .fs-header nav { gap: 12px; }
+  .fs-header nav > a.contact-link { padding: 10px 0; border: 0; border-radius: 0; }
+  .fs-header nav > a.contact-link:hover,
+  .fs-header nav > a.contact-link.active { background: transparent; color: var(--brand); }
+}
+
+@media (max-width: 620px) {
+  .simple-hero h1 { font-size: 48px; }
+  .hero-process { padding: 28px; box-shadow: 9px 9px 0 var(--brand2); }
+  .hero-process-intro > strong { font-size: 23px; }
+  .variant-catalog .what-we-do { padding: 30px 22px; }
+  .what-we-do h2,
+  .section-heading h2,
+  .company-preview h2,
+  .home-contact h2 { font-size: 38px; }
+  .felican-site .all-products-grid .product-card { min-height: 430px; }
+  .product-card-visual { height: 135px; }
+  .all-products-grid .product-card-body { padding: 28px; }
+  .home-contact { align-items: flex-start; flex-direction: column; }
+}

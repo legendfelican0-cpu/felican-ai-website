@@ -79,7 +79,7 @@ function Header({ onNavigate, path }) {
     <Mark onNavigate={onNavigate}/>
     <button className="fs-menu" aria-label="Toggle navigation" onClick={() => setOpen(!open)}>{open ? <X/> : <Menu/>}</button>
     <nav className={open ? 'open' : ''} aria-label="Main navigation">
-      {[['/products','Products'],['/services','Services'],['/books','Books'],['/about','About us'],['/contact','Contact']].map(([href,label]) => <a className={path === href || path.startsWith(`${href}/`) ? 'active' : ''} href={href} onClick={go(href)} key={href}>{label}</a>)}
+      {[['/','Home'],['/products','Products'],['/services','Services'],['/books','Books'],['/about','About us'],['/contact','Contact']].map(([href,label]) => <a className={path === href || (href !== '/' && path.startsWith(`${href}/`)) ? `active${href === '/contact' ? ' contact-link' : ''}` : href === '/contact' ? 'contact-link' : ''} href={href} onClick={go(href)} key={href}>{label}</a>)}
     </nav>
   </header>;
 }
@@ -91,22 +91,30 @@ function ReviewBar({ variant, setVariant }) {
 function Hero({ onNavigate }) {
   return <section className="fs-hero simple-hero" id="top">
     <div className="hero-copy">
-      <span className="fs-kicker">AI for every kind of business</span>
+      <span className="fs-kicker">Products, solutions, and training</span>
       <h1>We build useful AI for the way your business works.</h1>
-      <p>Felican AI creates products, custom AI agents, business automations, integrations, and practical training for companies of any size or industry.</p>
+      <p>Felican AI helps businesses turn everyday work into better systems—with practical products, custom AI, automation, integrations, and hands-on training.</p>
       <div className="hero-actions"><button className="fs-primary" onClick={() => onNavigate('/products')}>Explore products <ArrowRight/></button><button className="fs-secondary" onClick={() => onNavigate('/services')}>See our services</button></div>
+    </div>
+    <div className="hero-process" aria-label="How Felican AI works">
+      <div className="hero-process-intro"><span>How we work</span><strong>From a real business need to a working solution.</strong></div>
+      <ol>
+        <li><b>01</b><span><strong>Understand the work</strong><small>Learn the people, process, and goal.</small></span></li>
+        <li><b>02</b><span><strong>Build the right system</strong><small>Choose a product or create a custom solution.</small></span></li>
+        <li><b>03</b><span><strong>Launch and improve</strong><small>Train the team and keep it working.</small></span></li>
+      </ol>
     </div>
   </section>;
 }
 
 function WhatWeDo() {
-  return <section className="what-we-do"><div><span className="fs-kicker">What we do</span><h2>AI that fits your business—not the other way around.</h2></div><div><p>We work with businesses in any industry. We learn how the work gets done, find where AI can make a real difference, and deliver useful products, custom systems, integrations, and training.</p></div></section>;
+  return <section className="what-we-do"><div><span className="fs-kicker">What we do</span><h2>AI that fits your business—not the other way around.</h2></div><div><p>We work with businesses in any industry. We learn how the work gets done, find where AI can make a real difference, and deliver useful products, custom systems, integrations, and training.</p><div className="what-we-do-links"><span>Products</span><span>Custom solutions</span><span>Team training</span></div></div></section>;
 }
 
 function ProductCard({ product, onNavigate }) {
   return <a className="product-card" href={product.path} onClick={event => { event.preventDefault(); onNavigate(product.path); }} aria-label={`Open ${product.name}`}>
-    <div className="product-card-accent" style={{backgroundColor:product.color}}/>
-    <div className="product-card-body"><h3>{product.name}</h3><p>{product.description}</p><footer><span>View product</span><ArrowRight/></footer></div>
+    <div className="product-card-visual" style={{backgroundColor:product.color}}><span>{product.name.split(' ').map(word => word[0]).join('').slice(0, 3)}</span><small>{product.category}</small></div>
+    <div className="product-card-body"><h3>{product.name}</h3><p>{product.description}</p><footer><span>Explore {product.name}</span><ArrowRight/></footer></div>
   </a>;
 }
 
@@ -151,6 +159,14 @@ function About() {
   return <section className="fs-about" id="about"><div><span>Company</span><h2>Built to make AI useful.</h2></div><div><p>Felican AI is a family-built technology company led by Lee Felican Jr. and Legend Felican. We build products and custom systems that solve real operational problems.</p><p>Our work includes AI assistants, business automation, private AI, software integrations, training, and ongoing optimization. The focus is simple: understand the work, build the right system, and support it after launch.</p><div className="about-principles"><span>Real workflows first</span><span>Clear data boundaries</span><span>Human handoff</span><span>Long-term support</span></div></div></section>;
 }
 
+function CompanyPreview({ onNavigate }) {
+  return <section className="company-preview"><div><span className="fs-kicker">About Felican AI</span><h2>A family-built company focused on useful work.</h2></div><div><p>Lee Felican Jr. and Legend Felican build products and custom systems for businesses that want practical results—not more complexity.</p><button className="text-link" onClick={() => onNavigate('/about')}>Meet the company <ArrowRight/></button></div></section>;
+}
+
+function HomeContact({ onNavigate }) {
+  return <section className="home-contact"><div><span>Have a project in mind?</span><h2>Let’s make the work easier.</h2></div><button onClick={() => onNavigate('/contact')}>Contact Felican AI <ArrowRight/></button></section>;
+}
+
 function FAQ() {
   const [open, setOpen] = useState(0);
   return <section className="fs-faq"><div className="section-heading"><span>FAQ</span><h2>Common questions.</h2></div><div>{faqs.map(([q,a],i) => <article className={open === i ? 'open' : ''} key={q}><button onClick={() => setOpen(open === i ? -1 : i)}><span>{q}</span><ChevronDown/></button>{open === i && <p>{a}</p>}</article>)}</div></section>;
@@ -165,7 +181,7 @@ function PageIntro({ eyebrow, title, copy }) {
 }
 
 function HomePage({ onNavigate }) {
-  return <><Hero onNavigate={onNavigate}/><WhatWeDo/><Products onNavigate={onNavigate}/><Services onNavigate={onNavigate}/><Books/></>;
+  return <><Hero onNavigate={onNavigate}/><WhatWeDo/><Products onNavigate={onNavigate}/><Services onNavigate={onNavigate}/><Books/><CompanyPreview onNavigate={onNavigate}/><HomeContact onNavigate={onNavigate}/></>;
 }
 
 function ProductsPage({ onNavigate }) {
@@ -232,5 +248,5 @@ export function FelicanSite() {
     '/contact': <ContactPage onChat={() => setChat(true)}/>,
   }[path];
   return <div className={`felican-site variant-${variant}`}>
-    {review && <ReviewBar variant={variant} setVariant={setVariant}/>}<Header path={path} onNavigate={navigate}/><main key={path}>{page}</main><footer className="fs-footer"><Mark onNavigate={navigate}/><nav aria-label="Footer navigation">{[['/products','Products'],['/services','Services'],['/books','Books'],['/about','About'],['/contact','Contact']].map(([href,label]) => <a href={href} onClick={event => { event.preventDefault(); navigate(href); }} key={href}>{label}</a>)}</nav><span>© 2026 Felican AI</span></footer>{chat && <ChatPanel close={()=>setChat(false)}/>}</div>;
+    {review && <ReviewBar variant={variant} setVariant={setVariant}/>}<Header path={path} onNavigate={navigate}/><main key={path}>{page}</main><footer className="fs-footer"><Mark onNavigate={navigate}/><nav aria-label="Footer navigation">{[['/','Home'],['/products','Products'],['/services','Services'],['/books','Books'],['/about','About'],['/contact','Contact']].map(([href,label]) => <a href={href} onClick={event => { event.preventDefault(); navigate(href); }} key={href}>{label}</a>)}</nav><span>© 2026 Felican AI</span></footer>{chat && <ChatPanel close={()=>setChat(false)}/>}</div>;
 }
