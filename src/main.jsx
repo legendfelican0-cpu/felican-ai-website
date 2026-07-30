@@ -7,6 +7,7 @@ import {
   Sparkles, Workflow, X, Zap,
 } from 'lucide-react';
 import './styles.css';
+import './corrections.css';
 
 const PHONE_DISPLAY = '+1 (346) 515-0361';
 const PHONE_LINK = 'tel:+13465150361';
@@ -37,7 +38,7 @@ const services = [
 
 const faqs = [
   ['Can Felican AI work with our existing software?', 'Yes. Custom integrations are a core service. We design around the systems your team already uses—CRM, email, calendars, phone, documents, databases, and specialized tools.'],
-  ['Can the phone assistant answer questions about our business?', 'That is the goal: a voice assistant grounded in approved company knowledge, with clear escalation paths when a human should take over.'],
+  ['What happens when I call Felican AI?', 'Our AI front desk answers first. It knows Felican AI, our products, services, training, and common questions. It can understand why you are calling, transfer you to Legend or Lee when appropriate, collect details, and send the right follow-up email.'],
   ['Do you offer private AI deployment?', 'Yes. Felican can design controlled AI deployments for organizations that need stronger data boundaries, access control, auditability, and governance.'],
   ['Do you train teams as well as build systems?', 'Yes. Training ranges from practical AI foundations and prompt skills to hands-on agent and automation workshops for specific teams.'],
 ];
@@ -74,18 +75,19 @@ function PhoneDemo({ onClose }) {
     <section className="phone-modal" role="dialog" aria-modal="true" aria-labelledby="phone-title" onMouseDown={e => e.stopPropagation()}>
       <button className="modal-close" onClick={onClose} aria-label="Close phone demo"><X/></button>
       <div className="phone-orb"><Phone/></div>
-      <p className="eyebrow">Felican AI · voice line</p>
-      <h2 id="phone-title">Call. Ask. Get a useful answer.</h2>
-      <p>Our AI phone experience is designed to answer questions about Felican products, services, training, and next steps—then connect you with the right person.</p>
+      <p className="eyebrow">Our AI-powered front desk</p>
+      <h2 id="phone-title">Call Felican AI. Our AI answers first.</h2>
+      <p>It knows our company, products, services, training, and common business questions. It can understand what you need, transfer you to Legend or Lee, collect a message, and send email summaries or follow-ups.</p>
       <div className={playing ? 'call-transcript playing' : 'call-transcript'}>
         <p><b>Caller</b> “Can you build an AI agent for our service team?”</p>
-        <p><b>Felican AI</b> “Yes. We can connect it to your knowledge, CRM, calendar, and handoff process. Want a quick overview or to book a discovery call?”</p>
+        <p><b>Felican AI</b> “Yes. We build agents around your company knowledge and tools. I can transfer you to Legend, connect you with Lee, or email you an overview—which would you prefer?”</p>
       </div>
+      <div className="call-outcomes"><span><Phone/> Transfer the caller</span><span><Send/> Email the details</span><span><MessageCircle/> Take a message</span></div>
       <div className="modal-actions">
         <button className="button button-outline" onClick={() => setPlaying(!playing)}>{playing ? <RotateCcw/> : <Play/>}{playing ? 'Replay demo' : 'Hear how it works'}</button>
         <a className="button" href={PHONE_LINK}><Phone/> Call {PHONE_DISPLAY}</a>
       </div>
-      <small>Prototype note: the published number comes from the current Private AI Global contact page. The production knowledge base and voice routing are the next integration phase.</small>
+      <small>Website prototype: the production voice agent will need the Felican knowledge base, transfer rules and availability for Legend and Lee, email templates, call logging, and human fallback configured before launch.</small>
     </section>
   </div>;
 }
@@ -96,7 +98,7 @@ function ChatAssistant({ onClose }) {
   const [value, setValue] = useState('');
   const answer = (input) => {
     const q = input.toLowerCase();
-    if (q.includes('phone') || q.includes('call')) return `You can call Felican AI at ${PHONE_DISPLAY}. The voice experience can answer common questions and route the conversation.`;
+    if (q.includes('phone') || q.includes('call')) return `Call us at ${PHONE_DISPLAY}. Our AI front desk answers questions about Felican AI, understands why you are calling, and can transfer you to Legend or Lee, take a message, or send an email follow-up.`;
     if (q.includes('train') || q.includes('workshop')) return 'We offer AI foundations, practical team workshops, prompt training, and hands-on agent and automation programs.';
     if (q.includes('private') || q.includes('secure')) return 'Felican designs controlled AI environments with clear access, governance, and data-handling boundaries.';
     if (q.includes('product')) return `Our current portfolio includes ${products.slice(0, 6).map(p => p.name).join(', ')}, and more. I can help narrow it down.`;
@@ -146,8 +148,8 @@ function Footer({ onCall, onChat }) {
 
 function Broadsheet({ onCall, onChat }) {
   return <div className="concept broadsheet" id="top"><Nav onCall={onCall} onChat={onChat}/><main>
-    <section className="b-hero"><aside><span>Vol. 01</span><span>Applied intelligence</span></aside><div><p className="eyebrow">A family-built AI company</p><h1>We build the AI that answers your phone, works your website, and runs the parts of business that should already be easier.</h1><div className="hero-foot"><p>Products, agents, automation, private AI, integrations, training, and practical guidance—designed around real work.</p><div><button className="button" onClick={onChat}>Meet Felican AI <ArrowRight/></button><button className="arrow-link" onClick={onCall}><CirclePlay/> Hear the phone assistant</button></div></div></div></section>
-    <section className="editorial-callout"><span>01 / Voice</span><div><p className="quote">“Thanks for calling Felican AI. Tell me what you’re trying to improve, and I’ll help you find the right place to start.”</p><button className="arrow-link" onClick={onCall}>Call {PHONE_DISPLAY} <ArrowRight/></button></div><div className="waveform">{Array.from({length:28}).map((_,i)=><i style={{height:`${18 + (i*17)%46}px`}} key={i}/>)}</div></section>
+    <section className="b-hero"><aside><span>Vol. 01</span><span>Applied intelligence</span></aside><div><p className="eyebrow">A family-built AI company</p><h1>We build practical AI products, agents, and automations that make business easier.</h1><div className="hero-foot"><p>Call Felican AI and our own AI front desk answers—ready to explain what we do, help with your question, or transfer you to Legend or Lee.</p><div><button className="button" onClick={onChat}>Meet Felican AI <ArrowRight/></button><button className="arrow-link" onClick={onCall}><CirclePlay/> Hear our AI front desk</button></div></div></div></section>
+    <section className="editorial-callout"><span>01 / Our front desk</span><div><p className="quote">“Thanks for calling Felican AI. I can answer questions, take a message, send information by email, or connect you with Legend or Lee.”</p><button className="arrow-link" onClick={onCall}>Call our AI · {PHONE_DISPLAY} <ArrowRight/></button></div><div className="waveform">{Array.from({length:28}).map((_,i)=><i style={{height:`${18 + (i*17)%46}px`}} key={i}/>)}</div></section>
     <section className="indexed-section" id="products"><header><p className="eyebrow">02 / Products</p><h2>Things we have built.</h2><p>A growing portfolio of practical AI software for operators, teams, creators, and decision-makers.</p></header><ProductIndex/></section>
     <section className="service-table" id="services"><header><p className="eyebrow">03 / Services</p><h2>From idea to working system.</h2></header><div>{services.map((s,i)=><article key={s.name}><span>{String(i+1).padStart(2,'0')}</span><s.icon/><h3>{s.name}</h3><p>{s.description}</p><ArrowRight/></article>)}</div></section>
     <TrainingBooks/><AboutBand/><FAQ/>
@@ -163,7 +165,7 @@ function Workbench({ onCall, onChat }) {
   const filtered = useMemo(() => filter === 'All' ? products : products.filter(p=>p.category===filter), [filter]);
   return <div className="concept workbench" id="top"><Nav onCall={onCall} onChat={onChat}/><main>
     <section className="w-hero"><div><span className="mono-label">// BUILT FOR REAL WORK</span><h1>AI that clocks in.</h1><p>Explore a workbench of products, agents, and automations built to answer, organize, create, and move the business forward.</p><div><button className="button" onClick={onChat}>Start with Felican AI <ArrowRight/></button><button className="button button-outline" onClick={onCall}><Play/> See it answer a call</button></div><small><i/> Practical systems · human handoff · ongoing support</small></div><PhoneWidget onCall={onCall}/></section>
-    <section className="demo-shelf"><article onClick={onCall}><div className="tile-top"><Phone/><span className="mono-label">VOICE / 24×7</span></div><h2>Felican AI Phone</h2><p>A knowledgeable first conversation whenever someone calls.</p><div className="mini-wave">{Array.from({length:18}).map((_,i)=><i style={{height:`${8 + (i*13)%28}px`}} key={i}/>)}</div></article><article onClick={onChat}><div className="tile-top"><MessageCircle/><span className="mono-label">WEB / LIVE</span></div><h2>Felican AI Chat</h2><p>A product, service, and training guide embedded in your website.</p><div className="typing-demo"><span>What can you automate?</span><span>Intake, follow-up, reporting…</span></div></article></section>
+    <section className="demo-shelf"><article onClick={onCall}><div className="tile-top"><Phone/><span className="mono-label">OUR FRONT DESK / 24×7</span></div><h2>Call Felican AI</h2><p>Our AI answers the company line, helps the caller, transfers to Legend or Lee, and sends the right email follow-up.</p><div className="mini-wave">{Array.from({length:18}).map((_,i)=><i style={{height:`${8 + (i*13)%28}px`}} key={i}/>)}</div></article><article onClick={onChat}><div className="tile-top"><MessageCircle/><span className="mono-label">PRODUCT / WEB</span></div><h2>Felican AI Chat</h2><p>Our customer-facing website assistant—and a product we can tailor for other businesses.</p><div className="typing-demo"><span>What can you automate?</span><span>Intake, follow-up, reporting…</span></div></article></section>
     <section className="product-grid-section" id="products"><header><div><p className="mono-label">// PRODUCTS</p><h2>A portfolio you can explore.</h2></div><div className="filter-pills">{['All','AI workspace','Business ops','Creative tools','Developer tools'].map(f=><button className={filter===f?'active':''} onClick={()=>setFilter(f)} key={f}>{f}</button>)}</div></header><div className="product-grid">{filtered.map(p=><article key={p.name}><div><ProductMark product={p}/><span className="live-status"><i/> {p.status}</span></div><h3>{p.name}</h3><p>{p.description}</p><footer><span>{p.category}</span><ArrowRight/></footer></article>)}</div></section>
     <section className="service-grid-section" id="services"><header><p className="mono-label">// SERVICES</p><h2>One team from discovery through optimization.</h2></header><div>{services.map((s,i)=><article key={s.name}><span className="mono-label">0{i+1}</span><s.icon/><h3>{s.name}</h3><p>{s.description}</p><button>Scope a project <ArrowRight/></button></article>)}</div></section>
     <TrainingBooks/><AboutBand/><FAQ/>
@@ -171,14 +173,14 @@ function Workbench({ onCall, onChat }) {
 }
 
 const conversationMoments = [
-  { overline: 'AFTER HOURS', ask: '“Do you have someone who can answer after 5?”', reply: 'Your Felican phone assistant can answer common questions, qualify the need, and route the next step.', title: 'A better first call.', body: 'Give every caller a thoughtful first conversation—even when your team is busy, offline, or deep in the work.' },
+  { overline: 'WHEN YOU CALL US', ask: '“Can I speak with someone about an AI agent?”', reply: 'Absolutely. I can answer a few questions now, transfer you to Legend or Lee, take a message, or email you an overview.', title: 'Our AI answers the Felican line.', body: 'It acts as our front desk: grounded in our company knowledge, ready to help, and able to bring a human into the conversation at the right moment.' },
   { overline: 'ON YOUR WEBSITE', ask: '“Which product is actually right for us?”', reply: 'Tell me your workflow, your team, and where time is getting lost. I’ll narrow it down.', title: 'A website that knows what you do.', body: 'Turn a static site into a useful guide grounded in your approved products, services, policies, and knowledge.' },
   { overline: 'IN THE BACKGROUND', ask: '“Why are we still moving this by hand?”', reply: 'We can connect the intake, document, CRM, follow-up, and reporting steps into one managed workflow.', title: 'Less copy. Less paste. Less chasing.', body: 'Agents and automations can coordinate the routine work while your team stays in control of the important calls.' },
 ];
 
 function Conversation({ onCall, onChat }) {
   return <div className="concept conversation" id="top"><div className="scroll-progress"/><Nav onCall={onCall} onChat={onChat}/><main>
-    <section className="c-hero"><p className="eyebrow">A conversation with Felican AI</p><h1>Hear it answer.</h1><p className="lede">The easiest way to understand useful AI is to talk to it.</p><button className="audio-player" onClick={onCall}><span><Play/></span><div className="audio-wave">{Array.from({length:42}).map((_,i)=><i style={{height:`${9 + (i*19)%42}px`}} key={i}/>)}</div><time>0:20</time></button><div className="transcript-preview"><p><b>Felican AI</b></p><p>“Hi—tell me what you’re trying to make easier.”</p></div><button className="arrow-link" onClick={onCall}>Call live · {PHONE_DISPLAY} <ArrowRight/></button></section>
+    <section className="c-hero"><p className="eyebrow">Call the Felican AI front desk</p><h1>Our AI answers.</h1><p className="lede">Ask about our company, products, services, or training—or have it connect you with us.</p><button className="audio-player" onClick={onCall}><span><Play/></span><div className="audio-wave">{Array.from({length:42}).map((_,i)=><i style={{height:`${9 + (i*19)%42}px`}} key={i}/>)}</div><time>0:20</time></button><div className="transcript-preview"><p><b>Felican AI</b></p><p>“I can help with that, transfer you to Legend or Lee, or send the details by email.”</p></div><button className="arrow-link" onClick={onCall}>Call our AI · {PHONE_DISPLAY} <ArrowRight/></button></section>
     <section className="story-intro"><p>Every useful system starts with a real conversation: what is happening now, what keeps getting stuck, and what should feel easier on the other side.</p></section>
     <section className="conversation-moments">{conversationMoments.map((m,i)=><article key={m.overline} className={i%2?'reverse':''}><p className="eyebrow">{String(i+1).padStart(2,'0')} · {m.overline}</p><div className="exchange"><p className="ask">{m.ask}</p><p className="reply"><Sparkles/>{m.reply}</p></div><div className="moment-copy"><h2>{m.title}</h2><p>{m.body}</p><button className="arrow-link">See how it works <ArrowRight/></button></div></article>)}</section>
     <section className="private-diagram"><div><p className="eyebrow">04 · BEHIND YOUR BOUNDARIES</p><h2>Private AI, designed around control.</h2><p>For sensitive teams and regulated workflows, Felican can design AI environments with clear access, approved knowledge, auditability, and controlled integrations.</p><button className="arrow-link">Explore private AI <ArrowRight/></button></div><div className="boundary"><span>Your environment</span><div><LockKeyhole/><b>Company knowledge</b><small>Approved documents · systems · permissions</small></div><div><BrainCircuit/><b>Felican AI layer</b><small>Models · agents · tools · governance</small></div></div></section>

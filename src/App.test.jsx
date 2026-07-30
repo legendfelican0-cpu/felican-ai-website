@@ -8,8 +8,16 @@ afterEach(cleanup);
 describe('Felican AI concept site', () => {
   it('renders the default Broadsheet concept', () => {
     render(<App />);
-    expect(screen.getByText(/We build the AI that answers your phone/i)).toBeInTheDocument();
+    expect(screen.getByText(/We build practical AI products/i)).toBeInTheDocument();
     expect(screen.getByText('Relay')).toBeInTheDocument();
+  });
+
+  it('positions the company phone AI as Felican’s front desk', () => {
+    render(<App />);
+    fireEvent.click(screen.getByText(/Hear our AI front desk/i));
+    expect(screen.getByText(/Our AI answers first/i)).toBeInTheDocument();
+    expect(screen.getByText(/Transfer the caller/i)).toBeInTheDocument();
+    expect(screen.getByText(/Email the details/i)).toBeInTheDocument();
   });
 
   it('switches to the Workbench concept', () => {

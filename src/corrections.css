@@ -1,0 +1,23 @@
+.call-outcomes {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: -12px 0 24px;
+}
+
+.call-outcomes span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--rule);
+  background: #f4efe7;
+  padding: 8px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.call-outcomes svg {
+  width: 14px;
+  color: var(--coral);
+}
