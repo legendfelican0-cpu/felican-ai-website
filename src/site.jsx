@@ -13,18 +13,26 @@ const PHONE = '+1 (346) 515-0361';
 const PHONE_HREF = 'tel:+13465150361';
 
 const products = [
-  { name: 'Felican AI Assistant', category: 'AI assistants', status: 'Featured', description: 'A company-trained website assistant that answers questions, recommends services, and captures inquiries.', color: '#7357ff' },
-  { name: 'Relay', category: 'Business operations', status: 'Live', description: 'Field-service software for HVAC, plumbing, and electrical companies.', color: '#2467f2', href: 'https://felican.ai/relay', image: '/relay-live.png' },
-  { name: 'CasaSuite', category: 'Real estate', status: 'Live', description: 'AI tools for real-estate agents, investors, and property teams.', color: '#e76a32', href: 'https://felican.ai/realestate', image: '/casasuite-live.png' },
-  { name: 'LeadConcierge AI', category: 'Real estate', status: 'Live', description: 'Lead capture, qualification, and immediate follow-up for real-estate teams.', color: '#168b70' },
-  { name: 'InvestorHQ', category: 'Real estate', status: 'Live', description: 'Deal analysis, pipeline management, rentals, and property operations.', color: '#375a7a' },
-  { name: 'ThreadPilot', category: 'Business operations', status: 'Preview', description: 'Email triage, thread summaries, and reply drafting for busy teams.', color: '#2b807b' },
-  { name: 'AdPulse', category: 'Marketing', status: 'Preview', description: 'Ad account audits with a health score and prioritized fixes.', color: '#e44747' },
-  { name: 'FrameFire', category: 'Creative tools', status: 'Preview', description: 'Vertical videos created from a brief and reusable motion templates.', color: '#f07136' },
-  { name: 'Lumina', category: 'Creative tools', status: 'Preview', description: 'A straightforward AI image studio for business and creative teams.', color: '#bd4da5' },
-  { name: 'Dendrite', category: 'Developer tools', status: 'Preview', description: 'Web extraction that returns clean, AI-ready content for applications.', color: '#52a44f' },
-  { name: 'Ora', category: 'AI workspace', status: 'Preview', description: 'One workspace for working across leading AI models.', color: '#5d54ca' },
-  { name: 'Quorum', category: 'Research', status: 'Research', description: 'Multi-agent investment research and structured risk analysis.', color: '#253c59' },
+  { name: 'Relay', group: 'Business systems', category: 'Field service', status: 'Live', description: 'Field-service software for HVAC, plumbing, and electrical companies.', color: '#2467f2', href: 'https://felican.ai/relay', image: '/relay-live.png' },
+  { name: 'CasaSuite', group: 'Business systems', category: 'Real estate', status: 'Live', description: 'AI tools for real-estate agents, investors, and property teams.', color: '#e76a32', href: 'https://felican.ai/realestate', image: '/casasuite-live.png' },
+  { name: 'Felican Auto', group: 'Business systems', category: 'Automotive', status: 'Available', description: 'Connected AI tools and workflows built for automotive businesses.', color: '#173f6b' },
+  { name: 'Felican AI Assistant', group: 'AI products', category: 'Customer experience', status: 'Featured', description: 'A company-trained website assistant that answers questions, recommends services, and captures inquiries.', color: '#7357ff' },
+  { name: 'World of Agents', group: 'AI products', category: 'AI agents', status: 'Available', description: 'A place to discover and work with specialized AI agents built for focused tasks.', color: '#168b70' },
+  { name: 'BookMaker', group: 'AI products', category: 'Publishing', status: 'Available', description: 'An AI workspace for planning, writing, organizing, and preparing books.', color: '#9b4f2f' },
+  { name: 'Marketer', group: 'AI products', category: 'Marketing', status: 'Available', description: 'An AI marketing workspace for campaigns, content, and brand execution.', color: '#bd3f67' },
+];
+
+const productGroups = [
+  {
+    name: 'Business systems',
+    label: 'Run the business',
+    description: 'Purpose-built software for teams with real customers, real work, and real operations.',
+  },
+  {
+    name: 'AI products',
+    label: 'Create and automate',
+    description: 'Focused AI products for customer support, agents, publishing, and marketing.',
+  },
 ];
 
 const services = [
@@ -35,6 +43,39 @@ const services = [
   { icon: BriefcaseBusiness, title: 'AI implementation', text: 'Use-case selection, system design, delivery, rollout, and ongoing improvement.' },
   { icon: GraduationCap, title: 'Training', text: 'Practical workshops for leaders, operators, creators, and technical teams.' },
 ];
+
+const books = [
+  {
+    title: "The Big Balla's Guide to Making Money with AI",
+    subtitle: '100 Ways to Turn AI Into Income',
+    status: 'New · 2026',
+    image: '/book-big-ballas.jpg',
+    description: 'One hundred ways to make money with AI, organized by startup cost and industry, with checklists and a business-launch playbook.',
+  },
+  {
+    title: "Don't Be Replaced",
+    subtitle: 'How Not to Lose Your Job to AI',
+    status: 'On Amazon',
+    image: '/book-dont-be-replaced.jpg',
+    description: 'A working person’s plan for staying valuable by understanding job exposure and becoming the most AI-capable person on the team.',
+  },
+  {
+    title: 'Stop Being Nice to AI',
+    subtitle: 'How to Talk to AI Like a Pro with the GRRRRR Method',
+    status: 'On Amazon',
+    image: '/book-stop-being-nice.jpg',
+    description: 'A practical guide to getting stronger results from AI using Lee Felican Jr.’s GRRRRR prompting method.',
+  },
+  {
+    title: 'The BIG AI Book',
+    subtitle: "A Children's Guide to AI (For Grown-Ups)",
+    status: 'On Amazon',
+    image: '/book-big-ai.jpg',
+    description: 'A fully illustrated explanation of what AI is, where it appears in daily life, and how people can put it to work.',
+  },
+];
+
+const BOOKS_URL = 'https://felican.ai/Lee-Felican-jr/books/resources/';
 
 const faqs = [
   ['How can I contact Felican AI?', `Call us at ${PHONE}, email the company, or use the website assistant. The contact section has all three options.`],
@@ -53,7 +94,7 @@ function Header({ onChat }) {
     <Mark />
     <button className="fs-menu" aria-label="Toggle navigation" onClick={() => setOpen(!open)}>{open ? <X/> : <Menu/>}</button>
     <nav className={open ? 'open' : ''}>
-      <a href="#products">Products</a><a href="#services">Services</a><a href="#solutions">Solutions</a><a href="#training">Training</a><a href="#about">Company</a>
+      <a href="#products">Products</a><a href="#services">Services</a><a href="#solutions">Solutions</a><a href="#training">Training</a><a href="#books">Books</a><a href="#about">Company</a>
       <a className="fs-phone-link" href={PHONE_HREF}><Phone/> {PHONE}</a>
       <button className="fs-primary fs-nav-cta" onClick={onChat}>Ask Felican AI</button>
     </nav>
@@ -67,7 +108,7 @@ function ReviewBar({ variant, setVariant }) {
 function ProductShowcase() {
   return <div className="hero-showcase">
     <div className="showcase-window"><header><span><i/><i/><i/></span><b>Relay</b><small>Felican AI product</small></header><img src="/relay-live.png" alt="Relay field service software"/></div>
-    <div className="showcase-stat"><strong>12</strong><span>products across business operations, real estate, creative work, and AI.</span></div>
+    <div className="showcase-stat"><strong>{products.length}</strong><span>focused products across business software, publishing, marketing, and AI.</span></div>
     <div className="showcase-mini"><span className="product-symbol" style={{background:'#e76a32'}}>CS</span><div><b>CasaSuite</b><small>Real estate operations</small></div><ArrowRight/></div>
   </div>;
 }
@@ -94,19 +135,19 @@ function Hero({ onChat, variant }) {
 function ProductCard({ product, featured = false }) {
   const content = <>
     {product.image && <div className="product-shot"><img src={product.image} alt={`${product.name} product interface`}/></div>}
-    <div className="product-card-body"><header><span className="product-symbol" style={{background:product.color}}>{product.name.slice(0,2).toUpperCase()}</span><small>{product.status}</small></header><h3>{product.name}</h3><p>{product.description}</p><footer><span>{product.category}</span><ArrowRight/></footer></div>
+    {!product.image && featured && <div className="product-shot product-placeholder" style={{background:product.color}}><span>{product.name}</span><small>{product.category}</small></div>}
+    <div className="product-card-body"><header><span className="product-symbol" style={{background:product.color}}>{product.name.slice(0,2).toUpperCase()}</span><small>{product.status}</small></header><h3>{product.name}</h3><p>{product.description}</p><footer><span>{product.category}</span>{product.href ? <ArrowRight/> : <small>Felican AI</small>}</footer></div>
   </>;
   return product.href ? <a className={featured ? 'product-card featured' : 'product-card'} href={product.href} target="_blank" rel="noreferrer">{content}</a> : <article className={featured ? 'product-card featured' : 'product-card'}>{content}</article>;
 }
 
 function Products() {
-  const [showAll, setShowAll] = useState(false);
-  const visible = showAll ? products : products.slice(0, 6);
   return <section className="fs-products" id="products">
-    <div className="section-heading"><span>Products</span><h2>Built by Felican AI.</h2><p>Software for operations, real estate, marketing, creative work, and AI-powered customer experiences.</p></div>
-    <div className="featured-products"><ProductCard product={products[1]} featured/><ProductCard product={products[2]} featured/></div>
-    <div className="product-list">{visible.filter(p => !['Relay','CasaSuite'].includes(p.name)).map(p => <ProductCard product={p} key={p.name}/>)}</div>
-    <button className="show-products" onClick={() => setShowAll(!showAll)}>{showAll ? 'Show featured products' : `View all ${products.length} products`} <ArrowRight/></button>
+    <div className="section-heading"><span>Products</span><h2>Built by Felican AI.</h2><p>A focused portfolio of business systems and practical AI products—organized by what they help you do.</p></div>
+    <div className="product-groups">{productGroups.map(group => <section className="product-group" key={group.name}>
+      <div className="product-group-heading"><div><small>{group.label}</small><h3>{group.name}</h3></div><p>{group.description}</p></div>
+      <div className="product-list">{products.filter(product => product.group === group.name).map(product => <ProductCard product={product} featured={group.name === 'Business systems'} key={product.name}/>)}</div>
+    </section>)}</div>
   </section>;
 }
 
@@ -133,7 +174,7 @@ function SolutionsTraining() {
 }
 
 function Books() {
-  return <section className="books-section"><div><span className="fs-kicker">Books and field guides</span><h2>Practical AI knowledge, in print.</h2><p>The Felican library will bring together books, playbooks, and field guides for business owners and teams. Confirmed titles and purchasing links will be added from the Felican catalogue.</p><button className="fs-secondary"><Mail/> Get publishing updates</button></div><div className="book-visual" aria-label="Felican AI book collection preview"><span>FELICAN<br/>FIELD<br/>GUIDES</span><span>AI FOR<br/>REAL<br/>WORK</span><span>BUILD<br/>THE<br/>SYSTEM</span></div></section>;
+  return <section className="books-section" id="books"><div className="books-heading"><span className="fs-kicker">Books by Lee Felican Jr.</span><h2>Practical guides for working with AI.</h2><p>Four books covering AI income opportunities, career readiness, better prompting, and AI fundamentals.</p><a className="fs-secondary" href={BOOKS_URL} target="_blank" rel="noreferrer"><BookOpen/> Open the official book resources</a></div><div className="books-grid">{books.map(book => <a className="book-card" href={BOOKS_URL} target="_blank" rel="noreferrer" key={book.title}><div className="book-cover"><img src={book.image} alt={`${book.title} cover`}/><span>{book.status}</span></div><div><small>{book.subtitle}</small><h3>{book.title}</h3><p>{book.description}</p><b>View book resources <ArrowRight/></b></div></a>)}</div></section>;
 }
 
 function About() {
@@ -155,7 +196,7 @@ function ChatPanel({ close }) {
   const respond = text => {
     const q = text.toLowerCase();
     if(q.includes('phone')||q.includes('call')||q.includes('contact')) return `Call Felican AI at ${PHONE}, or use the contact section to send an email.`;
-    if(q.includes('product')) return 'Felican products include Relay, CasaSuite, LeadConcierge AI, InvestorHQ, ThreadPilot, AdPulse, FrameFire, Lumina, Dendrite, Ora, and Quorum.';
+    if(q.includes('product')) return 'Felican products include Relay, CasaSuite, Felican Auto, the Felican AI Assistant, World of Agents, BookMaker, and Marketer.';
     if(q.includes('train')) return 'Training includes AI fundamentals, prompting for daily work, workflow workshops, and hands-on agent building.';
     return 'Felican AI builds assistants, automations, integrations, private AI systems, and business software. Tell me what you want to improve and I’ll point you in the right direction.';
   };

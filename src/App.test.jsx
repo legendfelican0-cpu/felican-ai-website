@@ -34,5 +34,44 @@ describe('Felican AI company site', () => {
     fireEvent.click(screen.getByText('Talk to Felican AI'));
     fireEvent.click(screen.getByText('What products do you have?'));
     expect(screen.getByText(/Felican products include Relay/i)).toBeInTheDocument();
+    expect(screen.getByText(/World of Agents, BookMaker, and Marketer/i)).toBeInTheDocument();
+  });
+
+  it('organizes the current seven-product portfolio into two clear groups', () => {
+    render(<App />);
+
+    expect(screen.getByRole('heading', { name: 'Business systems' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'AI products' })).toBeInTheDocument();
+    ['Felican Auto', 'World of Agents', 'BookMaker', 'Marketer'].forEach(name => {
+      expect(screen.getByRole('heading', { name })).toBeInTheDocument();
+    });
+    ['LeadConcierge AI', 'InvestorHQ', 'ThreadPilot', 'AdPulse', 'FrameFire', 'Lumina', 'Dendrite', 'Ora', 'Quorum'].forEach(name => {
+      expect(screen.queryByText(name)).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows Lee Felican Jr.\'s four books with official resource links', () => {
+    render(<App />);
+
+    const titles = [
+      "The Big Balla's Guide to Making Money with AI",
+      "Don't Be Replaced",
+      'Stop Being Nice to AI',
+      'The BIG AI Book',
+    ];
+
+    titles.forEach(title => {
+      const bookTitle = screen.getByText(title);
+      expect(bookTitle).toBeInTheDocument();
+      expect(bookTitle.closest('a')).toHaveAttribute(
+        'href',
+        'https://felican.ai/Lee-Felican-jr/books/resources/',
+      );
+    });
+
+    expect(screen.getByAltText("The Big Balla's Guide to Making Money with AI cover")).toHaveAttribute(
+      'src',
+      '/book-big-ballas.jpg',
+    );
   });
 });
