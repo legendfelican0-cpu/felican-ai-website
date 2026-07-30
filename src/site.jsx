@@ -85,7 +85,7 @@ function Mark({ onNavigate }) {
   return <a className="fs-mark" href="/" onClick={event => { if (onNavigate) { event.preventDefault(); onNavigate('/'); } }}><span>F</span><b>Felican AI</b></a>;
 }
 
-function Header({ onChat, onNavigate, path }) {
+function Header({ onNavigate, path }) {
   const [open, setOpen] = useState(false);
   const go = href => event => { event.preventDefault(); setOpen(false); onNavigate(href); };
   return <header className="fs-header">
@@ -93,13 +93,12 @@ function Header({ onChat, onNavigate, path }) {
     <button className="fs-menu" aria-label="Toggle navigation" onClick={() => setOpen(!open)}>{open ? <X/> : <Menu/>}</button>
     <nav className={open ? 'open' : ''} aria-label="Main navigation">
       {[['/products','Products'],['/services','Services'],['/books','Books'],['/about','About us'],['/contact','Contact']].map(([href,label]) => <a className={path === href ? 'active' : ''} href={href} onClick={go(href)} key={href}>{label}</a>)}
-      <button className="fs-primary fs-nav-cta" onClick={onChat}>Ask Felican AI</button>
     </nav>
   </header>;
 }
 
 function ReviewBar({ variant, setVariant }) {
-  return <div className="review-bar"><span>Design review</span>{[['signal','01 Signal'],['catalog','02 Catalog'],['network','03 Network']].map(([id,label]) => <button className={variant === id ? 'active' : ''} onClick={() => setVariant(id)} key={id}>{label}</button>)}</div>;
+  return <div className="review-bar"><span>Choose a direction</span>{[['signal','01 Editorial'],['catalog','02 Clean'],['network','03 Friendly']].map(([id,label]) => <button className={variant === id ? 'active' : ''} onClick={() => setVariant(id)} key={id}>{label}</button>)}</div>;
 }
 
 function ProductShowcase({ onNavigate }) {
@@ -108,7 +107,7 @@ function ProductShowcase({ onNavigate }) {
   </div>;
 }
 
-function Hero({ onChat, onNavigate, variant }) {
+function Hero({ onNavigate, variant }) {
   const copy = {
     signal: ['Products · Services · Training', 'Practical AI for the work that runs your business.', 'Felican AI builds software, assistants, and automations for companies that want useful systems, clear support, and measurable improvements.'],
     catalog: ['The Felican AI catalogue', 'Products and services, built by Felican AI.', 'Explore our software portfolio, custom implementation services, training programs, and publishing work.'],
@@ -119,7 +118,7 @@ function Hero({ onChat, onNavigate, variant }) {
       <span className="fs-kicker">{copy[0]}</span>
       <h1>{copy[1]}</h1>
       <p>{copy[2]}</p>
-      <div className="hero-actions"><button className="fs-primary" onClick={onChat}>Talk to Felican AI <ArrowRight/></button><a className="fs-secondary" href={PHONE_HREF}><Phone/> Call {PHONE}</a></div>
+      <div className="hero-actions"><button className="fs-primary" onClick={() => onNavigate('/products')}>Explore products <ArrowRight/></button><button className="fs-secondary" onClick={() => onNavigate('/services')}>See our services</button></div>
       <div className="hero-proof"><span><Check/> Real products</span><span><Check/> Custom systems</span><span><Check/> Hands-on training</span></div>
     </div>
     <ProductShowcase onNavigate={onNavigate}/>
@@ -134,7 +133,7 @@ function ProductCard({ product, featured = false, onSelect }) {
   return <button className={featured ? 'product-card featured' : 'product-card'} onClick={() => onSelect(product)} aria-label={`Explore ${product.name}`}>{content}</button>;
 }
 
-function ProductDetail({ product, onClose, onChat, onNavigate }) {
+function ProductDetail({ product, onClose, onNavigate }) {
   useEffect(() => {
     const closeOnEscape = event => { if (event.key === 'Escape') onClose(); };
     window.addEventListener('keydown', closeOnEscape);
@@ -146,11 +145,11 @@ function ProductDetail({ product, onClose, onChat, onNavigate }) {
     <span className="product-symbol product-modal-symbol" style={{background:product.color}}>{product.name.slice(0,2).toUpperCase()}</span>
     <small>{product.category} · {product.status}</small><h2 id="product-modal-title">{product.name}</h2><p>{product.description}</p>
     <div className="product-detail-features">{product.features.map(feature => <span key={feature}><CircleCheck/> {feature}</span>)}</div>
-    <div className="product-modal-actions">{product.name === 'Felican AI Assistant' && <button className="fs-primary" onClick={() => { onClose(); onChat(); }}>Try the assistant</button>}<button className="fs-secondary" onClick={() => { onClose(); onNavigate('/contact'); }}>Ask about {product.name} <ArrowRight/></button></div>
+    <div className="product-modal-actions"><button className="fs-primary" onClick={() => { onClose(); onNavigate('/contact'); }}>Ask about {product.name} <ArrowRight/></button></div>
   </section></div>;
 }
 
-function Products({ onChat, onNavigate, compact = false }) {
+function Products({ onNavigate, compact = false }) {
   const [selected, setSelected] = useState(null);
   return <section className="fs-products" id="products">
     <div className="section-heading"><span>Current products</span><h2>Built by Felican AI.</h2><p>Five focused products for automotive operations, customer experience, agents, publishing, and marketing. Select any product to explore it.</p></div>
@@ -158,7 +157,7 @@ function Products({ onChat, onNavigate, compact = false }) {
       <div className="product-group-heading"><div><small>{group.label}</small><h3>{group.name}</h3></div><p>{group.description}</p></div>
       <div className="product-list">{products.filter(product => product.group === group.name).map(product => <ProductCard product={product} featured={!compact && group.name === 'Business software'} onSelect={setSelected} key={product.name}/>)}</div>
     </section>)}</div>
-    {selected && <ProductDetail product={selected} onClose={() => setSelected(null)} onChat={onChat} onNavigate={onNavigate}/>}
+    {selected && <ProductDetail product={selected} onClose={() => setSelected(null)} onNavigate={onNavigate}/>}
   </section>;
 }
 
@@ -215,12 +214,12 @@ function HomeRoutes({ onNavigate }) {
   return <section className="home-routes" aria-label="Explore Felican AI">{routes.map(([href,title,copy]) => <a href={href} onClick={event => { event.preventDefault(); onNavigate(href); }} key={href}><small>Explore</small><h2>{title}</h2><p>{copy}</p><span>Open page <ArrowRight/></span></a>)}</section>;
 }
 
-function HomePage({ onChat, onNavigate, variant }) {
-  return <><Hero variant={variant} onChat={onChat} onNavigate={onNavigate}/><HomeRoutes onNavigate={onNavigate}/><Products compact onChat={onChat} onNavigate={onNavigate}/><WebsiteAssistantProduct onChat={onChat}/><Contact onChat={onChat}/></>;
+function HomePage({ onNavigate, variant }) {
+  return <><Hero variant={variant} onNavigate={onNavigate}/><HomeRoutes onNavigate={onNavigate}/><Products compact onNavigate={onNavigate}/></>;
 }
 
-function ProductsPage({ onChat, onNavigate }) {
-  return <><PageIntro eyebrow="Products" title="Five products. Built for real work." copy="Explore every product currently available from Felican AI. Open a card for capabilities and the next step."/><Products onChat={onChat} onNavigate={onNavigate}/></>;
+function ProductsPage({ onNavigate }) {
+  return <><PageIntro eyebrow="Products" title="Five products. Built for real work." copy="Explore every product currently available from Felican AI. Open a card for capabilities and the next step."/><Products onNavigate={onNavigate}/></>;
 }
 
 function ServicesPage({ onNavigate }) {
@@ -273,13 +272,13 @@ export function FelicanSite() {
     if (!window.navigator.userAgent.toLowerCase().includes('jsdom')) window.scrollTo({ top: 0, behavior: 'smooth' });
   };
   const page = {
-    '/': <HomePage variant={variant} onChat={() => setChat(true)} onNavigate={navigate}/>,
-    '/products': <ProductsPage onChat={() => setChat(true)} onNavigate={navigate}/>,
+    '/': <HomePage variant={variant} onNavigate={navigate}/>,
+    '/products': <ProductsPage onNavigate={navigate}/>,
     '/services': <ServicesPage onNavigate={navigate}/>,
     '/books': <BooksPage/>,
     '/about': <AboutPage/>,
     '/contact': <ContactPage onChat={() => setChat(true)}/>,
   }[path];
   return <div className={`felican-site variant-${variant}`}>
-    {review && <ReviewBar variant={variant} setVariant={setVariant}/>}<Header path={path} onNavigate={navigate} onChat={()=>setChat(true)}/><main key={path}>{page}</main><footer className="fs-footer"><Mark onNavigate={navigate}/><nav aria-label="Footer navigation">{[['/products','Products'],['/services','Services'],['/books','Books'],['/about','About'],['/contact','Contact']].map(([href,label]) => <a href={href} onClick={event => { event.preventDefault(); navigate(href); }} key={href}>{label}</a>)}</nav><span>© 2026 Felican AI</span></footer>{chat && <ChatPanel close={()=>setChat(false)}/>}</div>;
+    {review && <ReviewBar variant={variant} setVariant={setVariant}/>}<Header path={path} onNavigate={navigate}/><main key={path}>{page}</main><footer className="fs-footer"><Mark onNavigate={navigate}/><nav aria-label="Footer navigation">{[['/products','Products'],['/services','Services'],['/books','Books'],['/about','About'],['/contact','Contact']].map(([href,label]) => <a href={href} onClick={event => { event.preventDefault(); navigate(href); }} key={href}>{label}</a>)}</nav><span>© 2026 Felican AI</span></footer>{chat && <ChatPanel close={()=>setChat(false)}/>}</div>;
 }

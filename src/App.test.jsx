@@ -13,10 +13,13 @@ describe('Felican AI company site', () => {
     expect(screen.getAllByText('Felican Auto').length).toBeGreaterThan(0);
     expect(screen.queryByText('Relay')).not.toBeInTheDocument();
     expect(screen.queryByText('CasaSuite')).not.toBeInTheDocument();
+    expect(screen.queryByText('Talk to Felican AI')).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Call \+1/i })).not.toBeInTheDocument();
     expect(screen.queryByText('Design review')).not.toBeInTheDocument();
   });
 
   it('presents the phone number as a normal contact link', () => {
+    window.history.replaceState({}, '', '/contact');
     render(<App />);
     const phoneLinks = screen.getAllByRole('link', { name: /\+1 \(346\) 515-0361/i });
     expect(phoneLinks[0]).toHaveAttribute('href', 'tel:+13465150361');
@@ -26,14 +29,15 @@ describe('Felican AI company site', () => {
   it('keeps three distinct directions in private review mode', () => {
     window.history.replaceState({}, '', '/?review=1&v=catalog');
     render(<App />);
-    expect(screen.getByText('Design review')).toBeInTheDocument();
-    fireEvent.click(screen.getByText('03 Network'));
+    expect(screen.getByText('Choose a direction')).toBeInTheDocument();
+    fireEvent.click(screen.getByText('03 Friendly'));
     expect(document.querySelector('.variant-network')).toBeInTheDocument();
   });
 
-  it('opens the website assistant and answers a product question', () => {
+  it('keeps the website assistant in Contact Us and answers a product question', () => {
+    window.history.replaceState({}, '', '/contact');
     render(<App />);
-    fireEvent.click(screen.getByText('Talk to Felican AI'));
+    fireEvent.click(screen.getByText('Ask Felican AI'));
     fireEvent.click(screen.getByText('What products do you have?'));
     expect(screen.getByText(/Felican products include Felican Auto/i)).toBeInTheDocument();
     expect(screen.getByText(/World of Agents, BookMaker, and Marketer/i)).toBeInTheDocument();
