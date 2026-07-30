@@ -12,24 +12,11 @@ const PHONE = '+1 (346) 515-0361';
 const PHONE_HREF = 'tel:+13465150361';
 
 const products = [
-  { name: 'Felican Auto', group: 'Business software', category: 'Automotive', status: 'Available', description: 'Connected AI tools and workflows built for automotive businesses.', color: '#173f6b', features: ['Customer intake', 'Connected workflows', 'Follow-up and reporting'] },
-  { name: 'Felican AI Assistant', group: 'AI products', category: 'Customer experience', status: 'Featured', description: 'A company-trained website assistant that answers questions, recommends services, and captures inquiries.', color: '#7357ff', features: ['Approved company knowledge', 'Lead qualification', 'Human handoff'] },
-  { name: 'World of Agents', group: 'AI products', category: 'AI agents', status: 'Available', description: 'A place to discover and work with specialized AI agents built for focused tasks.', color: '#168b70', features: ['Specialized agents', 'Task-based discovery', 'Business workflows'] },
-  { name: 'BookMaker', group: 'AI products', category: 'Publishing', status: 'Available', description: 'An AI workspace for planning, writing, organizing, and preparing books.', color: '#9b4f2f', features: ['Book planning', 'Draft organization', 'Publishing workflow'] },
-  { name: 'Marketer', group: 'AI products', category: 'Marketing', status: 'Available', description: 'An AI marketing workspace for campaigns, content, and brand execution.', color: '#bd3f67', features: ['Campaign planning', 'Content workflows', 'Brand guidance'] },
-];
-
-const productGroups = [
-  {
-    name: 'Business software',
-    label: 'Run the business',
-    description: 'Purpose-built software for teams with real customers, real work, and real operations.',
-  },
-  {
-    name: 'AI products',
-    label: 'Create and automate',
-    description: 'Focused AI products for customer support, agents, publishing, and marketing.',
-  },
+  { name: 'Felican Auto', path: '/products/felican-auto', category: 'Automotive', status: 'Available', description: 'Connected AI tools and workflows built for automotive businesses.', color: '#173f6b', features: ['Customer intake', 'Connected workflows', 'Follow-up and reporting'] },
+  { name: 'Felican AI Assistant', path: '/products/felican-ai-assistant', category: 'Customer experience', status: 'Featured', description: 'A company-trained website assistant that answers questions, recommends services, and captures inquiries.', color: '#7357ff', features: ['Approved company knowledge', 'Lead qualification', 'Human handoff'] },
+  { name: 'World of Agents', path: '/products/world-of-agents', category: 'AI agents', status: 'Available', description: 'A place to discover and work with specialized AI agents built for focused tasks.', color: '#168b70', features: ['Specialized agents', 'Task-based discovery', 'Business workflows'] },
+  { name: 'BookMaker', path: '/products/bookmaker', category: 'Publishing', status: 'Available', description: 'An AI workspace for planning, writing, organizing, and preparing books.', color: '#9b4f2f', features: ['Book planning', 'Draft organization', 'Publishing workflow'] },
+  { name: 'Marketer', path: '/products/marketer', category: 'Marketing', status: 'Available', description: 'An AI marketing workspace for campaigns, content, and brand execution.', color: '#bd3f67', features: ['Campaign planning', 'Content workflows', 'Brand guidance'] },
 ];
 
 const services = [
@@ -92,7 +79,7 @@ function Header({ onNavigate, path }) {
     <Mark onNavigate={onNavigate}/>
     <button className="fs-menu" aria-label="Toggle navigation" onClick={() => setOpen(!open)}>{open ? <X/> : <Menu/>}</button>
     <nav className={open ? 'open' : ''} aria-label="Main navigation">
-      {[['/products','Products'],['/services','Services'],['/books','Books'],['/about','About us'],['/contact','Contact']].map(([href,label]) => <a className={path === href ? 'active' : ''} href={href} onClick={go(href)} key={href}>{label}</a>)}
+      {[['/products','Products'],['/services','Services'],['/books','Books'],['/about','About us'],['/contact','Contact']].map(([href,label]) => <a className={path === href || path.startsWith(`${href}/`) ? 'active' : ''} href={href} onClick={go(href)} key={href}>{label}</a>)}
     </nav>
   </header>;
 }
@@ -101,64 +88,38 @@ function ReviewBar({ variant, setVariant }) {
   return <div className="review-bar"><span>Choose a direction</span>{[['signal','01 Editorial'],['catalog','02 Clean'],['network','03 Friendly']].map(([id,label]) => <button className={variant === id ? 'active' : ''} onClick={() => setVariant(id)} key={id}>{label}</button>)}</div>;
 }
 
-function ProductShowcase({ onNavigate }) {
-  return <div className="hero-showcase current-products-showcase">
-    <div className="product-board"><div className="product-board-heading"><span>What we make</span><strong>Useful products for real work.</strong></div><div className="showcase-product-list">{products.slice(0,4).map(product => <button onClick={() => onNavigate('/products')} key={product.name}><i style={{background:product.color}}/><span><b>{product.name}</b><small>{product.category}</small></span><ArrowRight/></button>)}</div><button className="board-link" onClick={() => onNavigate('/products')}>See all {products.length} products <ArrowRight/></button></div>
-  </div>;
-}
-
-function Hero({ onNavigate, variant }) {
-  const copy = {
-    signal: ['Products · Services · Training', 'Practical AI for the work that runs your business.', 'Felican AI builds software, assistants, and automations for companies that want useful systems, clear support, and measurable improvements.'],
-    catalog: ['The Felican AI catalogue', 'Products and services, built by Felican AI.', 'Explore our software portfolio, custom implementation services, training programs, and publishing work.'],
-    network: ['Connected AI systems', 'Connect your business to working AI.', 'We connect company knowledge, software, people, and AI into systems that can answer, act, and hand work to the right person.'],
-  }[variant];
-  return <section className="fs-hero" id="top">
+function Hero({ onNavigate }) {
+  return <section className="fs-hero simple-hero" id="top">
     <div className="hero-copy">
-      <span className="fs-kicker">{copy[0]}</span>
-      <h1>{copy[1]}</h1>
-      <p>{copy[2]}</p>
+      <span className="fs-kicker">AI for every kind of business</span>
+      <h1>We build useful AI for the way your business works.</h1>
+      <p>Felican AI creates products, custom AI agents, business automations, integrations, and practical training for companies of any size or industry.</p>
       <div className="hero-actions"><button className="fs-primary" onClick={() => onNavigate('/products')}>Explore products <ArrowRight/></button><button className="fs-secondary" onClick={() => onNavigate('/services')}>See our services</button></div>
       <div className="hero-proof"><span><Check/> Real products</span><span><Check/> Custom systems</span><span><Check/> Hands-on training</span></div>
     </div>
-    <ProductShowcase onNavigate={onNavigate}/>
   </section>;
 }
 
-function ProductCard({ product, featured = false, onSelect }) {
-  const content = <>
-    {featured && <div className="product-shot product-placeholder" style={{backgroundColor:product.color}}><span>{product.name}</span><small>{product.category}</small></div>}
-    <div className="product-card-body"><header><span className="product-symbol" style={{background:product.color}}>{product.name.slice(0,2).toUpperCase()}</span><small>{product.status}</small></header><h3>{product.name}</h3><p>{product.description}</p><footer><span>Explore product</span><ArrowRight/></footer></div>
-  </>;
-  return <button className={featured ? 'product-card featured' : 'product-card'} onClick={() => onSelect(product)} aria-label={`Explore ${product.name}`}>{content}</button>;
+function WhatWeDo() {
+  return <section className="what-we-do"><div><span className="fs-kicker">What we do</span><h2>AI that fits your business—not the other way around.</h2></div><div><p>We work with businesses in any industry. We learn how the work gets done, find where AI can make a real difference, and build a practical system around it.</p><ul><li><Check/> Products your team can use</li><li><Check/> Custom agents and automations</li><li><Check/> Integrations with existing software</li><li><Check/> Training and ongoing support</li></ul></div></section>;
 }
 
-function ProductDetail({ product, onClose, onNavigate }) {
-  useEffect(() => {
-    const closeOnEscape = event => { if (event.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', closeOnEscape);
-    return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [onClose]);
-
-  return <div className="product-modal-wrap" role="presentation" onMouseDown={onClose}><section className="product-modal" role="dialog" aria-modal="true" aria-labelledby="product-modal-title" onMouseDown={event => event.stopPropagation()}>
-    <button className="modal-x" onClick={onClose} aria-label="Close product details"><X/></button>
-    <span className="product-symbol product-modal-symbol" style={{background:product.color}}>{product.name.slice(0,2).toUpperCase()}</span>
-    <small>{product.category} · {product.status}</small><h2 id="product-modal-title">{product.name}</h2><p>{product.description}</p>
-    <div className="product-detail-features">{product.features.map(feature => <span key={feature}><CircleCheck/> {feature}</span>)}</div>
-    <div className="product-modal-actions"><button className="fs-primary" onClick={() => { onClose(); onNavigate('/contact'); }}>Ask about {product.name} <ArrowRight/></button></div>
-  </section></div>;
+function ProductCard({ product, onNavigate }) {
+  return <a className="product-card" href={product.path} onClick={event => { event.preventDefault(); onNavigate(product.path); }} aria-label={`Open ${product.name}`}>
+    <div className="product-card-visual" style={{backgroundColor:product.color}}><span>{product.name.slice(0,2).toUpperCase()}</span></div>
+    <div className="product-card-body"><header><small>{product.category}</small><small>{product.status}</small></header><h3>{product.name}</h3><p>{product.description}</p><footer><span>View product</span><ArrowRight/></footer></div>
+  </a>;
 }
 
-function Products({ onNavigate, compact = false }) {
-  const [selected, setSelected] = useState(null);
+function Products({ onNavigate }) {
   return <section className="fs-products" id="products">
-    <div className="section-heading"><span>Current products</span><h2>Built by Felican AI.</h2><p>Five focused products for automotive operations, customer experience, agents, publishing, and marketing. Select any product to explore it.</p></div>
-    <div className="product-groups">{productGroups.map(group => <section className="product-group" key={group.name}>
-      <div className="product-group-heading"><div><small>{group.label}</small><h3>{group.name}</h3></div><p>{group.description}</p></div>
-      <div className="product-list">{products.filter(product => product.group === group.name).map(product => <ProductCard product={product} featured={!compact && group.name === 'Business software'} onSelect={setSelected} key={product.name}/>)}</div>
-    </section>)}</div>
-    {selected && <ProductDetail product={selected} onClose={() => setSelected(null)} onNavigate={onNavigate}/>}
+    <div className="section-heading"><span>Products</span><h2>Everything we make, in one place.</h2><p>Each product solves a specific business problem. Choose one to see what it does.</p></div>
+    <div className="product-list all-products-grid">{products.map(product => <ProductCard product={product} onNavigate={onNavigate} key={product.name}/>)}</div>
   </section>;
+}
+
+function ProductPage({ product, onNavigate }) {
+  return <><PageIntro eyebrow={product.category} title={product.name} copy={product.description}/><section className="product-page"><div className="product-page-visual" style={{backgroundColor:product.color}}><span>{product.name.slice(0,2).toUpperCase()}</span><strong>{product.name}</strong></div><div><span className="fs-kicker">What it does</span><h2>Built for focused, practical work.</h2><p>{product.description}</p><div className="product-detail-features">{product.features.map(feature => <span key={feature}><CircleCheck/> {feature}</span>)}</div><button className="fs-primary" onClick={() => onNavigate('/contact')}>Contact us about {product.name} <ArrowRight/></button></div></section></>;
 }
 
 function WebsiteAssistantProduct({ onChat }) {
@@ -204,22 +165,12 @@ function PageIntro({ eyebrow, title, copy }) {
   return <section className="page-intro" id="top"><span className="fs-kicker">{eyebrow}</span><h1>{title}</h1><p>{copy}</p></section>;
 }
 
-function HomeRoutes({ onNavigate }) {
-  const routes = [
-    ['/products', 'Products', 'Explore the five products currently in the Felican AI portfolio.'],
-    ['/services', 'Services', 'See how we build agents, automations, integrations, private AI, and training.'],
-    ['/about', 'About us', 'Meet the family-built company behind the products and client work.'],
-    ['/contact', 'Contact', 'Call, email, or start a conversation with the website assistant.'],
-  ];
-  return <section className="home-routes" aria-label="Explore Felican AI">{routes.map(([href,title,copy]) => <a href={href} onClick={event => { event.preventDefault(); onNavigate(href); }} key={href}><small>Explore</small><h2>{title}</h2><p>{copy}</p><span>Open page <ArrowRight/></span></a>)}</section>;
-}
-
-function HomePage({ onNavigate, variant }) {
-  return <><Hero variant={variant} onNavigate={onNavigate}/><HomeRoutes onNavigate={onNavigate}/><Products compact onNavigate={onNavigate}/></>;
+function HomePage({ onNavigate }) {
+  return <><Hero onNavigate={onNavigate}/><WhatWeDo/><Products onNavigate={onNavigate}/><Services onNavigate={onNavigate}/><Books/></>;
 }
 
 function ProductsPage({ onNavigate }) {
-  return <><PageIntro eyebrow="Products" title="Five products. Built for real work." copy="Explore every product currently available from Felican AI. Open a card for capabilities and the next step."/><Products onNavigate={onNavigate}/></>;
+  return <><PageIntro eyebrow="Products" title="Five products. Built for real work." copy="Every Felican AI product is listed together below. Select a product to open its page and learn what it does."/><Products onNavigate={onNavigate}/></>;
 }
 
 function ServicesPage({ onNavigate }) {
@@ -258,7 +209,8 @@ export function FelicanSite() {
   const [variant,setVariant] = useState(['signal','catalog','network'].includes(requested) ? requested : 'signal');
   const review = params.get('review') === '1';
   const [chat,setChat] = useState(false);
-  const normalizePath = value => ['/products','/services','/books','/about','/contact'].includes(value) ? value : '/';
+  const publicPaths = ['/products','/services','/books','/about','/contact', ...products.map(product => product.path)];
+  const normalizePath = value => publicPaths.includes(value) ? value : '/';
   const [path,setPath] = useState(normalizePath(window.location.pathname));
   useEffect(() => {
     const handleBack = () => setPath(normalizePath(window.location.pathname));
@@ -271,8 +223,9 @@ export function FelicanSite() {
     setPath(next);
     if (!window.navigator.userAgent.toLowerCase().includes('jsdom')) window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-  const page = {
-    '/': <HomePage variant={variant} onNavigate={navigate}/>,
+  const selectedProduct = products.find(product => product.path === path);
+  const page = selectedProduct ? <ProductPage product={selectedProduct} onNavigate={navigate}/> : {
+    '/': <HomePage onNavigate={navigate}/>,
     '/products': <ProductsPage onNavigate={navigate}/>,
     '/services': <ServicesPage onNavigate={navigate}/>,
     '/books': <BooksPage/>,

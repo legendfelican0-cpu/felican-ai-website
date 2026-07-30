@@ -9,7 +9,8 @@ afterEach(() => { cleanup(); window.history.replaceState({}, '', '/'); });
 describe('Felican AI company site', () => {
   it('renders the Signal direction by default without review controls', () => {
     render(<App />);
-    expect(screen.getByText(/Practical AI for the work that runs your business/i)).toBeInTheDocument();
+    expect(screen.getByText(/We build useful AI for the way your business works/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /AI that fits your business/i })).toBeInTheDocument();
     expect(screen.getAllByText('Felican Auto').length).toBeGreaterThan(0);
     expect(screen.queryByText('Relay')).not.toBeInTheDocument();
     expect(screen.queryByText('CasaSuite')).not.toBeInTheDocument();
@@ -43,13 +44,14 @@ describe('Felican AI company site', () => {
     expect(screen.getByText(/World of Agents, BookMaker, and Marketer/i)).toBeInTheDocument();
   });
 
-  it('organizes the current five-product portfolio and opens product details', () => {
+  it('shows all five products together and opens a dedicated product page', () => {
     window.history.replaceState({}, '', '/products');
     render(<App />);
 
     expect(screen.getByRole('heading', { name: 'Five products. Built for real work.' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Business software' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'AI products' })).toBeInTheDocument();
+    expect(screen.queryByText('Business software')).not.toBeInTheDocument();
+    expect(screen.queryByText('Create and automate')).not.toBeInTheDocument();
+    expect(screen.queryByText('Current products')).not.toBeInTheDocument();
     ['Felican Auto', 'World of Agents', 'BookMaker', 'Marketer'].forEach(name => {
       expect(screen.getByRole('heading', { name })).toBeInTheDocument();
     });
@@ -57,8 +59,11 @@ describe('Felican AI company site', () => {
       expect(screen.queryByText(name)).not.toBeInTheDocument();
     });
 
-    fireEvent.click(screen.getByRole('button', { name: 'Explore BookMaker' }));
-    expect(screen.getByRole('dialog')).toHaveTextContent('Draft organization');
+    const bookMakerLink = screen.getByRole('link', { name: 'Open BookMaker' });
+    expect(bookMakerLink).toHaveAttribute('href', '/products/bookmaker');
+    fireEvent.click(bookMakerLink);
+    expect(screen.getByRole('heading', { name: 'BookMaker', level: 1 })).toBeInTheDocument();
+    expect(screen.getByText('Draft organization')).toBeInTheDocument();
   });
 
   it('shows Lee Felican Jr.\'s four books with official resource links', () => {

@@ -829,3 +829,160 @@ button.product-card {
   .variant-network .hero-copy { padding: 28px 22px; border-radius: 20px; }
   .variant-network .product-board { transform: none; }
 }
+
+/* Simplified company homepage */
+.fs-hero.simple-hero {
+  display: block;
+  max-width: 1192px;
+}
+
+.variant-catalog .fs-hero.simple-hero::before {
+  content: none;
+}
+
+.simple-hero .hero-copy {
+  max-width: 900px;
+}
+
+.simple-hero .hero-copy > p {
+  max-width: 760px;
+}
+
+.what-we-do {
+  max-width: 1192px;
+  margin: 0 auto;
+  padding: 92px 0;
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: 90px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.what-we-do h2 {
+  margin: 18px 0 0;
+  font-size: 46px;
+  line-height: 1.08;
+}
+
+.what-we-do p {
+  margin-top: 0;
+  font-size: 17px;
+}
+
+.what-we-do ul {
+  margin: 28px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  list-style: none;
+}
+
+.what-we-do li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.what-we-do li svg {
+  width: 17px;
+  color: var(--brand);
+}
+
+.felican-site .all-products-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+.all-products-grid .product-card {
+  min-width: 0;
+  min-height: 390px;
+}
+
+.product-card-visual {
+  height: 118px;
+  display: flex;
+  align-items: flex-end;
+  padding: 18px;
+  color: #fff;
+}
+
+.product-card-visual span {
+  font-family: 'Manrope', Arial, sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.all-products-grid .product-card-body {
+  padding: 18px;
+}
+
+.all-products-grid .product-card h3 {
+  margin-top: 24px;
+  font-size: 22px;
+}
+
+.all-products-grid .product-card footer {
+  color: var(--brand);
+  font-family: 'Manrope', Arial, sans-serif;
+  font-weight: 800;
+}
+
+.product-page {
+  max-width: 1192px;
+  margin: 0 auto;
+  padding: 95px 0;
+  display: grid;
+  grid-template-columns: .8fr 1.2fr;
+  gap: 90px;
+  align-items: center;
+}
+
+.product-page-visual {
+  min-height: 430px;
+  padding: 34px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 18px;
+  color: #fff;
+}
+
+.product-page-visual span {
+  font-size: 58px;
+  font-weight: 800;
+}
+
+.product-page-visual strong {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 42px;
+  line-height: 1;
+}
+
+.product-page h2 {
+  margin: 18px 0;
+  font-size: 44px;
+}
+
+@media (max-width: 1100px) {
+  .what-we-do,
+  .product-page { margin-left: 20px; margin-right: 20px; }
+  .felican-site .all-products-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 900px) {
+  .what-we-do,
+  .product-page { padding: 72px 0; grid-template-columns: 1fr; gap: 38px; }
+  .felican-site .all-products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .what-we-do ul { grid-template-columns: 1fr; }
+  .what-we-do h2 { font-size: 36px; }
+  .felican-site .all-products-grid { grid-template-columns: 1fr; }
+  .all-products-grid .product-card { min-height: 360px; }
+  .product-page-visual { min-height: 320px; }
+}
