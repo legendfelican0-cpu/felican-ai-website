@@ -1172,3 +1172,134 @@ button.product-card {
   .hero-visual > i { top: 24px; left: 24px; }
   .variant-catalog .what-we-do { padding: 28px 22px; }
 }
+
+/* Readability-first simplification */
+.fs-hero.simple-hero {
+  display: block;
+  padding-top: 78px;
+  padding-bottom: 68px;
+}
+
+.simple-hero .hero-copy {
+  max-width: 940px;
+}
+
+.simple-hero h1 {
+  max-width: 900px;
+  font-size: clamp(46px, 5.4vw, 70px);
+}
+
+.simple-hero .hero-copy > p {
+  max-width: 760px;
+  font-size: 18px;
+}
+
+.what-we-do {
+  padding-top: 72px;
+  padding-bottom: 72px;
+  gap: 70px;
+}
+
+.what-we-do h2 {
+  font-size: 40px;
+}
+
+.what-we-do p {
+  max-width: 650px;
+  font-size: 18px;
+  line-height: 1.75;
+}
+
+.variant-catalog .what-we-do {
+  padding: 42px;
+}
+
+.felican-site .all-products-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.felican-site .all-products-grid .product-card {
+  min-height: 310px;
+}
+
+.product-card-accent {
+  height: 9px;
+  flex: 0 0 auto;
+}
+
+.all-products-grid .product-card-body {
+  padding: 28px;
+}
+
+.all-products-grid .product-card h3 {
+  margin: 8px 0 14px;
+  font-size: 28px;
+}
+
+.all-products-grid .product-card p {
+  margin: 0 0 28px;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.variant-catalog .section-heading {
+  padding-left: 0;
+}
+
+.variant-catalog .section-heading::before {
+  content: none;
+}
+
+.variant-catalog .service-list article {
+  min-height: 240px;
+  padding: 26px;
+}
+
+.variant-catalog .service-list article > svg {
+  margin: 0 0 24px;
+}
+
+.service-list h3 {
+  font-size: 21px;
+}
+
+.service-list p {
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.service-cta {
+  margin-top: 28px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.book-cover {
+  height: 330px;
+}
+
+.book-card h3 {
+  font-size: 23px;
+  line-height: 1.15;
+}
+
+.book-card b {
+  margin-top: 14px;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .felican-site .all-products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .what-we-do { gap: 32px; }
+}
+
+@media (max-width: 560px) {
+  .fs-hero.simple-hero { padding-top: 58px; padding-bottom: 52px; }
+  .simple-hero h1 { font-size: 43px; }
+  .simple-hero .hero-copy > p { font-size: 16px; }
+  .what-we-do { padding-top: 54px; padding-bottom: 54px; }
+  .felican-site .all-products-grid { grid-template-columns: 1fr; }
+  .felican-site .all-products-grid .product-card { min-height: 290px; }
+  .book-cover { height: 420px; }
+}

@@ -95,20 +95,18 @@ function Hero({ onNavigate }) {
       <h1>We build useful AI for the way your business works.</h1>
       <p>Felican AI creates products, custom AI agents, business automations, integrations, and practical training for companies of any size or industry.</p>
       <div className="hero-actions"><button className="fs-primary" onClick={() => onNavigate('/products')}>Explore products <ArrowRight/></button><button className="fs-secondary" onClick={() => onNavigate('/services')}>See our services</button></div>
-      <div className="hero-proof"><span><Check/> Real products</span><span><Check/> Custom systems</span><span><Check/> Hands-on training</span></div>
     </div>
-    <div className="hero-visual" aria-hidden="true"><span>Built around</span><strong>your<br/>business.</strong><i>AI</i></div>
   </section>;
 }
 
 function WhatWeDo() {
-  return <section className="what-we-do"><div><span className="fs-kicker">What we do</span><h2>AI that fits your business—not the other way around.</h2></div><div><p>We work with businesses in any industry. We learn how the work gets done, find where AI can make a real difference, and build a practical system around it.</p><ul><li><Check/> Products your team can use</li><li><Check/> Custom agents and automations</li><li><Check/> Integrations with existing software</li><li><Check/> Training and ongoing support</li></ul></div></section>;
+  return <section className="what-we-do"><div><span className="fs-kicker">What we do</span><h2>AI that fits your business—not the other way around.</h2></div><div><p>We work with businesses in any industry. We learn how the work gets done, find where AI can make a real difference, and deliver useful products, custom systems, integrations, and training.</p></div></section>;
 }
 
 function ProductCard({ product, onNavigate }) {
   return <a className="product-card" href={product.path} onClick={event => { event.preventDefault(); onNavigate(product.path); }} aria-label={`Open ${product.name}`}>
-    <div className="product-card-visual" style={{backgroundColor:product.color}}><span>{product.name.slice(0,2).toUpperCase()}</span></div>
-    <div className="product-card-body"><header><small>{product.category}</small><small>{product.status}</small></header><h3>{product.name}</h3><p>{product.description}</p><footer><span>View product</span><ArrowRight/></footer></div>
+    <div className="product-card-accent" style={{backgroundColor:product.color}}/>
+    <div className="product-card-body"><h3>{product.name}</h3><p>{product.description}</p><footer><span>View product</span><ArrowRight/></footer></div>
   </a>;
 }
 
@@ -135,7 +133,7 @@ function WebsiteAssistantProduct({ onChat }) {
 }
 
 function Services({ onNavigate }) {
-  return <section className="fs-services" id="services"><div className="section-heading"><span>Services</span><h2>We design it, build it, and keep it working.</h2></div><div className="service-list">{services.map((service,i) => <article key={service.title}><small>{String(i+1).padStart(2,'0')}</small><service.icon/><h3>{service.title}</h3><p>{service.text}</p><a href="/contact" onClick={event => { event.preventDefault(); onNavigate('/contact'); }}>Discuss a project <ArrowRight/></a></article>)}</div></section>;
+  return <section className="fs-services" id="services"><div className="section-heading"><span>Services</span><h2>We design it, build it, and keep it working.</h2><p>Practical AI help for any business—from one workflow to a complete system.</p></div><div className="service-list">{services.map(service => <article key={service.title}><service.icon/><h3>{service.title}</h3><p>{service.text}</p></article>)}</div><div className="service-cta"><button className="fs-primary" onClick={() => onNavigate('/contact')}>Discuss a project <ArrowRight/></button></div></section>;
 }
 
 function SolutionsTraining({ onNavigate }) {
@@ -146,7 +144,7 @@ function SolutionsTraining({ onNavigate }) {
 }
 
 function Books() {
-  return <section className="books-section" id="books"><div className="books-heading"><span className="fs-kicker">Books by Lee Felican Jr.</span><h2>Practical guides for working with AI.</h2><p>Four books covering AI income opportunities, career readiness, better prompting, and AI fundamentals.</p><a className="fs-secondary" href={BOOKS_URL} target="_blank" rel="noreferrer"><BookOpen/> Open the official book resources</a></div><div className="books-grid">{books.map(book => <a className="book-card" href={BOOKS_URL} target="_blank" rel="noreferrer" key={book.title}><div className="book-cover"><img src={book.image} alt={`${book.title} cover`}/><span>{book.status}</span></div><div><small>{book.subtitle}</small><h3>{book.title}</h3><p>{book.description}</p><b>View book resources <ArrowRight/></b></div></a>)}</div></section>;
+  return <section className="books-section" id="books"><div className="books-heading"><span className="fs-kicker">Books by Lee Felican Jr.</span><h2>Practical guides for working with AI.</h2><p>Four books about earning with AI, career readiness, better prompting, and AI fundamentals.</p><a className="fs-secondary" href={BOOKS_URL} target="_blank" rel="noreferrer"><BookOpen/> View all book resources</a></div><div className="books-grid">{books.map(book => <a className="book-card" href={BOOKS_URL} target="_blank" rel="noreferrer" key={book.title}><div className="book-cover"><img src={book.image} alt={`${book.title} cover`}/><span>{book.status}</span></div><div><small>{book.subtitle}</small><h3>{book.title}</h3><b>Open book resources <ArrowRight/></b></div></a>)}</div></section>;
 }
 
 function About() {
