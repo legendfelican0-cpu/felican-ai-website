@@ -97,6 +97,7 @@ function Hero({ onNavigate }) {
       <div className="hero-actions"><button className="fs-primary" onClick={() => onNavigate('/products')}>Explore products <ArrowRight/></button><button className="fs-secondary" onClick={() => onNavigate('/services')}>See our services</button></div>
       <div className="hero-proof"><span><Check/> Real products</span><span><Check/> Custom systems</span><span><Check/> Hands-on training</span></div>
     </div>
+    <div className="hero-visual" aria-hidden="true"><span>Built around</span><strong>your<br/>business.</strong><i>AI</i></div>
   </section>;
 }
 
