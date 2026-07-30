@@ -9,6 +9,7 @@ import {
 import './styles.css';
 import './corrections.css';
 import './human.css';
+import { FelicanSite } from './site.jsx';
 
 const PHONE_DISPLAY = '+1 (346) 515-0361';
 const PHONE_LINK = 'tel:+13465150361';
@@ -191,7 +192,7 @@ function Conversation({ onCall, onChat }) {
   </main><Footer onCall={onCall} onChat={onChat}/><FloatingChat onClick={onChat}/></div>;
 }
 
-export function App() {
+function LegacyApp() {
   const params = new URLSearchParams(window.location.search);
   const requestedDesign = params.get('v');
   const initialDesign = ['broadsheet', 'workbench', 'conversation'].includes(requestedDesign) ? requestedDesign : 'workbench';
@@ -201,6 +202,10 @@ export function App() {
   const [chat, setChat] = useState(false);
   const shared = { onCall: () => setPhone(true), onChat: () => setChat(true) };
   return <>{reviewMode && <DesignSwitcher design={design} setDesign={setDesign}/>} {design === 'broadsheet' && <Broadsheet {...shared}/>} {design === 'workbench' && <Workbench {...shared}/>} {design === 'conversation' && <Conversation {...shared}/>} {phone && <PhoneDemo onClose={()=>setPhone(false)}/>} {chat && <ChatAssistant onClose={()=>setChat(false)}/>}</>;
+}
+
+export function App() {
+  return <FelicanSite />;
 }
 
 const rootElement = document.getElementById('root');

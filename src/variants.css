@@ -1,0 +1,61 @@
+/* Structural differences between the three private review directions. */
+.variant-catalog .fs-hero {
+  display: block;
+  padding-top: 72px;
+}
+
+.variant-catalog .hero-copy {
+  max-width: 930px;
+}
+
+.variant-catalog .hero-copy > p {
+  max-width: 760px;
+}
+
+.variant-catalog .reception-card {
+  margin-top: 58px;
+  display: grid;
+  grid-template-columns: .8fr 1.2fr;
+  column-gap: 60px;
+}
+
+.variant-catalog .reception-card > header {
+  grid-column: 1 / -1;
+}
+
+.variant-catalog .reception-card h2,
+.variant-catalog .reception-card > p,
+.variant-catalog .fs-call-button {
+  grid-column: 1;
+}
+
+.variant-catalog .call-steps {
+  grid-column: 2;
+  grid-row: 2 / 5;
+}
+
+.variant-catalog .hero-grid-labels {
+  display: none;
+}
+
+.variant-network .hero-copy {
+  padding: 35px 0 35px 35px;
+}
+
+.variant-network .reception-card {
+  transform: translateY(28px);
+}
+
+@media (max-width: 900px) {
+  .variant-catalog .reception-card {
+    display: block;
+  }
+
+  .variant-network .hero-copy {
+    padding-left: 0;
+  }
+
+  .variant-network .reception-card {
+    transform: none;
+  }
+}
