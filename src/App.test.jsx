@@ -10,16 +10,15 @@ describe('Felican AI company site', () => {
   it('renders the Signal direction by default without review controls', () => {
     render(<App />);
     expect(screen.getByText(/Practical AI for the work that runs your business/i)).toBeInTheDocument();
-    expect(screen.getByText('Relay')).toBeInTheDocument();
+    expect(screen.getAllByText('Relay').length).toBeGreaterThan(0);
     expect(screen.queryByText('Design review')).not.toBeInTheDocument();
   });
 
-  it('positions the company phone AI as Felican’s front desk', () => {
+  it('presents the phone number as a normal contact link', () => {
     render(<App />);
-    fireEvent.click(screen.getByRole('button', { name: /See the full call flow/i }));
-    expect(screen.getByText(/What happens when you call/i)).toBeInTheDocument();
-    expect(screen.getByText(/transfer to Legend or Lee/i)).toBeInTheDocument();
-    expect(screen.getByText(/Call notes and follow-up details/i)).toBeInTheDocument();
+    const phoneLinks = screen.getAllByRole('link', { name: /\+1 \(346\) 515-0361/i });
+    expect(phoneLinks[0]).toHaveAttribute('href', 'tel:+13465150361');
+    expect(screen.queryByText(/receptionist/i)).not.toBeInTheDocument();
   });
 
   it('keeps three distinct directions in private review mode', () => {

@@ -6,6 +6,8 @@ import {
 } from 'lucide-react';
 import './reboot.css';
 import './variants.css';
+import './cleanup.css';
+import './cleanup.css';
 
 const PHONE = '+1 (346) 515-0361';
 const PHONE_HREF = 'tel:+13465150361';
@@ -35,7 +37,7 @@ const services = [
 ];
 
 const faqs = [
-  ['What happens when I call Felican AI?', 'Our AI receptionist answers the company line. It can explain what Felican AI does, answer common questions, transfer you to Legend or Lee, take a message, and trigger an email follow-up.'],
+  ['How can I contact Felican AI?', `Call us at ${PHONE}, email the company, or use the website assistant. The contact section has all three options.`],
   ['Can Felican connect to our current software?', 'Yes. We design integrations around the systems your team already uses, including CRM, email, calendars, phone systems, documents, and databases.'],
   ['Is the website assistant also a product?', 'Yes. The assistant on this site represents a product Felican AI can tailor to another company’s knowledge, services, lead process, and escalation rules.'],
   ['Do you offer private AI and training?', 'Yes. We provide controlled AI deployments as well as practical training for teams that need to adopt AI responsibly and usefully.'],
@@ -45,14 +47,14 @@ function Mark() {
   return <a className="fs-mark" href="#top"><span>F</span><b>Felican AI</b></a>;
 }
 
-function Header({ onChat, onPhone }) {
+function Header({ onChat }) {
   const [open, setOpen] = useState(false);
   return <header className="fs-header">
     <Mark />
     <button className="fs-menu" aria-label="Toggle navigation" onClick={() => setOpen(!open)}>{open ? <X/> : <Menu/>}</button>
     <nav className={open ? 'open' : ''}>
       <a href="#products">Products</a><a href="#services">Services</a><a href="#solutions">Solutions</a><a href="#training">Training</a><a href="#about">Company</a>
-      <button className="fs-phone-link" onClick={onPhone}><Phone/> {PHONE}</button>
+      <a className="fs-phone-link" href={PHONE_HREF}><Phone/> {PHONE}</a>
       <button className="fs-primary fs-nav-cta" onClick={onChat}>Ask Felican AI</button>
     </nav>
   </header>;
@@ -62,27 +64,18 @@ function ReviewBar({ variant, setVariant }) {
   return <div className="review-bar"><span>Design review</span>{[['signal','01 Signal'],['catalog','02 Catalog'],['network','03 Network']].map(([id,label]) => <button className={variant === id ? 'active' : ''} onClick={() => setVariant(id)} key={id}>{label}</button>)}</div>;
 }
 
-function ReceptionistCard({ onPhone }) {
-  const [step, setStep] = useState(0);
-  const steps = [
-    ['01', 'Answers the Felican AI line'],
-    ['02', 'Understands what the caller needs'],
-    ['03', 'Answers, transfers, or takes a message'],
-    ['04', 'Sends the right email follow-up'],
-  ];
-  return <article className="reception-card">
-    <header><span className="live-dot"/> Felican AI receptionist <small>Company contact line</small></header>
-    <h2>Call us. Our AI answers first.</h2>
-    <p>It knows the company and can connect callers with Legend or Lee.</p>
-    <div className="call-steps">{steps.map(([n,label], i) => <button className={step === i ? 'active' : ''} onClick={() => setStep(i)} key={n}><b>{n}</b><span>{label}</span>{step === i && <CircleCheck/>}</button>)}</div>
-    <button className="fs-call-button" onClick={onPhone}><Phone/> See the full call flow <ArrowRight/></button>
-  </article>;
+function ProductShowcase() {
+  return <div className="hero-showcase">
+    <div className="showcase-window"><header><span><i/><i/><i/></span><b>Relay</b><small>Felican AI product</small></header><img src="/relay-live.png" alt="Relay field service software"/></div>
+    <div className="showcase-stat"><strong>12</strong><span>products across business operations, real estate, creative work, and AI.</span></div>
+    <div className="showcase-mini"><span className="product-symbol" style={{background:'#e76a32'}}>CS</span><div><b>CasaSuite</b><small>Real estate operations</small></div><ArrowRight/></div>
+  </div>;
 }
 
-function Hero({ onChat, onPhone, variant }) {
+function Hero({ onChat, variant }) {
   const copy = {
     signal: ['Products · Services · Training', 'Practical AI for the work that runs your business.', 'Felican AI builds software, assistants, and automations for companies that want useful systems, clear support, and measurable improvements.'],
-    catalog: ['The Felican AI catalogue', 'Products and services, built by Felican AI.', 'Explore our software portfolio, custom implementation services, company AI receptionist, training, and publishing work.'],
+    catalog: ['The Felican AI catalogue', 'Products and services, built by Felican AI.', 'Explore our software portfolio, custom implementation services, training programs, and publishing work.'],
     network: ['Connected AI systems', 'Connect your business to working AI.', 'We connect company knowledge, software, people, and AI into systems that can answer, act, and hand work to the right person.'],
   }[variant];
   return <section className="fs-hero" id="top">
@@ -90,10 +83,10 @@ function Hero({ onChat, onPhone, variant }) {
       <span className="fs-kicker">{copy[0]}</span>
       <h1>{copy[1]}</h1>
       <p>{copy[2]}</p>
-      <div className="hero-actions"><button className="fs-primary" onClick={onChat}>Talk to Felican AI <ArrowRight/></button><button className="fs-secondary" onClick={onPhone}><Phone/> Call {PHONE}</button></div>
-      <div className="hero-proof"><span><Check/> Company-trained AI</span><span><Check/> Human transfer</span><span><Check/> Custom implementation</span></div>
+      <div className="hero-actions"><button className="fs-primary" onClick={onChat}>Talk to Felican AI <ArrowRight/></button><a className="fs-secondary" href={PHONE_HREF}><Phone/> Call {PHONE}</a></div>
+      <div className="hero-proof"><span><Check/> Real products</span><span><Check/> Custom systems</span><span><Check/> Hands-on training</span></div>
     </div>
-    <ReceptionistCard onPhone={onPhone}/>
+    <ProductShowcase/>
     <div className="hero-grid-labels" aria-hidden="true"><span>BUILD</span><span>CONNECT</span><span>TRAIN</span></div>
   </section>;
 }
@@ -152,8 +145,8 @@ function FAQ() {
   return <section className="fs-faq"><div className="section-heading"><span>FAQ</span><h2>Common questions.</h2></div><div>{faqs.map(([q,a],i) => <article className={open === i ? 'open' : ''} key={q}><button onClick={() => setOpen(open === i ? -1 : i)}><span>{q}</span><ChevronDown/></button>{open === i && <p>{a}</p>}</article>)}</div></section>;
 }
 
-function Contact({ onPhone, onChat }) {
-  return <section className="fs-contact" id="contact"><div><span>Contact</span><h2>Tell us what needs to work better.</h2><p>Talk with Felican AI first, or contact the company directly.</p></div><div className="contact-actions"><button onClick={onPhone}><Phone/><span><small>Call our AI receptionist</small><b>{PHONE}</b></span><ArrowRight/></button><button onClick={onChat}><MessageCircle/><span><small>Chat on the website</small><b>Ask Felican AI</b></span><ArrowRight/></button><a href="mailto:info@privateaiglobal.com"><Mail/><span><small>Send an email</small><b>info@privateaiglobal.com</b></span><ArrowRight/></a></div></section>;
+function Contact({ onChat }) {
+  return <section className="fs-contact" id="contact"><div><span>Contact</span><h2>Tell us what needs to work better.</h2><p>Call, email, or start with the website assistant.</p></div><div className="contact-actions"><a href={PHONE_HREF}><Phone/><span><small>Call Felican AI</small><b>{PHONE}</b></span><ArrowRight/></a><button onClick={onChat}><MessageCircle/><span><small>Chat on the website</small><b>Ask Felican AI</b></span><ArrowRight/></button><a href="mailto:info@privateaiglobal.com"><Mail/><span><small>Send an email</small><b>info@privateaiglobal.com</b></span><ArrowRight/></a></div></section>;
 }
 
 function ChatPanel({ close }) {
@@ -161,17 +154,13 @@ function ChatPanel({ close }) {
   const [input,setInput] = useState('');
   const respond = text => {
     const q = text.toLowerCase();
-    if(q.includes('phone')||q.includes('call')) return `Call ${PHONE}. Our AI receptionist can help, transfer you to Legend or Lee, or take a message.`;
+    if(q.includes('phone')||q.includes('call')||q.includes('contact')) return `Call Felican AI at ${PHONE}, or use the contact section to send an email.`;
     if(q.includes('product')) return 'Felican products include Relay, CasaSuite, LeadConcierge AI, InvestorHQ, ThreadPilot, AdPulse, FrameFire, Lumina, Dendrite, Ora, and Quorum.';
     if(q.includes('train')) return 'Training includes AI fundamentals, prompting for daily work, workflow workshops, and hands-on agent building.';
     return 'Felican AI builds assistants, automations, integrations, private AI systems, and business software. Tell me what you want to improve and I’ll point you in the right direction.';
   };
   const send = text => { const clean=text.trim(); if(!clean)return; setMessages(m=>[...m,{role:'user',text:clean},{role:'bot',text:respond(clean)}]);setInput(''); };
-  return <aside className="fs-chat" role="dialog" aria-label="Felican AI website assistant"><header><div><span className="online"/><b>Felican AI Assistant</b><small>Website product demo</small></div><button onClick={close}><X/></button></header><div className="fs-chat-messages">{messages.map((m,i)=><p className={m.role} key={i}>{m.text}</p>)}</div><div className="quick-asks">{['What products do you have?','Tell me about training','How does the phone AI work?'].map(q=><button key={q} onClick={()=>send(q)}>{q}</button>)}</div><form onSubmit={e=>{e.preventDefault();send(input)}}><input aria-label="Message Felican AI" value={input} onChange={e=>setInput(e.target.value)} placeholder="Ask a question"/><button><Send/></button></form></aside>;
-}
-
-function PhonePanel({ close }) {
-  return <div className="fs-modal-wrap" onMouseDown={close}><section className="fs-phone-modal" role="dialog" aria-label="Felican AI receptionist call flow" onMouseDown={e=>e.stopPropagation()}><button className="modal-x" onClick={close}><X/></button><span className="fs-kicker">Company phone system</span><h2>What happens when you call.</h2><p>The number on the contact page routes to Felican AI’s own receptionist. It is not a product listing; it is how customers reach us.</p><ol><li><b>1</b><span><strong>The AI answers as Felican AI.</strong> It identifies the company and asks how it can help.</span></li><li><b>2</b><span><strong>It uses approved company knowledge.</strong> Products, services, training, contact information, and common questions.</span></li><li><b>3</b><span><strong>It completes the right next step.</strong> Transfer to Legend or Lee, take a message, schedule, or send an email.</span></li><li><b>4</b><span><strong>It records the outcome.</strong> Call notes and follow-up details go to the right person.</span></li></ol><a className="fs-primary" href={PHONE_HREF}><Phone/> Call {PHONE}</a><small>Production activation requires the approved knowledge base, transfer numbers, hours, email destinations, and fallback rules.</small></section></div>;
+  return <aside className="fs-chat" role="dialog" aria-label="Felican AI website assistant"><header><div><span className="online"/><b>Felican AI Assistant</b><small>Website product demo</small></div><button onClick={close}><X/></button></header><div className="fs-chat-messages">{messages.map((m,i)=><p className={m.role} key={i}>{m.text}</p>)}</div><div className="quick-asks">{['What products do you have?','Tell me about training','How do I contact Felican AI?'].map(q=><button key={q} onClick={()=>send(q)}>{q}</button>)}</div><form onSubmit={e=>{e.preventDefault();send(input)}}><input aria-label="Message Felican AI" value={input} onChange={e=>setInput(e.target.value)} placeholder="Ask a question"/><button><Send/></button></form></aside>;
 }
 
 export function FelicanSite() {
@@ -180,7 +169,6 @@ export function FelicanSite() {
   const [variant,setVariant] = useState(['signal','catalog','network'].includes(requested) ? requested : 'signal');
   const review = params.get('review') === '1';
   const [chat,setChat] = useState(false);
-  const [phone,setPhone] = useState(false);
   return <div className={`felican-site variant-${variant}`}>
-    {review && <ReviewBar variant={variant} setVariant={setVariant}/>}<Header onChat={()=>setChat(true)} onPhone={()=>setPhone(true)}/><main><Hero variant={variant} onChat={()=>setChat(true)} onPhone={()=>setPhone(true)}/><Products/><WebsiteAssistantProduct onChat={()=>setChat(true)}/><Services/><SolutionsTraining/><Books/><About/><FAQ/><Contact onPhone={()=>setPhone(true)} onChat={()=>setChat(true)}/></main><footer className="fs-footer"><Mark/><p>Products · Services · Solutions · Training · Books · Company · Contact</p><span>© 2026 Felican AI</span></footer>{chat && <ChatPanel close={()=>setChat(false)}/>} {phone && <PhonePanel close={()=>setPhone(false)}/>}</div>;
+    {review && <ReviewBar variant={variant} setVariant={setVariant}/>}<Header onChat={()=>setChat(true)}/><main><Hero variant={variant} onChat={()=>setChat(true)}/><Products/><WebsiteAssistantProduct onChat={()=>setChat(true)}/><Services/><SolutionsTraining/><Books/><About/><FAQ/><Contact onChat={()=>setChat(true)}/></main><footer className="fs-footer"><Mark/><p>Products · Services · Solutions · Training · Books · Company · Contact</p><span>© 2026 Felican AI</span></footer>{chat && <ChatPanel close={()=>setChat(false)}/>}</div>;
 }

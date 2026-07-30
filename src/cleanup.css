@@ -1,0 +1,96 @@
+.hero-showcase {
+  position: relative;
+  min-height: 470px;
+}
+
+.showcase-window {
+  position: absolute;
+  inset: 10px 0 70px 15px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 28px 70px rgba(19, 40, 78, .16);
+  transform: rotate(1.2deg);
+}
+
+.showcase-window > header {
+  height: 46px;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+
+.showcase-window > header > span {
+  display: flex;
+  gap: 5px;
+}
+
+.showcase-window > header i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c9d1de;
+}
+
+.showcase-window > header i:first-child { background: #2467f2; }
+.showcase-window > header small { margin-left: auto; color: var(--muted); }
+.showcase-window img { width: 100%; height: calc(100% - 46px); object-fit: cover; object-position: top; }
+
+.showcase-stat {
+  position: absolute;
+  left: -15px;
+  bottom: 10px;
+  width: 210px;
+  padding: 15px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: var(--ink);
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 15px 35px rgba(16, 24, 39, .22);
+}
+
+.showcase-stat strong { font-size: 32px; }
+.showcase-stat span { font-size: 10px; line-height: 1.4; color: #ccd5e4; }
+
+.showcase-mini {
+  position: absolute;
+  right: -18px;
+  bottom: 18px;
+  min-width: 235px;
+  padding: 13px;
+  display: grid;
+  grid-template-columns: 38px 1fr 18px;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 15px 35px rgba(16, 24, 39, .16);
+}
+
+.showcase-mini div { display: flex; flex-direction: column; }
+.showcase-mini small { color: var(--muted); font-size: 10px; }
+.showcase-mini > svg { width: 16px; color: var(--brand); }
+
+.variant-catalog .hero-showcase { margin-top: 50px; min-height: 560px; }
+.variant-catalog .showcase-window { inset: 0 0 70px; transform: none; border-radius: 0; }
+.variant-catalog .showcase-stat, .variant-catalog .showcase-mini { border-radius: 0; }
+.variant-network .showcase-window { transform: none; border-radius: 28px 28px 28px 6px; }
+
+@media (max-width: 900px) {
+  .hero-showcase { min-height: 410px; }
+  .variant-catalog .hero-showcase { min-height: 430px; }
+}
+
+@media (max-width: 560px) {
+  .hero-showcase { min-height: 340px; }
+  .showcase-window { inset: 0 0 58px; transform: none; }
+  .showcase-stat { left: 8px; width: 165px; }
+  .showcase-mini { right: 8px; min-width: 185px; }
+}
