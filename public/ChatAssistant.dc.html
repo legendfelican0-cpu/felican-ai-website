@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@keyframes fa-in { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:none } }
+@keyframes fa-dot { 0%,80%,100% { opacity:.25 } 40% { opacity:1 } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
+</style>
+</helmet>
+<div style="position:fixed;right:18px;bottom:18px;z-index:1000;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;align-items:flex-end;gap:12px;max-width:calc(100vw - 36px)">
+
+  <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+    <section aria-label="Felican AI assistant" style="width:min(392px,calc(100vw - 36px));height:min(560px,calc(100vh - 130px));background:#FFFFFF;border:1px solid #C9DDFB;border-radius:4px;box-shadow:0 24px 60px rgba(7,26,51,0.28);display:flex;flex-direction:column;overflow:hidden;animation:fa-in .22s ease-out both">
+      <div style="background:#071A33;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0">
+        <div style="display:flex;align-items:center;gap:11px">
+          <span aria-hidden="true" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:2px;width:20px;height:20px">
+            <span style="background:#2F80FF"></span><span style="background:#1457D9"></span>
+            <span style="background:#1457D9"></span><span style="background:#DDEBFF"></span>
+          </span>
+          <div>
+            <p style="margin:0;font-family:Sora,sans-serif;font-size:16px;font-weight:700;color:#FFFFFF">Felican AI Assistant</p>
+            <p style="margin:2px 0 0;font-size:13px;color:#8FA9CE">Ask about products, services, or books</p>
+          </div>
+        </div>
+        <button type="button" onClick="{{ close }}" aria-label="Close assistant" style="background:transparent;border:1px solid rgba(221,235,255,0.3);color:#DDEBFF;width:32px;height:32px;border-radius:2px;font-size:18px;line-height:1;cursor:pointer;flex-shrink:0" style-hover="background:rgba(47,128,255,0.18);color:#FFFFFF" style-focus="outline:2px solid #2F80FF;outline-offset:2px">&#215;</button>
+      </div>
+
+      <div ref="{{ scrollRef }}" role="log" aria-live="polite" style="flex:1;overflow-y:auto;padding:18px;background:#F7F9FC;display:flex;flex-direction:column;gap:14px">
+        <sc-for list="{{ messages }}" as="m" hint-placeholder-count="1">
+          <div style="align-self:{{ m.align }};max-width:86%;background:{{ m.bg }};color:{{ m.fg }};border:1px solid {{ m.border }};padding:12px 14px;border-radius:3px;font-size:16px;line-height:1.6;white-space:pre-wrap">{{ m.text }}</div>
+        </sc-for>
+        <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}">
+          <div aria-label="Assistant is typing" style="align-self:flex-start;display:flex;gap:5px;padding:14px">
+            <span style="width:7px;height:7px;border-radius:50%;background:#1457D9;animation:fa-dot 1.2s infinite"></span>
+            <span style="width:7px;height:7px;border-radius:50%;background:#1457D9;animation:fa-dot 1.2s .18s infinite"></span>
+            <span style="width:7px;height:7px;border-radius:50%;background:#1457D9;animation:fa-dot 1.2s .36s infinite"></span>
+          </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ showChips }}" hint-placeholder-val="{{ true }}">
+        <div style="padding:12px 14px 0;background:#FFFFFF;display:flex;flex-wrap:wrap;gap:8px;flex-shrink:0">
+          <sc-for list="{{ chips }}" as="c" hint-placeholder-count="3">
+            <button type="button" onClick="{{ c.go }}" style="background:#DDEBFF;border:1px solid #B7D3FA;color:#0A1630;font-family:Inter,sans-serif;font-size:14px;font-weight:600;padding:9px 12px;border-radius:2px;cursor:pointer" style-hover="background:#2F80FF;color:#FFFFFF;border-color:#2F80FF" style-focus="outline:2px solid #1457D9;outline-offset:2px">{{ c.label }}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <form onSubmit="{{ submit }}" style="padding:14px;background:#FFFFFF;border-top:1px solid #E3ECF9;display:flex;gap:8px;flex-shrink:0">
+        <label for="fa-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your message</label>
+        <input id="fa-input" type="text" value="{{ draft }}" onChange="{{ onDraft }}" placeholder="Type your question" autoComplete="off" style="flex:1;min-width:0;border:1px solid #C9DDFB;background:#FFFFFF;color:#0A1630;font-family:Inter,sans-serif;font-size:16px;padding:13px 14px;border-radius:2px" style-focus="outline:2px solid #1457D9;outline-offset:1px;border-color:#1457D9">
+        <button type="submit" aria-label="Send message" style="background:#1457D9;border:none;color:#FFFFFF;font-family:Inter,sans-serif;font-size:16px;font-weight:700;padding:13px 18px;border-radius:2px;cursor:pointer" style-hover="background:#2F80FF" style-focus="outline:2px solid #071A33;outline-offset:2px">Send</button>
+      </form>
+    </section>
+  </sc-if>
+
+  <button type="button" onClick="{{ toggle }}" aria-expanded="{{ openStr }}" aria-label="Open the Felican AI assistant" style="display:inline-flex;align-items:center;gap:11px;background:#1457D9;color:#FFFFFF;border:none;font-family:Sora,Inter,sans-serif;font-size:16px;font-weight:700;padding:15px 20px;border-radius:2px;cursor:pointer;box-shadow:0 12px 30px rgba(20,87,217,0.34);transition:background .18s ease,transform .18s ease" style-hover="background:#2F80FF;transform:translateY(-3px)" style-focus="outline:3px solid #DDEBFF;outline-offset:3px">
+    <span aria-hidden="true" style="width:10px;height:10px;background:#DDEBFF;border-radius:50%;flex-shrink:0"></span>
+    {{ btnLabel }}
+  </button>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:640}}">
+const SYS = `You are the Felican AI website assistant. Felican AI builds useful AI products, custom systems, business automations, integrations, assistants, solutions, and training for businesses in any industry. It is led by Lee Felican Jr., a software engineer of 30+ years named a Top 10 AI Director of 2026 by CIOReview.
+
+The five products are: Felican Auto (connected AI products, automations and workflows for automotive businesses); Felican AI Assistant (a company-trained website assistant that answers questions, recommends services and captures inquiries); World of Agents (discover and work with specialized AI agents for focused business tasks); BookMaker (an AI workspace for planning, writing, organizing and preparing books); Marketer (an AI marketing workspace for campaigns, content, brand planning and execution).
+
+Services: AI agents and bots, business automation, custom integrations, private AI systems, AI implementation and consulting, business solutions, AI training and workshops. Felican AI works with businesses in any industry and designs solutions around how each company actually operates.
+
+Lee Felican Jr. has published four books: The Big Balla's Guide to Making Money with AI, Don't Be Replaced, Stop Being Nice to AI, and The BIG AI Book.
+
+Contact: phone +1 (346) 515-0361, email privateaiglobal@gmail.com. Never describe or speculate about how the phone line is answered or what technology handles calls — just give the number.
+
+Answer in 2-4 short sentences, plainly and helpfully. Never invent customers, statistics, pricing, awards, or products that are not listed above. If you do not know, say so and point the visitor to the contact page.`;
+
+class Component extends DCLogic {
+  state = {
+    open: false, busy: false, draft: '',
+    messages: [{ role: 'assistant', text: "Hi — I'm the Felican AI assistant. Ask me about our products, services, training, or Lee's books." }]
+  };
+  scrollRef = React.createRef();
+  componentDidUpdate() {
+    const el = this.scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }
+  async send(text) {
+    const q = (text || '').trim();
+    if (!q || this.state.busy) return;
+    this.setState(s => ({ messages: [...s.messages, { role: 'user', text: q }], draft: '', busy: true }));
+    let reply = '';
+    try {
+      const history = [...this.state.messages, { role: 'user', text: q }]
+        .map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }));
+      reply = await window.claude.complete({ system: SYS, messages: history, max_tokens: 500 });
+    } catch (e) {
+      reply = "I couldn't reach the assistant just now. Call +1 (346) 515-0361 or email privateaiglobal@gmail.com and we'll help directly.";
+    }
+    this.setState(s => ({ messages: [...s.messages, { role: 'assistant', text: (reply || '').trim() || 'Sorry — could you rephrase that?' }], busy: false }));
+  }
+  renderVals() {
+    const chip = label => ({ label, go: () => this.send(label) });
+    return {
+      open: this.state.open,
+      openStr: this.state.open ? 'true' : 'false',
+      btnLabel: this.state.open ? 'Assistant' : 'Ask Felican AI',
+      busy: this.state.busy,
+      draft: this.state.draft,
+      showChips: this.state.messages.length <= 1,
+      scrollRef: this.scrollRef,
+      messages: this.state.messages.map(m => m.role === 'user'
+        ? { ...m, align: 'flex-end', bg: '#1457D9', fg: '#FFFFFF', border: '#1457D9' }
+        : { ...m, align: 'flex-start', bg: '#FFFFFF', fg: '#0A1630', border: '#DDEBFF' }),
+      chips: [chip('What products do you offer?'), chip('Can you automate my business?'), chip('Tell me about the books')],
+      toggle: () => this.setState(s => ({ open: !s.open })),
+      close: () => this.setState({ open: false }),
+      onDraft: e => this.setState({ draft: e.target.value }),
+      submit: e => { e.preventDefault(); this.send(this.state.draft); }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

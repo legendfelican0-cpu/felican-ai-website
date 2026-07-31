@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script src="/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Products — Felican AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html { scroll-behavior:smooth; -webkit-text-size-adjust:100% }
+  body { margin:0; background:#F7F9FC; color:#0A1630; font-family:Inter,system-ui,sans-serif; overflow-x:hidden }
+  * { box-sizing:border-box }
+  a { color:#1457D9 } a:hover { color:#2F80FF }
+  ::selection { background:#2F80FF; color:#fff }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
+</style>
+</helmet>
+
+<dc-import name="SiteNav" active="Products" hint-size="100%,74px"></dc-import>
+
+<main>
+  <section aria-labelledby="ph" style="position:relative;background:#071A33;color:#FFFFFF;overflow:hidden;padding:clamp(56px,7vw,96px) 0 clamp(56px,7vw,88px)">
+    <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,128,255,0.12) 0 1px,transparent 1px 8.3333%)"></div>
+    <div aria-hidden="true" style="position:absolute;right:-4%;top:0;bottom:0;width:34%;background:linear-gradient(200deg,#1457D9 0%,rgba(7,26,51,0) 70%);opacity:.5"></div>
+    <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:end">
+      <div>
+        <p style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2F80FF">PRODUCTS</p>
+        <h1 id="ph" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(40px,6vw,80px);font-weight:800;line-height:1;letter-spacing:-0.04em;text-wrap:balance">Five products, five jobs done properly</h1>
+      </div>
+      <p style="margin:0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#C3D5F0;text-wrap:pretty">Each one is a finished product with a clear purpose. No bundles you don't need, no feature list you'll never touch. Pick the one that matches the problem in front of you.</p>
+    </div>
+  </section>
+
+  <section aria-label="All Felican AI products" style="background:#F7F9FC;padding:clamp(56px,7vw,96px) 0 clamp(72px,8vw,112px)">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(400px, 100%), 1fr));gap:clamp(20px,2.2vw,28px)">
+      <sc-for list="{{ products }}" as="p" hint-placeholder-count="5">
+        <article id="{{ p.id }}" data-reveal="1" style="scroll-margin-top:100px;background:#FFFFFF;border:1px solid #DDEBFF;border-top:6px solid {{ p.accent }};padding:clamp(30px,3vw,44px);display:flex;flex-direction:column;gap:20px;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease,border-color .3s ease" style-hover="transform:translateY(-8px);box-shadow:0 28px 56px rgba(7,26,51,0.16);border-color:#B7D3FA">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
+            <span aria-hidden="true" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:4px;width:44px;height:44px;flex-shrink:0">
+              <span style="background:{{ p.accent }}"></span><span style="background:#DDEBFF"></span>
+              <span style="background:#DDEBFF"></span><span style="background:{{ p.accent }}"></span>
+            </span>
+            <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.12em;color:#526079;text-align:right">{{ p.num }} &middot; {{ p.tag }}</span>
+          </div>
+          <h2 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(28px,2.7vw,38px);font-weight:800;line-height:1.08;letter-spacing:-0.03em;color:#0A1630;text-wrap:balance">{{ p.name }}</h2>
+          <p style="margin:0;font-size:clamp(17px,1.35vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">{{ p.desc }}</p>
+          <ul style="list-style:none;margin:0;padding:0;display:grid;gap:12px;border-top:1px solid #E7EFFA;padding-top:20px">
+            <sc-for list="{{ p.points }}" as="pt" hint-placeholder-count="3">
+              <li style="display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;font-size:17px;line-height:1.6;color:#0A1630">
+                <span aria-hidden="true" style="width:9px;height:9px;background:{{ p.accent }};margin-top:8px"></span>
+                {{ pt }}
+              </li>
+            </sc-for>
+          </ul>
+          <div style="margin-top:auto;display:flex;flex-wrap:wrap;gap:12px;padding-top:8px">
+            <a href="{{ p.url }}" target="{{ p.target }}" rel="noopener" style="flex:1 1 200px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 20px;background:{{ p.accent }};color:#FFFFFF;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#071A33;transform:translateY(-2px)" style-focus="outline:3px solid #071A33;outline-offset:3px">{{ p.cta }} <span aria-hidden="true">&#8594;</span></a>
+            <a href="/contact/" style="flex:0 1 auto;display:inline-flex;align-items:center;padding:17px 20px;border:1px solid #C9DDFB;color:#1457D9;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease" style-hover="background:#DDEBFF" style-focus="outline:3px solid #1457D9;outline-offset:3px">Ask a question</a>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <section aria-labelledby="notsure" style="background:#071A33;color:#FFFFFF;padding:clamp(64px,8vw,104px) 0">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:center">
+      <div>
+        <h2 id="notsure" style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:clamp(32px,4.2vw,54px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;text-wrap:balance">Need something none of these do?</h2>
+        <p style="margin:0;font-size:clamp(17px,1.45vw,20px);line-height:1.65;color:#C3D5F0;max-width:560px;text-wrap:pretty">That's most of our work. We build custom AI systems, automations, and integrations around the way your business already runs.</p>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px">
+        <a href="/services/" style="flex:1 1 210px;text-align:center;padding:19px 26px;background:#2F80FF;color:#04122A;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#DDEBFF;transform:translateY(-3px)" style-focus="outline:3px solid #DDEBFF;outline-offset:4px">See our services</a>
+        <a href="/contact/" style="flex:1 1 210px;text-align:center;padding:19px 26px;border:1px solid rgba(221,235,255,0.45);color:#FFFFFF;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;transition:background .2s ease" style-hover="background:rgba(47,128,255,0.16)" style-focus="outline:3px solid #2F80FF;outline-offset:4px">Start a conversation</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dc-import name="SiteFooter" hint-size="100%,460px"></dc-import>
+<dc-import name="ChatAssistant" hint-size="100%,0px"></dc-import>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  componentDidMount() {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) return;
+    const nodes = Array.from(document.querySelectorAll('[data-reveal]'));
+    const vh = window.innerHeight || 800;
+    const hidden = nodes.filter(n => n.getBoundingClientRect().top > vh * 0.9);
+    hidden.forEach(n => { n.style.opacity = '0'; n.style.transform = 'translateY(24px)'; n.style.transition = 'opacity .6s cubic-bezier(.2,.8,.2,1), transform .6s cubic-bezier(.2,.8,.2,1)'; });
+    const show = n => { n.style.opacity = '1'; n.style.transform = 'none'; };
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      show(e.target); io.unobserve(e.target);
+    }), { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+    hidden.forEach(n => io.observe(n));
+    this._io = io;
+    this._fallback = setTimeout(() => { hidden.forEach(n => { if (n.style.opacity === '0') show(n); }); }, 1400);
+  }
+  componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._fallback) clearTimeout(this._fallback); }
+  renderVals() {
+    const p = [
+      { id: 'felican-auto', num: '01', name: 'Felican Auto', tag: 'AUTOMOTIVE', accent: '#1457D9', url: '/contact/', cta: 'Get Felican Auto',
+        desc: 'Connected AI products, automations, and workflows designed for automotive businesses.',
+        points: ['Handles inbound customer questions about service, parts, and availability', 'Automates the follow-up and status updates staff never get to', 'Connects to the systems your dealership or shop already runs on'] },
+      { id: 'ai-assistant', num: '02', name: 'Felican AI Assistant', tag: 'WEBSITE', accent: '#2F80FF', url: '/contact/', cta: 'Get the Assistant',
+        desc: 'A company-trained website assistant that answers questions, recommends services, and captures customer inquiries.',
+        points: ['Trained on your services, pricing rules, and policies', 'Recommends the right service instead of guessing', 'Captures the inquiry and hands it to your team with context'] },
+      { id: 'world-of-agents', num: '03', name: 'World of Agents', tag: 'AGENTS', accent: '#0E86D9', url: '/contact/', cta: 'Enter World of Agents',
+        desc: 'A place to discover and work with specialized AI agents designed for focused business tasks.',
+        points: ['Agents built for one job each, so quality stays high', 'Browse by task instead of building from scratch', 'Put an agent to work without hiring an AI team'] },
+      { id: 'bookmaker', num: '04', name: 'BookMaker', tag: 'PUBLISHING', accent: '#4B57DE', url: '/contact/', cta: 'Open BookMaker',
+        desc: 'An AI workspace for planning, writing, organizing, and preparing books.',
+        points: ['Outline, chapter structure, and research in one workspace', 'Drafting help that keeps your voice consistent', 'Prepares the manuscript for publishing'] },
+      { id: 'marketer', num: '05', name: 'Marketer', tag: 'MARKETING', accent: '#7B5BE0', url: '/contact/', cta: 'Open Marketer',
+        desc: 'An AI marketing workspace for campaigns, content, brand planning, and execution.',
+        points: ['Campaign planning with your positioning already loaded', 'Content produced in your brand voice, not a generic one', 'Takes plans through to execution instead of stopping at ideas'] }
+    ];
+    return { products: p.map(x => ({ ...x, target: /^https?:/.test(x.url) ? '_blank' : undefined })) };
+  }
+}
+
+</script>
+</body>
+</html>

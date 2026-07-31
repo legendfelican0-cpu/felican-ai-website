@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script src="/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<title>Services — Felican AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  html { scroll-behavior:smooth; -webkit-text-size-adjust:100% }
+  body { margin:0; background:#FFFFFF; color:#0A1630; font-family:Inter,system-ui,sans-serif; overflow-x:hidden }
+  * { box-sizing:border-box }
+  a { color:#1457D9 } a:hover { color:#2F80FF }
+  ::selection { background:#2F80FF; color:#fff }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
+</style>
+</helmet>
+
+<dc-import name="SiteNav" active="Services" hint-size="100%,74px"></dc-import>
+
+<main>
+  <section aria-labelledby="sh" style="position:relative;background:#1457D9;color:#FFFFFF;overflow:hidden;padding:clamp(56px,7vw,96px) 0 clamp(56px,7vw,88px)">
+    <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.1) 0 1px,transparent 1px 8.3333%)"></div>
+    <div aria-hidden="true" style="position:absolute;left:0;bottom:0;width:100%;height:6px;background:#071A33"></div>
+    <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px">
+      <p style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#DDEBFF">SERVICES</p>
+      <h1 id="sh" style="margin:0;max-width:940px;font-family:Sora,sans-serif;font-size:clamp(40px,6.2vw,84px);font-weight:800;line-height:0.99;letter-spacing:-0.04em;text-wrap:balance">Seven ways we put AI to work inside a business</h1>
+      <p style="margin:clamp(24px,3vw,34px) 0 0;max-width:680px;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#E7F0FF;text-wrap:pretty">Felican AI works with businesses in any industry. We start by learning how your company actually operates, then design the solution around that — not around whatever is easiest to build.</p>
+    </div>
+  </section>
+
+  <section aria-label="Service list" style="background:#FFFFFF">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px">
+      <sc-for list="{{ services }}" as="s" hint-placeholder-count="7">
+        <article data-reveal="1" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px, 100%), 1fr));gap:clamp(20px,3vw,56px);padding:clamp(34px,4vw,56px) 0;border-bottom:1px solid #E7EFFA;position:relative">
+          <div style="display:flex;align-items:flex-start;gap:clamp(16px,2vw,28px)">
+            <span aria-hidden="true" style="font-family:Sora,sans-serif;font-size:clamp(28px,3vw,40px);font-weight:800;letter-spacing:-0.03em;color:#B7D3FA;line-height:1">{{ s.num }}</span>
+            <h2 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(27px,3.2vw,44px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">{{ s.name }}</h2>
+          </div>
+          <div>
+            <p style="margin:0 0 20px;font-size:clamp(17px,1.4vw,20px);line-height:1.7;color:#526079;text-wrap:pretty">{{ s.body }}</p>
+            <ul style="list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px">
+              <sc-for list="{{ s.tags }}" as="t" hint-placeholder-count="3">
+                <li style="font-size:15px;font-weight:600;color:#1457D9;background:#F2F7FF;border:1px solid #DDEBFF;padding:9px 13px">{{ t }}</li>
+              </sc-for>
+            </ul>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </section>
+
+  <section aria-labelledby="how" style="background:#071A33;color:#FFFFFF;padding:clamp(72px,8vw,112px) 0">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px">
+      <h2 id="how" style="margin:0 0 clamp(36px,4vw,56px);max-width:840px;font-family:Sora,sans-serif;font-size:clamp(32px,4.4vw,58px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;text-wrap:balance">How an engagement actually runs</h2>
+      <ol style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(250px, 100%), 1fr));gap:2px;background:rgba(47,128,255,0.3)">
+        <sc-for list="{{ steps }}" as="st" hint-placeholder-count="4">
+          <li data-reveal="1" style="background:#071A33;padding:clamp(26px,2.8vw,36px);display:flex;flex-direction:column;gap:14px;transition:background .25s ease" style-hover="background:#0C2547">
+            <span aria-hidden="true" style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.16em;color:#2F80FF">{{ st.num }}</span>
+            <h3 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(21px,2vw,26px);font-weight:700;letter-spacing:-0.02em">{{ st.title }}</h3>
+            <p style="margin:0;font-size:17px;line-height:1.65;color:#C3D5F0;text-wrap:pretty">{{ st.body }}</p>
+          </li>
+        </sc-for>
+      </ol>
+    </div>
+  </section>
+
+  <section aria-labelledby="ind" style="background:#DDEBFF;padding:clamp(64px,7vw,96px) 0">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px, 100%), 1fr));gap:clamp(24px,3vw,56px);align-items:center">
+        <h2 id="ind" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(30px,3.6vw,46px);font-weight:800;line-height:1.08;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">Any industry. The method doesn't change.</h2>
+        <p style="margin:0;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#3D4C63;text-wrap:pretty">A shop, a law firm, a clinic, and a construction company all have the same underlying problem: work that people repeat by hand. We find those and remove them.</p>
+      </div>
+      <ul style="list-style:none;margin:clamp(32px,4vw,48px) 0 0;padding:0;display:flex;flex-wrap:wrap;gap:10px">
+        <sc-for list="{{ industries }}" as="i" hint-placeholder-count="8">
+          <li style="background:#FFFFFF;border:1px solid #B7D3FA;padding:13px 18px;font-family:Sora,sans-serif;font-size:16px;font-weight:600;color:#0A1630">{{ i }}</li>
+        </sc-for>
+      </ul>
+    </div>
+  </section>
+
+  <section aria-labelledby="svccta" style="background:#FFFFFF;padding:clamp(72px,8vw,112px) 0">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:center">
+      <div>
+        <h2 id="svccta" style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:clamp(32px,4.2vw,54px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">Bring us the process that keeps breaking.</h2>
+        <p style="margin:0;font-size:clamp(17px,1.45vw,20px);line-height:1.7;color:#526079;max-width:560px;text-wrap:pretty">Describe it in a sentence or two. We'll tell you honestly whether AI is the right fix — and if it isn't, we'll say so.</p>
+      </div>
+      <div style="display:grid;gap:14px">
+        <a href="/contact/" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;background:#1457D9;color:#FFFFFF;font-family:Sora,sans-serif;font-size:clamp(18px,1.6vw,21px);font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#2F80FF;transform:translateX(6px)" style-focus="outline:3px solid #071A33;outline-offset:4px">Start a conversation <span aria-hidden="true">&#8594;</span></a>
+        <a href="tel:+13465150361" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;background:#071A33;color:#FFFFFF;font-family:Sora,sans-serif;font-size:clamp(18px,1.6vw,21px);font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#04122A;transform:translateX(6px)" style-focus="outline:3px solid #1457D9;outline-offset:4px">+1 (346) 515-0361 <span aria-hidden="true">&#8594;</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<dc-import name="SiteFooter" hint-size="100%,460px"></dc-import>
+<dc-import name="ChatAssistant" hint-size="100%,0px"></dc-import>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+class Component extends DCLogic {
+  componentDidMount() {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce || !('IntersectionObserver' in window)) return;
+    const nodes = Array.from(document.querySelectorAll('[data-reveal]'));
+    const vh = window.innerHeight || 800;
+    const hidden = nodes.filter(n => n.getBoundingClientRect().top > vh * 0.9);
+    hidden.forEach(n => { n.style.opacity = '0'; n.style.transform = 'translateY(24px)'; n.style.transition = 'opacity .6s cubic-bezier(.2,.8,.2,1), transform .6s cubic-bezier(.2,.8,.2,1)'; });
+    const show = n => { n.style.opacity = '1'; n.style.transform = 'none'; };
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      show(e.target); io.unobserve(e.target);
+    }), { rootMargin: '0px 0px -10% 0px', threshold: 0.1 });
+    hidden.forEach(n => io.observe(n));
+    this._io = io;
+    this._fallback = setTimeout(() => { hidden.forEach(n => { if (n.style.opacity === '0') show(n); }); }, 1400);
+  }
+  componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._fallback) clearTimeout(this._fallback); }
+  renderVals() {
+    return {
+      services: [
+        { num: '01', name: 'AI agents and bots', body: 'Agents that handle one job well — answering customers, qualifying leads, routing requests, chasing follow-ups — and escalate to a person when they should.', tags: ['Customer-facing agents', 'Internal agents', 'Escalation rules'] },
+        { num: '02', name: 'Business automation', body: 'We map the steps your team repeats by hand every week and remove them. Fewer copy-pastes between systems, fewer things forgotten on a Friday.', tags: ['Workflow mapping', 'Document handling', 'Scheduled jobs'] },
+        { num: '03', name: 'Custom integrations', body: 'AI is only useful when it touches your real data. We connect it to your CRM, phone, scheduling, billing, and back-office tools.', tags: ['CRM', 'Scheduling', 'Back office', 'APIs'] },
+        { num: '04', name: 'Private AI systems', body: 'For companies that cannot send data to a public model. Your AI runs inside your environment, under your access controls.', tags: ['Self-hosted models', 'Access control', 'Data residency'] },
+        { num: '05', name: 'AI implementation and consulting', body: 'A clear plan for what to build, in what order, and what to skip. Written for decision-makers, not for engineers to translate.', tags: ['Roadmap', 'Build vs. buy', 'Risk review'] },
+        { num: '06', name: 'Business solutions', body: 'A complete build aimed at one operational problem — intake, dispatch, quoting, reporting — designed end to end and handed over working.', tags: ['End-to-end build', 'Rollout', 'Handover'] },
+        { num: '07', name: 'AI training and workshops', body: 'Practical sessions for leadership and staff on using AI in the work they already do, so adoption does not stall after launch.', tags: ['Leadership sessions', 'Team workshops', 'Ongoing support'] }
+      ],
+      steps: [
+        { num: 'STEP 01', title: 'Understand the operation', body: 'A short working session on how the business runs today and where time disappears.' },
+        { num: 'STEP 02', title: 'Scope the smallest useful build', body: 'We pick the one change with the clearest payoff and define it precisely.' },
+        { num: 'STEP 03', title: 'Build and integrate', body: 'We build it against your real systems and data, then test it with your team.' },
+        { num: 'STEP 04', title: 'Train and hand over', body: 'Your staff learn to run and adjust it. We stay reachable after go-live.' }
+      ],
+      industries: ['Automotive', 'Legal', 'Healthcare', 'Real estate', 'Construction and trades', 'Professional services', 'Finance', 'Retail and e-commerce', 'Education', 'Logistics']
+    };
+  }
+}
+
+</script>
+</body>
+</html>
