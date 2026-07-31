@@ -1,0 +1,460 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,500;6..72,600&display=swap');
+
+/* Claude visual direction: a calm, editorial business studio. */
+.felican-site,
+.felican-site.variant-catalog,
+.felican-site.variant-network {
+  --bg: #f7f4ee;
+  --surface: #fffdfa;
+  --ink: #1b1f1b;
+  --muted: #5f665f;
+  --line: #c9d3c7;
+  --brand: #1f3d2e;
+  --brand2: #d76a3e;
+  --brand-dark: #152b20;
+  --soft: #e8eee8;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Manrope', Arial, sans-serif;
+  font-size: 16px;
+}
+
+.felican-site h1,
+.felican-site h2,
+.felican-site h3,
+.felican-site.variant-catalog h1,
+.felican-site.variant-catalog h2,
+.felican-site.variant-catalog h3,
+.felican-site.variant-network h1,
+.felican-site.variant-network h2,
+.felican-site.variant-network h3 {
+  font-family: 'Newsreader', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -.035em;
+}
+
+.felican-site p { color: var(--muted); font-size: 17px; line-height: 1.72; }
+.felican-site button,
+.felican-site a { transition: color .2s ease, background-color .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+.felican-site a:focus-visible,
+.felican-site button:focus-visible { outline: 3px solid rgba(192, 86, 47, .35); outline-offset: 4px; }
+
+/* Navigation */
+.fs-header {
+  width: min(100%, 1320px);
+  max-width: 1320px;
+  height: 88px;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.fs-mark { gap: 12px; }
+.fs-mark > span {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--brand);
+  font-size: 15px;
+}
+.fs-mark b { font-size: 19px; letter-spacing: -.035em; }
+.fs-header nav { gap: 34px; font-size: 14px; }
+.fs-header nav > a { position: relative; color: var(--ink); font-weight: 600; }
+.fs-header nav > a:not(.contact-link)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -9px;
+  left: 0;
+  height: 1px;
+  background: var(--brand);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform .2s ease;
+}
+.fs-header nav > a:hover::after,
+.fs-header nav > a.active::after { transform: scaleX(1); transform-origin: left; }
+.fs-header nav > a.contact-link {
+  min-height: 46px;
+  padding: 0 21px;
+  border: 1px solid var(--ink);
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+}
+.fs-header nav > a.contact-link:hover,
+.fs-header nav > a.contact-link.active { background: var(--ink); color: #fff; }
+
+/* Hero */
+.fs-hero.simple-hero,
+.felican-site.variant-catalog .fs-hero.simple-hero,
+.felican-site.variant-network .fs-hero.simple-hero {
+  width: min(calc(100% - 64px), 1256px);
+  max-width: 1256px;
+  min-height: 690px;
+  margin: 0 auto;
+  padding: 82px 0 88px;
+  grid-template-columns: minmax(0, 1.18fr) minmax(380px, .82fr);
+  gap: clamp(60px, 8vw, 116px);
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+}
+.fs-hero.simple-hero::before,
+.fs-hero.simple-hero::after { display: none; }
+.hero-copy { max-width: 750px; }
+.fs-kicker,
+.section-heading > span,
+.fs-about > div:first-child > span,
+.fs-contact > div:first-child > span,
+.solutions-panel > span,
+.training-panel > span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--brand);
+  font-family: 'Manrope', Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .085em;
+  text-transform: uppercase;
+}
+.fs-kicker::before,
+.section-heading > span::before {
+  content: '';
+  width: 34px;
+  height: 1px;
+  background: currentColor;
+}
+.fs-hero h1 {
+  max-width: 770px;
+  margin: 24px 0 28px;
+  font-size: clamp(62px, 6.4vw, 92px);
+  line-height: .96;
+  letter-spacing: -.052em;
+}
+.hero-copy > p { max-width: 670px; margin: 0; font-size: 18px; line-height: 1.7; }
+.hero-actions { margin: 34px 0 38px; gap: 12px; }
+.fs-primary,
+.fs-secondary {
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+}
+.fs-primary { background: var(--brand); color: #fff !important; }
+.fs-primary:hover { background: var(--brand-dark); transform: translateY(-2px); }
+.fs-secondary { border: 1px solid #aeb9ae; background: transparent; }
+.fs-secondary:hover { border-color: var(--ink); background: rgba(255, 255, 255, .45); }
+.hero-index {
+  max-width: 590px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.hero-index span { color: var(--muted); font-size: 13px; font-weight: 600; }
+.hero-index b { margin-right: 7px; color: var(--brand); font-family: 'Newsreader', Georgia, serif; font-size: 20px; }
+.hero-process {
+  position: relative;
+  min-height: 500px;
+  padding: 44px 40px 34px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 16px 16px 0 #d8a934;
+}
+.hero-process::before {
+  content: 'FELICAN / WORKING METHOD';
+  position: absolute;
+  top: -28px;
+  right: 0;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .13em;
+}
+.hero-process-intro { padding-bottom: 30px; border-bottom-color: rgba(255, 255, 255, .2); }
+.hero-process-intro > span { color: #d4dfd7; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
+.hero-process-intro > strong { max-width: 350px; font-family: 'Newsreader', Georgia, serif; font-size: 34px; line-height: 1.12; }
+.hero-process ol { padding-top: 10px; }
+.hero-process li { padding: 21px 0; grid-template-columns: 44px 1fr; border-bottom-color: rgba(255, 255, 255, .16); }
+.hero-process li > b { color: #e3b940; font-family: 'Newsreader', Georgia, serif; font-size: 18px; }
+.hero-process li strong { font-size: 16px; }
+.hero-process li small { color: #c8d0ca; font-size: 13px; }
+
+/* Editorial section rhythm */
+.what-we-do,
+.fs-products,
+.fs-services,
+.books-section,
+.company-preview,
+.home-contact,
+.page-intro,
+.fs-about,
+.fs-faq,
+.fs-contact,
+.solutions-training {
+  width: min(calc(100% - 64px), 1256px);
+  max-width: 1256px;
+}
+.what-we-do { padding: 112px 0; grid-template-columns: 1.03fr .97fr; gap: 110px; border-bottom: 1px solid var(--line); }
+.what-we-do h2 { max-width: 590px; margin: 20px 0 0; font-size: clamp(45px, 4.5vw, 62px); line-height: 1.02; }
+.what-we-do p { margin-top: 0; font-size: 18px; }
+.what-we-do-links { margin-top: 36px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 1px solid var(--line); }
+.what-we-do-links span {
+  padding: 16px 8px 16px 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  color: var(--brand);
+  font-size: 13px;
+  font-weight: 700;
+}
+.what-we-do-links span::before { content: '↗'; margin-right: 8px; color: var(--brand2); }
+.fs-products,
+.fs-services { padding: 116px 0; }
+.section-heading { margin-bottom: 54px; grid-template-columns: 1.15fr .85fr; gap: 80px; align-items: end; }
+.section-heading > span { grid-column: 1 / -1; }
+.section-heading h2 { max-width: 700px; font-size: clamp(45px, 4.2vw, 60px); line-height: 1.05; }
+.section-heading p { max-width: 520px; font-size: 17px; }
+
+/* Products */
+.felican-site .all-products-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; }
+.felican-site .all-products-grid .product-card {
+  position: relative;
+  min-height: 500px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: 0 1px 0 rgba(27, 31, 27, .04);
+  overflow: hidden;
+}
+.product-card-visual {
+  position: relative;
+  height: 210px;
+  padding: 28px 30px;
+  border: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  overflow: hidden;
+}
+.product-card-visual::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 92px;
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 255, 255, .24);
+}
+.product-card-visual::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 60px;
+  left: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, .24);
+}
+.product-card-visual span { position: relative; z-index: 1; color: #fff; font-family: 'Newsreader', Georgia, serif; font-size: 66px; line-height: .8; }
+.product-card-visual small { position: relative; z-index: 1; color: rgba(255, 255, 255, .9); font-size: 13px; font-weight: 700; letter-spacing: .04em; }
+.product-index {
+  position: absolute;
+  z-index: 2;
+  top: 24px;
+  right: 28px;
+  color: rgba(255, 255, 255, .9);
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 18px;
+  font-weight: 500;
+}
+.all-products-grid .product-card-body { padding: 34px 36px 32px; }
+.all-products-grid .product-card h3 { margin: 0 0 14px; font-size: 38px; line-height: 1.05; }
+.all-products-grid .product-card p { margin: 0 0 30px; font-size: 17px; line-height: 1.65; }
+.all-products-grid .product-card footer { padding-top: 19px; border-top: 1px solid var(--line); color: var(--brand); font-size: 13px; font-weight: 700; }
+.all-products-grid .product-card footer svg { width: 19px; }
+.felican-site .all-products-grid .product-card:hover { border-color: var(--brand); transform: translateY(-4px); box-shadow: 0 18px 38px rgba(27, 31, 27, .09); }
+.all-products-grid .product-card:hover .product-card-visual span { transform: translateY(-2px); }
+
+/* Services */
+.fs-services { border-top: 1px solid var(--line); }
+.service-list { counter-reset: services; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.service-list article {
+  counter-increment: services;
+  min-height: 330px;
+  padding: 30px;
+  border: 1px solid var(--line) !important;
+  border-radius: 9px;
+  background: rgba(255, 253, 250, .58);
+}
+.service-list article::before {
+  content: '0' counter(services);
+  float: right;
+  color: var(--brand);
+  font-family: 'Newsreader', Georgia, serif;
+  font-size: 16px;
+}
+.service-list article > svg { width: 38px; height: 38px; margin: 0 0 46px; padding: 8px; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--brand); }
+.service-list h3 { max-width: 240px; font-size: 28px; line-height: 1.08; }
+.service-list p { font-size: 15px; line-height: 1.65; }
+.service-list article:hover { border-color: var(--brand) !important; transform: translateY(-3px); background: var(--surface); }
+.service-cta { margin-top: 38px; }
+
+/* Books and company */
+.books-section {
+  margin: 0 auto;
+  padding: 116px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+}
+.books-heading { max-width: 760px; margin-bottom: 52px; }
+.books-heading h2 { margin: 22px 0 16px; font-size: clamp(45px, 4vw, 58px); line-height: 1.04; }
+.books-grid { gap: 24px; }
+.book-cover { height: 430px; padding: 22px; border: 1px solid var(--line); border-radius: 8px; background: #ede9e0; }
+.book-cover img { filter: drop-shadow(0 18px 24px rgba(27, 31, 27, .18)); transition: transform .2s ease; }
+.book-cover span { top: 14px; right: 14px; border-radius: 5px; font-family: 'Manrope', Arial, sans-serif; font-size: 10px; }
+.book-card small { min-height: 36px; color: var(--brand); font-size: 12px; }
+.book-card h3 { min-height: 58px; margin: 9px 0 0; font-size: 25px; line-height: 1.12; }
+.book-card b { color: var(--brand); font-size: 12px; }
+.book-card:hover .book-cover { border-color: var(--brand); }
+.book-card:hover .book-cover img { transform: translateY(-4px) rotate(-.4deg); }
+.company-preview {
+  margin: 0 auto;
+  padding: 116px 0;
+  grid-template-columns: 1.15fr .85fr;
+  gap: 110px;
+  border-bottom: 1px solid var(--line);
+}
+.company-preview h2 { max-width: 670px; font-size: clamp(46px, 4.5vw, 64px); line-height: 1.02; }
+.company-preview p { font-size: 18px; }
+.text-link { color: var(--brand); font-size: 14px; }
+.text-link:hover { color: var(--brand2); }
+.home-contact {
+  margin: 72px auto;
+  padding: 58px 64px;
+  border-radius: 10px;
+  grid-template-columns: 1fr auto;
+  background: #c0562f;
+  color: #fff;
+  box-shadow: 12px 12px 0 var(--ink);
+}
+.home-contact span { color: #f4d9ce; font-size: 14px; }
+.home-contact h2 { font-size: clamp(40px, 4vw, 56px); }
+.home-contact button { min-height: 52px; padding: 0 22px; border-radius: 8px; background: #fff; color: var(--ink); }
+.home-contact button:hover { transform: translateY(-2px); background: #f7f4ee; }
+
+/* Interior pages */
+.page-intro {
+  margin: 0 auto;
+  padding: 102px 0 92px;
+  border-bottom: 1px solid var(--line);
+}
+.page-intro h1 { max-width: 980px; margin: 24px 0 25px; font-size: clamp(60px, 7vw, 96px); line-height: .95; }
+.page-intro p { max-width: 720px; margin: 0; font-size: 19px; }
+.fs-about,
+.fs-faq { margin-right: auto; margin-left: auto; }
+.fs-about { padding: 112px 0; }
+.fs-about h2 { font-size: 58px; }
+.solutions-training { margin: 0 auto 112px; gap: 20px; }
+.solutions-panel,
+.training-panel { border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.training-panel { background: var(--brand); color: #fff; }
+.training-panel p { color: #d7e0da; }
+.training-panel > span { color: #d7e0da; }
+.fs-contact {
+  margin: 60px auto 100px;
+  padding: 70px;
+  border-radius: 10px;
+  background: var(--brand);
+}
+.fs-contact h2 { font-size: 56px; }
+.contact-actions > button,
+.contact-actions > a { border-radius: 8px; }
+.fs-faq { padding: 112px 0; }
+
+/* Footer and assistant */
+.fs-footer {
+  width: min(calc(100% - 64px), 1256px);
+  max-width: 1256px;
+  min-height: 140px;
+  padding: 34px 0 60px;
+  border-top: 1px solid var(--line);
+}
+.fs-chat { border-radius: 10px; border-color: var(--line); }
+.fs-chat form button { border-radius: 7px; background: var(--brand); }
+.quick-asks button { border-radius: 7px; }
+
+@media (max-width: 1050px) {
+  .fs-hero.simple-hero,
+  .felican-site.variant-catalog .fs-hero.simple-hero,
+  .felican-site.variant-network .fs-hero.simple-hero { grid-template-columns: 1fr; gap: 70px; }
+  .hero-process { max-width: 680px; }
+  .books-grid { grid-template-columns: repeat(2, 1fr); row-gap: 48px; }
+  .book-cover { height: 500px; }
+}
+
+@media (max-width: 900px) {
+  .fs-header { height: 74px; padding: 0 22px; }
+  .fs-header nav { top: 74px; right: 14px; left: 14px; gap: 8px; padding: 16px; border-radius: 8px; box-shadow: 0 18px 40px rgba(27, 31, 27, .12); }
+  .fs-header nav > a { padding: 10px 12px; }
+  .fs-header nav > a:not(.contact-link)::after { display: none; }
+  .fs-hero.simple-hero,
+  .felican-site.variant-catalog .fs-hero.simple-hero,
+  .felican-site.variant-network .fs-hero.simple-hero,
+  .what-we-do,
+  .fs-products,
+  .fs-services,
+  .books-section,
+  .company-preview,
+  .home-contact,
+  .page-intro,
+  .fs-about,
+  .fs-faq,
+  .fs-contact,
+  .solutions-training,
+  .fs-footer { width: min(calc(100% - 40px), 1256px); }
+  .fs-hero.simple-hero { padding-top: 72px; }
+  .what-we-do,
+  .company-preview { grid-template-columns: 1fr; gap: 38px; }
+  .service-list { grid-template-columns: repeat(2, 1fr); }
+  .home-contact { padding: 48px; }
+}
+
+@media (max-width: 680px) {
+  .fs-hero h1 { font-size: 55px; }
+  .hero-actions { flex-direction: column; }
+  .hero-actions .fs-primary,
+  .hero-actions .fs-secondary { width: 100%; }
+  .hero-index { gap: 7px; }
+  .hero-index span { display: flex; flex-direction: column; gap: 3px; }
+  .hero-index b { font-size: 24px; }
+  .hero-process { min-height: auto; padding: 34px 28px 26px; box-shadow: 9px 9px 0 #d8a934; }
+  .hero-process-intro > strong { font-size: 29px; }
+  .section-heading { grid-template-columns: 1fr; gap: 18px; }
+  .felican-site .all-products-grid,
+  .service-list,
+  .books-grid { grid-template-columns: 1fr; }
+  .felican-site .all-products-grid .product-card { min-height: 470px; }
+  .product-card-visual { height: 190px; }
+  .all-products-grid .product-card-body { padding: 29px 27px 27px; }
+  .all-products-grid .product-card h3 { font-size: 34px; }
+  .books-grid { row-gap: 46px; }
+  .book-cover { height: 470px; }
+  .home-contact { margin: 46px auto; padding: 38px 28px; grid-template-columns: 1fr; gap: 30px; box-shadow: 8px 8px 0 var(--ink); }
+  .page-intro { padding: 74px 0 66px; }
+  .page-intro h1 { font-size: 56px; }
+  .fs-contact { padding: 42px 25px; }
+  .fs-footer { align-items: flex-start; text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .felican-site *,
+  .felican-site *::before,
+  .felican-site *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}

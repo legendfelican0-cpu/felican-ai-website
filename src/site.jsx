@@ -7,6 +7,7 @@ import {
 import './reboot.css';
 import './variants.css';
 import './cleanup.css';
+import './claude-design.css';
 
 const PHONE = '+1 (346) 515-0361';
 const PHONE_HREF = 'tel:+13465150361';
@@ -96,6 +97,11 @@ function Hero({ onNavigate }) {
       <h1>We build useful AI for the way your business works.</h1>
       <p>Felican AI helps businesses turn everyday work into better systems—with practical products, custom AI, automation, integrations, and hands-on training.</p>
       <div className="hero-actions"><button className="fs-primary" onClick={() => onNavigate('/products')}>Explore products <ArrowRight/></button><button className="fs-secondary" onClick={() => onNavigate('/services')}>See our services</button></div>
+      <div className="hero-index" aria-label="Felican AI at a glance">
+        <span><b>05</b> Products</span>
+        <span><b>06</b> Services</span>
+        <span><b>04</b> Books</span>
+      </div>
     </div>
     <div className="hero-process" aria-label="How Felican AI works">
       <div className="hero-process-intro"><span>How we work</span><strong>From a real business need to a working solution.</strong></div>
@@ -112,9 +118,9 @@ function WhatWeDo() {
   return <section className="what-we-do"><div><span className="fs-kicker">What we do</span><h2>AI that fits your business—not the other way around.</h2></div><div><p>We work with businesses in any industry. We learn how the work gets done, find where AI can make a real difference, and deliver useful products, custom systems, integrations, and training.</p><div className="what-we-do-links"><span>Products</span><span>Custom solutions</span><span>Team training</span></div></div></section>;
 }
 
-function ProductCard({ product, onNavigate }) {
+function ProductCard({ product, onNavigate, index }) {
   return <a className="product-card" href={product.path} onClick={event => { event.preventDefault(); onNavigate(product.path); }} aria-label={`Open ${product.name}`}>
-    <div className="product-card-visual" style={{backgroundColor:product.color}}><span>{product.name.split(' ').map(word => word[0]).join('').slice(0, 3)}</span><small>{product.category}</small></div>
+    <div className="product-card-visual" style={{backgroundColor:product.color}}><b className="product-index">{String(index + 1).padStart(2, '0')}</b><span>{product.name.split(' ').map(word => word[0]).join('').slice(0, 3)}</span><small>{product.category}</small></div>
     <div className="product-card-body"><h3>{product.name}</h3><p>{product.description}</p><footer><span>Explore {product.name}</span><ArrowRight/></footer></div>
   </a>;
 }
@@ -122,7 +128,7 @@ function ProductCard({ product, onNavigate }) {
 function Products({ onNavigate }) {
   return <section className="fs-products" id="products">
     <div className="section-heading"><span>Products</span><h2>Everything we make, in one place.</h2><p>Each product solves a specific business problem. Choose one to see what it does.</p></div>
-    <div className="product-list all-products-grid">{products.map(product => <ProductCard product={product} onNavigate={onNavigate} key={product.name}/>)}</div>
+    <div className="product-list all-products-grid">{products.map((product, index) => <ProductCard product={product} onNavigate={onNavigate} index={index} key={product.name}/>)}</div>
   </section>;
 }
 
