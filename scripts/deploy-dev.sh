@@ -32,7 +32,7 @@ trap on_error ERR
 
 log "creating immutable DEV release ${RELEASE_ID}"
 ssh -o BatchMode=yes -o ConnectTimeout=15 "${DEV_HOST}" \
-  "sudo -n install -d -m 0755 '${RELEASE_DIR}/dist/client' '${RELEASE_DIR}/deploy'"
+  "sudo -n install -d -m 0755 '${RELEASE_DIR}/dist/client' '${RELEASE_DIR}/deploy' '${RELEASE_DIR}/server'"
 
 rsync -az --rsync-path="sudo -n rsync" \
   -e "ssh -o BatchMode=yes -o ConnectTimeout=15" \
@@ -40,23 +40,29 @@ rsync -az --rsync-path="sudo -n rsync" \
 
 rsync -az --rsync-path="sudo -n rsync" \
   -e "ssh -o BatchMode=yes -o ConnectTimeout=15" \
-  "${PROJECT_ROOT}/deploy/Dockerfile.dev" "${PROJECT_ROOT}/deploy/nginx.dev.conf" \
+  "${PROJECT_ROOT}/deploy/Dockerfile.dev" \
   "${DEV_HOST}:${RELEASE_DIR}/deploy/"
+
+rsync -az --rsync-path="sudo -n rsync" \
+  -e "ssh -o BatchMode=yes -o ConnectTimeout=15" \
+  "${PROJECT_ROOT}/server/" "${DEV_HOST}:${RELEASE_DIR}/server/"
 
 log "building ${IMAGE} and replacing only the DEV container"
 ssh -o BatchMode=yes -o ConnectTimeout=15 "${DEV_HOST}" \
-  "sudo -n bash -s -- '${RELEASE_DIR}' '${IMAGE}' '${APP_NAME}' '${BACKUP_CONTAINER}'" <<'REMOTE'
+  "sudo -n bash -s -- '${RELEASE_DIR}' '${IMAGE}' '${APP_NAME}' '${BACKUP_CONTAINER}' '${REMOTE_ROOT}'" <<'REMOTE'
 set -Eeuo pipefail
 release_dir="$1"
 image="$2"
 app_name="$3"
 backup_container="$4"
+remote_root="$5"
 old_saved=0
+new_started=0
 
 rollback() {
   rc=$?
   echo "[felicanai-dev] remote failure (exit ${rc}); rolling back DEV container" >&2
-  if docker inspect "${app_name}" >/dev/null 2>&1; then
+  if [[ "${new_started}" == "1" ]] && docker inspect "${app_name}" >/dev/null 2>&1; then
     docker stop "${app_name}" >/dev/null 2>&1 || true
     docker rename "${app_name}" "${app_name}-failed-$(date -u +%Y%m%dT%H%M%SZ)" >/dev/null 2>&1 || true
   fi
@@ -71,6 +77,28 @@ trap rollback ERR
 
 docker build --pull -f "${release_dir}/deploy/Dockerfile.dev" -t "${image}" "${release_dir}"
 
+config_dir="${remote_root}/config"
+ai_env_file="${config_dir}/ai.env"
+install -d -m 0700 "${config_dir}"
+if [[ ! -s "${ai_env_file}" ]]; then
+  for candidate in /var/www/betiq/.env.local /var/www/fruit/api/.env /opt/fruit/api/.env /opt/felican-factory/.env.local; do
+    if [[ -r "${candidate}" ]] && grep -Eq '^(ASHER_API_KEY|ANTHROPIC_API_KEY)=.+' "${candidate}"; then
+      grep -E '^(ASHER_API_KEY|ASHER_BASE_URL|ASHER_MODEL|ANTHROPIC_API_KEY|ANTHROPIC_MODEL)=' "${candidate}" > "${ai_env_file}"
+      chmod 0600 "${ai_env_file}"
+      break
+    fi
+  done
+fi
+if [[ ! -s "${ai_env_file}" ]]; then
+  echo "Felican AI provider credentials were not found in an approved server-side source" >&2
+  false
+fi
+if ! grep -Eq '^ANTHROPIC_API_KEY=.+' "${ai_env_file}" && \
+   ! { grep -Eq '^ASHER_API_KEY=.+' "${ai_env_file}" && grep -Eq '^ASHER_BASE_URL=.+' "${ai_env_file}"; }; then
+  echo "Felican AI provider configuration is incomplete" >&2
+  false
+fi
+
 if docker inspect "${app_name}" >/dev/null 2>&1; then
   docker stop "${app_name}"
   docker rename "${app_name}" "${backup_container}"
@@ -82,8 +110,10 @@ docker run -d \
   --restart unless-stopped \
   --label felican.environment=dev \
   --label felican.release="${image}" \
+  --env-file "${ai_env_file}" \
   -p 127.0.0.1:3002:80 \
   "${image}"
+new_started=1
 
 for attempt in 1 2 3 4 5 6; do
   if docker exec "${app_name}" wget -q -O /dev/null http://127.0.0.1/; then

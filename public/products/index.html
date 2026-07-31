@@ -42,7 +42,7 @@
   <section aria-label="All Felican AI products" style="background:#F7F9FC;padding:clamp(56px,7vw,96px) 0 clamp(72px,8vw,112px)">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(400px, 100%), 1fr));gap:clamp(20px,2.2vw,28px)">
       <sc-for list="{{ products }}" as="p" hint-placeholder-count="5">
-        <article id="{{ p.id }}" data-reveal="1" style="scroll-margin-top:100px;background:#FFFFFF;border:1px solid #DDEBFF;border-top:6px solid {{ p.accent }};padding:clamp(30px,3vw,44px);display:flex;flex-direction:column;gap:20px;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease,border-color .3s ease" style-hover="transform:translateY(-8px);box-shadow:0 28px 56px rgba(7,26,51,0.16);border-color:#B7D3FA">
+        <article id="{{ p.id }}" style="scroll-margin-top:100px;background:#FFFFFF;border:1px solid #DDEBFF;border-top:6px solid {{ p.accent }};padding:clamp(30px,3vw,44px);display:flex;flex-direction:column;gap:20px;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease,border-color .3s ease" style-hover="transform:translateY(-8px);box-shadow:0 28px 56px rgba(7,26,51,0.16);border-color:#B7D3FA">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
             <span aria-hidden="true" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:4px;width:44px;height:44px;flex-shrink:0">
               <span style="background:{{ p.accent }}"></span><span style="background:#DDEBFF"></span>
@@ -50,6 +50,9 @@
             </span>
             <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.12em;color:#526079;text-align:right">{{ p.num }} &middot; {{ p.tag }}</span>
           </div>
+          <a href="{{ p.url }}" target="{{ p.target }}" rel="noopener" aria-label="Open {{ p.name }}" style="display:block;aspect-ratio:16/10;overflow:hidden;background:#071A33;border:1px solid #DDEBFF">
+            <img src="{{ p.image }}" alt="{{ p.name }} live product screenshot" style="display:block;width:100%;height:100%;object-fit:cover;object-position:top">
+          </a>
           <h2 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(28px,2.7vw,38px);font-weight:800;line-height:1.08;letter-spacing:-0.03em;color:#0A1630;text-wrap:balance">{{ p.name }}</h2>
           <p style="margin:0;font-size:clamp(17px,1.35vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">{{ p.desc }}</p>
           <ul style="list-style:none;margin:0;padding:0;display:grid;gap:12px;border-top:1px solid #E7EFFA;padding-top:20px">
@@ -108,21 +111,21 @@ class Component extends DCLogic {
   componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._fallback) clearTimeout(this._fallback); }
   renderVals() {
     const p = [
-      { id: 'felican-auto', num: '01', name: 'Felican Auto', tag: 'AUTOMOTIVE', accent: '#1457D9', url: '/contact/', cta: 'Get Felican Auto',
-        desc: 'Connected AI products, automations, and workflows designed for automotive businesses.',
-        points: ['Handles inbound customer questions about service, parts, and availability', 'Automates the follow-up and status updates staff never get to', 'Connects to the systems your dealership or shop already runs on'] },
-      { id: 'ai-assistant', num: '02', name: 'Felican AI Assistant', tag: 'WEBSITE', accent: '#2F80FF', url: '/contact/', cta: 'Get the Assistant',
+      { id: 'felican-auto', num: '01', name: 'Felican Auto', tag: 'AUTOMOTIVE', accent: '#1457D9', url: 'https://auto.felican.ai/', cta: 'Open Felican Auto', image: '/product-felican-auto.png',
+        desc: 'AI voice and web assistance for car dealerships — available around the clock and connected to live inventory.',
+        points: ['Answers dealership calls and website chats 24/7', 'Knows live inventory and books test drives', 'Captures and follows up with leads instead of letting them go cold'] },
+      { id: 'ai-assistant', num: '02', name: 'Felican AI Assistant', tag: 'WEBSITE', accent: '#2F80FF', url: '/?assistant=1', cta: 'Try the Assistant', image: '/product-ai-assistant.png',
         desc: 'A company-trained website assistant that answers questions, recommends services, and captures customer inquiries.',
         points: ['Trained on your services, pricing rules, and policies', 'Recommends the right service instead of guessing', 'Captures the inquiry and hands it to your team with context'] },
-      { id: 'world-of-agents', num: '03', name: 'World of Agents', tag: 'AGENTS', accent: '#0E86D9', url: '/contact/', cta: 'Enter World of Agents',
-        desc: 'A place to discover and work with specialized AI agents designed for focused business tasks.',
-        points: ['Agents built for one job each, so quality stays high', 'Browse by task instead of building from scratch', 'Put an agent to work without hiring an AI team'] },
-      { id: 'bookmaker', num: '04', name: 'BookMaker', tag: 'PUBLISHING', accent: '#4B57DE', url: '/contact/', cta: 'Open BookMaker',
-        desc: 'An AI workspace for planning, writing, organizing, and preparing books.',
-        points: ['Outline, chapter structure, and research in one workspace', 'Drafting help that keeps your voice consistent', 'Prepares the manuscript for publishing'] },
-      { id: 'marketer', num: '05', name: 'Marketer', tag: 'MARKETING', accent: '#7B5BE0', url: '/contact/', cta: 'Open Marketer',
-        desc: 'An AI marketing workspace for campaigns, content, brand planning, and execution.',
-        points: ['Campaign planning with your positioning already loaded', 'Content produced in your brand voice, not a generic one', 'Takes plans through to execution instead of stopping at ideas'] }
+      { id: 'world-of-agents', num: '03', name: 'World of Agents', tag: 'AGENTS', accent: '#0E86D9', url: 'https://woa.felican.ai/', cta: 'Open World of Agents', image: '/product-world-of-agents.png',
+        desc: 'Create a trusted AI Twin that can represent you while you decide who can reach it and what it knows.',
+        points: ['Answers like you using only what you choose to teach it', 'Works across the web, conversations, circles, messages, and calls', 'Asks you when it is unsure so you stay in control'] },
+      { id: 'bookmaker', num: '04', name: 'BookMaker', tag: 'PUBLISHING', accent: '#4B57DE', url: 'https://book-studio.felican.dev/', cta: 'Open BookMaker', image: '/product-bookmaker.png',
+        desc: 'A friendly AI book studio that guides an idea or completed manuscript into publish-ready formats.',
+        points: ['Starts from a new idea or an existing manuscript', 'Creates the words, art, cover, and interior layout', 'Prepares Kindle eBook, paperback, and hardcover editions'] },
+      { id: 'marketer', num: '05', name: 'Marketer', tag: 'MARKETING', accent: '#7B5BE0', url: 'https://book-marketer.felican.dev/', cta: 'Open Marketer', image: '/product-marketer.png',
+        desc: 'An autonomous book marketing engine for managing approvals, content, outreach, and results.',
+        points: ['Plans and produces campaign content', 'Keeps approvals in the workflow before anything goes live', 'Tracks outreach and performance from one protected dashboard'] }
     ];
     return { products: p.map(x => ({ ...x, target: /^https?:/.test(x.url) ? '_blank' : undefined })) };
   }

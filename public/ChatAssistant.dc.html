@@ -56,8 +56,9 @@
 
       <form onSubmit="{{ submit }}" style="padding:14px;background:#FFFFFF;border-top:1px solid #E3ECF9;display:flex;gap:8px;flex-shrink:0">
         <label for="fa-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your message</label>
-        <input id="fa-input" type="text" value="{{ draft }}" onChange="{{ onDraft }}" placeholder="Type your question" autoComplete="off" style="flex:1;min-width:0;border:1px solid #C9DDFB;background:#FFFFFF;color:#0A1630;font-family:Inter,sans-serif;font-size:16px;padding:13px 14px;border-radius:2px" style-focus="outline:2px solid #1457D9;outline-offset:1px;border-color:#1457D9">
-        <button type="submit" aria-label="Send message" style="background:#1457D9;border:none;color:#FFFFFF;font-family:Inter,sans-serif;font-size:16px;font-weight:700;padding:13px 18px;border-radius:2px;cursor:pointer" style-hover="background:#2F80FF" style-focus="outline:2px solid #071A33;outline-offset:2px">Send</button>
+        <input type="text" name="website" value="{{ website }}" onChange="{{ onWebsite }}" tabindex="-1" autoComplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden">
+        <input id="fa-input" type="text" value="{{ draft }}" onChange="{{ onDraft }}" placeholder="Type your question" maxlength="800" autoComplete="off" style="flex:1;min-width:0;border:1px solid #C9DDFB;background:#FFFFFF;color:#0A1630;font-family:Inter,sans-serif;font-size:16px;padding:13px 14px;border-radius:2px" style-focus="outline:2px solid #1457D9;outline-offset:1px;border-color:#1457D9">
+        <button type="submit" aria-label="Send message" style="background:#1457D9;border:none;color:#FFFFFF;font-family:Inter,sans-serif;font-size:16px;font-weight:700;padding:13px 18px;border-radius:2px;cursor:pointer" style-hover="background:#2F80FF" style-focus="outline:2px solid #071A33;outline-offset:2px">{{ sendLabel }}</button>
       </form>
     </section>
   </sc-if>
@@ -84,7 +85,7 @@ Answer in 2-4 short sentences, plainly and helpfully. Never invent customers, st
 
 class Component extends DCLogic {
   state = {
-    open: false, busy: false, draft: '',
+    open: new URLSearchParams(window.location.search).has('assistant'), busy: false, draft: '', website: '',
     messages: [{ role: 'assistant', text: "Hi — I'm the Felican AI assistant. Ask me about our products, services, training, or Lee's books." }]
   };
   scrollRef = React.createRef();
@@ -100,7 +101,14 @@ class Component extends DCLogic {
     try {
       const history = [...this.state.messages, { role: 'user', text: q }]
         .map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }));
-      reply = await window.claude.complete({ system: SYS, messages: history, max_tokens: 500 });
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history, website: this.state.website })
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.reply) throw new Error(payload.error || 'Assistant request failed');
+      reply = payload.reply;
     } catch (e) {
       reply = "I couldn't reach the assistant just now. Call +1 (346) 515-0361 or email privateaiglobal@gmail.com and we'll help directly.";
     }
@@ -113,7 +121,9 @@ class Component extends DCLogic {
       openStr: this.state.open ? 'true' : 'false',
       btnLabel: this.state.open ? 'Assistant' : 'Ask Felican AI',
       busy: this.state.busy,
+      sendLabel: this.state.busy ? 'Thinking' : 'Send',
       draft: this.state.draft,
+      website: this.state.website,
       showChips: this.state.messages.length <= 1,
       scrollRef: this.scrollRef,
       messages: this.state.messages.map(m => m.role === 'user'
@@ -123,6 +133,7 @@ class Component extends DCLogic {
       toggle: () => this.setState(s => ({ open: !s.open })),
       close: () => this.setState({ open: false }),
       onDraft: e => this.setState({ draft: e.target.value }),
+      onWebsite: e => this.setState({ website: e.target.value }),
       submit: e => { e.preventDefault(); this.send(this.state.draft); }
     };
   }

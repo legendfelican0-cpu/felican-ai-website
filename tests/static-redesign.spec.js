@@ -51,5 +51,12 @@ test.describe('Claude Design website export', () => {
     await expect(assistantButton).toBeVisible();
     await assistantButton.click();
     await expect(assistantButton).toHaveAttribute('aria-expanded', 'true');
+
+    const input = page.getByRole('textbox', { name: 'Your message' });
+    await input.fill('What does Felican AI build?');
+    await page.getByRole('button', { name: 'Send message' }).click();
+    await expect(page.getByRole('log')).toContainText(
+      'Felican AI builds products, custom systems, automations, integrations, and training for businesses.',
+    );
   });
 });

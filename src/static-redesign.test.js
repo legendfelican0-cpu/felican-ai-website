@@ -41,4 +41,24 @@ describe('Claude Design static website export', () => {
   it('loads shared Design Component imports from the site root', () => {
     expect(read('public/support.js')).toContain('var COMPONENT_DIR = "";');
   });
+
+  it('links every product to its live destination and includes a real screenshot', () => {
+    const products = read('public/products/index.html');
+    for (const [url, image] of [
+      ['https://auto.felican.ai/', '/product-felican-auto.png'],
+      ['/?assistant=1', '/product-ai-assistant.png'],
+      ['https://woa.felican.ai/', '/product-world-of-agents.png'],
+      ['https://book-studio.felican.dev/', '/product-bookmaker.png'],
+      ['https://book-marketer.felican.dev/', '/product-marketer.png'],
+    ]) {
+      expect(products).toContain(url);
+      expect(products).toContain(image);
+    }
+  });
+
+  it('connects the assistant UI to the protected server endpoint', () => {
+    const assistant = read('public/ChatAssistant.dc.html');
+    expect(assistant).toContain("fetch('/api/chat'");
+    expect(assistant).not.toContain('window.claude.complete');
+  });
 });
