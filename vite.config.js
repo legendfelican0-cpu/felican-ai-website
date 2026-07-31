@@ -4,6 +4,7 @@ import { cloudflare } from '@cloudflare/vite-plugin';
 import { sites } from './build/sites-vite-plugin.js';
 
 export default defineConfig(({ mode }) => ({
+  base: './',
   plugins: [react(), ...(mode === 'test' ? [] : [sites(), cloudflare()])],
   server: {
     allowedHosts: ['.serveousercontent.com', '.lhr.life'],
