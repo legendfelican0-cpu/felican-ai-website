@@ -4,7 +4,7 @@ import { cloudflare } from '@cloudflare/vite-plugin';
 import { sites } from './build/sites-vite-plugin.js';
 
 export default defineConfig(({ mode }) => ({
-  base: './',
+  base: '/felican-ai-website/',
   plugins: [react(), ...(mode === 'test' ? [] : [sites(), cloudflare()])],
   server: {
     allowedHosts: ['.serveousercontent.com', '.lhr.life'],

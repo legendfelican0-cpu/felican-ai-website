@@ -10,6 +10,7 @@ import './cleanup.css';
 
 const PHONE = '+1 (346) 515-0361';
 const PHONE_HREF = 'tel:+13465150361';
+const assetPath = fileName => `${import.meta.env.BASE_URL}${fileName}`;
 
 const products = [
   { name: 'Felican Auto', path: '/products/felican-auto', category: 'Automotive', status: 'Available', description: 'Connected AI tools and workflows built for automotive businesses.', color: '#173f6b', features: ['Customer intake', 'Connected workflows', 'Follow-up and reporting'] },
@@ -33,28 +34,28 @@ const books = [
     title: "The Big Balla's Guide to Making Money with AI",
     subtitle: '100 Ways to Turn AI Into Income',
     status: 'New · 2026',
-    image: '/book-big-ballas.jpg',
+    image: assetPath('book-big-ballas.jpg'),
     description: 'One hundred ways to make money with AI, organized by startup cost and industry, with checklists and a business-launch playbook.',
   },
   {
     title: "Don't Be Replaced",
     subtitle: 'How Not to Lose Your Job to AI',
     status: 'On Amazon',
-    image: '/book-dont-be-replaced.jpg',
+    image: assetPath('book-dont-be-replaced.jpg'),
     description: 'A working person’s plan for staying valuable by understanding job exposure and becoming the most AI-capable person on the team.',
   },
   {
     title: 'Stop Being Nice to AI',
     subtitle: 'How to Talk to AI Like a Pro with the GRRRRR Method',
     status: 'On Amazon',
-    image: '/book-stop-being-nice.jpg',
+    image: assetPath('book-stop-being-nice.jpg'),
     description: 'A practical guide to getting stronger results from AI using Lee Felican Jr.’s GRRRRR prompting method.',
   },
   {
     title: 'The BIG AI Book',
     subtitle: "A Children's Guide to AI (For Grown-Ups)",
     status: 'On Amazon',
-    image: '/book-big-ai.jpg',
+    image: assetPath('book-big-ai.jpg'),
     description: 'A fully illustrated explanation of what AI is, where it appears in daily life, and how people can put it to work.',
   },
 ];
