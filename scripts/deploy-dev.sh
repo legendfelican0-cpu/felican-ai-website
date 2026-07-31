@@ -82,7 +82,7 @@ docker run -d \
   --restart unless-stopped \
   --label felican.environment=dev \
   --label felican.release="${image}" \
-  -p 127.0.0.1:8080:80 \
+  -p 127.0.0.1:3002:80 \
   "${image}"
 
 for attempt in 1 2 3 4 5 6; do
