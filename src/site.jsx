@@ -15,6 +15,7 @@ const assetPath = fileName => `${import.meta.env.BASE_URL}${fileName}`;
 
 const products = [
   { name: 'Felican Auto', path: '/products/felican-auto', category: 'Automotive', status: 'Available', description: 'Connected AI tools and workflows built for automotive businesses.', color: '#173f6b', features: ['Customer intake', 'Connected workflows', 'Follow-up and reporting'] },
+  { name: 'Relay', path: '/products/relay', category: 'Field service', status: 'Available', description: 'AI field-service software for HVAC, plumbing, and electrical companies.', color: '#2563eb', features: ['Maintenance scheduling', 'AP invoice automation', 'Collections, quotes, and crews'] },
   { name: 'Felican AI Assistant', path: '/products/felican-ai-assistant', category: 'Customer experience', status: 'Featured', description: 'A company-trained website assistant that answers questions, recommends services, and captures inquiries.', color: '#7357ff', features: ['Approved company knowledge', 'Lead qualification', 'Human handoff'] },
   { name: 'World of Agents', path: '/products/world-of-agents', category: 'AI agents', status: 'Available', description: 'A place to discover and work with specialized AI agents built for focused tasks.', color: '#168b70', features: ['Specialized agents', 'Task-based discovery', 'Business workflows'] },
   { name: 'BookMaker', path: '/products/bookmaker', category: 'Publishing', status: 'Available', description: 'An AI workspace for planning, writing, organizing, and preparing books.', color: '#9b4f2f', features: ['Book planning', 'Draft organization', 'Publishing workflow'] },
@@ -97,7 +98,7 @@ function Hero({ onNavigate }) {
       <p>Felican AI helps businesses turn everyday work into better systems—with practical products, custom AI, automation, integrations, and hands-on training.</p>
       <div className="hero-actions"><button className="fs-primary" onClick={() => onNavigate('/products')}>Explore products <ArrowRight/></button><button className="fs-secondary" onClick={() => onNavigate('/services')}>See our services</button></div>
       <div className="hero-index" aria-label="Felican AI at a glance">
-        <span><b>04</b> Products</span>
+        <span><b>05</b> Products</span>
         <span><b>06</b> Services</span>
         <span><b>04</b> Books</span>
       </div>
@@ -191,7 +192,7 @@ function HomePage({ onNavigate }) {
 }
 
 function ProductsPage({ onNavigate }) {
-  return <><PageIntro eyebrow="Products" title="Four products. Built for real work." copy="Every Felican AI product is listed together below. Select a product to open its page and learn what it does."/><Products onNavigate={onNavigate}/></>;
+  return <><PageIntro eyebrow="Products" title="Five products. Built for real work." copy="Every Felican AI product is listed together below. Select a product to open its page and learn what it does."/><Products onNavigate={onNavigate}/></>;
 }
 
 function ServicesPage({ onNavigate }) {
@@ -216,7 +217,7 @@ function ChatPanel({ close }) {
   const respond = text => {
     const q = text.toLowerCase();
     if(q.includes('phone')||q.includes('call')||q.includes('contact')) return `Call Felican AI at ${PHONE}, or use the contact section to send an email.`;
-    if(q.includes('product')) return 'Felican products include Felican Auto, the Felican AI Assistant, World of Agents, and BookMaker.';
+    if(q.includes('product')) return 'Felican products include Felican Auto, Relay, the Felican AI Assistant, World of Agents, and BookMaker.';
     if(q.includes('train')) return 'Training includes AI fundamentals, prompting for daily work, workflow workshops, and hands-on agent building.';
     return 'Felican AI builds assistants, automations, integrations, private AI systems, and business software. Tell me what you want to improve and I’ll point you in the right direction.';
   };

@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 const routes = [
   ['/', 'We build the AI your business'],
-  ['/products/', 'Four products. Built for real work.'],
+  ['/products/', 'Five products. Built for real work.'],
   ['/services/', 'Seven ways we put AI to work inside a business'],
   ['/books/', 'Four books by Lee Felican Jr.'],
   ['/about/', 'A family-built company that builds AI for a living'],
@@ -38,12 +38,16 @@ test.describe('Claude Design website export', () => {
       await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Products', exact: true }).click();
     }
     await expect(page).toHaveURL(/\/products\/?$/);
-    await expect(page.locator('article[id]')).toHaveCount(4);
+    await expect(page.locator('article[id]')).toHaveCount(5);
 
     const productCards = page.locator('article[id]');
     await expect(productCards.filter({ hasText: 'BookMaker' }).getByRole('link', { name: 'Open BookMaker' }).first()).toHaveAttribute(
       'href',
       'https://book-studio.felican.dev/',
+    );
+    await expect(productCards.filter({ hasText: 'Relay' }).getByRole('link', { name: 'Open Relay' }).first()).toHaveAttribute(
+      'href',
+      'https://relay.felican.dev/relay',
     );
 
     await page.goto('/books/', { waitUntil: 'networkidle' });

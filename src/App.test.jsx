@@ -13,7 +13,7 @@ describe('Felican AI company site', () => {
     expect(screen.getByText(/We build useful AI for the way your business works/i)).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /AI that fits your business/i })).toBeInTheDocument();
     expect(screen.getAllByText('Felican Auto').length).toBeGreaterThan(0);
-    expect(screen.queryByText('Relay')).not.toBeInTheDocument();
+    expect(screen.getAllByText('Relay').length).toBeGreaterThan(0);
     expect(screen.queryByText('CasaSuite')).not.toBeInTheDocument();
     expect(screen.queryByText('Talk to Felican AI')).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /Call \+1/i })).not.toBeInTheDocument();
@@ -42,21 +42,21 @@ describe('Felican AI company site', () => {
     fireEvent.click(screen.getByText('Ask Felican AI'));
     fireEvent.click(screen.getByText('What products do you have?'));
     expect(screen.getByText(/Felican products include Felican Auto/i)).toBeInTheDocument();
-    expect(screen.getByText(/World of Agents, and BookMaker/i)).toBeInTheDocument();
+    expect(screen.getByText(/Relay, the Felican AI Assistant, World of Agents, and BookMaker/i)).toBeInTheDocument();
   });
 
-  it('shows all four products together and opens a dedicated product page', () => {
+  it('shows all five products together and opens a dedicated product page', () => {
     window.history.replaceState({}, '', '/products');
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: 'Four products. Built for real work.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Five products. Built for real work.' })).toBeInTheDocument();
     expect(screen.queryByText('Business software')).not.toBeInTheDocument();
     expect(screen.queryByText('Create and automate')).not.toBeInTheDocument();
     expect(screen.queryByText('Current products')).not.toBeInTheDocument();
-    ['Felican Auto', 'World of Agents', 'BookMaker'].forEach(name => {
+    ['Felican Auto', 'Relay', 'World of Agents', 'BookMaker'].forEach(name => {
       expect(screen.getByRole('heading', { name })).toBeInTheDocument();
     });
-    ['Relay', 'CasaSuite', 'LeadConcierge AI', 'InvestorHQ', 'ThreadPilot', 'AdPulse', 'FrameFire', 'Lumina', 'Dendrite', 'Ora', 'Quorum'].forEach(name => {
+    ['CasaSuite', 'LeadConcierge AI', 'InvestorHQ', 'ThreadPilot', 'AdPulse', 'FrameFire', 'Lumina', 'Dendrite', 'Ora', 'Quorum'].forEach(name => {
       expect(screen.queryByText(name)).not.toBeInTheDocument();
     });
 

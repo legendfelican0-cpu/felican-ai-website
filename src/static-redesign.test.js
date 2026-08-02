@@ -10,13 +10,13 @@ describe('Claude Design static website export', () => {
     const home = read('index.html');
 
     expect(home).toContain('We build the AI your business');
-    expect(home).toContain('Four products. One clear lineup.');
+    expect(home).toContain('Five products. One clear lineup.');
     expect(home).toContain('Books by Lee Felican Jr.');
     expect(home).not.toMatch(/(?:Home|Products|Services|Books|About|Contact)\.dc\.html/);
   });
 
   it.each([
-    ['products', 'Four products. Built for real work.'],
+    ['products', 'Five products. Built for real work.'],
     ['services', 'Services'],
     ['books', 'Books by Lee Felican Jr.'],
     ['about', 'A family-built company that builds AI for a living'],
@@ -46,6 +46,7 @@ describe('Claude Design static website export', () => {
     const products = read('public/products/index.html');
     for (const [url, image] of [
       ['https://auto.felican.ai/', '/product-felican-auto.png'],
+      ['https://relay.felican.dev/relay', '/product-relay.png'],
       ['/?assistant=1', '/product-ai-assistant.png'],
       ['https://woa.felican.ai/', '/product-world-of-agents.png'],
       ['https://book-studio.felican.dev/', '/product-bookmaker.png'],

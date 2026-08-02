@@ -49,7 +49,7 @@
         </h1>
         <p style="margin:clamp(26px,3.4vw,38px) 0 0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#C3D5F0;max-width:620px;text-wrap:pretty">Felican AI designs and delivers AI products, custom systems, business automations, integrations, assistants, and training. Any industry — built around how your company already works.</p>
         <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:clamp(30px,3.6vw,42px)">
-          <a href="/products/" style="flex:1 1 auto;min-width:220px;text-align:center;padding:19px 30px;background:#2F80FF;color:#04122A;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,transform .2s ease" style-hover="background:#DDEBFF;transform:translateY(-3px)" style-focus="outline:3px solid #DDEBFF;outline-offset:4px">See all four products</a>
+          <a href="/products/" style="flex:1 1 auto;min-width:220px;text-align:center;padding:19px 30px;background:#2F80FF;color:#04122A;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,transform .2s ease" style-hover="background:#DDEBFF;transform:translateY(-3px)" style-focus="outline:3px solid #DDEBFF;outline-offset:4px">See all five products</a>
           <a href="/contact/" style="flex:1 1 auto;min-width:200px;text-align:center;padding:19px 30px;background:transparent;color:#FFFFFF;border:1px solid rgba(221,235,255,0.45);font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,border-color .2s ease" style-hover="background:rgba(47,128,255,0.16);border-color:#2F80FF" style-focus="outline:3px solid #2F80FF;outline-offset:4px">Talk to us</a>
         </div>
       </div>
@@ -57,7 +57,7 @@
       <div style="position:relative">
         <p style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2F80FF">THE PRODUCT LINE</p>
         <ul style="list-style:none;margin:0;padding:0;border-top:1px solid rgba(47,128,255,0.3)">
-          <sc-for list="{{ products }}" as="p" hint-placeholder-count="4">
+          <sc-for list="{{ products }}" as="p" hint-placeholder-count="5">
             <li style="border-bottom:1px solid rgba(47,128,255,0.3)">
               <a href="{{ p.href }}" style="display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;padding:clamp(16px,1.7vw,21px) 8px;text-decoration:none;color:#FFFFFF;transition:background .2s ease,padding-left .2s ease" style-hover="background:rgba(47,128,255,0.12);padding-left:18px" style-focus="outline:2px solid #2F80FF;outline-offset:-2px">
                 <span aria-hidden="true" style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;color:{{ p.accent }};letter-spacing:0.08em">{{ p.num }}</span>
@@ -104,13 +104,13 @@
       <div style="display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:flex-end;margin-bottom:clamp(38px,4vw,54px)">
         <div>
           <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2F80FF">ALL PRODUCTS</p>
-          <h2 id="prod-h" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(34px,4.6vw,60px);font-weight:800;line-height:1.05;letter-spacing:-0.035em">Four products. One clear lineup.</h2>
+          <h2 id="prod-h" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(34px,4.6vw,60px);font-weight:800;line-height:1.05;letter-spacing:-0.035em">Five products. One clear lineup.</h2>
         </div>
         <a href="/products/" style="display:inline-flex;align-items:center;gap:10px;padding:16px 24px;border:1px solid rgba(221,235,255,0.45);color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,border-color .2s ease" style-hover="background:rgba(47,128,255,0.16);border-color:#2F80FF" style-focus="outline:3px solid #2F80FF;outline-offset:3px">Full product detail <span aria-hidden="true">&#8594;</span></a>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(330px, 100%), 1fr));gap:clamp(18px,1.8vw,24px)">
-        <sc-for list="{{ products }}" as="p" hint-placeholder-count="4">
+        <sc-for list="{{ products }}" as="p" hint-placeholder-count="5">
           <article data-reveal="1" style="background:#FFFFFF;border-top:5px solid {{ p.accent }};padding:clamp(28px,2.6vw,36px);display:flex;flex-direction:column;gap:18px;min-height:340px;transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s ease" style-hover="transform:translateY(-8px);box-shadow:0 26px 50px rgba(4,18,42,0.35)">
             <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
               <span aria-hidden="true" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px;width:34px;height:34px">
@@ -263,13 +263,14 @@ class Component extends DCLogic {
     return {
       products: [
         { num: '01', name: 'Felican Auto', tag: 'AUTOMOTIVE', accent: ac('#1457D9'), href: '/products/#felican-auto', cta: 'Explore Felican Auto', desc: 'Connected AI products, automations, and workflows designed for automotive businesses — from inbound customer contact to service and inventory operations.' },
-        { num: '02', name: 'Felican AI Assistant', tag: 'WEBSITE', accent: ac('#2F80FF'), href: '/products/#ai-assistant', cta: 'Explore the Assistant', desc: 'A company-trained website assistant that answers questions, recommends services, and captures customer inquiries around the clock.' },
-        { num: '03', name: 'World of Agents', tag: 'AGENTS', accent: ac('#0E86D9'), href: '/products/#world-of-agents', cta: 'Explore World of Agents', desc: 'A place to discover and work with specialized AI agents built for focused business tasks, instead of one generalist chatbot doing everything badly.' },
-        { num: '04', name: 'BookMaker', tag: 'PUBLISHING', accent: ac('#4B57DE'), href: '/products/#bookmaker', cta: 'Explore BookMaker', desc: 'An AI workspace for planning, writing, organizing, and preparing books — outline to finished manuscript in one place.' }
+        { num: '02', name: 'Relay', tag: 'FIELD SERVICE', accent: ac('#2563EB'), href: '/products/#relay', cta: 'Explore Relay', desc: 'AI field-service software for HVAC, plumbing, and electrical companies — scheduling, AP invoices, collections, quotes, crews, and AI operations support in one place.' },
+        { num: '03', name: 'Felican AI Assistant', tag: 'WEBSITE', accent: ac('#2F80FF'), href: '/products/#ai-assistant', cta: 'Explore the Assistant', desc: 'A company-trained website assistant that answers questions, recommends services, and captures customer inquiries around the clock.' },
+        { num: '04', name: 'World of Agents', tag: 'AGENTS', accent: ac('#0E86D9'), href: '/products/#world-of-agents', cta: 'Explore World of Agents', desc: 'A place to discover and work with specialized AI agents built for focused business tasks, instead of one generalist chatbot doing everything badly.' },
+        { num: '05', name: 'BookMaker', tag: 'PUBLISHING', accent: ac('#4B57DE'), href: '/products/#bookmaker', cta: 'Explore BookMaker', desc: 'An AI workspace for planning, writing, organizing, and preparing books — outline to finished manuscript in one place.' }
       ],
       heroTags: ['Any industry', 'Custom systems', 'Automations', 'Integrations', 'Training'],
       pillars: [
-        { num: '01', title: 'Products you can use now', body: 'Four focused AI products, ready to put in front of your customers and your team.', cta: 'See the products', href: '/products/' },
+        { num: '01', title: 'Products you can use now', body: 'Five focused AI products, ready to put in front of your customers and your team.', cta: 'See the products', href: '/products/' },
         { num: '02', title: 'Systems built for you', body: 'Custom AI systems, automations, and integrations designed around your existing tools and process.', cta: 'See the services', href: '/services/' },
         { num: '03', title: 'Training that sticks', body: 'Workshops and implementation support so your team keeps running it after we hand it over.', cta: 'Get in touch', href: '/contact/' }
       ],
