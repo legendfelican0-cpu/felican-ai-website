@@ -99,6 +99,17 @@ describe('Felican AI server', () => {
     await expect(unavailable.json()).resolves.toEqual({ ok: false, dependencies: { ai: 'unavailable' } });
   });
 
+  it('serves restrictive security headers without the retired CDN runtime', async () => {
+    const base = await start();
+    const response = await fetch(`${base}/server/app.js`);
+    const policy = response.headers.get('content-security-policy');
+    expect(policy).toContain("frame-ancestors 'none'");
+    expect(policy).toContain('https://static.cloudflareinsights.com');
+    expect(policy).toContain('https://fonts.googleapis.com');
+    expect(policy).not.toContain('unpkg.com');
+    expect(response.headers.get('cross-origin-opener-policy')).toBe('same-origin');
+  });
+
   it('accepts privacy-safe analytics and rejects unknown routes', async () => {
     const logs = [];
     const base = await start(undefined, { logger: { error() {}, warn() {}, info(value) { logs.push(JSON.parse(value)); } } });
