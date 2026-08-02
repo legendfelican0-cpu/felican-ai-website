@@ -42,7 +42,7 @@ describe('Felican AI company site', () => {
     fireEvent.click(screen.getByText('Ask Felican AI'));
     fireEvent.click(screen.getByText('What products do you have?'));
     expect(screen.getByText(/Felican products include Felican Auto/i)).toBeInTheDocument();
-    expect(screen.getByText(/Relay, the Felican AI Assistant, World of Agents, and BookMaker/i)).toBeInTheDocument();
+    expect(screen.getByText(/World of Agents, Relay, the Felican AI Assistant, and BookMaker/i)).toBeInTheDocument();
   });
 
   it('shows the complete product lineup together and opens a dedicated product page', () => {

@@ -15,9 +15,9 @@ const assetPath = fileName => `${import.meta.env.BASE_URL}${fileName}`;
 
 const products = [
   { name: 'Felican Auto', path: '/products/felican-auto', category: 'Automotive', status: 'Available', description: 'Connected AI tools and workflows built for automotive businesses.', color: '#173f6b', features: ['Customer intake', 'Connected workflows', 'Follow-up and reporting'] },
+  { name: 'World of Agents', path: '/products/world-of-agents', category: 'AI agents', status: 'Available', description: 'A place to discover and work with specialized AI agents built for focused tasks.', color: '#168b70', features: ['Specialized agents', 'Task-based discovery', 'Business workflows'] },
   { name: 'Relay', path: '/products/relay', category: 'Field service', status: 'Available', description: 'AI field-service software for HVAC, plumbing, and electrical companies.', color: '#2563eb', features: ['Maintenance scheduling', 'AP invoice automation', 'Collections, quotes, and crews'] },
   { name: 'Felican AI Assistant', path: '/products/felican-ai-assistant', category: 'Embeddable agent', status: 'Featured', description: 'A company-trained AI agent businesses can embed inside a website or app to answer questions, connect workflows, and hand off to people.', color: '#7357ff', features: ['Website and app embedding', 'Approved company knowledge', 'Workflow actions and human handoff'] },
-  { name: 'World of Agents', path: '/products/world-of-agents', category: 'AI agents', status: 'Available', description: 'A place to discover and work with specialized AI agents built for focused tasks.', color: '#168b70', features: ['Specialized agents', 'Task-based discovery', 'Business workflows'] },
   { name: 'BookMaker', path: '/products/bookmaker', category: 'Publishing', status: 'Available', description: 'An AI workspace for planning, writing, organizing, and preparing books.', color: '#9b4f2f', features: ['Book planning', 'Draft organization', 'Publishing workflow'] },
 ];
 
@@ -217,7 +217,7 @@ function ChatPanel({ close }) {
   const respond = text => {
     const q = text.toLowerCase();
     if(q.includes('phone')||q.includes('call')||q.includes('contact')) return `Call Felican AI at ${PHONE}, or use the contact section to send an email.`;
-    if(q.includes('product')) return 'Felican products include Felican Auto, Relay, the Felican AI Assistant, World of Agents, and BookMaker.';
+    if(q.includes('product')) return 'Felican products include Felican Auto, World of Agents, Relay, the Felican AI Assistant, and BookMaker.';
     if(q.includes('train')) return 'Training includes AI fundamentals, prompting for daily work, workflow workshops, and hands-on agent building.';
     return 'Felican AI builds assistants, automations, integrations, private AI systems, and business software. Tell me what you want to improve and I’ll point you in the right direction.';
   };

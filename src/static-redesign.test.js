@@ -60,6 +60,13 @@ describe('Claude Design static website export', () => {
     expect(products).not.toMatch(/BookMarketer|book-marketer|product-marketer/i);
   });
 
+  it('places World of Agents directly after Felican Auto', () => {
+    for (const productPage of [read('index.html'), read('public/products/index.html')]) {
+      expect(productPage.indexOf("name: 'Felican Auto'")).toBeLessThan(productPage.indexOf("name: 'World of Agents'"));
+      expect(productPage.indexOf("name: 'World of Agents'")).toBeLessThan(productPage.indexOf("name: 'Relay'"));
+    }
+  });
+
   it('uses direct contact links without a contact form', () => {
     const contact = read('public/contact/index.html');
     expect(contact).toContain("'privateaiglobal' + '@' + 'gmail.com'");

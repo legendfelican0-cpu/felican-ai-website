@@ -41,6 +41,8 @@ test.describe('Claude Design website export', () => {
     await expect(page.locator('article[id]')).toHaveCount(5);
 
     const productCards = page.locator('article[id]');
+    await expect(productCards.nth(0)).toHaveAttribute('id', 'felican-auto');
+    await expect(productCards.nth(1)).toHaveAttribute('id', 'world-of-agents');
     await expect(productCards.filter({ hasText: 'BookMaker' }).getByRole('link', { name: 'Open BookMaker' }).first()).toHaveAttribute(
       'href',
       'https://book-studio.felican.dev/',
@@ -96,6 +98,8 @@ test.describe('Claude Design website export', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     const firstPillar = page.locator('.home-pillars article').first();
+    await expect(firstPillar.locator('h3')).toBeVisible();
+    await page.waitForTimeout(250);
     await firstPillar.locator('h3').scrollIntoViewIfNeeded();
     const overlapIsVisible = await firstPillar.evaluate(card => {
       const heading = card.querySelector('h3');
