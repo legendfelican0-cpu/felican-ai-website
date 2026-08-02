@@ -94,7 +94,7 @@ function createWindowLimiter(limit, windowMs) {
 function securityHeaders(contentType = 'application/json; charset=utf-8') {
   return {
     'Content-Type': contentType,
-    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:",
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://cloudflareinsights.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:",
     'Cross-Origin-Opener-Policy': 'same-origin',
     'Cross-Origin-Resource-Policy': 'same-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
@@ -311,7 +311,9 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
     const filePath = staticPath(siteRoot, url.pathname);
     if (!filePath || !existsSync(filePath)) return json(res, 404, { error: 'Not found' });
     const contentType = MIME.get(extname(filePath).toLowerCase()) || 'application/octet-stream';
-    const cache = contentType.startsWith('text/html') ? 'no-cache' : 'public, max-age=86400';
+    const cache = contentType.startsWith('text/html') || contentType.startsWith('text/javascript')
+      ? 'no-cache'
+      : 'public, max-age=86400';
     res.writeHead(200, { ...securityHeaders(contentType), 'Cache-Control': cache });
     if (req.method === 'HEAD') return res.end();
     const stream = createReadStream(filePath);
