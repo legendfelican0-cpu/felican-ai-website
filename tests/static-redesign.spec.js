@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 
 const routes = [
   ['/', 'We build the AI your business'],
@@ -7,6 +8,8 @@ const routes = [
   ['/books/', 'Four books by Lee Felican Jr.'],
   ['/about/', 'A family-built company that builds AI for a living'],
   ['/contact/', "Let's talk about your business"],
+  ['/privacy/', 'Privacy Policy'],
+  ['/terms/', 'Terms of Use'],
 ];
 
 test.describe('Claude Design website export', () => {
@@ -17,6 +20,7 @@ test.describe('Claude Design website export', () => {
         if (message.type() === 'error') consoleErrors.push(message.text());
       });
 
+      await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.goto(route, { waitUntil: 'networkidle' });
 
       await expect(page.locator('h1').first()).toContainText(headline);
@@ -25,6 +29,8 @@ test.describe('Claude Design website export', () => {
         await page.evaluate(() => document.documentElement.clientWidth),
       );
       expect(consoleErrors).toEqual([]);
+      const accessibility = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
+      expect(accessibility.violations.filter(item => ['serious', 'critical'].includes(item.impact))).toEqual([]);
     });
   }
 
@@ -92,6 +98,22 @@ test.describe('Claude Design website export', () => {
       'tel:+13465150361',
     );
     await expect(page.locator('main form')).toHaveCount(0);
+  });
+
+  test('legal, search, social, and analytics foundations are present', async ({ page }) => {
+    await page.goto('/privacy/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { name: 'Privacy Policy', exact: true })).toBeVisible();
+    await expect(page.getByText(/Messages sent to the Felican AI Assistant are processed by an AI service provider/i)).toBeVisible();
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://felican.ai/privacy/');
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', 'https://felican.ai/og.png');
+
+    const robots = await page.request.get('/robots.txt');
+    expect(await robots.text()).toContain('Disallow: /');
+    const sitemap = await page.request.get('/sitemap.xml');
+    expect(await sitemap.text()).toContain('<loc>https://felican.ai/products/</loc>');
+
+    const analytics = await page.request.post('/api/analytics', { data: { event: 'page_view', path: '/privacy/' } });
+    expect(analytics.status()).toBe(204);
   });
 
   test('homepage overlap stays visible and service hover remains readable', async ({ page }, testInfo) => {

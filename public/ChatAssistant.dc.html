@@ -27,6 +27,8 @@
 .fa-chip { background:#EFF5FF;border:1px solid #C9DDFB;color:#0A1630;font-family:Inter,sans-serif;font-size:13px;font-weight:600;padding:9px 12px;border-radius:999px;cursor:pointer;transition:background .18s ease,color .18s ease,transform .18s ease }
 .fa-chip:hover { background:#1457D9;color:#FFFFFF;border-color:#1457D9;transform:translateY(-1px) }
 .fa-composer { padding:14px;background:#FFFFFF;border-top:1px solid #E3ECF9;display:flex;gap:9px;flex-shrink:0 }
+.fa-privacy { margin:0;padding:8px 16px 0;background:#FFFFFF;color:#68758B;font-size:11px;line-height:1.4;text-align:center }
+.fa-privacy a { color:#1457D9;font-weight:600 }
 .fa-input { flex:1;min-width:0;border:1px solid #C9DDFB;background:#F9FBFF;color:#0A1630;font-family:Inter,sans-serif;font-size:16px;padding:13px 17px;border-radius:999px }
 .fa-input:focus { outline:2px solid #1457D9;outline-offset:1px;border-color:#1457D9;background:#FFFFFF }
 .fa-send { width:50px;height:50px;display:grid;place-items:center;flex:0 0 50px;background:linear-gradient(135deg,#1457D9,#2F80FF);border:0;color:#FFFFFF;font-family:Sora,sans-serif;font-size:22px;font-weight:700;padding:0;border-radius:50%;cursor:pointer;box-shadow:0 8px 20px rgba(20,87,217,.24);transition:transform .18s ease,box-shadow .18s ease }
@@ -90,6 +92,7 @@
         </div>
       </sc-if>
 
+      <p class="fa-privacy">Please do not share confidential or sensitive information. See our <a href="/privacy/">Privacy Policy</a>.</p>
       <form class="fa-composer" onSubmit="{{ submit }}">
         <label for="fa-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your message</label>
         <input type="text" name="website" value="{{ website }}" onChange="{{ onWebsite }}" tabindex="-1" autoComplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden">
@@ -120,7 +123,7 @@ Lee Felican Jr. has published four books: The Big Balla's Guide to Making Money 
 
 Contact: phone +1 (346) 515-0361, email privateaiglobal@gmail.com. Never describe or speculate about how the phone line is answered or what technology handles calls — just give the number.
 
-Answer in 2-4 short sentences, plainly and helpfully. Never invent customers, statistics, pricing, awards, or products that are not listed above. If you do not know, say so and point the visitor to the contact page.`;
+Answer in 2-4 short sentences, plainly and helpfully. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, statistics, pricing, awards, or products that are not listed above. If you do not know, say so and point the visitor to the contact page.`;
 
 class Component extends DCLogic {
   state = {

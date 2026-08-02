@@ -1,4 +1,5 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
+import { randomUUID } from 'node:crypto';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { createServer } from 'node:http';
 
@@ -7,6 +8,7 @@ const MAX_BODY_BYTES = 16 * 1024;
 const MAX_MESSAGE_LENGTH = 800;
 const MAX_MESSAGES = 10;
 const RATE_MAP_CAP = 10_000;
+const ANALYTICS_EVENTS = new Set(['page_view', 'contact_click', 'product_click', 'assistant_open']);
 
 const MIME = new Map([
   ['.css', 'text/css; charset=utf-8'],
@@ -41,7 +43,7 @@ Books by Lee Felican Jr.:
 - The BIG AI Book: a fully illustrated, plain-language explanation of AI for grown-ups, including agents, skills, and tools.
 Book resources: https://felican.ai/Lee-Felican-jr/books/resources/
 
-Contact: +1 (346) 515-0361 and privateaiglobal@gmail.com. Never describe or speculate about what technology answers the phone. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
+Contact: +1 (346) 515-0361 and privateaiglobal@gmail.com. Never describe or speculate about what technology answers the phone. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
 
 export function sanitizeText(value, maxLength = MAX_MESSAGE_LENGTH) {
   return String(value ?? '')
@@ -49,6 +51,18 @@ export function sanitizeText(value, maxLength = MAX_MESSAGE_LENGTH) {
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, '')
     .trim()
     .slice(0, maxLength);
+}
+
+export function sanitizeAssistantReply(value) {
+  return sanitizeText(value, 2400)
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '$1 ($2)')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/__([^_]+)__/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
 }
 
 export function normalizeMessages(input) {
@@ -80,13 +94,28 @@ function createWindowLimiter(limit, windowMs) {
 function securityHeaders(contentType = 'application/json; charset=utf-8') {
   return {
     'Content-Type': contentType,
-    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:",
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:",
+    'Cross-Origin-Opener-Policy': 'same-origin',
+    'Cross-Origin-Resource-Policy': 'same-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
     'X-Content-Type-Options': 'nosniff',
     'X-Frame-Options': 'DENY',
   };
+}
+
+function empty(res, status = 204, extraHeaders = {}) {
+  res.writeHead(status, { ...securityHeaders(), 'Cache-Control': 'no-store', ...extraHeaders });
+  res.end();
+}
+
+function providerIsConfigured(env) {
+  return Boolean(env.ANTHROPIC_API_KEY?.trim() || (env.ASHER_API_KEY?.trim() && env.ASHER_BASE_URL?.trim()));
+}
+
+function structuredLog(logger, level, event, fields = {}) {
+  logger[level]?.(JSON.stringify({ timestamp: new Date().toISOString(), level, event, ...fields }));
 }
 
 function json(res, status, payload, extraHeaders = {}) {
@@ -156,7 +185,13 @@ export async function completeWithConfiguredProvider(messages, env = process.env
       ? payload.content.filter(block => block?.type === 'text').map(block => block.text).join('\n').trim()
       : '';
     if (!reply) throw new Error('AI provider returned an empty reply');
-    return reply.slice(0, 2400);
+    return {
+      reply: sanitizeAssistantReply(reply),
+      usage: {
+        inputTokens: Number(payload.usage?.input_tokens) || 0,
+        outputTokens: Number(payload.usage?.output_tokens) || 0,
+      },
+    };
   } finally {
     clearTimeout(timeout);
   }
@@ -174,28 +209,71 @@ function staticPath(rootDir, pathname) {
   if (candidate !== rootDir && !candidate.startsWith(`${rootDir}${sep}`)) return null;
   if (existsSync(candidate) && statSync(candidate).isDirectory()) return join(candidate, 'index.html');
   if (existsSync(candidate)) return candidate;
-  return join(rootDir, 'index.html');
+  return decoded === '/' ? join(rootDir, 'index.html') : null;
 }
 
-export function createAppServer({ rootDir, complete = completeWithConfiguredProvider, logger = console } = {}) {
+export function createAppServer({ rootDir, complete = completeWithConfiguredProvider, logger = console, env = process.env } = {}) {
   const siteRoot = resolve(rootDir || join(process.cwd(), 'dist/client'));
   const perMinute = createWindowLimiter(10, 60_000);
   const perDay = createWindowLimiter(50, 86_400_000);
   const globalMinute = createWindowLimiter(300, 60_000);
+  const analyticsMinute = createWindowLimiter(120, 60_000);
+  const globalDailyLimit = Math.max(100, Number.parseInt(env.AI_DAILY_LIMIT || '2500', 10) || 2500);
+  let globalDailyUsed = 0;
+  let globalDailyResetAt = Date.now() + 86_400_000;
+
+  const consumeDailyBudget = () => {
+    if (Date.now() >= globalDailyResetAt) {
+      globalDailyUsed = 0;
+      globalDailyResetAt = Date.now() + 86_400_000;
+    }
+    globalDailyUsed += 1;
+    if (globalDailyUsed === Math.floor(globalDailyLimit * 0.8)) {
+      structuredLog(logger, 'warn', 'chat.daily_budget_warning', { used: globalDailyUsed, limit: globalDailyLimit });
+    }
+    return globalDailyUsed <= globalDailyLimit;
+  };
 
   const server = createServer(async (req, res) => {
     const url = new URL(req.url || '/', 'http://localhost');
     if (url.pathname === '/api/health') return json(res, 200, { ok: true });
+    if (url.pathname === '/api/ready') {
+      const ready = providerIsConfigured(env);
+      return json(res, ready ? 200 : 503, { ok: ready, dependencies: { ai: ready ? 'configured' : 'unavailable' } });
+    }
+
+    if (url.pathname === '/api/analytics') {
+      if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' }, { Allow: 'POST' });
+      const ip = requestIp(req);
+      if (!analyticsMinute(ip)) return empty(res, 204);
+      try {
+        const body = await readJson(req);
+        const event = sanitizeText(body.event, 40);
+        if (ANALYTICS_EVENTS.has(event)) {
+          structuredLog(logger, 'info', 'site.analytics', {
+            eventName: event,
+            path: sanitizeText(body.path, 180),
+            target: sanitizeText(body.target, 180),
+            referrer: sanitizeText(body.referrer, 180),
+          });
+        }
+      } catch (error) {
+        structuredLog(logger, 'warn', 'site.analytics_rejected', { reason: error?.message || 'invalid' });
+      }
+      return empty(res, 204);
+    }
 
     if (url.pathname === '/api/chat') {
       if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' }, { Allow: 'POST' });
       const ua = String(req.headers['user-agent'] || '');
       if (!ua || BOT_UA.test(ua)) return json(res, 403, { error: 'Request unavailable' });
       const ip = requestIp(req);
-      if (!globalMinute('global') || !perMinute(ip) || !perDay(ip)) {
+      if (!globalMinute('global') || !perMinute(ip) || !perDay(ip) || !consumeDailyBudget()) {
         return json(res, 429, { error: 'Too many questions. Please try again later.' }, { 'Retry-After': '60' });
       }
 
+      const requestId = randomUUID();
+      const startedAt = Date.now();
       try {
         const body = await readJson(req);
         if (sanitizeText(body.website, 200)) return json(res, 200, { reply: 'Thanks. We will be in touch.' });
@@ -203,13 +281,30 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
         if (!messages.length || messages.at(-1).role !== 'user') {
           return json(res, 400, { error: 'Please enter a question.' });
         }
-        const reply = await complete(messages);
-        return json(res, 200, { reply: sanitizeText(reply, 2400) });
+        const completion = await complete(messages);
+        const reply = typeof completion === 'string' ? completion : completion?.reply;
+        const usage = typeof completion === 'object' ? completion?.usage : undefined;
+        structuredLog(logger, 'info', 'chat.completed', {
+          requestId,
+          durationMs: Date.now() - startedAt,
+          inputTokens: Number(usage?.inputTokens) || 0,
+          outputTokens: Number(usage?.outputTokens) || 0,
+        });
+        return json(res, 200, { reply: sanitizeAssistantReply(reply) });
       } catch (error) {
         const status = Number(error?.statusCode) || 503;
-        logger.error?.('[chat] request failed', { status, message: error?.message || 'unknown error' });
+        structuredLog(logger, 'error', 'chat.failed', { requestId, status, durationMs: Date.now() - startedAt, reason: error?.message || 'unknown error' });
         return json(res, status, { error: status < 500 ? 'Invalid request.' : 'The assistant is temporarily unavailable.' });
       }
+    }
+
+    if (url.pathname === '/robots.txt') {
+      const hostname = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(':')[0].toLowerCase();
+      const staging = hostname.endsWith('felican.dev') || hostname === 'localhost' || hostname === '127.0.0.1';
+      res.writeHead(200, { ...securityHeaders('text/plain; charset=utf-8'), 'Cache-Control': 'public, max-age=300' });
+      return res.end(staging
+        ? 'User-agent: *\nDisallow: /\n'
+        : 'User-agent: *\nAllow: /\n\nSitemap: https://felican.ai/sitemap.xml\n');
     }
 
     if (!['GET', 'HEAD'].includes(req.method || 'GET')) return json(res, 405, { error: 'Method not allowed' });

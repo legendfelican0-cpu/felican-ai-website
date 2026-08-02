@@ -24,6 +24,8 @@ describe('Claude Design static website export', () => {
     ['books', 'Books by Lee Felican Jr.'],
     ['about', 'A family-built company that builds AI for a living'],
     ['contact', "Let's talk about your business"],
+    ['privacy', 'Privacy Policy'],
+    ['terms', 'Terms of Use'],
   ])('includes the %s page', (route, expectedText) => {
     expect(read(`public/${route}/index.html`)).toContain(expectedText);
   });
@@ -43,6 +45,8 @@ describe('Claude Design static website export', () => {
 
   it('loads shared Design Component imports from the site root', () => {
     expect(read('public/support.js')).toContain('var COMPONENT_DIR = "";');
+    expect(read('public/support.js')).toContain('var REACT_URL = "/vendor/react.production.min.js";');
+    expect(read('public/support.js')).not.toContain('https://unpkg.com');
   });
 
   it('links every product to its live destination and includes a real screenshot', () => {
@@ -90,6 +94,27 @@ describe('Claude Design static website export', () => {
     expect(productCopy).toContain('EMBEDDABLE AGENT');
     expect(productCopy).toContain('embed inside a website or app');
     expect(productCopy).not.toContain('company-trained website assistant');
+  });
+
+  it('ships legal, search, social, and privacy disclosures', () => {
+    const home = read('index.html');
+    const footer = read('public/SiteFooter.dc.html');
+    const assistant = read('public/ChatAssistant.dc.html');
+
+    expect(home).toContain('<link rel="canonical" href="https://felican.ai/">');
+    expect(home).toContain('https://felican.ai/og.png');
+    expect(read('public/robots.txt')).toContain('Disallow: /');
+    expect(read('public/sitemap.xml')).toContain('<loc>https://felican.ai/privacy/</loc>');
+    expect(footer).toContain('href="/privacy/"');
+    expect(footer).toContain('href="/terms/"');
+    expect(assistant).toContain('Please do not share confidential or sensitive information');
+    expect(assistant).toContain('Use plain text only');
+  });
+
+  it('keeps World of Agents second in the footer too', () => {
+    const footer = read('public/SiteFooter.dc.html');
+    expect(footer.indexOf("label: 'Felican Auto'")).toBeLessThan(footer.indexOf("label: 'World of Agents'"));
+    expect(footer.indexOf("label: 'World of Agents'")).toBeLessThan(footer.indexOf("label: 'Relay'"));
   });
 
   it('does not publish a fixed product count', () => {

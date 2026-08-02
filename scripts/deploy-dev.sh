@@ -9,6 +9,7 @@ readonly RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)"
 readonly RELEASE_DIR="${REMOTE_ROOT}/releases/${RELEASE_ID}"
 readonly IMAGE="felicanai-dev-site:${RELEASE_ID}"
 readonly BACKUP_CONTAINER="${APP_NAME}-backup-${RELEASE_ID}"
+readonly SOURCE_COMMIT="$(git -C "${PROJECT_ROOT}" rev-parse HEAD)"
 
 log() {
   printf '[felicanai-dev] %s\n' "$*"
@@ -49,13 +50,14 @@ rsync -az --rsync-path="sudo -n rsync" \
 
 log "building ${IMAGE} and replacing only the DEV container"
 ssh -o BatchMode=yes -o ConnectTimeout=15 "${DEV_HOST}" \
-  "sudo -n bash -s -- '${RELEASE_DIR}' '${IMAGE}' '${APP_NAME}' '${BACKUP_CONTAINER}' '${REMOTE_ROOT}'" <<'REMOTE'
+  "sudo -n bash -s -- '${RELEASE_DIR}' '${IMAGE}' '${APP_NAME}' '${BACKUP_CONTAINER}' '${REMOTE_ROOT}' '${SOURCE_COMMIT}'" <<'REMOTE'
 set -Eeuo pipefail
 release_dir="$1"
 image="$2"
 app_name="$3"
 backup_container="$4"
 remote_root="$5"
+source_commit="$6"
 old_saved=0
 new_started=0
 
@@ -108,15 +110,25 @@ fi
 docker run -d \
   --name "${app_name}" \
   --restart unless-stopped \
+  --read-only \
+  --tmpfs /tmp:rw,noexec,nosuid,size=64m \
+  --cap-drop ALL \
+  --security-opt no-new-privileges:true \
+  --memory 512m \
+  --cpus 1.0 \
+  --pids-limit 128 \
+  --log-opt max-size=10m \
+  --log-opt max-file=3 \
   --label felican.environment=dev \
   --label felican.release="${image}" \
+  --label felican.commit="${source_commit}" \
   --env-file "${ai_env_file}" \
-  -p 127.0.0.1:3002:80 \
+  -p 127.0.0.1:3002:8080 \
   "${image}"
 new_started=1
 
 for attempt in 1 2 3 4 5 6; do
-  if docker exec "${app_name}" wget -q -O /dev/null http://127.0.0.1/; then
+  if docker exec "${app_name}" wget -q -O /dev/null http://127.0.0.1:8080/api/ready; then
     trap - ERR
     echo "[felicanai-dev] container healthy on attempt ${attempt}; rollback container retained as ${backup_container}"
     exit 0
@@ -129,3 +141,4 @@ false
 REMOTE
 
 log "DEV release ${RELEASE_ID} is running"
+node "${PROJECT_ROOT}/scripts/smoke.mjs" https://felican.dev/ --chat

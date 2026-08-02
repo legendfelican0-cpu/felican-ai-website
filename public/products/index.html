@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,6 +10,12 @@
 <x-dc>
 <helmet>
 <title>Products — Felican AI</title>
+<meta name="description" content="Explore Felican AI products for automotive, field service, publishing, embedded assistance, and specialized AI agents.">
+<meta name="robots" content="index,follow"><link rel="canonical" href="https://felican.ai/products/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Felican AI">
+<meta property="og:title" content="Products — Felican AI"><meta property="og:description" content="Practical AI products built for real work.">
+<meta property="og:url" content="https://felican.ai/products/"><meta property="og:image" content="https://felican.ai/og.png">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://felican.ai/og.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,7 +63,7 @@
             <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.12em;color:#526079;text-align:right">{{ p.num }} &middot; {{ p.tag }}</span>
           </div>
           <a class="product-shot" href="{{ p.url }}" target="{{ p.target }}" rel="noopener" aria-label="Open {{ p.name }}">
-            <img src="{{ p.image }}" alt="{{ p.name }} live product screenshot">
+            <img data-product-image="{{ p.image }}" alt="{{ p.name }} live product screenshot">
           </a>
           <h2 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(28px,2.7vw,38px);font-weight:800;line-height:1.08;letter-spacing:-0.03em;color:#0A1630;text-wrap:balance">{{ p.name }}</h2>
           <p style="margin:0;font-size:clamp(17px,1.35vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">{{ p.desc }}</p>
@@ -99,6 +105,10 @@
 <script type="text/x-dc" data-dc-script data-props="{}">
 class Component extends DCLogic {
   componentDidMount() {
+    setTimeout(() => document.querySelectorAll('img[data-product-image]').forEach(img => {
+      const src = img.getAttribute('data-product-image');
+      if (src && src.indexOf('{{') === -1) img.src = src;
+    }), 0);
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce || !('IntersectionObserver' in window)) return;
     const nodes = Array.from(document.querySelectorAll('[data-reveal]'));
@@ -120,13 +130,13 @@ class Component extends DCLogic {
       { id: 'felican-auto', num: '01', name: 'Felican Auto', tag: 'AUTOMOTIVE', accent: '#1457D9', url: 'https://auto.felican.ai/', cta: 'Open Felican Auto', image: '/product-felican-auto.png',
         desc: 'AI voice and web assistance for car dealerships — available around the clock and connected to live inventory.',
         points: ['Answers dealership calls and website chats 24/7', 'Knows live inventory and books test drives', 'Captures and follows up with leads instead of letting them go cold'] },
-      { id: 'world-of-agents', num: '02', name: 'World of Agents', tag: 'AGENTS', accent: '#0E86D9', url: 'https://woa.felican.ai/', cta: 'Open World of Agents', image: '/product-world-of-agents.png',
+      { id: 'world-of-agents', num: '02', name: 'World of Agents', tag: 'AGENTS', accent: '#0A5FA8', url: 'https://woa.felican.ai/', cta: 'Open World of Agents', image: '/product-world-of-agents.png',
         desc: 'Create a trusted AI Twin that can represent you while you decide who can reach it and what it knows.',
         points: ['Answers like you using only what you choose to teach it', 'Works across the web, conversations, circles, messages, and calls', 'Asks you when it is unsure so you stay in control'] },
       { id: 'relay', num: '03', name: 'Relay', tag: 'FIELD SERVICE', accent: '#2563EB', url: 'https://relay.felican.dev/relay', cta: 'Open Relay', image: '/product-relay.png',
         desc: 'AI field-service software that gives HVAC, plumbing, and electrical companies a practical back office in one place.',
         points: ['Schedules maintenance and manages crews', 'Reads AP invoices and organizes review', 'Tracks collections and quotes with AI-assisted follow-up'] },
-      { id: 'ai-assistant', num: '04', name: 'Felican AI Assistant', tag: 'EMBEDDABLE AGENT', accent: '#2F80FF', url: '/?assistant=1', cta: 'Try the Assistant', image: '/product-ai-assistant.png',
+      { id: 'ai-assistant', num: '04', name: 'Felican AI Assistant', tag: 'EMBEDDABLE AGENT', accent: '#1457D9', url: '/?assistant=1', cta: 'Try the Assistant', image: '/product-ai-assistant.png',
         desc: 'A company-trained AI agent businesses can embed inside a website or app to answer questions, capture inquiries, and connect customer workflows.',
         points: ['Fits inside websites, customer portals, and business apps', 'Trained on your services, rules, policies, and approved knowledge', 'Captures context, triggers workflows, and hands off to your team'] },
       { id: 'bookmaker', num: '05', name: 'BookMaker', tag: 'PUBLISHING', accent: '#4B57DE', url: 'https://book-studio.felican.dev/', cta: 'Open BookMaker', image: '/product-bookmaker.png',

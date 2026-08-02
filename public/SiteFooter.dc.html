@@ -53,7 +53,11 @@
 
   <div style="max-width:1280px;margin:0 auto;padding:26px 24px 44px;border-top:1px solid rgba(47,128,255,0.18);display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center">
     <p style="margin:0;font-size:15px;color:#7C90B0">&copy; 2026 Felican AI. All rights reserved.</p>
-    <p style="margin:0;font-size:15px;color:#7C90B0">Books by Lee Felican Jr.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
+      <a href="/privacy/" style="font-size:15px;color:#9FB3D1;text-decoration:none" style-hover="color:#FFFFFF">Privacy</a>
+      <a href="/terms/" style="font-size:15px;color:#9FB3D1;text-decoration:none" style-hover="color:#FFFFFF">Terms</a>
+      <span style="font-size:15px;color:#7C90B0">Books by Lee Felican Jr.</span>
+    </div>
   </div>
 </footer>
 
@@ -67,9 +71,9 @@ class Component extends DCLogic {
       nav: [['Home','/'],['Products','/products/'],['Services','/services/'],['Books','/books/'],['About Us','/about/'],['Contact','/contact/']].map(([label,href])=>({label,href})),
       prods: [
         { label: 'Felican Auto', href: '/products/#felican-auto' },
+        { label: 'World of Agents', href: '/products/#world-of-agents' },
         { label: 'Relay', href: '/products/#relay' },
         { label: 'Felican AI Assistant', href: '/products/#ai-assistant' },
-        { label: 'World of Agents', href: '/products/#world-of-agents' },
         { label: 'BookMaker', href: '/products/#bookmaker' }
       ]
     };
