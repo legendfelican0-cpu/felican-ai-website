@@ -18,7 +18,6 @@ const products = [
   { name: 'Felican AI Assistant', path: '/products/felican-ai-assistant', category: 'Customer experience', status: 'Featured', description: 'A company-trained website assistant that answers questions, recommends services, and captures inquiries.', color: '#7357ff', features: ['Approved company knowledge', 'Lead qualification', 'Human handoff'] },
   { name: 'World of Agents', path: '/products/world-of-agents', category: 'AI agents', status: 'Available', description: 'A place to discover and work with specialized AI agents built for focused tasks.', color: '#168b70', features: ['Specialized agents', 'Task-based discovery', 'Business workflows'] },
   { name: 'BookMaker', path: '/products/bookmaker', category: 'Publishing', status: 'Available', description: 'An AI workspace for planning, writing, organizing, and preparing books.', color: '#9b4f2f', features: ['Book planning', 'Draft organization', 'Publishing workflow'] },
-  { name: 'Marketer', path: '/products/marketer', category: 'Marketing', status: 'Available', description: 'An AI marketing workspace for campaigns, content, and brand execution.', color: '#bd3f67', features: ['Campaign planning', 'Content workflows', 'Brand guidance'] },
 ];
 
 const services = [
@@ -64,7 +63,7 @@ const books = [
 const BOOKS_URL = 'https://felican.ai/Lee-Felican-jr/books/resources/';
 
 const faqs = [
-  ['How can I contact Felican AI?', `Call us at ${PHONE}, email the company, or use the website assistant. The contact section has all three options.`],
+  ['How can I contact Felican AI?', `Call us at ${PHONE} or email privateaiglobal@gmail.com. The website assistant is also available for quick product and service questions.`],
   ['Can Felican connect to our current software?', 'Yes. We design integrations around the systems your team already uses, including CRM, email, calendars, phone systems, documents, and databases.'],
   ['Is the website assistant also a product?', 'Yes. The assistant on this site represents a product Felican AI can tailor to another company’s knowledge, services, lead process, and escalation rules.'],
   ['Do you offer private AI and training?', 'Yes. We provide controlled AI deployments as well as practical training for teams that need to adopt AI responsibly and usefully.'],
@@ -98,7 +97,7 @@ function Hero({ onNavigate }) {
       <p>Felican AI helps businesses turn everyday work into better systems—with practical products, custom AI, automation, integrations, and hands-on training.</p>
       <div className="hero-actions"><button className="fs-primary" onClick={() => onNavigate('/products')}>Explore products <ArrowRight/></button><button className="fs-secondary" onClick={() => onNavigate('/services')}>See our services</button></div>
       <div className="hero-index" aria-label="Felican AI at a glance">
-        <span><b>05</b> Products</span>
+        <span><b>04</b> Products</span>
         <span><b>06</b> Services</span>
         <span><b>04</b> Books</span>
       </div>
@@ -180,7 +179,7 @@ function FAQ() {
 }
 
 function Contact({ onChat }) {
-  return <section className="fs-contact" id="contact"><div><span>Contact</span><h2>Tell us what needs to work better.</h2><p>Call, email, or start with the website assistant.</p></div><div className="contact-actions"><a href={PHONE_HREF}><Phone/><span><small>Call Felican AI</small><b>{PHONE}</b></span><ArrowRight/></a><button onClick={onChat}><MessageCircle/><span><small>Chat on the website</small><b>Ask Felican AI</b></span><ArrowRight/></button><a href="mailto:info@privateaiglobal.com"><Mail/><span><small>Send an email</small><b>info@privateaiglobal.com</b></span><ArrowRight/></a></div></section>;
+  return <section className="fs-contact" id="contact"><div><span>Contact</span><h2>Tell us what needs to work better.</h2><p>Email us directly or call the company line.</p></div><div className="contact-actions"><a href="mailto:privateaiglobal@gmail.com"><Mail/><span><small>Send an email</small><b>privateaiglobal@gmail.com</b></span><ArrowRight/></a><a href={PHONE_HREF}><Phone/><span><small>Call Felican AI</small><b>{PHONE}</b></span><ArrowRight/></a><button onClick={onChat}><MessageCircle/><span><small>Quick questions</small><b>Ask Felican AI</b></span><ArrowRight/></button></div></section>;
 }
 
 function PageIntro({ eyebrow, title, copy }) {
@@ -192,7 +191,7 @@ function HomePage({ onNavigate }) {
 }
 
 function ProductsPage({ onNavigate }) {
-  return <><PageIntro eyebrow="Products" title="Five products. Built for real work." copy="Every Felican AI product is listed together below. Select a product to open its page and learn what it does."/><Products onNavigate={onNavigate}/></>;
+  return <><PageIntro eyebrow="Products" title="Four products. Built for real work." copy="Every Felican AI product is listed together below. Select a product to open its page and learn what it does."/><Products onNavigate={onNavigate}/></>;
 }
 
 function ServicesPage({ onNavigate }) {
@@ -208,7 +207,7 @@ function AboutPage() {
 }
 
 function ContactPage({ onChat }) {
-  return <><PageIntro eyebrow="Contact" title="Let’s talk about what needs to work better." copy="Reach Felican AI by phone, email, or the assistant on this website."/><Contact onChat={onChat}/><FAQ/></>;
+  return <><PageIntro eyebrow="Contact" title="Let’s talk about what needs to work better." copy="Email Felican AI directly or call the company line."/><Contact onChat={onChat}/><FAQ/></>;
 }
 
 function ChatPanel({ close }) {
@@ -217,7 +216,7 @@ function ChatPanel({ close }) {
   const respond = text => {
     const q = text.toLowerCase();
     if(q.includes('phone')||q.includes('call')||q.includes('contact')) return `Call Felican AI at ${PHONE}, or use the contact section to send an email.`;
-    if(q.includes('product')) return 'Felican products include Felican Auto, the Felican AI Assistant, World of Agents, BookMaker, and Marketer.';
+    if(q.includes('product')) return 'Felican products include Felican Auto, the Felican AI Assistant, World of Agents, and BookMaker.';
     if(q.includes('train')) return 'Training includes AI fundamentals, prompting for daily work, workflow workshops, and hands-on agent building.';
     return 'Felican AI builds assistants, automations, integrations, private AI systems, and business software. Tell me what you want to improve and I’ll point you in the right direction.';
   };

@@ -35,7 +35,7 @@
     <nav aria-label="Products">
       <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.14em;color:#2F80FF">PRODUCTS</h2>
       <ul style="list-style:none;margin:0;padding:0;display:grid;gap:12px">
-        <sc-for list="{{ prods }}" as="p" hint-placeholder-count="5">
+        <sc-for list="{{ prods }}" as="p" hint-placeholder-count="4">
           <li><a href="{{ p.href }}" style="font-size:17px;color:#DDEBFF;text-decoration:none" style-hover="color:#FFFFFF" style-focus="outline:2px solid #2F80FF;outline-offset:3px">{{ p.label }}</a></li>
         </sc-for>
       </ul>
@@ -67,8 +67,7 @@ class Component extends DCLogic {
         { label: 'Felican Auto', href: '/products/#felican-auto' },
         { label: 'Felican AI Assistant', href: '/products/#ai-assistant' },
         { label: 'World of Agents', href: '/products/#world-of-agents' },
-        { label: 'BookMaker', href: '/products/#bookmaker' },
-        { label: 'Marketer', href: '/products/#marketer' }
+        { label: 'BookMaker', href: '/products/#bookmaker' }
       ]
     };
   }

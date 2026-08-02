@@ -20,6 +20,12 @@
   * { box-sizing:border-box }
   a { color:#1457D9 } a:hover { color:#2F80FF }
   ::selection { background:#2F80FF; color:#fff }
+  .product-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(22px,2.4vw,32px) }
+  .product-card { min-width:0; overflow:hidden; border-radius:4px; box-shadow:0 14px 34px rgba(7,26,51,.07) }
+  .product-shot { display:block; aspect-ratio:16/10; overflow:hidden; background:#071A33; border:1px solid #DDEBFF }
+  .product-shot img { display:block; width:100%; height:100%; object-fit:cover; object-position:top; transition:transform .35s cubic-bezier(.2,.8,.2,1) }
+  .product-card:hover .product-shot img { transform:scale(1.025) }
+  @media (max-width:850px) { .product-grid { grid-template-columns:1fr } }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -33,16 +39,16 @@
     <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:end">
       <div>
         <p style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2F80FF">PRODUCTS</p>
-        <h1 id="ph" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(40px,6vw,80px);font-weight:800;line-height:1;letter-spacing:-0.04em;text-wrap:balance">Five products, five jobs done properly</h1>
+        <h1 id="ph" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(40px,6vw,80px);font-weight:800;line-height:1;letter-spacing:-0.04em;text-wrap:balance">Four products. Built for real work.</h1>
       </div>
       <p style="margin:0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#C3D5F0;text-wrap:pretty">Each one is a finished product with a clear purpose. No bundles you don't need, no feature list you'll never touch. Pick the one that matches the problem in front of you.</p>
     </div>
   </section>
 
   <section aria-label="All Felican AI products" style="background:#F7F9FC;padding:clamp(56px,7vw,96px) 0 clamp(72px,8vw,112px)">
-    <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(400px, 100%), 1fr));gap:clamp(20px,2.2vw,28px)">
-      <sc-for list="{{ products }}" as="p" hint-placeholder-count="5">
-        <article id="{{ p.id }}" style="scroll-margin-top:100px;background:#FFFFFF;border:1px solid #DDEBFF;border-top:6px solid {{ p.accent }};padding:clamp(30px,3vw,44px);display:flex;flex-direction:column;gap:20px;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease,border-color .3s ease" style-hover="transform:translateY(-8px);box-shadow:0 28px 56px rgba(7,26,51,0.16);border-color:#B7D3FA">
+    <div class="product-grid" style="max-width:1280px;margin:0 auto;padding:0 24px">
+      <sc-for list="{{ products }}" as="p" hint-placeholder-count="4">
+        <article class="product-card" id="{{ p.id }}" style="scroll-margin-top:100px;background:#FFFFFF;border:1px solid #DDEBFF;border-top:6px solid {{ p.accent }};padding:clamp(30px,3vw,44px);display:flex;flex-direction:column;gap:22px;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease,border-color .3s ease" style-hover="transform:translateY(-8px);box-shadow:0 28px 56px rgba(7,26,51,0.16);border-color:#B7D3FA">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
             <span aria-hidden="true" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:4px;width:44px;height:44px;flex-shrink:0">
               <span style="background:{{ p.accent }}"></span><span style="background:#DDEBFF"></span>
@@ -50,8 +56,8 @@
             </span>
             <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.12em;color:#526079;text-align:right">{{ p.num }} &middot; {{ p.tag }}</span>
           </div>
-          <a href="{{ p.url }}" target="{{ p.target }}" rel="noopener" aria-label="Open {{ p.name }}" style="display:block;aspect-ratio:16/10;overflow:hidden;background:#071A33;border:1px solid #DDEBFF">
-            <img src="{{ p.image }}" alt="{{ p.name }} live product screenshot" style="display:block;width:100%;height:100%;object-fit:cover;object-position:top">
+          <a class="product-shot" href="{{ p.url }}" target="{{ p.target }}" rel="noopener" aria-label="Open {{ p.name }}">
+            <img src="{{ p.image }}" alt="{{ p.name }} live product screenshot">
           </a>
           <h2 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(28px,2.7vw,38px);font-weight:800;line-height:1.08;letter-spacing:-0.03em;color:#0A1630;text-wrap:balance">{{ p.name }}</h2>
           <p style="margin:0;font-size:clamp(17px,1.35vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">{{ p.desc }}</p>
@@ -122,10 +128,7 @@ class Component extends DCLogic {
         points: ['Answers like you using only what you choose to teach it', 'Works across the web, conversations, circles, messages, and calls', 'Asks you when it is unsure so you stay in control'] },
       { id: 'bookmaker', num: '04', name: 'BookMaker', tag: 'PUBLISHING', accent: '#4B57DE', url: 'https://book-studio.felican.dev/', cta: 'Open BookMaker', image: '/product-bookmaker.png',
         desc: 'A friendly AI book studio that guides an idea or completed manuscript into publish-ready formats.',
-        points: ['Starts from a new idea or an existing manuscript', 'Creates the words, art, cover, and interior layout', 'Prepares Kindle eBook, paperback, and hardcover editions'] },
-      { id: 'marketer', num: '05', name: 'Marketer', tag: 'MARKETING', accent: '#7B5BE0', url: 'https://book-marketer.felican.dev/', cta: 'Open Marketer', image: '/product-marketer.png',
-        desc: 'An autonomous book marketing engine for managing approvals, content, outreach, and results.',
-        points: ['Plans and produces campaign content', 'Keeps approvals in the workflow before anything goes live', 'Tracks outreach and performance from one protected dashboard'] }
+        points: ['Starts from a new idea or an existing manuscript', 'Creates the words, art, cover, and interior layout', 'Prepares Kindle eBook, paperback, and hardcover editions'] }
     ];
     return { products: p.map(x => ({ ...x, target: /^https?:/.test(x.url) ? '_blank' : undefined })) };
   }

@@ -42,18 +42,18 @@ describe('Felican AI company site', () => {
     fireEvent.click(screen.getByText('Ask Felican AI'));
     fireEvent.click(screen.getByText('What products do you have?'));
     expect(screen.getByText(/Felican products include Felican Auto/i)).toBeInTheDocument();
-    expect(screen.getByText(/World of Agents, BookMaker, and Marketer/i)).toBeInTheDocument();
+    expect(screen.getByText(/World of Agents, and BookMaker/i)).toBeInTheDocument();
   });
 
-  it('shows all five products together and opens a dedicated product page', () => {
+  it('shows all four products together and opens a dedicated product page', () => {
     window.history.replaceState({}, '', '/products');
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: 'Five products. Built for real work.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Four products. Built for real work.' })).toBeInTheDocument();
     expect(screen.queryByText('Business software')).not.toBeInTheDocument();
     expect(screen.queryByText('Create and automate')).not.toBeInTheDocument();
     expect(screen.queryByText('Current products')).not.toBeInTheDocument();
-    ['Felican Auto', 'World of Agents', 'BookMaker', 'Marketer'].forEach(name => {
+    ['Felican Auto', 'World of Agents', 'BookMaker'].forEach(name => {
       expect(screen.getByRole('heading', { name })).toBeInTheDocument();
     });
     ['Relay', 'CasaSuite', 'LeadConcierge AI', 'InvestorHQ', 'ThreadPilot', 'AdPulse', 'FrameFire', 'Lumina', 'Dendrite', 'Ora', 'Quorum'].forEach(name => {
@@ -108,5 +108,6 @@ describe('Felican AI company site', () => {
     render(<App />);
     expect(screen.getByRole('heading', { name: 'Let’s talk about what needs to work better.' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /Call Felican AI/i })).toHaveAttribute('href', 'tel:+13465150361');
+    expect(screen.getByRole('link', { name: /privateaiglobal@gmail.com/i })).toHaveAttribute('href', 'mailto:privateaiglobal@gmail.com');
   });
 });

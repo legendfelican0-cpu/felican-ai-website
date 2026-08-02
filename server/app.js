@@ -30,7 +30,6 @@ Products and official links:
 - Felican AI Assistant: a company-trained website assistant like this one. It answers questions, recommends the right service, and captures inquiries. Visitors can ask about it on this site or contact Felican AI.
 - World of Agents: a trusted AI presence and AI Twin product that helps people stay available across conversations, circles, messages, and calls while controlling access. https://woa.felican.ai/
 - BookMaker (live as Book Studio): an AI-guided workspace that turns an idea or manuscript into a publish-ready Kindle eBook, paperback, and hardcover. https://book-studio.felican.dev/
-- Marketer (live as BookMarketer): an autonomous book marketing engine for approvals, content, outreach, and metrics. https://book-marketer.felican.dev/
 
 Services: AI agents and bots, business automation, custom integrations, private AI systems, AI implementation and consulting, business solutions, AI training and workshops.
 

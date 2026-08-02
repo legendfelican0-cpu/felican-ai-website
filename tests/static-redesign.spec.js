@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 const routes = [
   ['/', 'We build the AI your business'],
-  ['/products/', 'Five products, five jobs done properly'],
+  ['/products/', 'Four products. Built for real work.'],
   ['/services/', 'Seven ways we put AI to work inside a business'],
   ['/books/', 'Four books by Lee Felican Jr.'],
   ['/about/', 'A family-built company that builds AI for a living'],
@@ -38,7 +38,13 @@ test.describe('Claude Design website export', () => {
       await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Products', exact: true }).click();
     }
     await expect(page).toHaveURL(/\/products\/?$/);
-    await expect(page.locator('article[id]')).toHaveCount(5);
+    await expect(page.locator('article[id]')).toHaveCount(4);
+
+    const productCards = page.locator('article[id]');
+    await expect(productCards.filter({ hasText: 'BookMaker' }).getByRole('link', { name: 'Open BookMaker' }).first()).toHaveAttribute(
+      'href',
+      'https://book-studio.felican.dev/',
+    );
 
     await page.goto('/books/', { waitUntil: 'networkidle' });
     const covers = page.locator('img[alt$=" cover"]');
@@ -58,5 +64,18 @@ test.describe('Claude Design website export', () => {
     await expect(page.getByRole('log')).toContainText(
       'Felican AI builds products, custom systems, automations, integrations, and training for businesses.',
     );
+  });
+
+  test('contact page uses direct email and phone links without a form', async ({ page }) => {
+    await page.goto('/contact/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('link', { name: /privateaiglobal@gmail.com/i }).first()).toHaveAttribute(
+      'href',
+      /mailto:privateaiglobal@gmail.com/,
+    );
+    await expect(page.getByRole('link', { name: /\+1 \(346\) 515-0361/i }).first()).toHaveAttribute(
+      'href',
+      'tel:+13465150361',
+    );
+    await expect(page.locator('main form')).toHaveCount(0);
   });
 });

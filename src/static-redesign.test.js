@@ -10,13 +10,13 @@ describe('Claude Design static website export', () => {
     const home = read('index.html');
 
     expect(home).toContain('We build the AI your business');
-    expect(home).toContain('Five products. One system.');
+    expect(home).toContain('Four products. One clear lineup.');
     expect(home).toContain('Books by Lee Felican Jr.');
     expect(home).not.toMatch(/(?:Home|Products|Services|Books|About|Contact)\.dc\.html/);
   });
 
   it.each([
-    ['products', 'Five products, five jobs done properly'],
+    ['products', 'Four products. Built for real work.'],
     ['services', 'Services'],
     ['books', 'Books by Lee Felican Jr.'],
     ['about', 'A family-built company that builds AI for a living'],
@@ -49,11 +49,18 @@ describe('Claude Design static website export', () => {
       ['/?assistant=1', '/product-ai-assistant.png'],
       ['https://woa.felican.ai/', '/product-world-of-agents.png'],
       ['https://book-studio.felican.dev/', '/product-bookmaker.png'],
-      ['https://book-marketer.felican.dev/', '/product-marketer.png'],
     ]) {
       expect(products).toContain(url);
       expect(products).toContain(image);
     }
+    expect(products).not.toMatch(/BookMarketer|book-marketer|product-marketer/i);
+  });
+
+  it('uses direct contact links without a contact form', () => {
+    const contact = read('public/contact/index.html');
+    expect(contact).toContain('mailto:privateaiglobal@gmail.com');
+    expect(contact).toContain('tel:+13465150361');
+    expect(contact).not.toContain('<form');
   });
 
   it('connects the assistant UI to the protected server endpoint', () => {
