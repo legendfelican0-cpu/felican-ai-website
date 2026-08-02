@@ -36,7 +36,7 @@ describe('Felican AI company site', () => {
     expect(document.querySelector('.variant-network')).toBeInTheDocument();
   });
 
-  it('keeps the website assistant in Contact Us and answers a product question', () => {
+  it('keeps the Felican AI agent in Contact Us and answers a product question', () => {
     window.history.replaceState({}, '', '/contact');
     render(<App />);
     fireEvent.click(screen.getByText('Ask Felican AI'));

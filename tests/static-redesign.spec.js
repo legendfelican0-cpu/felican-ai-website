@@ -57,10 +57,19 @@ test.describe('Claude Design website export', () => {
 
     await page.goto('/', { waitUntil: 'networkidle' });
     await page.screenshot({ path: testInfo.outputPath(`homepage-${testInfo.project.name}.png`), fullPage: false });
-    const assistantButton = page.getByRole('button', { name: /felican ai assistant/i }).first();
+    const assistantButton = page.locator('[data-assistant-launcher]');
+    await expect(assistantButton).toHaveCount(1);
     await expect(assistantButton).toBeVisible();
+    const launcherBox = await assistantButton.boundingBox();
+    const viewport = page.viewportSize();
+    expect(Math.abs(launcherBox.width - launcherBox.height)).toBeLessThanOrEqual(2);
+    expect(viewport.width - launcherBox.x - launcherBox.width).toBeLessThanOrEqual(testInfo.project.name === 'mobile' ? 16 : 30);
+    expect(viewport.height - launcherBox.y - launcherBox.height).toBeLessThanOrEqual(testInfo.project.name === 'mobile' ? 16 : 30);
     await assistantButton.click();
     await expect(assistantButton).toHaveAttribute('aria-expanded', 'true');
+    const assistantPanel = page.locator('.fa-panel');
+    await expect(assistantPanel).toBeVisible();
+    await expect(assistantPanel).toHaveCSS('border-radius', testInfo.project.name === 'mobile' ? '19px' : '22px');
 
     const input = page.getByRole('textbox', { name: 'Your message' });
     await input.fill('What does Felican AI build?');
@@ -71,7 +80,7 @@ test.describe('Claude Design website export', () => {
   });
 
   test('contact page uses direct email and phone links without a form', async ({ page }) => {
-    await page.goto('/contact/', { waitUntil: 'networkidle' });
+    await page.goto('/contact/', { waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('link', { name: /privateaiglobal@gmail.com/i }).first()).toHaveAttribute(
       'href',
       /mailto:privateaiglobal@gmail.com/,
@@ -84,7 +93,7 @@ test.describe('Claude Design website export', () => {
   });
 
   test('homepage overlap stays visible and service hover remains readable', async ({ page }, testInfo) => {
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     const firstPillar = page.locator('.home-pillars article').first();
     await firstPillar.locator('h3').scrollIntoViewIfNeeded();

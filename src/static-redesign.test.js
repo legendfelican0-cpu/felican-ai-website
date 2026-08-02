@@ -71,7 +71,18 @@ describe('Claude Design static website export', () => {
   it('connects the assistant UI to the protected server endpoint', () => {
     const assistant = read('public/ChatAssistant.dc.html');
     expect(assistant).toContain("fetch('/api/chat'");
+    expect(assistant).toContain('data-assistant-launcher="1"');
+    expect(assistant).toContain('class="fa-panel"');
+    expect(assistant).toContain('businesses can embed inside a website or app');
     expect(assistant).not.toContain('window.claude.complete');
+  });
+
+  it('positions Felican AI Assistant as an embeddable agent', () => {
+    const productCopy = `${read('index.html')}\n${read('public/products/index.html')}\n${read('server/app.js')}`;
+
+    expect(productCopy).toContain('EMBEDDABLE AGENT');
+    expect(productCopy).toContain('embed inside a website or app');
+    expect(productCopy).not.toContain('company-trained website assistant');
   });
 
   it('does not publish a fixed product count', () => {
