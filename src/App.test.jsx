@@ -45,11 +45,11 @@ describe('Felican AI company site', () => {
     expect(screen.getByText(/Relay, the Felican AI Assistant, World of Agents, and BookMaker/i)).toBeInTheDocument();
   });
 
-  it('shows all five products together and opens a dedicated product page', () => {
+  it('shows the complete product lineup together and opens a dedicated product page', () => {
     window.history.replaceState({}, '', '/products');
     render(<App />);
 
-    expect(screen.getByRole('heading', { name: 'Five products. Built for real work.' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Products built for real work.' })).toBeInTheDocument();
     expect(screen.queryByText('Business software')).not.toBeInTheDocument();
     expect(screen.queryByText('Create and automate')).not.toBeInTheDocument();
     expect(screen.queryByText('Current products')).not.toBeInTheDocument();

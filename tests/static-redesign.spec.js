@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 const routes = [
   ['/', 'We build the AI your business'],
-  ['/products/', 'Five products. Built for real work.'],
+  ['/products/', 'Products built for real work.'],
   ['/services/', 'Seven ways we put AI to work inside a business'],
   ['/books/', 'Four books by Lee Felican Jr.'],
   ['/about/', 'A family-built company that builds AI for a living'],

@@ -98,7 +98,7 @@ function Hero({ onNavigate }) {
       <p>Felican AI helps businesses turn everyday work into better systems—with practical products, custom AI, automation, integrations, and hands-on training.</p>
       <div className="hero-actions"><button className="fs-primary" onClick={() => onNavigate('/products')}>Explore products <ArrowRight/></button><button className="fs-secondary" onClick={() => onNavigate('/services')}>See our services</button></div>
       <div className="hero-index" aria-label="Felican AI at a glance">
-        <span><b>05</b> Products</span>
+        <span><b>Growing</b> Product lineup</span>
         <span><b>06</b> Services</span>
         <span><b>04</b> Books</span>
       </div>
@@ -192,7 +192,7 @@ function HomePage({ onNavigate }) {
 }
 
 function ProductsPage({ onNavigate }) {
-  return <><PageIntro eyebrow="Products" title="Five products. Built for real work." copy="Every Felican AI product is listed together below. Select a product to open its page and learn what it does."/><Products onNavigate={onNavigate}/></>;
+  return <><PageIntro eyebrow="Products" title="Products built for real work." copy="Every Felican AI product is listed together below. Select a product to open its page and learn what it does."/><Products onNavigate={onNavigate}/></>;
 }
 
 function ServicesPage({ onNavigate }) {

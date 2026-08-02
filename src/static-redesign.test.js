@@ -10,7 +10,7 @@ describe('Claude Design static website export', () => {
     const home = read('index.html');
 
     expect(home).toContain('We build the AI your business');
-    expect(home).toContain('Five products. One clear lineup.');
+    expect(home).toContain('A growing lineup of practical products.');
     expect(home).toContain('Books by Lee Felican Jr.');
     expect(home).toContain('class="home-overview"');
     expect(home).toContain('class="home-service-card"');
@@ -19,7 +19,7 @@ describe('Claude Design static website export', () => {
   });
 
   it.each([
-    ['products', 'Five products. Built for real work.'],
+    ['products', 'Products built for real work.'],
     ['services', 'Services'],
     ['books', 'Books by Lee Felican Jr.'],
     ['about', 'A family-built company that builds AI for a living'],
@@ -72,5 +72,17 @@ describe('Claude Design static website export', () => {
     const assistant = read('public/ChatAssistant.dc.html');
     expect(assistant).toContain("fetch('/api/chat'");
     expect(assistant).not.toContain('window.claude.complete');
+  });
+
+  it('does not publish a fixed product count', () => {
+    const productCopy = [
+      read('index.html'),
+      read('public/products/index.html'),
+      read('public/about/index.html'),
+      read('public/books/index.html'),
+      read('public/ChatAssistant.dc.html'),
+    ].join('\n');
+
+    expect(productCopy).not.toMatch(/\b(?:five|5)\b.{0,30}\bproducts?\b|\bproducts?\b.{0,30}\b(?:five|5)\b/i);
   });
 });
