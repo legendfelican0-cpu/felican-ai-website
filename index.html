@@ -22,6 +22,12 @@
   img { max-width:100% }
   a { color:#1457D9 }
   a:hover { color:#2F80FF }
+  .home-overview { position:relative; z-index:2 }
+  .home-pillars { position:relative; z-index:1 }
+  .home-service-card h3,
+  .home-service-card p { transition:color .22s ease }
+  .home-service-card:hover h3 { color:#FFFFFF !important }
+  .home-service-card:hover p { color:#DDEBFF !important }
   ::selection { background:#2F80FF; color:#fff }
   @keyframes rise { from { opacity:0; transform:translateY(26px) } to { opacity:1; transform:none } }
   @keyframes draw { from { transform:scaleX(0) } to { transform:scaleX(1) } }
@@ -77,9 +83,9 @@
   </section>
 
   <!-- WHAT WE DO — overlaps the hero -->
-  <section aria-labelledby="wwd-h" style="background:#F7F9FC;padding:0 0 clamp(72px,8vw,112px)">
+  <section class="home-overview" aria-labelledby="wwd-h" style="background:#F7F9FC;padding:0 0 clamp(72px,8vw,112px)">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px">
-      <div style="margin-top:clamp(-140px,-11vw,-90px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(290px, 100%), 1fr));gap:2px;background:#DDEBFF;border:1px solid #C9DDFB">
+      <div class="home-pillars" style="margin-top:clamp(-140px,-11vw,-90px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(290px, 100%), 1fr));gap:2px;background:#DDEBFF;border:1px solid #C9DDFB">
         <sc-for list="{{ pillars }}" as="c" hint-placeholder-count="3">
           <article data-reveal="1" style="background:#FFFFFF;padding:clamp(30px,3.2vw,44px);display:flex;flex-direction:column;gap:16px;transition:background .25s ease" style-hover="background:#F7F9FC">
             <span aria-hidden="true" style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.16em;color:#1457D9">{{ c.num }}</span>
@@ -145,7 +151,7 @@
       <ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px, 100%), 1fr));gap:2px;background:#DDEBFF;border:1px solid #DDEBFF">
         <sc-for list="{{ services }}" as="s" hint-placeholder-count="7">
           <li data-reveal="1" style="background:#FFFFFF">
-            <a href="/services/" style="display:flex;flex-direction:column;gap:12px;padding:clamp(26px,2.6vw,34px);height:100%;text-decoration:none;transition:background .22s ease" style-hover="background:#071A33" style-focus="outline:2px solid #1457D9;outline-offset:-2px">
+            <a class="home-service-card" data-service-card="1" href="/services/" style="display:flex;flex-direction:column;gap:12px;padding:clamp(26px,2.6vw,34px);height:100%;text-decoration:none;transition:background .22s ease" style-hover="background:#071A33" style-focus="outline:2px solid #1457D9;outline-offset:-2px">
               <span aria-hidden="true" style="width:26px;height:3px;background:#2F80FF"></span>
               <h3 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(21px,1.9vw,25px);font-weight:700;letter-spacing:-0.02em;color:#0A1630">{{ s.name }}</h3>
               <p style="margin:0;font-size:17px;line-height:1.65;color:#526079;text-wrap:pretty">{{ s.body }}</p>

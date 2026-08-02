@@ -82,4 +82,25 @@ test.describe('Claude Design website export', () => {
     );
     await expect(page.locator('main form')).toHaveCount(0);
   });
+
+  test('homepage overlap stays visible and service hover remains readable', async ({ page }, testInfo) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+
+    const firstPillar = page.locator('.home-pillars article').first();
+    await firstPillar.locator('h3').scrollIntoViewIfNeeded();
+    const overlapIsVisible = await firstPillar.evaluate(card => {
+      const heading = card.querySelector('h3');
+      const box = heading.getBoundingClientRect();
+      const topElement = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
+      return Boolean(topElement?.closest('.home-pillars article'));
+    });
+    expect(overlapIsVisible).toBe(true);
+
+    if (testInfo.project.name === 'mobile') return;
+
+    const serviceCard = page.locator('[data-service-card]').first();
+    await serviceCard.hover();
+    await expect(serviceCard.locator('h3')).toHaveCSS('color', 'rgb(255, 255, 255)');
+    await expect(serviceCard.locator('p')).toHaveCSS('color', 'rgb(221, 235, 255)');
+  });
 });

@@ -12,6 +12,9 @@ describe('Claude Design static website export', () => {
     expect(home).toContain('We build the AI your business');
     expect(home).toContain('Five products. One clear lineup.');
     expect(home).toContain('Books by Lee Felican Jr.');
+    expect(home).toContain('class="home-overview"');
+    expect(home).toContain('class="home-service-card"');
+    expect(home).toContain('.home-service-card:hover h3 { color:#FFFFFF !important }');
     expect(home).not.toMatch(/(?:Home|Products|Services|Books|About|Contact)\.dc\.html/);
   });
 
