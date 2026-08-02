@@ -30,7 +30,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="/image-slot.js"></script>
 <style>
-  html { scroll-behavior:smooth; -webkit-text-size-adjust:100% }
+  html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; overflow-x:hidden }
   body { margin:0; background:#F7F9FC; color:#0A1630; font-family:Inter,system-ui,sans-serif; overflow-x:hidden }
   * { box-sizing:border-box }
   img { max-width:100% }
@@ -215,7 +215,7 @@
       <div data-reveal="1">
         <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#1457D9">ABOUT US</p>
         <h2 id="about-h" style="margin:0 0 22px;font-family:Sora,sans-serif;font-size:clamp(34px,4.4vw,56px);font-weight:800;line-height:1.06;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">A family-built company, led by an engineer</h2>
-        <p style="margin:0 0 18px;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">Felican AI is led by Lee Felican Jr. — thirty years in software engineering and enterprise architecture, and named a Top 10 AI Director of 2026 by CIOReview.</p>
+        <p style="margin:0 0 18px;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">Felican AI is led by Lee Felican Jr. — thirty years in software engineering and enterprise architecture, with a career focused on building systems businesses can actually use.</p>
         <p style="margin:0 0 28px;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">That background is the whole point: we build AI that has to hold up in production, not in a slide deck.</p>
         <a href="/about/" style="display:inline-flex;align-items:center;gap:10px;padding:17px 26px;background:#071A33;color:#FFFFFF;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,transform .2s ease" style-hover="background:#1457D9;transform:translateY(-3px)" style-focus="outline:3px solid #1457D9;outline-offset:3px">More about Felican AI <span aria-hidden="true">&#8594;</span></a>
       </div>
@@ -313,7 +313,7 @@ class Component extends DCLogic {
       ],
       facts: [
         { k: '30 yrs', v: 'Software engineering and enterprise architecture' },
-        { k: 'Top 10', v: 'AI Directors of 2026, CIOReview' },
+        { k: 'Hands-on', v: 'Product and systems work' },
         { k: 'Growing', v: 'Product portfolio' },
         { k: '4', v: 'Books published on AI' }
       ]
