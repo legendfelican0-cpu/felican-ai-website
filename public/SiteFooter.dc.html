@@ -45,7 +45,7 @@
       <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.14em;color:#2F80FF">CONTACT</h2>
       <div style="display:grid;gap:14px">
         <a href="tel:+13465150361" style="font-family:Sora,sans-serif;font-size:22px;font-weight:700;color:#FFFFFF;text-decoration:none;letter-spacing:-0.01em" style-hover="color:#2F80FF" style-focus="outline:2px solid #2F80FF;outline-offset:3px">+1 (346) 515-0361</a>
-        <a href="mailto:privateaiglobal@gmail.com" style="font-size:17px;color:#DDEBFF;text-decoration:none;word-break:break-all" style-hover="color:#FFFFFF" style-focus="outline:2px solid #2F80FF;outline-offset:3px">privateaiglobal@gmail.com</a>
+        <a href="{{ emailHref }}" style="font-size:17px;color:#DDEBFF;text-decoration:none;word-break:break-all" style-hover="color:#FFFFFF" style-focus="outline:2px solid #2F80FF;outline-offset:3px">{{ email }}</a>
         <a href="/contact/" style="margin-top:6px;display:inline-flex;align-items:center;gap:10px;align-self:start;padding:13px 20px;background:#1457D9;color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .18s ease,transform .18s ease" style-hover="background:#2F80FF;transform:translateY(-2px)" style-focus="outline:2px solid #DDEBFF;outline-offset:3px">Start a conversation <span aria-hidden="true">&#8594;</span></a>
       </div>
     </div>
@@ -62,6 +62,8 @@
 class Component extends DCLogic {
   renderVals() {
     return {
+      email: 'privateaiglobal' + '@' + 'gmail.com',
+      emailHref: 'mailto:' + 'privateaiglobal' + '@' + 'gmail.com',
       nav: [['Home','/'],['Products','/products/'],['Services','/services/'],['Books','/books/'],['About Us','/about/'],['Contact','/contact/']].map(([label,href])=>({label,href})),
       prods: [
         { label: 'Felican Auto', href: '/products/#felican-auto' },

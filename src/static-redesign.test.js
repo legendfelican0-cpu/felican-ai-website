@@ -58,7 +58,8 @@ describe('Claude Design static website export', () => {
 
   it('uses direct contact links without a contact form', () => {
     const contact = read('public/contact/index.html');
-    expect(contact).toContain('mailto:privateaiglobal@gmail.com');
+    expect(contact).toContain("'privateaiglobal' + '@' + 'gmail.com'");
+    expect(contact).toContain("emailHref: 'mailto:' + email");
     expect(contact).toContain('tel:+13465150361');
     expect(contact).not.toContain('<form');
   });

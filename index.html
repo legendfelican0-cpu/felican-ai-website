@@ -221,7 +221,7 @@
       <div style="display:grid;gap:14px">
         <a href="/contact/" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;background:#FFFFFF;color:#071A33;font-family:Sora,sans-serif;font-size:clamp(18px,1.6vw,21px);font-weight:700;text-decoration:none;transition:transform .2s ease,background .2s ease" style-hover="background:#DDEBFF;transform:translateX(6px)" style-focus="outline:3px solid #071A33;outline-offset:4px">Go to the contact page <span aria-hidden="true">&#8594;</span></a>
         <a href="tel:+13465150361" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;background:#071A33;color:#FFFFFF;font-family:Sora,sans-serif;font-size:clamp(18px,1.6vw,21px);font-weight:700;text-decoration:none;transition:transform .2s ease,background .2s ease" style-hover="background:#04122A;transform:translateX(6px)" style-focus="outline:3px solid #071A33;outline-offset:4px">+1 (346) 515-0361 <span aria-hidden="true">&#8594;</span></a>
-        <a href="mailto:privateaiglobal@gmail.com" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;border:1px solid rgba(255,255,255,0.5);color:#FFFFFF;font-family:Sora,sans-serif;font-size:clamp(17px,1.5vw,20px);font-weight:700;text-decoration:none;word-break:break-word;transition:background .2s ease,transform .2s ease" style-hover="background:rgba(255,255,255,0.14);transform:translateX(6px)" style-focus="outline:3px solid #071A33;outline-offset:4px">privateaiglobal@gmail.com <span aria-hidden="true">&#8594;</span></a>
+        <a href="{{ emailHref }}" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;border:1px solid rgba(255,255,255,0.5);color:#FFFFFF;font-family:Sora,sans-serif;font-size:clamp(17px,1.5vw,20px);font-weight:700;text-decoration:none;word-break:break-word;transition:background .2s ease,transform .2s ease" style-hover="background:rgba(255,255,255,0.14);transform:translateX(6px)" style-focus="outline:3px solid #071A33;outline-offset:4px">{{ email }} <span aria-hidden="true">&#8594;</span></a>
       </div>
     </div>
   </section>
@@ -273,6 +273,8 @@ class Component extends DCLogic {
         { num: '02', title: 'Systems built for you', body: 'Custom AI systems, automations, and integrations designed around your existing tools and process.', cta: 'See the services', href: '/services/' },
         { num: '03', title: 'Training that sticks', body: 'Workshops and implementation support so your team keeps running it after we hand it over.', cta: 'Get in touch', href: '/contact/' }
       ],
+      email: 'privateaiglobal' + '@' + 'gmail.com',
+      emailHref: 'mailto:' + 'privateaiglobal' + '@' + 'gmail.com',
       services: [
         { name: 'AI agents and bots', body: 'Task-specific agents that answer, qualify, route, and follow up without supervision.' },
         { name: 'Business automation', body: 'Remove the repeated manual steps between your systems, inbox, and staff.' },
