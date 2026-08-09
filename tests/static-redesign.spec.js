@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 const routes = [
-  ['/', 'We build the AI your business'],
+  ['/', 'AI solutions for'],
   ['/products/', 'Products built for real work.'],
   ['/services/', 'Seven ways we put AI to work inside a business'],
   ['/books/', 'Four books by Lee Felican Jr.'],
@@ -126,26 +126,15 @@ test.describe('Claude Design website export', () => {
     expect(analytics.status()).toBe(204);
   });
 
-  test('homepage overlap stays visible and service hover remains readable', async ({ page }, testInfo) => {
+  test('homepage friction checklist and contact form are usable', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    const firstPillar = page.locator('.home-pillars article').first();
-    await expect(firstPillar.locator('h3')).toBeVisible();
-    await page.waitForTimeout(250);
-    await firstPillar.locator('h3').scrollIntoViewIfNeeded();
-    const overlapIsVisible = await firstPillar.evaluate(card => {
-      const heading = card.querySelector('h3');
-      const box = heading.getBoundingClientRect();
-      const topElement = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
-      return Boolean(topElement?.closest('.home-pillars article'));
-    });
-    expect(overlapIsVisible).toBe(true);
+    const firstFriction = page.locator('input[name="friction"]').first();
+    await firstFriction.check();
+    await expect(firstFriction).toBeChecked();
 
-    if (testInfo.project.name === 'mobile') return;
-
-    const serviceCard = page.locator('[data-service-card]').first();
-    await serviceCard.hover();
-    await expect(serviceCard.locator('h3')).toHaveCSS('color', 'rgb(255, 255, 255)');
-    await expect(serviceCard.locator('p')).toHaveCSS('color', 'rgb(221, 235, 255)');
+    await page.locator('#cf-name').fill('Test User');
+    await page.locator('#cf-message').fill('Testing the contact flow.');
+    await expect(page.locator('#cf-name')).toHaveValue('Test User');
   });
 });

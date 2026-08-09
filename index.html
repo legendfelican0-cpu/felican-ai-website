@@ -9,20 +9,20 @@
 <body>
 <x-dc>
 <helmet>
-<title>Felican AI — Practical AI products, systems and training for business</title>
-<meta name="description" content="Felican AI builds practical AI products, custom systems, automations, integrations, assistants, and training for businesses in any industry.">
+<title>Felican AI — AI solutions for private businesses</title>
+<meta name="description" content="Felican AI designs and delivers AI systems for private businesses — strategy, implementation, governance, management, and maintenance, built around how you already operate.">
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://felican.ai/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Felican AI">
-<meta property="og:title" content="Felican AI — Practical AI for real business">
-<meta property="og:description" content="Useful AI products, custom systems, automations, integrations, and training built around how your business operates.">
+<meta property="og:title" content="Felican AI — AI solutions for private businesses">
+<meta property="og:description" content="Practical systems. Private by design. Built around how your business works — from strategy and implementation through governance, management, and maintenance.">
 <meta property="og:url" content="https://felican.ai/">
 <meta property="og:image" content="https://felican.ai/og.png">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Felican AI — Practical AI for real business">
-<meta name="twitter:description" content="Useful AI products and systems built around real business work.">
+<meta name="twitter:title" content="Felican AI — AI solutions for private businesses">
+<meta name="twitter:description" content="Practical systems. Private by design. Built around how your business works.">
 <meta name="twitter:image" content="https://felican.ai/og.png">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,15 +36,11 @@
   img { max-width:100% }
   a { color:#1457D9 }
   a:hover { color:#2F80FF }
-  .home-overview { position:relative; z-index:2 }
-  .home-pillars { position:relative; z-index:1 }
-  .home-service-card h3,
-  .home-service-card p { transition:color .22s ease }
-  .home-service-card:hover h3 { color:#FFFFFF !important }
-  .home-service-card:hover p { color:#DDEBFF !important }
   ::selection { background:#2F80FF; color:#fff }
+  input,select,textarea { font:inherit }
+  input::placeholder,textarea::placeholder { color:#8FA6C9 }
+  input:focus,select:focus,textarea:focus { outline:3px solid #2F80FF; outline-offset:1px }
   @keyframes rise { from { opacity:0; transform:translateY(26px) } to { opacity:1; transform:none } }
-  @keyframes draw { from { transform:scaleX(0) } to { transform:scaleX(1) } }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -53,195 +49,140 @@
 
 <main>
   <!-- HERO -->
-  <section aria-labelledby="hero-h" style="position:relative;background:#071A33;color:#FFFFFF;overflow:hidden;padding:clamp(56px,7vw,104px) 0 clamp(120px,13vw,190px)">
+  <section aria-labelledby="hero-h" style="position:relative;background:#071A33;color:#FFFFFF;overflow:hidden;padding:clamp(56px,7vw,104px) 0 clamp(64px,7vw,96px)">
     <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,128,255,0.13) 0 1px,transparent 1px 8.3333%);opacity:.9"></div>
     <div aria-hidden="true" style="position:absolute;top:-8%;right:-6%;width:46%;height:78%;background:linear-gradient(180deg,#0F3E96 0%,#071A33 100%);transform:skewX(-9deg);opacity:.55"></div>
     <div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:2px;background:#1457D9"></div>
 
-    <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px, 100%), 1fr));gap:clamp(40px,5vw,72px);align-items:start">
-      <div>
-        <p style="display:inline-flex;align-items:center;gap:12px;margin:0 0 clamp(22px,3vw,34px);font-size:15px;font-weight:600;letter-spacing:0.1em;color:#9FC0F5">
-          <span aria-hidden="true" style="width:34px;height:3px;background:#2F80FF;display:inline-block"></span>
-          AI THAT SHIPS, NOT AI THAT DEMOS
-        </p>
-        <h1 id="hero-h" style="margin:0;font-family:Sora,sans-serif;font-weight:800;font-size:clamp(42px,6.6vw,88px);line-height:0.98;letter-spacing:-0.035em;text-wrap:balance">We build the AI your business<br>
-          <span style="position:relative;display:inline-block;color:#2F80FF">actually uses<span aria-hidden="true" style="position:absolute;left:0;right:0;bottom:-0.08em;height:6px;background:#2F80FF;transform-origin:left;animation:draw .9s .35s cubic-bezier(.2,.8,.2,1) both"></span></span>
-        </h1>
-        <p style="margin:clamp(26px,3.4vw,38px) 0 0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#C3D5F0;max-width:620px;text-wrap:pretty">Felican AI designs and delivers AI products, custom systems, business automations, integrations, assistants, and training. Any industry — built around how your company already works.</p>
-        <div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:clamp(30px,3.6vw,42px)">
-          <a href="/products/" style="flex:1 1 auto;min-width:220px;text-align:center;padding:19px 30px;background:#2F80FF;color:#04122A;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,transform .2s ease" style-hover="background:#DDEBFF;transform:translateY(-3px)" style-focus="outline:3px solid #DDEBFF;outline-offset:4px">Explore our products</a>
-          <a href="/booking/" style="flex:1 1 auto;min-width:200px;text-align:center;padding:19px 30px;background:transparent;color:#FFFFFF;border:1px solid rgba(221,235,255,0.45);font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,border-color .2s ease" style-hover="background:rgba(47,128,255,0.16);border-color:#2F80FF" style-focus="outline:3px solid #2F80FF;outline-offset:4px">Book a call</a>
-        </div>
+    <div style="position:relative;max-width:1000px;margin:0 auto;padding:0 24px;text-align:center">
+      <p style="display:inline-flex;align-items:center;gap:12px;margin:0 0 clamp(22px,3vw,30px);font-size:15px;font-weight:600;letter-spacing:0.1em;color:#9FC0F5">
+        <span aria-hidden="true" style="width:34px;height:3px;background:#2F80FF;display:inline-block"></span>
+        A TEAM OF CERTIFIED AI PROFESSIONALS
+        <span aria-hidden="true" style="width:34px;height:3px;background:#2F80FF;display:inline-block"></span>
+      </p>
+      <h1 id="hero-h" style="margin:0;font-family:Sora,sans-serif;font-weight:800;font-size:clamp(42px,6.2vw,72px);line-height:1.02;letter-spacing:-0.035em;text-wrap:balance">AI solutions for <span style="color:#2F80FF">private businesses</span></h1>
+      <p style="margin:clamp(24px,3vw,32px) auto 0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#C3D5F0;max-width:640px;text-wrap:pretty">Practical systems. Private by design. Built around how your business works — from strategy and implementation through governance, management, and maintenance.</p>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:clamp(30px,3.6vw,38px)">
+        <a href="/booking/" style="flex:0 1 auto;min-width:200px;text-align:center;padding:19px 30px;background:#2F80FF;color:#04122A;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,transform .2s ease" style-hover="background:#DDEBFF;transform:translateY(-3px)" style-focus="outline:3px solid #DDEBFF;outline-offset:4px">Book a call</a>
+        <a href="#contact" style="flex:0 1 auto;min-width:200px;text-align:center;padding:19px 30px;background:transparent;color:#FFFFFF;border:1px solid rgba(221,235,255,0.45);font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,border-color .2s ease" style-hover="background:rgba(47,128,255,0.16);border-color:#2F80FF" style-focus="outline:3px solid #2F80FF;outline-offset:4px">Contact form</a>
       </div>
-
-      <div style="position:relative">
-        <p style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2F80FF">THE PRODUCT LINE</p>
-        <ul style="list-style:none;margin:0;padding:0;border-top:1px solid rgba(47,128,255,0.3)">
-          <sc-for list="{{ products }}" as="p" hint-placeholder-count="5">
-            <li style="border-bottom:1px solid rgba(47,128,255,0.3)">
-              <a href="{{ p.href }}" style="display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:18px;padding:clamp(16px,1.7vw,21px) 8px;text-decoration:none;color:#FFFFFF;transition:background .2s ease,padding-left .2s ease" style-hover="background:rgba(47,128,255,0.12);padding-left:18px" style-focus="outline:2px solid #2F80FF;outline-offset:-2px">
-                <span aria-hidden="true" style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;color:{{ p.accent }};letter-spacing:0.08em">{{ p.num }}</span>
-                <span style="font-family:Sora,sans-serif;font-size:clamp(19px,1.85vw,24px);font-weight:600;letter-spacing:-0.02em">{{ p.name }}</span>
-                <span aria-hidden="true" style="font-size:20px;color:{{ p.accent }}">&#8594;</span>
-              </a>
-            </li>
-          </sc-for>
-        </ul>
-        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:26px">
-          <sc-for list="{{ heroTags }}" as="t" hint-placeholder-count="4">
-            <span style="font-size:14px;font-weight:600;letter-spacing:0.04em;color:#9FC0F5;border:1px solid rgba(159,192,245,0.28);padding:8px 12px">{{ t }}</span>
-          </sc-for>
-        </div>
-      </div>
+      <p style="margin:clamp(26px,3vw,34px) 0 0;font-size:13px;font-weight:600;letter-spacing:0.1em;color:#7C9BCF">VERIFIED CREDENTIALS &middot; CERTIFIED AI PROFESSIONALS</p>
     </div>
   </section>
 
-  <!-- WHAT WE DO — overlaps the hero -->
-  <section class="home-overview" aria-labelledby="wwd-h" style="background:#F7F9FC;padding:0 0 clamp(72px,8vw,112px)">
+  <!-- SOUND FAMILIAR — pain points -->
+  <section aria-labelledby="pain-h" style="background:#F7F9FC;padding:clamp(72px,8vw,112px) 0">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px">
-      <div class="home-pillars" style="margin-top:clamp(-140px,-11vw,-90px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(290px, 100%), 1fr));gap:2px;background:#DDEBFF;border:1px solid #C9DDFB">
-        <sc-for list="{{ pillars }}" as="c" hint-placeholder-count="3">
-          <article data-reveal="1" style="background:#FFFFFF;padding:clamp(30px,3.2vw,44px);display:flex;flex-direction:column;gap:16px;transition:background .25s ease" style-hover="background:#F7F9FC">
-            <span aria-hidden="true" style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.16em;color:#1457D9">{{ c.num }}</span>
-            <h3 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(23px,2.1vw,28px);font-weight:700;letter-spacing:-0.02em;color:#0A1630">{{ c.title }}</h3>
-            <p style="margin:0;font-size:17px;line-height:1.7;color:#526079;text-wrap:pretty">{{ c.body }}</p>
-            <a href="{{ c.href }}" style="margin-top:auto;display:inline-flex;align-items:center;gap:9px;font-size:16px;font-weight:700;color:#1457D9;text-decoration:none" style-hover="gap:15px;color:#2F80FF" style-focus="outline:2px solid #1457D9;outline-offset:3px">{{ c.cta }} <span aria-hidden="true">&#8594;</span></a>
-          </article>
-        </sc-for>
-      </div>
-
-      <div style="margin-top:clamp(64px,7vw,96px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(32px,4vw,64px);align-items:end">
-        <h2 id="wwd-h" data-reveal="1" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(34px,4.6vw,60px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">What we do, in plain terms</h2>
-        <p data-reveal="1" style="margin:0;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">Some businesses need a finished product they can switch on. Others need something built for the way they operate. We do both — and we stay long enough to train your team on it.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- PRODUCTS -->
-  <section id="products" aria-labelledby="prod-h" style="background:#071A33;color:#FFFFFF;padding:clamp(72px,8vw,112px) 0;position:relative;overflow:hidden">
-    <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,128,255,0.08) 0 1px,transparent 1px 12.5%)"></div>
-    <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px">
-      <div style="display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:flex-end;margin-bottom:clamp(38px,4vw,54px)">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:end;margin-bottom:clamp(38px,4vw,54px)">
         <div>
-          <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2F80FF">ALL PRODUCTS</p>
-          <h2 id="prod-h" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(34px,4.6vw,60px);font-weight:800;line-height:1.05;letter-spacing:-0.035em">A growing lineup of practical products.</h2>
+          <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#1457D9">FRICTION CHECK</p>
+          <h2 id="pain-h" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(34px,4.6vw,56px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">Sound familiar?</h2>
         </div>
-        <a href="/products/" style="display:inline-flex;align-items:center;gap:10px;padding:16px 24px;border:1px solid rgba(221,235,255,0.45);color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,border-color .2s ease" style-hover="background:rgba(47,128,255,0.16);border-color:#2F80FF" style-focus="outline:3px solid #2F80FF;outline-offset:3px">Full product detail <span aria-hidden="true">&#8594;</span></a>
-      </div>
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(330px, 100%), 1fr));gap:clamp(18px,1.8vw,24px)">
-        <sc-for list="{{ products }}" as="p" hint-placeholder-count="5">
-          <article data-reveal="1" style="background:#FFFFFF;border-top:5px solid {{ p.accent }};padding:clamp(28px,2.6vw,36px);display:flex;flex-direction:column;gap:18px;min-height:340px;transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s ease" style-hover="transform:translateY(-8px);box-shadow:0 26px 50px rgba(4,18,42,0.35)">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
-              <span aria-hidden="true" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px;width:34px;height:34px">
-                <span style="background:{{ p.accent }}"></span><span style="background:#DDEBFF"></span>
-                <span style="background:#DDEBFF"></span><span style="background:{{ p.accent }}"></span>
-              </span>
-              <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;color:#526079">{{ p.tag }}</span>
-            </div>
-            <h3 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(25px,2.3vw,31px);font-weight:700;letter-spacing:-0.025em;color:#0A1630;text-wrap:balance">{{ p.name }}</h3>
-            <p style="margin:0;font-size:17px;line-height:1.7;color:#526079;text-wrap:pretty">{{ p.desc }}</p>
-            <a href="{{ p.href }}" style="margin-top:auto;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px;background:#F7F9FC;border:1px solid #DDEBFF;color:{{ p.accent }};font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease,color .2s ease" style-hover="background:#071A33;color:#FFFFFF;border-color:#071A33" style-focus="outline:2px solid #1457D9;outline-offset:3px">{{ p.cta }} <span aria-hidden="true">&#8594;</span></a>
-          </article>
-        </sc-for>
-      </div>
-    </div>
-  </section>
-
-  <!-- SERVICES -->
-  <section id="services" aria-labelledby="svc-h" style="background:#FFFFFF;padding:clamp(72px,8vw,112px) 0">
-    <div style="max-width:1280px;margin:0 auto;padding:0 24px">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:start;margin-bottom:clamp(38px,4vw,54px)">
-        <div>
-          <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#1457D9">SERVICES</p>
-          <h2 id="svc-h" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(34px,4.6vw,60px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">Built around how you already operate</h2>
-        </div>
-        <div>
-          <p style="margin:0;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">We work with businesses in any industry — automotive, legal, healthcare, real estate, trades, professional services. We start with your actual workflow, not a template.</p>
-          <a href="/services/" style="margin-top:24px;display:inline-flex;align-items:center;gap:10px;padding:16px 24px;background:#1457D9;color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,transform .2s ease" style-hover="background:#2F80FF;transform:translateY(-3px)" style-focus="outline:3px solid #DDEBFF;outline-offset:3px">Explore services <span aria-hidden="true">&#8594;</span></a>
-        </div>
+        <p style="margin:0;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">Check the challenges that reflect current friction in your business.</p>
       </div>
 
       <ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px, 100%), 1fr));gap:2px;background:#DDEBFF;border:1px solid #DDEBFF">
-        <sc-for list="{{ services }}" as="s" hint-placeholder-count="7">
+        <sc-for list="{{ frictions }}" as="fr" hint-placeholder-count="6">
           <li data-reveal="1" style="background:#FFFFFF">
-            <a class="home-service-card" data-service-card="1" href="/services/" style="display:flex;flex-direction:column;gap:12px;padding:clamp(26px,2.6vw,34px);height:100%;text-decoration:none;transition:background .22s ease" style-hover="background:#071A33" style-focus="outline:2px solid #1457D9;outline-offset:-2px">
-              <span aria-hidden="true" style="width:26px;height:3px;background:#2F80FF"></span>
-              <h3 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(21px,1.9vw,25px);font-weight:700;letter-spacing:-0.02em;color:#0A1630">{{ s.name }}</h3>
-              <p style="margin:0;font-size:17px;line-height:1.65;color:#526079;text-wrap:pretty">{{ s.body }}</p>
-            </a>
+            <label style="display:flex;align-items:center;gap:14px;padding:clamp(22px,2.2vw,28px);cursor:pointer">
+              <input type="checkbox" name="friction" value="{{ fr }}" style="width:20px;height:20px;flex-shrink:0;accent-color:#1457D9">
+              <span style="font-size:17px;font-weight:600;color:#0A1630">{{ fr }}</span>
+            </label>
           </li>
         </sc-for>
       </ul>
     </div>
   </section>
 
-  <!-- BOOKS -->
-  <section id="books" aria-labelledby="books-h" style="background:#DDEBFF;padding:clamp(72px,8vw,112px) 0">
-    <div style="max-width:1280px;margin:0 auto;padding:0 24px">
-      <div style="display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:flex-end;margin-bottom:clamp(38px,4vw,54px)">
-        <div>
-          <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#1457D9">BOOKS</p>
-          <h2 id="books-h" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(34px,4.6vw,60px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;color:#0A1630">Books by Lee Felican Jr.</h2>
-        </div>
-        <a href="/books/" style="display:inline-flex;align-items:center;gap:10px;padding:16px 24px;background:#071A33;color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,transform .2s ease" style-hover="background:#1457D9;transform:translateY(-3px)" style-focus="outline:3px solid #1457D9;outline-offset:3px">Go to the Books page <span aria-hidden="true">&#8594;</span></a>
-      </div>
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px, 100%), 1fr));gap:clamp(20px,2.4vw,32px)">
-        <sc-for list="{{ books }}" as="b" hint-placeholder-count="4">
-          <article data-reveal="1" style="display:flex;flex-direction:column;gap:18px">
-            <div style="position:relative;width:100%;aspect-ratio:2/3;background:#FFFFFF;border:1px solid #B7D3FA;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease" style-hover="transform:translateY(-8px);box-shadow:0 24px 44px rgba(7,26,51,0.26)">
-              <img data-book-image="{{ b.image }}" alt="{{ b.title }} cover" style="width:100%;height:100%;object-fit:contain;display:block;padding:18px">
-            </div>
-            <div>
-              <h3 style="margin:0 0 8px;font-family:Sora,sans-serif;font-size:20px;font-weight:700;line-height:1.25;letter-spacing:-0.02em;color:#0A1630;text-wrap:balance">{{ b.title }}</h3>
-              <p style="margin:0 0 14px;font-size:16px;line-height:1.6;color:#526079;text-wrap:pretty">{{ b.sub }}</p>
-              <a href="{{ b.href }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:9px;font-size:16px;font-weight:700;color:#1457D9;text-decoration:none" style-hover="gap:15px;color:#071A33" style-focus="outline:2px solid #1457D9;outline-offset:3px">View the book <span aria-hidden="true">&#8594;</span></a>
-            </div>
-          </article>
-        </sc-for>
-      </div>
-
-      <a href="https://felican.ai/Lee-Felican-jr/books/resources" target="_blank" rel="noopener" data-reveal="1" style="margin-top:clamp(34px,4vw,48px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;padding:clamp(24px,3vw,34px);background:#FFFFFF;border:1px solid #B7D3FA;text-decoration:none;transition:background .22s ease,border-color .22s ease" style-hover="background:#071A33;border-color:#071A33" style-focus="outline:3px solid #1457D9;outline-offset:3px">
-        <span style="font-family:Sora,sans-serif;font-size:clamp(20px,2vw,26px);font-weight:700;letter-spacing:-0.02em;color:#0A1630">View all book resources</span>
-        <span style="display:inline-flex;align-items:center;gap:10px;font-size:16px;font-weight:700;color:#1457D9">Resources, courses and companion material <span aria-hidden="true">&#8594;</span></span>
-      </a>
+  <!-- WHAT WE DO -->
+  <section aria-labelledby="fits-h" style="background:#071A33;color:#FFFFFF;padding:clamp(72px,8vw,112px) 0;position:relative;overflow:hidden">
+    <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,128,255,0.08) 0 1px,transparent 1px 12.5%)"></div>
+    <div style="position:relative;max-width:900px;margin:0 auto;padding:0 24px;text-align:center">
+      <p style="margin:0 0 16px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2F80FF">AI THAT FITS THE BUSINESS</p>
+      <h2 id="fits-h" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(30px,3.8vw,46px);font-weight:800;line-height:1.15;letter-spacing:-0.03em;text-wrap:balance">We combine strategic guidance with technical delivery, so AI becomes a managed business capability — not another disconnected tool.</h2>
     </div>
   </section>
 
-  <!-- ABOUT PREVIEW -->
-  <section aria-labelledby="about-h" style="background:#F7F9FC;padding:clamp(72px,8vw,112px) 0">
+  <!-- FROM ASSESSMENT TO ONGOING VALUE -->
+  <section aria-labelledby="value-h" style="background:#FFFFFF;padding:clamp(72px,8vw,112px) 0">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(36px,4.5vw,72px);align-items:start">
+      <div data-reveal="1">
+        <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#1457D9">HOW WE WORK</p>
+        <h2 id="value-h" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(34px,4.4vw,54px);font-weight:800;line-height:1.06;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">From first assessment to ongoing value</h2>
+      </div>
+      <div data-reveal="1" style="display:flex;flex-direction:column;gap:20px">
+        <div style="border-left:3px solid #1457D9;background:#F7F9FC;padding:24px 28px">
+          <p style="margin:0;font-size:17px;line-height:1.7;color:#0A1630;text-wrap:pretty">Private and responsible by design. Human intervention remains available. Authorized Auto AI can be configured where the business decides it is appropriate.</p>
+        </div>
+        <ul style="list-style:none;margin:0;padding:0;display:grid;gap:2px;background:#DDEBFF;border:1px solid #DDEBFF">
+          <sc-for list="{{ process }}" as="p" hint-placeholder-count="4">
+            <li style="background:#FFFFFF;padding:20px 24px;display:flex;align-items:baseline;gap:16px">
+              <span aria-hidden="true" style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;color:#1457D9;letter-spacing:0.08em">{{ p.num }}</span>
+              <span style="font-size:17px;font-weight:600;color:#0A1630">{{ p.label }}</span>
+            </li>
+          </sc-for>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOK A CALL -->
+  <section id="booking" aria-labelledby="book-h" style="background:#DDEBFF;padding:clamp(72px,8vw,112px) 0">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(36px,4.5vw,72px);align-items:center">
       <div data-reveal="1">
-        <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#1457D9">ABOUT US</p>
-        <h2 id="about-h" style="margin:0 0 22px;font-family:Sora,sans-serif;font-size:clamp(34px,4.4vw,56px);font-weight:800;line-height:1.06;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">A family-built company, led by an engineer</h2>
-        <p style="margin:0 0 18px;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">Felican AI is led by Lee Felican Jr. — thirty years in software engineering and enterprise architecture, with a career focused on building systems businesses can actually use.</p>
-        <p style="margin:0 0 28px;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">That background is the whole point: we build AI that has to hold up in production, not in a slide deck.</p>
-        <a href="/about/" style="display:inline-flex;align-items:center;gap:10px;padding:17px 26px;background:#071A33;color:#FFFFFF;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,transform .2s ease" style-hover="background:#1457D9;transform:translateY(-3px)" style-focus="outline:3px solid #1457D9;outline-offset:3px">More about Felican AI <span aria-hidden="true">&#8594;</span></a>
+        <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#1457D9">BOOKING</p>
+        <h2 id="book-h" style="margin:0 0 20px;font-family:Sora,sans-serif;font-size:clamp(32px,4.2vw,50px);font-weight:800;line-height:1.06;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">Book a call</h2>
+        <p style="margin:0;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">Thirty minutes with a certified AI professional. We review current AI use, workflows, and where friction is costing you.</p>
+        <a href="/booking/" style="margin-top:28px;display:inline-flex;align-items:center;gap:10px;padding:17px 26px;background:#071A33;color:#FFFFFF;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .2s ease,transform .2s ease" style-hover="background:#1457D9;transform:translateY(-3px)" style-focus="outline:3px solid #1457D9;outline-offset:3px">Go to booking <span aria-hidden="true">&#8594;</span></a>
       </div>
-      <div data-reveal="1" style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#C9DDFB;border:1px solid #C9DDFB">
-        <sc-for list="{{ facts }}" as="f" hint-placeholder-count="4">
-          <div style="background:#FFFFFF;padding:clamp(24px,2.8vw,34px)">
-            <p style="margin:0 0 8px;font-family:Sora,sans-serif;font-size:clamp(34px,4vw,48px);font-weight:800;line-height:1;letter-spacing:-0.04em;color:#1457D9">{{ f.k }}</p>
-            <p style="margin:0;font-size:16px;line-height:1.5;color:#526079">{{ f.v }}</p>
-          </div>
-        </sc-for>
+      <div data-reveal="1" style="background:#FFFFFF;border:1px solid #C9DDFB;padding:clamp(28px,3vw,38px);display:flex;flex-direction:column;gap:14px">
+        <span aria-hidden="true" style="width:26px;height:3px;background:#2F80FF"></span>
+        <p style="margin:0;font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.14em;color:#1457D9">DIRECT CONTACT</p>
+        <a href="{{ emailHref }}" style="font-family:Sora,sans-serif;font-size:clamp(19px,1.8vw,23px);font-weight:700;color:#0A1630;text-decoration:none;word-break:break-word" style-hover="color:#1457D9">{{ email }}</a>
+        <a href="/booking/" style="font-family:Sora,sans-serif;font-size:clamp(19px,1.8vw,23px);font-weight:700;color:#0A1630;text-decoration:none" style-hover="color:#1457D9">felican.ai/booking</a>
       </div>
     </div>
   </section>
 
-  <!-- CONTACT CTA -->
-  <section aria-labelledby="cta-h" style="position:relative;background:#1457D9;color:#FFFFFF;padding:clamp(72px,9vw,124px) 0;overflow:hidden">
-    <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,0.09) 0 1px,transparent 1px 10%)"></div>
-    <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(34px,4.5vw,72px);align-items:center">
-      <div>
-        <h2 id="cta-h" style="margin:0 0 20px;font-family:Sora,sans-serif;font-size:clamp(36px,5.2vw,68px);font-weight:800;line-height:1.02;letter-spacing:-0.04em;text-wrap:balance">Tell us what's slowing your business down.</h2>
-        <p style="margin:0;font-size:clamp(18px,1.5vw,21px);line-height:1.6;color:#DDEBFF;max-width:560px;text-wrap:pretty">One conversation is usually enough to tell whether a product, a custom build, or training is the right move.</p>
+  <!-- CONTACT -->
+  <section id="contact" aria-labelledby="contact-h" style="position:relative;background:#071A33;color:#FFFFFF;padding:clamp(72px,8vw,112px) 0">
+    <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(36px,5vw,80px)">
+      <div data-reveal="1">
+        <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2F80FF">GET IN TOUCH</p>
+        <h2 id="contact-h" style="margin:0 0 16px;font-family:Sora,sans-serif;font-size:clamp(32px,4.2vw,50px);font-weight:800;line-height:1.06;letter-spacing:-0.035em;text-wrap:balance">Tell us where it hurts</h2>
+        <p style="margin:0;font-size:clamp(17px,1.4vw,19px);line-height:1.65;color:#C3D5F0">We reply within one business day. This opens your email app with the details filled in — nothing is stored on our servers.</p>
       </div>
-      <div style="display:grid;gap:14px">
-        <a href="/contact/" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;background:#FFFFFF;color:#071A33;font-family:Sora,sans-serif;font-size:clamp(18px,1.6vw,21px);font-weight:700;text-decoration:none;transition:transform .2s ease,background .2s ease" style-hover="background:#DDEBFF;transform:translateX(6px)" style-focus="outline:3px solid #071A33;outline-offset:4px">Go to the contact page <span aria-hidden="true">&#8594;</span></a>
-        <a href="tel:+13465150361" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;background:#071A33;color:#FFFFFF;font-family:Sora,sans-serif;font-size:clamp(18px,1.6vw,21px);font-weight:700;text-decoration:none;transition:transform .2s ease,background .2s ease" style-hover="background:#04122A;transform:translateX(6px)" style-focus="outline:3px solid #071A33;outline-offset:4px">+1 (346) 515-0361 <span aria-hidden="true">&#8594;</span></a>
-        <a href="{{ emailHref }}" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;border:1px solid rgba(255,255,255,0.5);color:#FFFFFF;font-family:Sora,sans-serif;font-size:clamp(17px,1.5vw,20px);font-weight:700;text-decoration:none;word-break:break-word;transition:background .2s ease,transform .2s ease" style-hover="background:rgba(255,255,255,0.14);transform:translateX(6px)" style-focus="outline:3px solid #071A33;outline-offset:4px">{{ email }} <span aria-hidden="true">&#8594;</span></a>
+
+      <div data-reveal="1" style="display:grid;gap:16px">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px, 100%), 1fr));gap:16px">
+          <label style="display:grid;gap:8px">
+            <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;color:#9FC0F5">NAME</span>
+            <input id="cf-name" type="text" autocomplete="name" style="padding:14px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(221,235,255,0.3);color:#FFFFFF;border-radius:2px">
+          </label>
+          <label style="display:grid;gap:8px">
+            <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;color:#9FC0F5">WORK EMAIL</span>
+            <input id="cf-email" type="email" autocomplete="email" style="padding:14px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(221,235,255,0.3);color:#FFFFFF;border-radius:2px">
+          </label>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px, 100%), 1fr));gap:16px">
+          <label style="display:grid;gap:8px">
+            <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;color:#9FC0F5">COMPANY</span>
+            <input id="cf-company" type="text" autocomplete="organization" style="padding:14px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(221,235,255,0.3);color:#FFFFFF;border-radius:2px">
+          </label>
+          <label style="display:grid;gap:8px">
+            <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;color:#9FC0F5">BIGGEST FRICTION</span>
+            <select id="cf-friction" style="padding:14px 16px;background:#0C2547;border:1px solid rgba(221,235,255,0.3);color:#FFFFFF;border-radius:2px">
+              <sc-for list="{{ frictions }}" as="fr" hint-placeholder-count="6">
+                <option value="{{ fr }}">{{ fr }}</option>
+              </sc-for>
+            </select>
+          </label>
+        </div>
+        <label style="display:grid;gap:8px">
+          <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.1em;color:#9FC0F5">WHAT ARE YOU TRYING TO FIX?</span>
+          <textarea id="cf-message" rows="4" style="padding:14px 16px;background:rgba(255,255,255,0.06);border:1px solid rgba(221,235,255,0.3);color:#FFFFFF;border-radius:2px;resize:vertical"></textarea>
+        </label>
+        <button type="button" onClick="{{ sendMessage }}" style="justify-self:start;padding:17px 30px;background:#2F80FF;color:#04122A;border:none;font-family:Sora,sans-serif;font-size:17px;font-weight:700;border-radius:2px;cursor:pointer;transition:background .2s ease,transform .2s ease" style-hover="background:#DDEBFF;transform:translateY(-3px)" style-focus="outline:3px solid #DDEBFF;outline-offset:4px">Send message</button>
       </div>
     </div>
   </section>
@@ -251,10 +192,9 @@
 <dc-import name="ChatAssistant" hint-size="100%,0px"></dc-import>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;revealMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;},&quot;distinctProductColors&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Products&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;revealMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;}}">
 class Component extends DCLogic {
   componentDidMount() {
-    setTimeout(() => document.querySelectorAll('img[data-book-image]').forEach(img => { const src = img.getAttribute('data-book-image'); if (src && src.indexOf('{{') === -1) img.src = src; }), 0);
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce || this.props.revealMotion === false || !('IntersectionObserver' in window)) return;
     const nodes = Array.from(document.querySelectorAll('[data-reveal]'));
@@ -265,9 +205,6 @@ class Component extends DCLogic {
     const io = new IntersectionObserver(entries => {
       entries.forEach(e => {
         if (!e.isIntersecting) return;
-        const sibs = Array.from(e.target.parentElement ? e.target.parentElement.children : []);
-        const i = Math.max(0, sibs.indexOf(e.target));
-        e.target.style.transitionDelay = Math.min(i * 70, 350) + 'ms';
         show(e.target);
         io.unobserve(e.target);
       });
@@ -278,45 +215,44 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._fallback) clearTimeout(this._fallback); }
   renderVals() {
-    const mono = this.props.distinctProductColors === false;
-    const ac = c => mono ? '#1457D9' : c;
+    const email = 'felican.ai.inc' + '@' + 'gmail.com';
     return {
-      products: [
-        { num: '01', name: 'Felican Auto', tag: 'AUTOMOTIVE', accent: ac('#1457D9'), href: '/products/#felican-auto', cta: 'Explore Felican Auto', desc: 'Connected AI products, automations, and workflows designed for automotive businesses — from inbound customer contact to service and inventory operations.' },
-        { num: '02', name: 'World of Agents', tag: 'AGENTS', accent: ac('#0A5FA8'), href: '/products/#world-of-agents', cta: 'Explore World of Agents', desc: 'A place to discover and work with specialized AI agents built for focused business tasks, instead of one generalist chatbot doing everything badly.' },
-        { num: '03', name: 'Relay', tag: 'FIELD SERVICE', accent: ac('#2563EB'), href: '/products/#relay', cta: 'Explore Relay', desc: 'AI field-service software for HVAC, plumbing, and electrical companies — scheduling, AP invoices, collections, quotes, crews, and AI operations support in one place.' },
-        { num: '04', name: 'Felican AI Assistant', tag: 'EMBEDDABLE AGENT', accent: ac('#1457D9'), href: '/products/#ai-assistant', cta: 'Explore the Assistant', desc: 'A company-trained AI agent businesses can embed inside a website or app to answer questions, capture inquiries, connect workflows, and hand off to people.' },
-        { num: '05', name: 'BookMaker', tag: 'PUBLISHING', accent: ac('#4B57DE'), href: '/products/#bookmaker', cta: 'Explore BookMaker', desc: 'An AI workspace for planning, writing, organizing, and preparing books — outline to finished manuscript in one place.' }
+      email,
+      emailHref: 'mailto:' + email,
+      frictions: [
+        'Data security & AI governance',
+        'Manual workflows',
+        'Knowledge loss',
+        'Slow sales cycles',
+        'Support overload',
+        'Data paralysis'
       ],
-      heroTags: ['Any industry', 'Custom systems', 'Automations', 'Integrations', 'Training'],
-      pillars: [
-        { num: '01', title: 'Products you can use now', body: 'Focused AI products, ready to put in front of your customers and your team.', cta: 'See the products', href: '/products/' },
-        { num: '02', title: 'Systems built for you', body: 'Custom AI systems, automations, and integrations designed around your existing tools and process.', cta: 'See the services', href: '/services/' },
-        { num: '03', title: 'Training that sticks', body: 'Workshops and implementation support so your team keeps running it after we hand it over.', cta: 'Get in touch', href: '/contact/' }
+      process: [
+        { num: '01', label: 'Assessment — where AI helps, and where it should not' },
+        { num: '02', label: 'Implementation — built around your existing workflow' },
+        { num: '03', label: 'Governance — human oversight stays available' },
+        { num: '04', label: 'Management & maintenance — ongoing, not one-and-done' }
       ],
-      email: 'privateaiglobal' + '@' + 'gmail.com',
-      emailHref: 'mailto:' + 'privateaiglobal' + '@' + 'gmail.com',
-      services: [
-        { name: 'AI agents and bots', body: 'Task-specific agents that answer, qualify, route, and follow up without supervision.' },
-        { name: 'Business automation', body: 'Remove the repeated manual steps between your systems, inbox, and staff.' },
-        { name: 'Custom integrations', body: 'Connect AI to the CRM, phone, scheduling, and back-office tools you already run.' },
-        { name: 'Private AI systems', body: 'AI that runs inside your environment, so your data does not leave it.' },
-        { name: 'AI implementation and consulting', body: 'A clear plan for what to build, in what order, and what to leave alone.' },
-        { name: 'Business solutions', body: 'End-to-end builds shaped around a specific operational problem in your company.' },
-        { name: 'AI training and workshops', body: 'Practical sessions for leadership and staff on using AI in real daily work.' }
-      ],
-      books: [
-        { title: "The Big Balla's Guide to Making Money with AI", sub: '100 real ways to make money with AI, sorted by startup cost and indexed by industry — plus beginner AI trading and a legal-business-under-$50 playbook.', href: 'https://www.amazon.com/dp/B0H9FLWJFD', image: '/book-big-ballas.jpg', slot: 'book-balla', slotHint: "Drop cover: The Big Balla's Guide to Making Money with AI" },
-        { title: "Don't Be Replaced", sub: "A working person's plan for staying valuable in the AI era by separating routine work from the human judgment that matters.", href: 'https://www.amazon.com/dp/B0H9G68TVC', image: '/book-dont-be-replaced.jpg', slot: 'book-replaced', slotHint: "Drop cover: Don't Be Replaced" },
-        { title: 'Stop Being Nice to AI', sub: 'A fast, practical guide to better results from any AI tool using the simple GRRRRR prompting method.', href: 'https://www.amazon.com/dp/B0H9G83R38', image: '/book-stop-being-nice.jpg', slot: 'book-stop-nice', slotHint: 'Drop cover: Stop Being Nice to AI' },
-        { title: 'The BIG AI Book', sub: 'A fully illustrated, full-color explanation of AI with zero jargon — including how agents use skills and tools.', href: 'https://www.amazon.com/dp/B0H9DVDF2R', image: '/book-big-ai.jpg', slot: 'book-big-ai', slotHint: 'Drop cover: The BIG AI Book' }
-      ],
-      facts: [
-        { k: '30 yrs', v: 'Software engineering and enterprise architecture' },
-        { k: 'Hands-on', v: 'Product and systems work' },
-        { k: 'Growing', v: 'Product portfolio' },
-        { k: '4', v: 'Books published on AI' }
-      ]
+      sendMessage: () => {
+        const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
+        const checked = Array.from(document.querySelectorAll('input[name="friction"]:checked')).map(i => i.value);
+        const name = val('cf-name');
+        const company = val('cf-company');
+        const friction = val('cf-friction');
+        const message = val('cf-message');
+        const lines = [
+          name && `Name: ${name}`,
+          company && `Company: ${company}`,
+          friction && `Biggest friction: ${friction}`,
+          checked.length ? `Also flagged: ${checked.join(', ')}` : '',
+          '',
+          message || "What are you trying to fix?"
+        ].filter(Boolean);
+        const subject = encodeURIComponent('Felican AI inquiry' + (company ? ` — ${company}` : ''));
+        const body = encodeURIComponent(lines.join('\n'));
+        const replyTo = val('cf-email');
+        window.location.href = `mailto:${email}?subject=${subject}&body=${body}` + (replyTo ? `&cc=${encodeURIComponent(replyTo)}` : '');
+      }
     };
   }
 }

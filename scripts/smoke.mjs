@@ -4,7 +4,7 @@ const target = new URL(process.argv[2] || 'https://felican.dev/');
 const includeChat = process.argv.includes('--chat');
 
 const checks = [
-  ['/', 'We build the AI your business'],
+  ['/', 'AI solutions for'],
   ['/products/', 'Products built for real work.'],
   ['/services/', 'Seven ways we put AI to work inside a business'],
   ['/books/', 'Four books by Lee Felican Jr.'],

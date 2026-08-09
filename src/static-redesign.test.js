@@ -9,12 +9,10 @@ describe('Claude Design static website export', () => {
   it('ships the redesigned homepage and clean internal routes', () => {
     const home = read('index.html');
 
-    expect(home).toContain('We build the AI your business');
-    expect(home).toContain('A growing lineup of practical products.');
-    expect(home).toContain('Books by Lee Felican Jr.');
-    expect(home).toContain('class="home-overview"');
-    expect(home).toContain('class="home-service-card"');
-    expect(home).toContain('.home-service-card:hover h3 { color:#FFFFFF !important }');
+    expect(home).toContain('AI solutions for');
+    expect(home).toContain('Sound familiar?');
+    expect(home).toContain('Tell us where it hurts');
+    expect(home).toContain('name="friction"');
     expect(home).not.toMatch(/(?:Home|Products|Services|Books|About|Contact)\.dc\.html/);
   });
 
@@ -66,10 +64,9 @@ describe('Claude Design static website export', () => {
   });
 
   it('places World of Agents directly after Felican Auto', () => {
-    for (const productPage of [read('index.html'), read('public/products/index.html')]) {
-      expect(productPage.indexOf("name: 'Felican Auto'")).toBeLessThan(productPage.indexOf("name: 'World of Agents'"));
-      expect(productPage.indexOf("name: 'World of Agents'")).toBeLessThan(productPage.indexOf("name: 'Relay'"));
-    }
+    const productPage = read('public/products/index.html');
+    expect(productPage.indexOf("name: 'Felican Auto'")).toBeLessThan(productPage.indexOf("name: 'World of Agents'"));
+    expect(productPage.indexOf("name: 'World of Agents'")).toBeLessThan(productPage.indexOf("name: 'Relay'"));
   });
 
   it('uses direct contact links without a contact form', () => {
