@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  ArrowRight, BookOpen, Bot, BriefcaseBusiness, Check, ChevronDown,
+  ArrowRight, BookOpen, Bot, BriefcaseBusiness, CalendarDays, Check, ChevronDown,
   CircleCheck, Code2, GraduationCap, Mail, Menu, MessageCircle,
   Phone, Send, ShieldCheck, Sparkles, UserRound, Workflow, X,
 } from 'lucide-react';
@@ -12,6 +12,17 @@ import './claude-design.css';
 const PHONE = '+1 (346) 515-0361';
 const PHONE_HREF = 'tel:+13465150361';
 const assetPath = fileName => `${import.meta.env.BASE_URL}${fileName}`;
+const CALENDLY_URL = (() => {
+  const candidate = (import.meta.env.VITE_CALENDLY_URL || '').trim();
+  try {
+    const parsed = new URL(candidate);
+    return parsed.protocol === 'https:' && (parsed.hostname === 'calendly.com' || parsed.hostname.endsWith('.calendly.com'))
+      ? parsed.toString()
+      : '';
+  } catch {
+    return '';
+  }
+})();
 
 const products = [
   { name: 'Felican Auto', path: '/products/felican-auto', category: 'Automotive', status: 'Available', description: 'Connected AI tools and workflows built for automotive businesses.', color: '#173f6b', features: ['Customer intake', 'Connected workflows', 'Follow-up and reporting'] },
@@ -81,7 +92,7 @@ function Header({ onNavigate, path }) {
     <Mark onNavigate={onNavigate}/>
     <button className="fs-menu" aria-label="Toggle navigation" onClick={() => setOpen(!open)}>{open ? <X/> : <Menu/>}</button>
     <nav className={open ? 'open' : ''} aria-label="Main navigation">
-      {[['/','Home'],['/products','Products'],['/services','Services'],['/books','Books'],['/about','About us'],['/contact','Contact']].map(([href,label]) => <a className={path === href || (href !== '/' && path.startsWith(`${href}/`)) ? `active${href === '/contact' ? ' contact-link' : ''}` : href === '/contact' ? 'contact-link' : ''} href={href} onClick={go(href)} key={href}>{label}</a>)}
+      {[['/','Home'],['/products','Products'],['/services','Services'],['/books','Books'],['/about','About us'],['/contact','Contact'],['/booking','Book a Call']].map(([href,label]) => <a className={path === href || (href !== '/' && path.startsWith(`${href}/`)) ? `active${href === '/booking' ? ' contact-link' : ''}` : href === '/booking' ? 'contact-link' : ''} href={href} onClick={go(href)} key={href}>{label}</a>)}
     </nav>
   </header>;
 }
@@ -171,7 +182,7 @@ function CompanyPreview({ onNavigate }) {
 }
 
 function HomeContact({ onNavigate }) {
-  return <section className="home-contact"><div><span>Have a project in mind?</span><h2>Let’s make the work easier.</h2></div><button onClick={() => onNavigate('/contact')}>Contact Felican AI <ArrowRight/></button></section>;
+  return <section className="home-contact"><div><span>Have a project in mind?</span><h2>Let’s make the work easier.</h2></div><button onClick={() => onNavigate('/booking')}>Book a call <ArrowRight/></button></section>;
 }
 
 function FAQ() {
@@ -211,6 +222,38 @@ function ContactPage({ onChat }) {
   return <><PageIntro eyebrow="Contact" title="Let’s talk about what needs to work better." copy="Email Felican AI directly or call the company line."/><Contact onChat={onChat}/><FAQ/></>;
 }
 
+function BookingPage() {
+  return <>
+    <section className="booking-hero" id="top">
+      <div className="booking-copy">
+        <span className="fs-kicker">Book a call</span>
+        <h1>Let’s talk about where AI can create leverage.</h1>
+        <p>Bring the business outcome, workflow, or AI decision in front of you. We’ll discuss what is practical, what needs control, and what a sensible next step could look like.</p>
+        <div className="booking-points" aria-label="What the call covers">
+          <span><Check/> Your goals and current workflow</span>
+          <span><Check/> AI opportunity, risk, and cost</span>
+          <span><Check/> A practical path forward</span>
+        </div>
+      </div>
+      <aside className="booking-card" aria-label="Schedule with Felican AI">
+        <CalendarDays aria-hidden="true"/>
+        <span>INTRODUCTORY CALL</span>
+        <h2>Choose a time that works for you.</h2>
+        {CALENDLY_URL ? <>
+          <a className="booking-primary" href={CALENDLY_URL} target="_blank" rel="noreferrer">Open Calendly <ArrowRight/></a>
+          <iframe title="Book a call with Felican AI" src={`${CALENDLY_URL}?hide_gdpr_banner=1`} loading="lazy" referrerPolicy="strict-origin-when-cross-origin"/>
+        </> : <div className="booking-fallback" role="status">
+          <strong>The calendar is being connected.</strong>
+          <p>The booking page is ready. Until the Felican AI Calendly event link is added, call or email us directly.</p>
+          <a href={PHONE_HREF}><Phone/> {PHONE}</a>
+          <a href="mailto:privateaiglobal@gmail.com"><Mail/> privateaiglobal@gmail.com</a>
+        </div>}
+      </aside>
+    </section>
+    <section className="booking-trust"><span>Your AI partner</span><p>Felican AI brings evaluation, strategy, custom agents, workflow automation, governance, management, maintenance, and cost control together with a team of certified AI professionals.</p></section>
+  </>;
+}
+
 function ChatPanel({ close }) {
   const [messages,setMessages] = useState([{role:'bot',text:'Hi. I’m the Felican AI agent. Ask me about our products, services, training, or company.'}]);
   const [input,setInput] = useState('');
@@ -231,7 +274,7 @@ export function FelicanSite() {
   const [variant,setVariant] = useState(['signal','catalog','network'].includes(requested) ? requested : 'signal');
   const review = params.get('review') === '1';
   const [chat,setChat] = useState(false);
-  const publicPaths = ['/products','/services','/books','/about','/contact', ...products.map(product => product.path)];
+  const publicPaths = ['/products','/services','/books','/about','/contact','/booking', ...products.map(product => product.path)];
   const normalizePath = value => publicPaths.includes(value) ? value : '/';
   const [path,setPath] = useState(normalizePath(window.location.pathname));
   useEffect(() => {
@@ -253,7 +296,8 @@ export function FelicanSite() {
     '/books': <BooksPage/>,
     '/about': <AboutPage/>,
     '/contact': <ContactPage onChat={() => setChat(true)}/>,
+    '/booking': <BookingPage/>,
   }[path];
   return <div className={`felican-site variant-${variant}`}>
-    {review && <ReviewBar variant={variant} setVariant={setVariant}/>}<Header path={path} onNavigate={navigate}/><main key={path}>{page}</main><footer className="fs-footer"><Mark onNavigate={navigate}/><nav aria-label="Footer navigation">{[['/','Home'],['/products','Products'],['/services','Services'],['/books','Books'],['/about','About'],['/contact','Contact']].map(([href,label]) => <a href={href} onClick={event => { event.preventDefault(); navigate(href); }} key={href}>{label}</a>)}</nav><span>© 2026 Felican AI</span></footer>{chat && <ChatPanel close={()=>setChat(false)}/>}</div>;
+    {review && <ReviewBar variant={variant} setVariant={setVariant}/>}<Header path={path} onNavigate={navigate}/><main key={path}>{page}</main><footer className="fs-footer"><Mark onNavigate={navigate}/><nav aria-label="Footer navigation">{[['/','Home'],['/products','Products'],['/services','Services'],['/books','Books'],['/about','About'],['/contact','Contact'],['/booking','Book a Call']].map(([href,label]) => <a href={href} onClick={event => { event.preventDefault(); navigate(href); }} key={href}>{label}</a>)}</nav><span>© 2026 Felican AI</span></footer>{chat && <ChatPanel close={()=>setChat(false)}/>}</div>;
 }

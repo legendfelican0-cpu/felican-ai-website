@@ -24,6 +24,7 @@ describe('Claude Design static website export', () => {
     ['books', 'Books by Lee Felican Jr.'],
     ['about', 'A family-built company that builds AI for a living'],
     ['contact', "Let's talk about your business"],
+    ['booking', 'Let’s talk about where AI can create leverage.'],
     ['privacy', 'Privacy Policy'],
     ['terms', 'Terms of Use'],
   ])('includes the %s page', (route, expectedText) => {
@@ -77,6 +78,22 @@ describe('Claude Design static website export', () => {
     expect(contact).toContain("emailHref: 'mailto:' + email");
     expect(contact).toContain('tel:+13465150361');
     expect(contact).not.toContain('<form');
+  });
+
+  it('ships a stable booking route with validated Calendly configuration and direct fallbacks', () => {
+    const booking = read('public/booking/index.html');
+    const config = read('public/booking-config.js');
+    const nav = read('public/SiteNav.dc.html');
+
+    expect(booking).toContain('https://felican.ai/booking/');
+    expect(booking).toContain("parsed.hostname === 'calendly.com'");
+    expect(booking).toContain('The calendar is being connected.');
+    expect(booking).toContain('tel:+13465150361');
+    expect(booking).not.toContain('<form');
+    expect(config).toContain("calendlyUrl: ''");
+    expect(nav).toContain('href="/booking/"');
+    expect(nav).toContain('Book a call');
+    expect(read('public/sitemap.xml')).toContain('https://felican.ai/booking/');
   });
 
   it('connects the assistant UI to the protected server endpoint', () => {

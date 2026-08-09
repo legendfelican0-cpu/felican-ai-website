@@ -110,4 +110,16 @@ describe('Felican AI company site', () => {
     expect(screen.getByRole('link', { name: /Call Felican AI/i })).toHaveAttribute('href', 'tel:+13465150361');
     expect(screen.getByRole('link', { name: /privateaiglobal@gmail.com/i })).toHaveAttribute('href', 'mailto:privateaiglobal@gmail.com');
   });
+
+  it('renders a useful booking page before Calendly is configured', () => {
+    window.history.replaceState({}, '', '/booking');
+    render(<App />);
+
+    expect(screen.getByRole('heading', { name: 'Let’s talk about where AI can create leverage.' })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'Book a Call' }).length).toBeGreaterThan(0);
+    expect(screen.getByText('The calendar is being connected.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /\+1 \(346\) 515-0361/i })).toHaveAttribute('href', 'tel:+13465150361');
+    expect(screen.getByRole('link', { name: /privateaiglobal@gmail.com/i })).toHaveAttribute('href', 'mailto:privateaiglobal@gmail.com');
+    expect(screen.queryByRole('form')).not.toBeInTheDocument();
+  });
 });

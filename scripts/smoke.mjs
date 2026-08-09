@@ -10,6 +10,7 @@ const checks = [
   ['/books/', 'Four books by Lee Felican Jr.'],
   ['/about/', 'A family-built company that builds AI for a living'],
   ['/contact/', "Let's talk about your business"],
+  ['/booking/', 'Let’s talk about where AI can create leverage.'],
   ['/privacy/', 'Privacy Policy'],
   ['/terms/', 'Terms of Use'],
   ['/sitemap.xml', '<urlset'],

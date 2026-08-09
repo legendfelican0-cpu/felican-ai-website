@@ -8,6 +8,7 @@ const routes = [
   ['/books/', 'Four books by Lee Felican Jr.'],
   ['/about/', 'A family-built company that builds AI for a living'],
   ['/contact/', "Let's talk about your business"],
+  ['/booking/', 'Let’s talk about where AI can create leverage.'],
   ['/privacy/', 'Privacy Policy'],
   ['/terms/', 'Terms of Use'],
 ];
@@ -97,6 +98,15 @@ test.describe('Claude Design website export', () => {
       'href',
       'tel:+13465150361',
     );
+    await expect(page.locator('main form')).toHaveCount(0);
+  });
+
+  test('booking page has a stable route and useful fallback until Calendly is configured', async ({ page }) => {
+    await page.goto('/booking/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { name: /where AI can create leverage/i })).toBeVisible();
+    await expect(page.getByText('The calendar is being connected.')).toBeVisible();
+    await expect(page.getByRole('link', { name: /\+1 \(346\) 515-0361/i }).first()).toHaveAttribute('href', 'tel:+13465150361');
+    await expect(page.getByRole('link', { name: /privateaiglobal@gmail.com/i }).first()).toHaveAttribute('href', /mailto:privateaiglobal@gmail.com/);
     await expect(page.locator('main form')).toHaveCount(0);
   });
 

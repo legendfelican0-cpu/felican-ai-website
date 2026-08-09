@@ -106,6 +106,7 @@ describe('Felican AI server', () => {
     expect(policy).toContain("frame-ancestors 'none'");
     expect(policy).toContain('https://static.cloudflareinsights.com');
     expect(policy).toContain('https://fonts.googleapis.com');
+    expect(policy).toContain('frame-src https://calendly.com https://*.calendly.com');
     expect(policy).not.toContain('unpkg.com');
     expect(response.headers.get('cross-origin-opener-policy')).toBe('same-origin');
   });

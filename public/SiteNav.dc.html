@@ -34,7 +34,7 @@
 
     <div style="display:{{ deskDisplay }};align-items:center;gap:14px;flex-shrink:0">
       <a href="tel:+13465150361" style="font-size:16px;font-weight:600;color:#DDEBFF;text-decoration:none;white-space:nowrap" style-hover="color:#FFFFFF" style-focus="outline:2px solid #2F80FF;outline-offset:3px">+1 (346) 515-0361</a>
-      <a href="/contact/" style="display:inline-block;padding:12px 20px;background:#2F80FF;color:#04122A;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:transform .18s ease,background .18s ease" style-hover="background:#DDEBFF;transform:translateY(-2px)" style-focus="outline:2px solid #DDEBFF;outline-offset:3px">Get in touch</a>
+      <a href="/booking/" style="display:inline-block;padding:12px 20px;background:#2F80FF;color:#04122A;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:transform .18s ease,background .18s ease" style-hover="background:#DDEBFF;transform:translateY(-2px)" style-focus="outline:2px solid #DDEBFF;outline-offset:3px">Book a call</a>
     </div>
 
     <button type="button" onClick="{{ toggle }}" aria-expanded="{{ openStr }}" aria-label="Toggle navigation menu" style="display:{{ mobDisplay }};align-items:center;gap:10px;background:transparent;border:1px solid rgba(221,235,255,0.35);color:#FFFFFF;font-family:Inter,sans-serif;font-size:15px;font-weight:600;padding:11px 14px;border-radius:2px;cursor:pointer" style-focus="outline:2px solid #2F80FF;outline-offset:3px">
@@ -56,14 +56,15 @@
             <span aria-hidden="true" style="color:#2F80FF;font-size:20px">&#8594;</span>
           </a>
         </sc-for>
-        <a href="tel:+13465150361" style="margin-top:20px;display:block;text-align:center;padding:16px;background:#2F80FF;color:#04122A;font-size:17px;font-weight:700;text-decoration:none;border-radius:2px">Call +1 (346) 515-0361</a>
+        <a href="/booking/" style="margin-top:20px;display:block;text-align:center;padding:16px;background:#2F80FF;color:#04122A;font-size:17px;font-weight:700;text-decoration:none;border-radius:2px">Book a call</a>
+        <a href="tel:+13465150361" style="margin-top:10px;display:block;text-align:center;padding:14px;color:#DDEBFF;border:1px solid rgba(221,235,255,.35);font-size:16px;font-weight:700;text-decoration:none;border-radius:2px">Call +1 (346) 515-0361</a>
       </nav>
     </div>
   </sc-if>
 </header>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:90},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Home&quot;,&quot;Products&quot;,&quot;Services&quot;,&quot;Books&quot;,&quot;About Us&quot;,&quot;Contact&quot;],&quot;default&quot;:&quot;Home&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:90},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Home&quot;,&quot;Products&quot;,&quot;Services&quot;,&quot;Books&quot;,&quot;About Us&quot;,&quot;Contact&quot;,&quot;Book a Call&quot;],&quot;default&quot;:&quot;Home&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
 class Component extends DCLogic {
   state = { open: false, w: typeof window !== 'undefined' ? window.innerWidth : 1400 };
   componentDidMount() {
