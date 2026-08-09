@@ -23,10 +23,10 @@
 <script src="/image-slot.js"></script>
 <style>
   html { scroll-behavior:smooth; -webkit-text-size-adjust:100% }
-  body { margin:0; background:#F7F9FC; color:#0A1630; font-family:Inter,system-ui,sans-serif; overflow-x:hidden }
+  body { margin:0; background:#080E13; color:#EEF4F4; font-family:Inter,system-ui,sans-serif; overflow-x:hidden }
   * { box-sizing:border-box }
-  a { color:#1457D9 } a:hover { color:#2F80FF }
-  ::selection { background:#2F80FF; color:#fff }
+  a { color:#2FB894 } a:hover { color:#59D4B4 }
+  ::selection { background:#2FB894; color:#080E13 }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -34,32 +34,32 @@
 <dc-import name="SiteNav" active="Books" hint-size="100%,74px"></dc-import>
 
 <main>
-  <section aria-labelledby="bh" style="position:relative;background:#071A33;color:#FFFFFF;overflow:hidden;padding:clamp(56px,7vw,96px) 0 clamp(56px,7vw,88px)">
-    <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,128,255,0.12) 0 1px,transparent 1px 8.3333%)"></div>
-    <div aria-hidden="true" style="position:absolute;left:-6%;top:-20%;width:38%;height:140%;background:linear-gradient(160deg,#1457D9,rgba(7,26,51,0));transform:skewX(-10deg);opacity:.45"></div>
+  <section aria-labelledby="bh" style="position:relative;background:#080E13;color:#FFFFFF;overflow:hidden;padding:clamp(56px,7vw,96px) 0 clamp(56px,7vw,88px)">
+    <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,184,148,0.12) 0 1px,transparent 1px 8.3333%)"></div>
+    <div aria-hidden="true" style="position:absolute;left:-6%;top:-20%;width:38%;height:140%;background:linear-gradient(160deg,#2FB894,rgba(8,14,19,0));transform:skewX(-10deg);opacity:.45"></div>
     <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:end">
       <div>
-        <p style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2F80FF">BOOKS</p>
+        <p style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2FB894">BOOKS</p>
         <h1 id="bh" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(40px,6vw,80px);font-weight:800;line-height:1;letter-spacing:-0.04em;text-wrap:balance">Four books by Lee Felican Jr.</h1>
       </div>
-      <p style="margin:0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#C3D5F0;text-wrap:pretty">Practical, plain-language books for workers, builders, business owners, and everyday people who want to put AI to work.</p>
+      <p style="margin:0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#C2D2D4;text-wrap:pretty">Practical, plain-language books for workers, builders, business owners, and everyday people who want to put AI to work.</p>
     </div>
   </section>
 
-  <section aria-label="The books" style="background:#F7F9FC;padding:clamp(56px,7vw,96px) 0">
+  <section aria-label="The books" style="background:#080E13;padding:clamp(56px,7vw,96px) 0">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;gap:clamp(20px,2.4vw,32px)">
       <sc-for list="{{ books }}" as="b" hint-placeholder-count="4">
-        <article data-reveal="1" style="background:#FFFFFF;border:1px solid #DDEBFF;padding:clamp(24px,3vw,44px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px, 100%), 1fr));gap:clamp(26px,3.4vw,56px);align-items:center;transition:border-color .3s ease,box-shadow .3s ease" style-hover="border-color:#B7D3FA;box-shadow:0 24px 48px rgba(7,26,51,0.12)">
-          <div style="position:relative;width:100%;max-width:340px;aspect-ratio:2/3;background:#F2F7FF;border:1px solid #DDEBFF;justify-self:center">
+        <article data-reveal="1" style="background:#0C1419;border:1px solid #1C2A28;padding:clamp(24px,3vw,44px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px, 100%), 1fr));gap:clamp(26px,3.4vw,56px);align-items:center;transition:border-color .3s ease,box-shadow .3s ease" style-hover="border-color:#2FB894;box-shadow:0 24px 48px rgba(0,0,0,0.45)">
+          <div style="position:relative;width:100%;max-width:340px;aspect-ratio:2/3;background:#080E13;border:1px solid #1C2A28;justify-self:center">
             <img data-book-image="{{ b.image }}" alt="{{ b.title }} cover" style="width:100%;height:100%;object-fit:contain;display:block;padding:18px">
           </div>
           <div>
-            <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.14em;color:#1457D9">{{ b.num }} &middot; {{ b.kicker }}</p>
-            <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:clamp(28px,3.2vw,44px);font-weight:800;line-height:1.06;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">{{ b.title }}</h2>
-            <p style="margin:0 0 26px;font-size:clamp(17px,1.4vw,20px);line-height:1.7;color:#526079;max-width:600px;text-wrap:pretty">{{ b.sub }}</p>
+            <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.14em;color:#2FB894">{{ b.num }} &middot; {{ b.kicker }}</p>
+            <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:clamp(28px,3.2vw,44px);font-weight:800;line-height:1.06;letter-spacing:-0.035em;color:#EEF4F4;text-wrap:balance">{{ b.title }}</h2>
+            <p style="margin:0 0 26px;font-size:clamp(17px,1.4vw,20px);line-height:1.7;color:#C2D2D4;max-width:600px;text-wrap:pretty">{{ b.sub }}</p>
             <div style="display:flex;flex-wrap:wrap;gap:12px">
-              <a href="{{ b.href }}" target="_blank" rel="noopener" style="flex:1 1 220px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;background:#1457D9;color:#FFFFFF;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#071A33;transform:translateY(-3px)" style-focus="outline:3px solid #071A33;outline-offset:3px">View the book <span aria-hidden="true">&#8594;</span></a>
-              <a href="https://felican.ai/Lee-Felican-jr/books/resources" target="_blank" rel="noopener" style="flex:0 1 auto;display:inline-flex;align-items:center;padding:18px 22px;border:1px solid #C9DDFB;color:#1457D9;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease" style-hover="background:#DDEBFF" style-focus="outline:3px solid #1457D9;outline-offset:3px">Book resources</a>
+              <a href="{{ b.href }}" target="_blank" rel="noopener" style="flex:1 1 220px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-3px)" style-focus="outline:3px solid #59D4B4;outline-offset:3px">View the book <span aria-hidden="true">&#8594;</span></a>
+              <a href="https://felican.ai/Lee-Felican-jr/books/resources" target="_blank" rel="noopener" style="flex:0 1 auto;display:inline-flex;align-items:center;padding:18px 22px;border:1px solid #1C2A28;color:#2FB894;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease" style-hover="background:rgba(47,184,148,0.14);border-color:#2FB894" style-focus="outline:3px solid #2FB894;outline-offset:3px">Book resources</a>
             </div>
           </div>
         </article>
@@ -67,29 +67,29 @@
     </div>
   </section>
 
-  <section aria-labelledby="res" style="background:#1457D9;color:#FFFFFF;padding:clamp(64px,8vw,104px) 0">
+  <section aria-labelledby="res" style="background:#0C1419;color:#EEF4F4;padding:clamp(64px,8vw,104px) 0">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:center">
       <div>
         <h2 id="res" style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:clamp(32px,4.2vw,54px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;text-wrap:balance">Every book has a companion hub</h2>
-        <p style="margin:0;font-size:clamp(17px,1.45vw,20px);line-height:1.7;color:#E7F0FF;max-width:560px;text-wrap:pretty">The destination behind the QR code in each book — resources, courses, events, and companion material.</p>
+        <p style="margin:0;font-size:clamp(17px,1.45vw,20px);line-height:1.7;color:#C2D2D4;max-width:560px;text-wrap:pretty">The destination behind the QR code in each book — resources, courses, events, and companion material.</p>
       </div>
-      <a href="https://felican.ai/Lee-Felican-jr/books/resources" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;gap:18px;padding:clamp(24px,3vw,32px);background:#FFFFFF;color:#0A1630;font-family:Sora,sans-serif;font-size:clamp(19px,1.8vw,24px);font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#DDEBFF;transform:translateX(6px)" style-focus="outline:3px solid #071A33;outline-offset:4px">View all book resources <span aria-hidden="true" style="color:#1457D9">&#8594;</span></a>
+      <a href="https://felican.ai/Lee-Felican-jr/books/resources" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;gap:18px;padding:clamp(24px,3vw,32px);background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:clamp(19px,1.8vw,24px);font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateX(6px)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">View all book resources <span aria-hidden="true" style="color:#080E13">&#8594;</span></a>
     </div>
   </section>
 
-  <section aria-labelledby="auth" style="background:#F7F9FC;padding:clamp(64px,8vw,104px) 0">
+  <section aria-labelledby="auth" style="background:#080E13;padding:clamp(64px,8vw,104px) 0">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:center">
       <div>
-        <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#1457D9">THE AUTHOR</p>
-        <h2 id="auth" style="margin:0 0 20px;font-family:Sora,sans-serif;font-size:clamp(30px,3.8vw,48px);font-weight:800;line-height:1.06;letter-spacing:-0.035em;color:#0A1630;text-wrap:balance">Lee Felican Jr.</h2>
-        <p style="margin:0 0 26px;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#526079;text-wrap:pretty">Thirty years in software engineering and enterprise architecture, and the founder of Felican AI. The books come from the same practical work as the products.</p>
-        <a href="/about/" style="display:inline-flex;align-items:center;gap:10px;padding:17px 24px;background:#071A33;color:#FFFFFF;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#1457D9;transform:translateY(-3px)" style-focus="outline:3px solid #1457D9;outline-offset:3px">About Felican AI <span aria-hidden="true">&#8594;</span></a>
+        <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2FB894">THE AUTHOR</p>
+        <h2 id="auth" style="margin:0 0 20px;font-family:Sora,sans-serif;font-size:clamp(30px,3.8vw,48px);font-weight:800;line-height:1.06;letter-spacing:-0.035em;color:#EEF4F4;text-wrap:balance">Lee Felican Jr.</h2>
+        <p style="margin:0 0 26px;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#C2D2D4;text-wrap:pretty">Thirty years in software engineering and enterprise architecture, and the founder of Felican AI. The books come from the same practical work as the products.</p>
+        <a href="/about/" style="display:inline-flex;align-items:center;gap:10px;padding:17px 24px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-3px)" style-focus="outline:3px solid #59D4B4;outline-offset:3px">About Felican AI <span aria-hidden="true">&#8594;</span></a>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#C9DDFB;border:1px solid #C9DDFB">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#1C2A28;border:1px solid #1C2A28">
         <sc-for list="{{ facts }}" as="f" hint-placeholder-count="4">
-          <div style="background:#FFFFFF;padding:clamp(24px,2.8vw,34px)">
-            <p style="margin:0 0 8px;font-family:Sora,sans-serif;font-size:clamp(30px,3.6vw,44px);font-weight:800;line-height:1;letter-spacing:-0.04em;color:#1457D9">{{ f.k }}</p>
-            <p style="margin:0;font-size:16px;line-height:1.5;color:#526079">{{ f.v }}</p>
+          <div style="background:#0C1419;padding:clamp(24px,2.8vw,34px)">
+            <p style="margin:0 0 8px;font-family:Sora,sans-serif;font-size:clamp(30px,3.6vw,44px);font-weight:800;line-height:1;letter-spacing:-0.04em;color:#2FB894">{{ f.k }}</p>
+            <p style="margin:0;font-size:16px;line-height:1.5;color:#C2D2D4">{{ f.v }}</p>
           </div>
         </sc-for>
       </div>

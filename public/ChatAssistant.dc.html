@@ -12,36 +12,34 @@
 <style>
 @keyframes fa-in { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:none } }
 @keyframes fa-dot { 0%,80%,100% { opacity:.25 } 40% { opacity:1 } }
-@keyframes fa-pulse { 0%,100% { box-shadow:0 0 0 0 rgba(47,128,255,.42) } 50% { box-shadow:0 0 0 7px rgba(47,128,255,0) } }
+@keyframes fa-pulse { 0%,100% { box-shadow:0 0 0 0 rgba(47,184,148,.42) } 50% { box-shadow:0 0 0 7px rgba(47,184,148,0) } }
 .fa-shell { position:fixed;right:28px;bottom:28px;z-index:1000;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;align-items:flex-end;gap:14px;max-width:calc(100vw - 56px);pointer-events:none }
 .fa-shell > * { pointer-events:auto }
-.fa-panel { position:relative;width:min(420px,calc(100vw - 56px));height:min(610px,calc(100vh - 124px));background:#FFFFFF;border:1px solid rgba(183,211,250,.95);border-radius:22px;box-shadow:0 28px 80px rgba(4,18,42,.28),0 4px 16px rgba(20,87,217,.12);display:flex;flex-direction:column;overflow:hidden;animation:fa-in .24s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom right }
-.fa-panel::before { content:'';position:absolute;z-index:2;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#2F80FF,#7FB2FF,#2F80FF) }
-.fa-head { background:linear-gradient(135deg,#071A33 0%,#0C2F68 100%);padding:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0 }
-.fa-head-mark { width:42px;height:42px;padding:10px;border-radius:13px;background:rgba(47,128,255,.16);border:1px solid rgba(159,192,245,.26);box-shadow:inset 0 1px 0 rgba(255,255,255,.12) }
-.fa-close { background:rgba(255,255,255,.06);border:1px solid rgba(221,235,255,.28);color:#DDEBFF;width:36px;height:36px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer;flex-shrink:0;transition:background .18s ease,transform .18s ease }
-.fa-close:hover { background:rgba(47,128,255,.22);color:#FFFFFF;transform:rotate(4deg) }
-.fa-messages { flex:1;overflow-y:auto;padding:20px;background:linear-gradient(180deg,#F7F9FC 0%,#EFF5FF 100%);display:flex;flex-direction:column;gap:14px }
-.fa-message { max-width:86%;padding:13px 15px;border-radius:16px;font-size:16px;line-height:1.55;white-space:pre-wrap;box-shadow:0 5px 16px rgba(7,26,51,.05) }
-.fa-chips { padding:13px 16px 2px;background:#FFFFFF;display:flex;flex-wrap:wrap;gap:8px;flex-shrink:0 }
-.fa-chip { background:#EFF5FF;border:1px solid #C9DDFB;color:#0A1630;font-family:Inter,sans-serif;font-size:13px;font-weight:600;padding:9px 12px;border-radius:999px;cursor:pointer;transition:background .18s ease,color .18s ease,transform .18s ease }
-.fa-chip:hover { background:#1457D9;color:#FFFFFF;border-color:#1457D9;transform:translateY(-1px) }
-.fa-composer { padding:14px;background:#FFFFFF;border-top:1px solid #E3ECF9;display:flex;gap:9px;flex-shrink:0 }
-.fa-privacy { margin:0;padding:8px 16px 0;background:#FFFFFF;color:#68758B;font-size:11px;line-height:1.4;text-align:center }
-.fa-privacy a { color:#1457D9;font-weight:600 }
-.fa-input { flex:1;min-width:0;border:1px solid #C9DDFB;background:#F9FBFF;color:#0A1630;font-family:Inter,sans-serif;font-size:16px;padding:13px 17px;border-radius:999px }
-.fa-input:focus { outline:2px solid #1457D9;outline-offset:1px;border-color:#1457D9;background:#FFFFFF }
-.fa-send { width:50px;height:50px;display:grid;place-items:center;flex:0 0 50px;background:linear-gradient(135deg,#1457D9,#2F80FF);border:0;color:#FFFFFF;font-family:Sora,sans-serif;font-size:22px;font-weight:700;padding:0;border-radius:50%;cursor:pointer;box-shadow:0 8px 20px rgba(20,87,217,.24);transition:transform .18s ease,box-shadow .18s ease }
-.fa-send:hover { transform:translateY(-2px);box-shadow:0 11px 25px rgba(20,87,217,.34) }
+.fa-panel { position:relative;width:min(420px,calc(100vw - 56px));height:min(610px,calc(100vh - 124px));background:#0C1419;border:1px solid rgba(47,184,148,.3);border-radius:22px;box-shadow:0 28px 80px rgba(5,9,12,.55),0 4px 16px rgba(47,184,148,.12);display:flex;flex-direction:column;overflow:hidden;animation:fa-in .24s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom right }
+.fa-panel::before { content:'';position:absolute;z-index:2;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#2FB894,#8FE0C8,#2FB894) }
+.fa-head { background:linear-gradient(135deg,#080E13 0%,#12281F 100%);padding:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0 }
+.fa-head-mark { width:42px;height:42px;padding:8px;border-radius:13px;background:rgba(47,184,148,.16);border:1px solid rgba(143,224,200,.26);box-shadow:inset 0 1px 0 rgba(255,255,255,.08) }
+.fa-close { background:rgba(255,255,255,.06);border:1px solid rgba(238,244,244,.28);color:#EEF4F4;width:36px;height:36px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer;flex-shrink:0;transition:background .18s ease,transform .18s ease }
+.fa-close:hover { background:rgba(47,184,148,.22);color:#FFFFFF;transform:rotate(4deg) }
+.fa-messages { flex:1;overflow-y:auto;padding:20px;background:linear-gradient(180deg,#080E13 0%,#0C1419 100%);display:flex;flex-direction:column;gap:14px }
+.fa-message { max-width:86%;padding:13px 15px;border-radius:16px;font-size:16px;line-height:1.55;white-space:pre-wrap;box-shadow:0 5px 16px rgba(5,9,12,.25) }
+.fa-chips { padding:13px 16px 2px;background:#0C1419;display:flex;flex-wrap:wrap;gap:8px;flex-shrink:0 }
+.fa-chip { background:#12181C;border:1px solid #1C2A28;color:#EEF4F4;font-family:Inter,sans-serif;font-size:13px;font-weight:600;padding:9px 12px;border-radius:999px;cursor:pointer;transition:background .18s ease,color .18s ease,transform .18s ease }
+.fa-chip:hover { background:#2FB894;color:#080E13;border-color:#2FB894;transform:translateY(-1px) }
+.fa-composer { padding:14px;background:#0C1419;border-top:1px solid #1C2A28;display:flex;gap:9px;flex-shrink:0 }
+.fa-privacy { margin:0;padding:8px 16px 0;background:#0C1419;color:#7C9391;font-size:11px;line-height:1.4;text-align:center }
+.fa-privacy a { color:#59D4B4;font-weight:600 }
+.fa-input { flex:1;min-width:0;border:1px solid #1C2A28;background:#05090C;color:#EEF4F4;font-family:Inter,sans-serif;font-size:16px;padding:13px 17px;border-radius:999px }
+.fa-input:focus { outline:2px solid #2FB894;outline-offset:1px;border-color:#2FB894;background:#080E13 }
+.fa-send { width:50px;height:50px;display:grid;place-items:center;flex:0 0 50px;background:linear-gradient(135deg,#2FB894,#59D4B4);border:0;color:#080E13;font-family:Sora,sans-serif;font-size:22px;font-weight:700;padding:0;border-radius:50%;cursor:pointer;box-shadow:0 8px 20px rgba(47,184,148,.28);transition:transform .18s ease,box-shadow .18s ease }
+.fa-send:hover { transform:translateY(-2px);box-shadow:0 11px 25px rgba(47,184,148,.38) }
 .fa-launch-row { display:flex;align-items:center;gap:12px }
-.fa-launch-label { padding:11px 15px;border:1px solid rgba(201,221,251,.9);border-radius:999px;background:rgba(255,255,255,.96);color:#071A33;font-family:Sora,Inter,sans-serif;font-size:14px;font-weight:700;box-shadow:0 10px 30px rgba(7,26,51,.16);backdrop-filter:blur(10px) }
-.fa-launcher { position:relative;width:68px;height:68px;display:grid;place-items:center;flex:0 0 68px;padding:0;border:1px solid rgba(255,255,255,.72);border-radius:50%;background:linear-gradient(145deg,#3A8BFF 0%,#1457D9 55%,#0B3479 100%);color:#FFFFFF;cursor:pointer;box-shadow:0 18px 44px rgba(20,87,217,.4),inset 0 1px 0 rgba(255,255,255,.38);transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s ease }
-.fa-launcher:hover { transform:translateY(-4px) scale(1.035);box-shadow:0 23px 52px rgba(20,87,217,.46),inset 0 1px 0 rgba(255,255,255,.42) }
+.fa-launch-label { padding:11px 15px;border:1px solid rgba(47,184,148,.4);border-radius:999px;background:rgba(12,20,25,.94);color:#EEF4F4;font-family:Sora,Inter,sans-serif;font-size:14px;font-weight:700;box-shadow:0 10px 30px rgba(5,9,12,.4);backdrop-filter:blur(10px) }
+.fa-launcher { position:relative;width:68px;height:68px;display:grid;place-items:center;flex:0 0 68px;padding:0;border:1px solid rgba(255,255,255,.5);border-radius:50%;background:linear-gradient(145deg,#59D4B4 0%,#2FB894 55%,#12281F 100%);color:#FFFFFF;cursor:pointer;box-shadow:0 18px 44px rgba(47,184,148,.4),inset 0 1px 0 rgba(255,255,255,.32);transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s ease }
+.fa-launcher:hover { transform:translateY(-4px) scale(1.035);box-shadow:0 23px 52px rgba(47,184,148,.46),inset 0 1px 0 rgba(255,255,255,.36) }
 .fa-launcher::before { content:'';position:absolute;inset:5px;border:1px solid rgba(255,255,255,.22);border-radius:50% }
-.fa-launch-grid { position:relative;z-index:1;width:29px;height:29px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px;transform:rotate(-2deg) }
-.fa-launch-grid span { border-radius:2px;background:#FFFFFF }
-.fa-launch-grid span:nth-child(2),.fa-launch-grid span:nth-child(3) { background:#8FBEFF }
-.fa-launch-status { position:absolute;z-index:2;right:2px;bottom:4px;width:15px;height:15px;border:3px solid #1457D9;border-radius:50%;background:#76F0B3;animation:fa-pulse 2.2s ease-in-out infinite }
+.fa-launch-mark { position:relative;z-index:1;width:36px;height:36px;object-fit:contain }
+.fa-launch-status { position:absolute;z-index:2;right:2px;bottom:4px;width:15px;height:15px;border:3px solid #2FB894;border-radius:50%;background:#76F0B3;animation:fa-pulse 2.2s ease-in-out infinite }
 @media (max-width:640px) {
   .fa-shell { right:14px;bottom:14px;max-width:calc(100vw - 28px) }
   .fa-panel { width:calc(100vw - 28px);height:min(600px,calc(100vh - 104px));border-radius:19px }
@@ -59,16 +57,15 @@
     <section class="fa-panel" aria-label="Felican AI assistant">
       <div class="fa-head">
         <div style="display:flex;align-items:center;gap:11px">
-          <span class="fa-head-mark" aria-hidden="true" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3px">
-            <span style="background:#FFFFFF;border-radius:1px"></span><span style="background:#8FBEFF;border-radius:1px"></span>
-            <span style="background:#8FBEFF;border-radius:1px"></span><span style="background:#FFFFFF;border-radius:1px"></span>
+          <span class="fa-head-mark" aria-hidden="true">
+            <img src="/logo-mark.png" alt="" style="width:100%;height:100%;object-fit:contain;display:block">
           </span>
           <div>
             <p style="margin:0;font-family:Sora,sans-serif;font-size:16px;font-weight:700;color:#FFFFFF">Felican AI Assistant</p>
-            <p style="margin:3px 0 0;font-size:13px;color:#AFC8EC">Live agent demo · usually replies instantly</p>
+            <p style="margin:3px 0 0;font-size:13px;color:#9FC0BE">Live agent demo · usually replies instantly</p>
           </div>
         </div>
-        <button class="fa-close" type="button" onClick="{{ close }}" aria-label="Close assistant" style-focus="outline:2px solid #8FBEFF;outline-offset:2px">&#215;</button>
+        <button class="fa-close" type="button" onClick="{{ close }}" aria-label="Close assistant" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">&#215;</button>
       </div>
 
       <div class="fa-messages" ref="{{ scrollRef }}" role="log" aria-live="polite">
@@ -77,9 +74,9 @@
         </sc-for>
         <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}">
           <div aria-label="Assistant is typing" style="align-self:flex-start;display:flex;gap:5px;padding:14px">
-            <span style="width:7px;height:7px;border-radius:50%;background:#1457D9;animation:fa-dot 1.2s infinite"></span>
-            <span style="width:7px;height:7px;border-radius:50%;background:#1457D9;animation:fa-dot 1.2s .18s infinite"></span>
-            <span style="width:7px;height:7px;border-radius:50%;background:#1457D9;animation:fa-dot 1.2s .36s infinite"></span>
+            <span style="width:7px;height:7px;border-radius:50%;background:#2FB894;animation:fa-dot 1.2s infinite"></span>
+            <span style="width:7px;height:7px;border-radius:50%;background:#2FB894;animation:fa-dot 1.2s .18s infinite"></span>
+            <span style="width:7px;height:7px;border-radius:50%;background:#2FB894;animation:fa-dot 1.2s .36s infinite"></span>
           </div>
         </sc-if>
       </div>
@@ -87,7 +84,7 @@
       <sc-if value="{{ showChips }}" hint-placeholder-val="{{ true }}">
         <div class="fa-chips">
           <sc-for list="{{ chips }}" as="c" hint-placeholder-count="3">
-            <button class="fa-chip" type="button" onClick="{{ c.go }}" style-focus="outline:2px solid #1457D9;outline-offset:2px">{{ c.label }}</button>
+            <button class="fa-chip" type="button" onClick="{{ c.go }}" style-focus="outline:2px solid #2FB894;outline-offset:2px">{{ c.label }}</button>
           </sc-for>
         </div>
       </sc-if>
@@ -97,15 +94,15 @@
         <label for="fa-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your message</label>
         <input type="text" name="website" value="{{ website }}" onChange="{{ onWebsite }}" tabindex="-1" autoComplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden">
         <input class="fa-input" id="fa-input" type="text" value="{{ draft }}" onChange="{{ onDraft }}" placeholder="Ask anything about Felican AI" maxlength="800" autoComplete="off">
-        <button class="fa-send" type="submit" aria-label="Send message" title="{{ sendLabel }}" style-focus="outline:2px solid #071A33;outline-offset:2px">&#8593;</button>
+        <button class="fa-send" type="submit" aria-label="Send message" title="{{ sendLabel }}" style-focus="outline:2px solid #080E13;outline-offset:2px">&#8593;</button>
       </form>
     </section>
   </sc-if>
 
   <div class="fa-launch-row">
     <span class="fa-launch-label" aria-hidden="true">{{ btnLabel }}</span>
-    <button class="fa-launcher" data-assistant-launcher="1" type="button" onClick="{{ toggle }}" aria-expanded="{{ openStr }}" aria-label="{{ launcherLabel }}" style-focus="outline:3px solid #DDEBFF;outline-offset:3px">
-      <span class="fa-launch-grid" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+    <button class="fa-launcher" data-assistant-launcher="1" type="button" onClick="{{ toggle }}" aria-expanded="{{ openStr }}" aria-label="{{ launcherLabel }}" style-focus="outline:3px solid #8FE0C8;outline-offset:3px">
+      <img class="fa-launch-mark" src="/logo-mark.png" alt="" aria-hidden="true">
       <span class="fa-launch-status" aria-hidden="true"></span>
     </button>
   </div>
@@ -121,7 +118,7 @@ Services: AI agents and bots, business automation, custom integrations, private 
 
 Lee Felican Jr. has published four books: The Big Balla's Guide to Making Money with AI, Don't Be Replaced, Stop Being Nice to AI, and The BIG AI Book.
 
-Contact: phone +1 (346) 515-0361, email privateaiglobal@gmail.com. Never describe or speculate about how the phone line is answered or what technology handles calls — just give the number.
+Contact: email felican.ai.inc@gmail.com. There is no phone line — email only.
 
 Answer in 2-4 short sentences, plainly and helpfully. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, statistics, pricing, awards, or products that are not listed above. If you do not know, say so and point the visitor to the contact page.`;
 
@@ -152,7 +149,7 @@ class Component extends DCLogic {
       if (!response.ok || !payload.reply) throw new Error(payload.error || 'Assistant request failed');
       reply = payload.reply;
     } catch (e) {
-      reply = "I couldn't reach the assistant just now. Call +1 (346) 515-0361 or email privateaiglobal@gmail.com and we'll help directly.";
+      reply = "I couldn't reach the assistant just now. Email felican.ai.inc@gmail.com and we'll help directly.";
     }
     this.setState(s => ({ messages: [...s.messages, { role: 'assistant', text: (reply || '').trim() || 'Sorry — could you rephrase that?' }], busy: false }));
   }
@@ -170,8 +167,8 @@ class Component extends DCLogic {
       showChips: this.state.messages.length <= 1,
       scrollRef: this.scrollRef,
       messages: this.state.messages.map(m => m.role === 'user'
-        ? { ...m, align: 'flex-end', bg: '#1457D9', fg: '#FFFFFF', border: '#1457D9' }
-        : { ...m, align: 'flex-start', bg: '#FFFFFF', fg: '#0A1630', border: '#DDEBFF' }),
+        ? { ...m, align: 'flex-end', bg: '#2FB894', fg: '#080E13', border: '#2FB894' }
+        : { ...m, align: 'flex-start', bg: '#12181C', fg: '#EEF4F4', border: '#1C2A28' }),
       chips: [chip('What products do you offer?'), chip('Can you automate my business?'), chip('Tell me about the books')],
       toggle: () => this.setState(s => ({ open: !s.open })),
       close: () => this.setState({ open: false }),

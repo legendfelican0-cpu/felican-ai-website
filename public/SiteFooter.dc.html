@@ -10,50 +10,49 @@
 <helmet>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </helmet>
-<footer style="background:#04122A;color:#B9C9E4;font-family:Inter,system-ui,sans-serif;border-top:4px solid #1457D9">
+<footer style="background:#05090C;color:#9FC0BE;font-family:Inter,system-ui,sans-serif;border-top:4px solid #2FB894">
   <div style="max-width:1280px;margin:0 auto;padding:72px 24px 40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px, 100%), 1fr));gap:48px 40px">
     <div style="grid-column:span 1;min-width:220px">
       <a href="/" style="display:flex;align-items:center;gap:12px;text-decoration:none;margin-bottom:20px">
-        <img src="/logo-mark.png" alt="" width="30" height="30" style="width:30px;height:30px;border-radius:6px;display:block">
-        <span style="font-family:Sora,sans-serif;font-weight:800;font-size:21px;letter-spacing:-0.02em;color:#FFFFFF">Felican<span style="color:#2F80FF"> AI</span></span>
+        <img src="/logo-mark.png" alt="" width="30" height="30" style="width:30px;height:30px;display:block">
+        <span style="font-family:Sora,sans-serif;font-weight:800;font-size:21px;letter-spacing:-0.02em;color:#FFFFFF">Felican<span style="color:#2FB894"> AI</span></span>
       </a>
-      <p style="margin:0;font-size:17px;line-height:1.65;max-width:320px;color:#93A8C8">Useful AI products, custom systems, automations, integrations, and training — built for how your business actually operates.</p>
+      <p style="margin:0;font-size:17px;line-height:1.65;max-width:320px;color:#7C9391">Useful AI products, custom systems, automations, integrations, and training — built for how your business actually operates.</p>
     </div>
 
     <nav aria-label="Site">
-      <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.14em;color:#2F80FF">SITE</h2>
+      <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.14em;color:#2FB894">SITE</h2>
       <ul style="list-style:none;margin:0;padding:0;display:grid;gap:12px">
         <sc-for list="{{ nav }}" as="l" hint-placeholder-count="6">
-          <li><a href="{{ l.href }}" style="font-size:17px;color:#DDEBFF;text-decoration:none" style-hover="color:#FFFFFF" style-focus="outline:2px solid #2F80FF;outline-offset:3px">{{ l.label }}</a></li>
+          <li><a href="{{ l.href }}" style="font-size:17px;color:#C2D2D4;text-decoration:none" style-hover="color:#FFFFFF" style-focus="outline:2px solid #2FB894;outline-offset:3px">{{ l.label }}</a></li>
         </sc-for>
       </ul>
     </nav>
 
     <nav aria-label="Products">
-      <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.14em;color:#2F80FF">PRODUCTS</h2>
+      <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.14em;color:#2FB894">PRODUCTS</h2>
       <ul style="list-style:none;margin:0;padding:0;display:grid;gap:12px">
         <sc-for list="{{ prods }}" as="p" hint-placeholder-count="5">
-          <li><a href="{{ p.href }}" style="font-size:17px;color:#DDEBFF;text-decoration:none" style-hover="color:#FFFFFF" style-focus="outline:2px solid #2F80FF;outline-offset:3px">{{ p.label }}</a></li>
+          <li><a href="{{ p.href }}" style="font-size:17px;color:#C2D2D4;text-decoration:none" style-hover="color:#FFFFFF" style-focus="outline:2px solid #2FB894;outline-offset:3px">{{ p.label }}</a></li>
         </sc-for>
       </ul>
     </nav>
 
     <div>
-      <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.14em;color:#2F80FF">CONTACT</h2>
+      <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.14em;color:#2FB894">CONTACT</h2>
       <div style="display:grid;gap:14px">
-        <a href="tel:+13465150361" style="font-family:Sora,sans-serif;font-size:22px;font-weight:700;color:#FFFFFF;text-decoration:none;letter-spacing:-0.01em" style-hover="color:#2F80FF" style-focus="outline:2px solid #2F80FF;outline-offset:3px">+1 (346) 515-0361</a>
-        <a href="{{ emailHref }}" style="font-size:17px;color:#DDEBFF;text-decoration:none;word-break:break-all" style-hover="color:#FFFFFF" style-focus="outline:2px solid #2F80FF;outline-offset:3px">{{ email }}</a>
-        <a href="/booking/" style="margin-top:6px;display:inline-flex;align-items:center;gap:10px;align-self:start;padding:13px 20px;background:#1457D9;color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .18s ease,transform .18s ease" style-hover="background:#2F80FF;transform:translateY(-2px)" style-focus="outline:2px solid #DDEBFF;outline-offset:3px">Book a call <span aria-hidden="true">&#8594;</span></a>
+        <a href="{{ emailHref }}" style="font-size:17px;color:#C2D2D4;text-decoration:none;word-break:break-all" style-hover="color:#FFFFFF" style-focus="outline:2px solid #2FB894;outline-offset:3px">{{ email }}</a>
+        <a href="/booking/" style="margin-top:6px;display:inline-flex;align-items:center;gap:10px;align-self:start;padding:13px 20px;background:#2FB894;color:#080E13;font-size:16px;font-weight:700;text-decoration:none;border-radius:2px;transition:background .18s ease,transform .18s ease" style-hover="background:#59D4B4;transform:translateY(-2px)" style-focus="outline:2px solid #59D4B4;outline-offset:3px">Book a call <span aria-hidden="true">&#8594;</span></a>
       </div>
     </div>
   </div>
 
-  <div style="max-width:1280px;margin:0 auto;padding:26px 24px 44px;border-top:1px solid rgba(47,128,255,0.18);display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center">
-    <p style="margin:0;font-size:15px;color:#7C90B0">&copy; 2026 Felican AI. All rights reserved.</p>
+  <div style="max-width:1280px;margin:0 auto;padding:26px 24px 44px;border-top:1px solid rgba(47,184,148,0.18);display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center">
+    <p style="margin:0;font-size:15px;color:#5E7371">&copy; 2026 Felican AI. All rights reserved.</p>
     <div style="display:flex;flex-wrap:wrap;gap:18px;align-items:center">
-      <a href="/privacy/" style="font-size:15px;color:#9FB3D1;text-decoration:none" style-hover="color:#FFFFFF">Privacy</a>
-      <a href="/terms/" style="font-size:15px;color:#9FB3D1;text-decoration:none" style-hover="color:#FFFFFF">Terms</a>
-      <span style="font-size:15px;color:#7C90B0">Books by Lee Felican Jr.</span>
+      <a href="/privacy/" style="font-size:15px;color:#8FA6A3;text-decoration:none" style-hover="color:#FFFFFF">Privacy</a>
+      <a href="/terms/" style="font-size:15px;color:#8FA6A3;text-decoration:none" style-hover="color:#FFFFFF">Terms</a>
+      <span style="font-size:15px;color:#5E7371">Books by Lee Felican Jr.</span>
     </div>
   </div>
 </footer>
@@ -63,8 +62,8 @@
 class Component extends DCLogic {
   renderVals() {
     return {
-      email: 'privateaiglobal' + '@' + 'gmail.com',
-      emailHref: 'mailto:' + 'privateaiglobal' + '@' + 'gmail.com',
+      email: 'felican.ai.inc' + '@' + 'gmail.com',
+      emailHref: 'mailto:' + 'felican.ai.inc' + '@' + 'gmail.com',
       nav: [['Home','/'],['Products','/products/'],['Services','/services/'],['Books','/books/'],['About Us','/about/'],['Contact','/contact/'],['Book a Call','/booking/']].map(([label,href])=>({label,href})),
       prods: [
         { label: 'Felican Auto', href: '/products/#felican-auto' },

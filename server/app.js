@@ -43,7 +43,7 @@ Books by Lee Felican Jr.:
 - The BIG AI Book: a fully illustrated, plain-language explanation of AI for grown-ups, including agents, skills, and tools.
 Book resources: https://felican.ai/Lee-Felican-jr/books/resources/
 
-Contact: +1 (346) 515-0361 and privateaiglobal@gmail.com. Never describe or speculate about what technology answers the phone. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
+Contact: felican.ai.inc@gmail.com. There is no phone line — email only. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
 
 export function sanitizeText(value, maxLength = MAX_MESSAGE_LENGTH) {
   return String(value ?? '')

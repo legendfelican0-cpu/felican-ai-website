@@ -88,15 +88,11 @@ test.describe('Claude Design website export', () => {
     );
   });
 
-  test('contact page uses direct email and phone links without a form', async ({ page }) => {
+  test('contact page uses a direct email link without a form', async ({ page }) => {
     await page.goto('/contact/', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByRole('link', { name: /privateaiglobal@gmail.com/i }).first()).toHaveAttribute(
+    await expect(page.getByRole('link', { name: /felican\.ai\.inc@gmail\.com/i }).first()).toHaveAttribute(
       'href',
-      /mailto:privateaiglobal@gmail.com/,
-    );
-    await expect(page.getByRole('link', { name: /\+1 \(346\) 515-0361/i }).first()).toHaveAttribute(
-      'href',
-      'tel:+13465150361',
+      /mailto:felican\.ai\.inc@gmail\.com/,
     );
     await expect(page.locator('main form')).toHaveCount(0);
   });
@@ -105,8 +101,7 @@ test.describe('Claude Design website export', () => {
     await page.goto('/booking/', { waitUntil: 'networkidle' });
     await expect(page.getByRole('heading', { name: /where AI can create leverage/i })).toBeVisible();
     await expect(page.getByText('The calendar is being connected.')).toBeVisible();
-    await expect(page.getByRole('link', { name: /\+1 \(346\) 515-0361/i }).first()).toHaveAttribute('href', 'tel:+13465150361');
-    await expect(page.getByRole('link', { name: /privateaiglobal@gmail.com/i }).first()).toHaveAttribute('href', /mailto:privateaiglobal@gmail.com/);
+    await expect(page.getByRole('link', { name: /felican\.ai\.inc@gmail\.com/i }).first()).toHaveAttribute('href', /mailto:felican\.ai\.inc@gmail\.com/);
     await expect(page.locator('main form')).toHaveCount(0);
   });
 

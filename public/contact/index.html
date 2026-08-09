@@ -22,10 +22,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   html { scroll-behavior:smooth; -webkit-text-size-adjust:100% }
-  body { margin:0; background:#F7F9FC; color:#0A1630; font-family:Inter,system-ui,sans-serif; overflow-x:hidden }
+  body { margin:0; background:#080E13; color:#EEF4F4; font-family:Inter,system-ui,sans-serif; overflow-x:hidden }
   * { box-sizing:border-box }
-  a { color:#1457D9 } a:hover { color:#2F80FF }
-  ::selection { background:#2F80FF; color:#fff }
+  a { color:#2FB894 } a:hover { color:#59D4B4 }
+  ::selection { background:#2FB894; color:#080E13 }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -33,41 +33,36 @@
 <dc-import name="SiteNav" active="Contact" hint-size="100%,74px"></dc-import>
 
 <main>
-  <section aria-labelledby="ch" style="position:relative;background:#071A33;color:#FFFFFF;overflow:hidden;padding:clamp(56px,7vw,96px) 0 clamp(56px,7vw,88px)">
-    <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,128,255,0.12) 0 1px,transparent 1px 8.3333%)"></div>
+  <section aria-labelledby="ch" style="position:relative;background:#080E13;color:#EEF4F4;overflow:hidden;padding:clamp(56px,7vw,96px) 0 clamp(56px,7vw,88px)">
+    <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,184,148,0.12) 0 1px,transparent 1px 8.3333%)"></div>
     <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:end">
       <div>
-        <p style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2F80FF">CONTACT</p>
+        <p style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2FB894">CONTACT</p>
         <h1 id="ch" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(40px,6vw,80px);font-weight:800;line-height:1;letter-spacing:-0.04em;text-wrap:balance">Let's talk about your business</h1>
       </div>
-      <p style="margin:0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#C3D5F0;text-wrap:pretty">Email us directly or call the company line. No portal, no contact form, and no extra steps.</p>
+      <p style="margin:0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#C2D2D4;text-wrap:pretty">Email us directly or call the company line. No portal, no contact form, and no extra steps.</p>
     </div>
   </section>
 
-  <section aria-label="Contact methods" style="background:#F7F9FC;padding:clamp(48px,6vw,80px) 0 0">
-    <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(360px, 100%), 1fr));gap:clamp(18px,2vw,24px)">
-      <a href="{{ emailHref }}" style="background:#1457D9;color:#FFFFFF;padding:clamp(32px,3.6vw,48px);text-decoration:none;display:flex;flex-direction:column;gap:14px;transition:background .2s ease,transform .25s ease,box-shadow .25s ease" style-hover="background:#2F80FF;transform:translateY(-6px);box-shadow:0 22px 44px rgba(7,26,51,0.16)" style-focus="outline:3px solid #071A33;outline-offset:4px">
-        <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.14em;color:#DDEBFF">EMAIL FELICAN AI</span>
+  <section aria-label="Contact methods" style="background:#080E13;padding:clamp(48px,6vw,80px) 0 0">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:flex;justify-content:center">
+      <a href="{{ emailHref }}" style="max-width:480px;width:100%;background:#2FB894;color:#080E13;padding:clamp(32px,3.6vw,48px);text-decoration:none;display:flex;flex-direction:column;gap:14px;transition:background .2s ease,transform .25s ease,box-shadow .25s ease" style-hover="background:#59D4B4;transform:translateY(-6px);box-shadow:0 22px 44px rgba(0,0,0,0.35)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">
+        <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.14em;color:rgba(8,14,19,0.65)">EMAIL FELICAN AI</span>
         <span style="font-family:Sora,sans-serif;font-size:clamp(22px,2.3vw,32px);font-weight:800;letter-spacing:-0.025em;line-height:1.2;word-break:break-word">{{ email }}</span>
         <span style="display:inline-flex;align-items:center;gap:10px;margin-top:auto;padding-top:12px;font-size:18px;font-weight:700">Open your email app <span aria-hidden="true">&#8594;</span></span>
       </a>
-      <a href="tel:+13465150361" style="background:#071A33;color:#FFFFFF;padding:clamp(32px,3.6vw,48px);text-decoration:none;display:flex;flex-direction:column;gap:14px;transition:background .2s ease,transform .25s ease,box-shadow .25s ease" style-hover="background:#0C2547;transform:translateY(-6px);box-shadow:0 22px 44px rgba(7,26,51,0.16)" style-focus="outline:3px solid #1457D9;outline-offset:4px">
-        <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.14em;color:#DDEBFF">CALL US</span>
-        <span style="font-family:Sora,sans-serif;font-size:clamp(26px,2.6vw,34px);font-weight:800;letter-spacing:-0.03em;line-height:1.1">+1 (346) 515-0361</span>
-        <span style="display:inline-flex;align-items:center;gap:10px;margin-top:auto;padding-top:12px;font-size:18px;font-weight:700">Tap to call <span aria-hidden="true">&#8594;</span></span>
-      </a>
     </div>
   </section>
 
-  <section aria-labelledby="emailh" style="background:#F7F9FC;padding:clamp(56px,7vw,88px) 0 clamp(72px,8vw,112px)">
+  <section aria-labelledby="emailh" style="background:#080E13;padding:clamp(56px,7vw,88px) 0 clamp(72px,8vw,112px)">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(330px,100%),1fr));gap:clamp(32px,5vw,76px);align-items:start">
       <div>
-        <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:.16em;color:#1457D9">WHAT TO SEND</p>
-        <h2 id="emailh" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(32px,4.2vw,54px);font-weight:800;line-height:1.05;letter-spacing:-.035em;color:#0A1630;text-wrap:balance">A short email is enough.</h2>
+        <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:.16em;color:#2FB894">WHAT TO SEND</p>
+        <h2 id="emailh" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(32px,4.2vw,54px);font-weight:800;line-height:1.05;letter-spacing:-.035em;color:#EEF4F4;text-wrap:balance">A short email is enough.</h2>
       </div>
-      <div style="font-size:clamp(17px,1.45vw,20px);line-height:1.75;color:#526079">
+      <div style="font-size:clamp(17px,1.45vw,20px);line-height:1.75;color:#C2D2D4">
         <p style="margin:0 0 20px">Tell us what your business does, what you want to improve, and the best way to reach you. We will reply directly from the Private AI Global inbox.</p>
-        <a href="{{ emailHref }}" style="display:inline-flex;align-items:center;gap:12px;padding:17px 22px;background:#FFFFFF;border:1px solid #C9DDFB;color:#1457D9;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;transition:background .2s ease,border-color .2s ease" style-hover="background:#DDEBFF;border-color:#1457D9" style-focus="outline:3px solid #1457D9;outline-offset:3px">Write to Felican AI <span aria-hidden="true">&#8594;</span></a>
+        <a href="{{ emailHref }}" style="display:inline-flex;align-items:center;gap:12px;padding:17px 22px;background:#0C1419;border:1px solid #1C2A28;color:#2FB894;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;transition:background .2s ease,border-color .2s ease" style-hover="background:rgba(47,184,148,0.14);border-color:#2FB894" style-focus="outline:3px solid #2FB894;outline-offset:3px">Write to Felican AI <span aria-hidden="true">&#8594;</span></a>
       </div>
     </div>
   </section>
@@ -80,7 +75,7 @@
 <script type="text/x-dc" data-dc-script data-props="{}">
 class Component extends DCLogic {
   renderVals() {
-    const email = 'privateaiglobal' + '@' + 'gmail.com';
+    const email = 'felican.ai.inc' + '@' + 'gmail.com';
     return { email, emailHref: 'mailto:' + email + '?subject=Felican%20AI%20inquiry' };
   }
 }

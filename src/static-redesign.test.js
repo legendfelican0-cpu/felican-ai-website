@@ -71,9 +71,9 @@ describe('Claude Design static website export', () => {
 
   it('uses direct contact links without a contact form', () => {
     const contact = read('public/contact/index.html');
-    expect(contact).toContain("'privateaiglobal' + '@' + 'gmail.com'");
+    expect(contact).toContain("'felican.ai.inc' + '@' + 'gmail.com'");
     expect(contact).toContain("emailHref: 'mailto:' + email");
-    expect(contact).toContain('tel:+13465150361');
+    expect(contact).not.toContain('tel:+13465150361');
     expect(contact).not.toContain('<form');
   });
 
@@ -85,7 +85,7 @@ describe('Claude Design static website export', () => {
     expect(booking).toContain('https://felican.ai/booking/');
     expect(booking).toContain("parsed.hostname === 'calendly.com'");
     expect(booking).toContain('The calendar is being connected.');
-    expect(booking).toContain('tel:+13465150361');
+    expect(booking).not.toContain('tel:+13465150361');
     expect(booking).not.toContain('<form');
     expect(config).toContain("calendlyUrl: ''");
     expect(nav).toContain('href="/booking/"');

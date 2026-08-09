@@ -22,10 +22,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   html { scroll-behavior:smooth; -webkit-text-size-adjust:100% }
-  body { margin:0; background:#F7F9FC; color:#0A1630; font-family:Inter,system-ui,sans-serif; overflow-x:hidden }
+  body { margin:0; background:#080E13; color:#EEF4F4; font-family:Inter,system-ui,sans-serif; overflow-x:hidden }
   * { box-sizing:border-box }
-  a { color:#1457D9 }
-  ::selection { background:#2F80FF; color:#fff }
+  a { color:#2FB894 }
+  ::selection { background:#2FB894; color:#080E13 }
   @media (prefers-reduced-motion:reduce) { html{scroll-behavior:auto} *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important} }
 </style>
 </helmet>
@@ -33,33 +33,32 @@
 <dc-import name="SiteNav" active="Book a Call" hint-size="100%,74px"></dc-import>
 
 <main>
-  <section aria-labelledby="booking-h" style="position:relative;background:#071A33;color:#FFFFFF;overflow:hidden;padding:clamp(64px,8vw,112px) 0">
-    <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,128,255,.13) 0 1px,transparent 1px 8.3333%)"></div>
+  <section aria-labelledby="booking-h" style="position:relative;background:#080E13;color:#EEF4F4;overflow:hidden;padding:clamp(64px,8vw,112px) 0">
+    <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,184,148,.13) 0 1px,transparent 1px 8.3333%)"></div>
     <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(350px,100%),1fr));gap:clamp(42px,6vw,90px);align-items:start">
       <div style="padding-top:14px">
-        <p style="margin:0 0 20px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:.16em;color:#2F80FF">BOOK A CALL</p>
+        <p style="margin:0 0 20px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:.16em;color:#2FB894">BOOK A CALL</p>
         <h1 id="booking-h" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(44px,6.5vw,82px);font-weight:800;line-height:1;letter-spacing:-.04em;text-wrap:balance">Let’s talk about where AI can create leverage.</h1>
-        <p style="margin:30px 0 0;max-width:650px;font-size:clamp(18px,1.5vw,21px);line-height:1.7;color:#C3D5F0">Bring the business outcome, workflow, or AI decision in front of you. We’ll discuss what is practical, what needs control, and what a sensible next step could look like.</p>
-        <ul style="list-style:none;margin:32px 0 0;padding:0;display:grid;gap:14px;color:#DDEBFF;font-size:17px;font-weight:600">
-          <li><span aria-hidden="true" style="color:#2F80FF;margin-right:10px">&#10003;</span>Your goals and current workflow</li>
-          <li><span aria-hidden="true" style="color:#2F80FF;margin-right:10px">&#10003;</span>AI opportunity, risk, and cost</li>
-          <li><span aria-hidden="true" style="color:#2F80FF;margin-right:10px">&#10003;</span>A practical path forward</li>
+        <p style="margin:30px 0 0;max-width:650px;font-size:clamp(18px,1.5vw,21px);line-height:1.7;color:#C2D2D4">Bring the business outcome, workflow, or AI decision in front of you. We’ll discuss what is practical, what needs control, and what a sensible next step could look like.</p>
+        <ul style="list-style:none;margin:32px 0 0;padding:0;display:grid;gap:14px;color:#EEF4F4;font-size:17px;font-weight:600">
+          <li><span aria-hidden="true" style="color:#2FB894;margin-right:10px">&#10003;</span>Your goals and current workflow</li>
+          <li><span aria-hidden="true" style="color:#2FB894;margin-right:10px">&#10003;</span>AI opportunity, risk, and cost</li>
+          <li><span aria-hidden="true" style="color:#2FB894;margin-right:10px">&#10003;</span>A practical path forward</li>
         </ul>
       </div>
 
-      <aside aria-label="Schedule with Felican AI" style="background:#FFFFFF;color:#0A1630;padding:clamp(30px,4vw,46px);box-shadow:14px 14px 0 #1457D9">
-        <p style="margin:0 0 12px;font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:.14em;color:#1457D9">INTRODUCTORY CALL</p>
+      <aside aria-label="Schedule with Felican AI" style="background:#0C1419;color:#EEF4F4;padding:clamp(30px,4vw,46px);box-shadow:14px 14px 0 #2FB894">
+        <p style="margin:0 0 12px;font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:.14em;color:#2FB894">INTRODUCTORY CALL</p>
         <h2 style="margin:0 0 24px;font-family:Sora,sans-serif;font-size:clamp(30px,3.4vw,44px);line-height:1.06;letter-spacing:-.03em">Choose a time that works for you.</h2>
         <sc-if value="{{ hasCalendly }}" hint-placeholder-val="{{ false }}">
-          <a href="{{ calendlyUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;padding:17px 20px;background:#1457D9;color:#FFFFFF;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none" style-hover="background:#2F80FF" style-focus="outline:3px solid #071A33;outline-offset:3px">Open Calendly <span aria-hidden="true">&#8594;</span></a>
-          <iframe title="Book a call with Felican AI" src="{{ calendlyEmbedUrl }}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;min-height:670px;margin-top:22px;border:1px solid #C9DDFB;background:#FFFFFF"></iframe>
+          <a href="{{ calendlyUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;padding:17px 20px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none" style-hover="background:#59D4B4" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Open Calendly <span aria-hidden="true">&#8594;</span></a>
+          <iframe title="Book a call with Felican AI" src="{{ calendlyEmbedUrl }}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;min-height:670px;margin-top:22px;border:1px solid #1C2A28;background:#0C1419"></iframe>
         </sc-if>
         <sc-if value="{{ showFallback }}" hint-placeholder-val="{{ true }}">
-          <div role="status" style="margin-top:20px;padding:26px;background:#DDEBFF;border-left:4px solid #1457D9">
+          <div role="status" style="margin-top:20px;padding:26px;background:#0C1419;border-left:4px solid #2FB894">
             <h3 style="margin:0 0 9px;font-family:Sora,sans-serif;font-size:21px">The calendar is being connected.</h3>
-            <p style="margin:0 0 20px;font-size:16px;line-height:1.65;color:#526079">The booking page is ready. Until the Felican AI Calendly event link is added, call or email us directly.</p>
+            <p style="margin:0 0 20px;font-size:16px;line-height:1.65;color:#C2D2D4">The booking page is ready. Until the Felican AI Calendly event link is added, email us directly.</p>
             <div style="display:grid;gap:12px">
-              <a href="tel:+13465150361" style="font-size:17px;font-weight:700;text-decoration:none">+1 (346) 515-0361</a>
               <a href="{{ emailHref }}" style="font-size:17px;font-weight:700;text-decoration:none;overflow-wrap:anywhere">{{ email }}</a>
             </div>
           </div>
@@ -68,10 +67,10 @@
     </div>
   </section>
 
-  <section aria-labelledby="partner-h" style="padding:clamp(64px,8vw,108px) 0;background:#F7F9FC">
+  <section aria-labelledby="partner-h" style="padding:clamp(64px,8vw,108px) 0;background:#0C1419">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(330px,100%),1fr));gap:clamp(34px,6vw,86px)">
-      <div><p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:.16em;color:#1457D9">YOUR AI PARTNER</p><h2 id="partner-h" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(34px,4.5vw,58px);line-height:1.05;letter-spacing:-.035em">From first evaluation through ongoing improvement.</h2></div>
-      <p style="margin:0;font-size:clamp(17px,1.45vw,20px);line-height:1.75;color:#526079">Felican AI brings evaluation, strategy, custom agents, workflow automation, governance, management, maintenance, and cost control together with a team of certified AI professionals.</p>
+      <div><p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:.16em;color:#2FB894">YOUR AI PARTNER</p><h2 id="partner-h" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(34px,4.5vw,58px);line-height:1.05;letter-spacing:-.035em">From first evaluation through ongoing improvement.</h2></div>
+      <p style="margin:0;font-size:clamp(17px,1.45vw,20px);line-height:1.75;color:#C2D2D4">Felican AI brings evaluation, strategy, custom agents, workflow automation, governance, management, maintenance, and cost control together with a team of certified AI professionals.</p>
     </div>
   </section>
 </main>
@@ -91,7 +90,7 @@ class Component extends DCLogic {
     } catch (error) {
       console.info('Felican booking calendar is not configured yet.');
     }
-    const email = 'privateaiglobal' + '@' + 'gmail.com';
+    const email = 'felican.ai.inc' + '@' + 'gmail.com';
     return {
       hasCalendly: Boolean(calendlyUrl),
       showFallback: !calendlyUrl,

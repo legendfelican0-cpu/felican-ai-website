@@ -31,16 +31,28 @@
 <script src="/image-slot.js"></script>
 <style>
   html { scroll-behavior:smooth; -webkit-text-size-adjust:100%; overflow-x:hidden }
-  body { margin:0; background:#F7F9FC; color:#0A1630; font-family:Inter,system-ui,sans-serif; overflow-x:hidden }
+  body { margin:0; background:#080E13; color:#EEF4F4; font-family:Inter,system-ui,sans-serif; overflow-x:hidden }
   * { box-sizing:border-box }
   img { max-width:100% }
-  a { color:#1457D9 }
-  a:hover { color:#2F80FF }
+  a { color:#2FB894 }
+  a:hover { color:#59D4B4 }
   ::selection { background:#2FB894; color:#080E13 }
   .lf-home input,.lf-home select,.lf-home textarea { font:inherit }
   .lf-home input::placeholder,.lf-home textarea::placeholder { color:#7C9391 }
   .lf-home input:focus,.lf-home select:focus,.lf-home textarea:focus { outline:3px solid #2FB894; outline-offset:1px }
   @keyframes rise { from { opacity:0; transform:translateY(26px) } to { opacity:1; transform:none } }
+  .friction-row { position:relative; display:flex; align-items:center; gap:16px; padding:clamp(20px,2.2vw,26px) clamp(20px,2.2vw,28px); cursor:pointer; transition:background .2s ease }
+  .friction-row:hover { background:rgba(47,184,148,.07) }
+  .friction-input { position:absolute; opacity:0; width:24px; height:24px; margin:0; cursor:pointer }
+  .friction-box { width:23px; height:23px; flex-shrink:0; border:2px solid #3A5450; border-radius:5px; display:flex; align-items:center; justify-content:center; transition:background .15s ease,border-color .15s ease }
+  .friction-box::after { content:''; }
+  .friction-input:checked ~ .friction-box { background:#2FB894; border-color:#2FB894 }
+  .friction-input:checked ~ .friction-box::after { content:'\2713'; color:#080E13; font-weight:900; font-size:14px; line-height:1 }
+  .friction-input:focus-visible ~ .friction-box { outline:3px solid #59D4B4; outline-offset:2px }
+  .friction-label { font-size:17px; font-weight:600; color:#EEF4F4; flex:1; transition:color .15s ease }
+  .friction-input:checked ~ .friction-label { color:#8FE0C8 }
+  .friction-noted { margin-left:auto; flex-shrink:0; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#2FB894; opacity:0; transform:translateX(-6px); transition:opacity .2s ease,transform .2s ease }
+  .friction-input:checked ~ .friction-noted { opacity:1; transform:none }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -75,7 +87,7 @@
       <p style="margin:0 0 26px;font-size:13px;font-weight:600;letter-spacing:0.14em;color:#8FA6A3">VERIFIED CREDENTIALS &middot; CERTIFIED AI PROFESSIONALS</p>
       <div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:clamp(28px,4vw,56px)">
         <sc-for list="{{ badges }}" as="b" hint-placeholder-count="5">
-          <img data-badge-src="{{ b.src }}" alt="{{ b.alt }}" style="height:32px;width:auto;filter:grayscale(1) brightness(1.6);opacity:.85">
+          <img data-badge-src="{{ b.src }}" alt="{{ b.alt }}" style="height:34px;width:auto">
         </sc-for>
       </div>
     </div>
@@ -84,20 +96,19 @@
   <!-- SOUND FAMILIAR — pain points -->
   <section aria-labelledby="pain-h" style="background:#080E13;padding:clamp(72px,8vw,112px) 0">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:end;margin-bottom:clamp(38px,4vw,54px)">
-        <div>
-          <p style="margin:0 0 14px;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2FB894">FRICTION CHECK</p>
-          <h2 id="pain-h" style="margin:0;font-size:clamp(34px,4.6vw,56px);font-weight:700;line-height:1.05;letter-spacing:-0.02em;color:#EEF4F4;text-wrap:balance">Sound familiar?</h2>
-        </div>
+      <div style="margin-bottom:clamp(38px,4vw,54px)">
+        <h2 id="pain-h" style="margin:0 0 12px;font-size:clamp(34px,4.6vw,56px);font-weight:700;line-height:1.05;letter-spacing:-0.02em;color:#EEF4F4;text-wrap:balance">Sound familiar?</h2>
         <p style="margin:0;font-size:clamp(15px,1.2vw,17px);font-weight:600;letter-spacing:0.04em;color:#8FA6A3;text-transform:uppercase;text-wrap:pretty">Check the challenges that reflect current friction in your business</p>
       </div>
 
-      <ul style="list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px, 100%), 1fr));gap:1px;background:#1C2A28;border:1px solid #1C2A28">
+      <ul style="list-style:none;margin:0;padding:0;max-width:720px;display:grid;gap:1px;background:#1C2A28;border:1px solid #1C2A28">
         <sc-for list="{{ frictions }}" as="fr" hint-placeholder-count="6">
           <li data-reveal="1" style="background:#0C1419">
-            <label style="display:flex;align-items:center;gap:14px;padding:clamp(22px,2.2vw,28px);cursor:pointer">
-              <input type="checkbox" name="friction" value="{{ fr }}" style="width:20px;height:20px;flex-shrink:0;accent-color:#2FB894">
-              <span style="font-size:17px;font-weight:600;color:#EEF4F4">{{ fr }}</span>
+            <label class="friction-row">
+              <input class="friction-input" type="checkbox" name="friction" value="{{ fr }}">
+              <span class="friction-box" aria-hidden="true"></span>
+              <span class="friction-label">{{ fr }}</span>
+              <span class="friction-noted" aria-hidden="true">Noted</span>
             </label>
           </li>
         </sc-for>
