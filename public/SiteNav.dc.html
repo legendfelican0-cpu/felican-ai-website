@@ -12,6 +12,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* support.js injects FULL_PAGE_CSS, which pins html, body, #dc-root and .sc-host
+     to height:100%. That traps the whole document in a viewport-height box: the page
+     cannot scroll normally and position:sticky on this header has nothing to stick
+     within. Release the height so the document flows and the header stays put. */
+  html, body { height:auto !important; min-height:100% }
+  #dc-root, #dc-root > .sc-host { height:auto !important; min-height:100% }
+  /* dc-import wraps this component in a .sc-host sized from hint-size (74px tall).
+     position:sticky can only travel within its parent's box, so that wrapper pinned
+     the header in place and it scrolled away. display:contents removes the wrapper
+     box from layout so the header sticks against the page instead. */
+  .sc-host:has(> header) { display:contents }
+</style>
 </helmet>
 <header style="position:sticky;top:0;z-index:900;background:#080E13;border-bottom:1px solid rgba(47,184,148,0.22);font-family:Inter,system-ui,sans-serif">
   <div style="max-width:1280px;margin:0 auto;padding:0 24px;height:74px;display:flex;align-items:center;justify-content:space-between;gap:24px">

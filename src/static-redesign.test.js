@@ -127,23 +127,47 @@ describe('Claude Design static website export', () => {
     const products = read('public/products/index.html');
     expect(products).toContain("name: 'Private AI Global'");
     expect(products).toContain('featured: true');
-    expect(products.indexOf("name: 'Private AI Global'")).toBeLessThan(products.indexOf("name: 'Felican Auto'"));
+    expect(products.indexOf("name: 'Private AI Global'")).toBeLessThan(products.indexOf("name: 'Felican AI Assistant'"));
     // The contact form must offer the same name so ?product= pre-selects it.
     expect(read('public/contact/index.html')).toContain("'Private AI Global'");
   });
 
-  it('shows the wider workshop lineup from the server registry', () => {
+  it('orders the headline products as the owner specified', () => {
+    const products = read('public/products/index.html');
+    const order = [
+      'Private AI Global', 'Felican AI Assistant', 'Felican IDP', 'CrossCheck AI',
+      'Felican AI Auto Marketer', 'World of Agents', 'AI Receptionist', 'Relay',
+      'CandyShop', 'Felican AI Trading',
+    ];
+    const positions = order.map(name => products.indexOf(`name: '${name}'`));
+    positions.forEach((pos, i) => expect(pos, `${order[i]} missing`).toBeGreaterThan(-1));
+    for (let i = 1; i < positions.length; i += 1) {
+      expect(positions[i], `${order[i]} out of order`).toBeGreaterThan(positions[i - 1]);
+    }
+  });
+
+  it('groups the strongest factory apps as agents, then the rest of the bench', () => {
     const products = read('public/products/index.html');
     const contact = read('public/contact/index.html');
-    const lineup = [
-      'Felican Factory', 'Ora', 'ThreadPilot', 'AdPulse', 'Candyshop', 'Mira', 'FrameFire',
-      'Lumina', 'Avatar Comparison', 'Dendrite', 'Quorum', 'FloorDesk', 'QuantDesk', 'Felican Auto-Trading',
-    ];
-    for (const name of lineup) {
+    for (const name of ['Quorum', 'FloorDesk', 'QuantDesk', 'ThreadPilot', 'AdPulse', 'Dendrite']) {
       expect(products).toContain(`name: '${name}'`);
-      // Every product must be selectable on the contact form for ?product= to pre-fill.
       expect(contact).toContain(`'${name}'`);
     }
+    for (const name of ['Ora', 'Mira', 'FrameFire', 'Lumina', 'Avatar Comparison']) {
+      expect(products).toContain(`name: '${name}'`);
+      expect(contact).toContain(`'${name}'`);
+    }
+    // Agents come before the leftovers on the page.
+    expect(products.indexOf('const agents =')).toBeLessThan(products.indexOf('const rest ='));
+  });
+
+  it('drops Factory and the retired Felican Auto name', () => {
+    const products = read('public/products/index.html');
+    expect(products).not.toContain('Factory');
+    expect(products).not.toContain("name: 'Felican Auto'");
+    // Renamed, but it keeps the same screenshot.
+    expect(products).toContain("name: 'AI Receptionist'");
+    expect(products).toContain('/product-felican-auto.png');
   });
 
   it('excludes the entries the owner asked to keep off the site', () => {
@@ -160,19 +184,26 @@ describe('Claude Design static website export', () => {
     }
   });
 
-  it('keeps a current screenshot for each product that shows one', () => {
+  it('keeps a current cover for each product that shows one', () => {
     const products = read('public/products/index.html');
     for (const image of [
       '/product-felican-auto.png',
       '/product-relay.png',
-      '/product-ai-assistant.jpg',
+      '/product-ai-assistant.png',
       '/product-world-of-agents.png',
       '/product-bookmaker.png',
     ]) {
       expect(products).toContain(image);
     }
-    // The old assistant shot showed retired blue branding and a dead phone number.
-    expect(products).not.toContain('/product-ai-assistant.png');
+  });
+
+  it('uses a purpose-built assistant cover, not a screenshot of this website', () => {
+    const cover = fs.readFileSync(path.join(projectRoot, 'public/product-ai-assistant.png'));
+    expect(cover.slice(1, 4).toString()).toBe('PNG');
+    // The retired cover was a 1440x900 grab of the old blue homepage, complete with
+    // a phone number that is no longer in service. The replacement is 808x505.
+    expect(cover.readUInt32BE(16)).toBe(808);
+    expect(cover.readUInt32BE(20)).toBe(505);
   });
 
   it('places World of Agents directly after Felican Auto', () => {

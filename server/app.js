@@ -95,7 +95,10 @@ function createWindowLimiter(limit, windowMs) {
 function securityHeaders(contentType = 'application/json; charset=utf-8') {
   return {
     'Content-Type': contentType,
-    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://cloudflareinsights.com https://fonts.googleapis.com; frame-src https://calendly.com https://*.calendly.com https://cal.com https://*.cal.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:",
+    // tawk.to entries support the assistant's live-chat escalation. The script is
+    // lazy-loaded only when a visitor asks for a person, so ordinary page views
+    // still contact nothing but our own origin.
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://embed.tawk.to https://*.tawk.to; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.tawk.to; font-src 'self' data: https://fonts.gstatic.com https://*.tawk.to; img-src 'self' data: https:; media-src 'self' https://*.tawk.to; connect-src 'self' https://cloudflareinsights.com https://fonts.googleapis.com https://*.tawk.to wss://*.tawk.to; frame-src https://calendly.com https://*.calendly.com https://cal.com https://*.cal.com https://*.tawk.to; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:",
     'Cross-Origin-Opener-Policy': 'same-origin',
     'Cross-Origin-Resource-Policy': 'same-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
