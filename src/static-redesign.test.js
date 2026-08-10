@@ -184,17 +184,29 @@ describe('Claude Design static website export', () => {
     }
   });
 
-  it('keeps a current cover for each product that shows one', () => {
+  it('gives every headline product a cover image that exists on disk', () => {
     const products = read('public/products/index.html');
-    for (const image of [
-      '/product-felican-auto.png',
-      '/product-relay.png',
-      '/product-ai-assistant.png',
-      '/product-world-of-agents.png',
-      '/product-bookmaker.png',
-    ]) {
-      expect(products).toContain(image);
+    const covers = [...products.matchAll(/image: '(\/product-[a-z0-9-]+\.png)'/g)].map(m => m[1]);
+    // All eleven cards above the agent sections carry artwork.
+    expect(covers.length).toBe(11);
+    for (const cover of covers) {
+      const file = path.join(projectRoot, 'public', cover.replace(/^\//, ''));
+      expect(fs.existsSync(file), `${cover} missing from public/`).toBe(true);
+      const bytes = fs.readFileSync(file);
+      // product-relay.png is actually a JPEG carrying a .png name — harmless, since
+      // browsers sniff the content, so accept either signature.
+      const isPng = bytes.slice(1, 4).toString() === 'PNG';
+      const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8;
+      expect(isPng || isJpeg, `${cover} is not a usable image`).toBe(true);
     }
+  });
+
+  it('never mentions the internal ResyDoc name', () => {
+    const everything = [
+      'index.html', 'public/products/index.html', 'public/contact/index.html',
+      'public/about/index.html', 'public/services/index.html', 'public/ChatAssistant.dc.html',
+    ].map(read).join('\n');
+    expect(everything).not.toMatch(/resydoc/i);
   });
 
   it('uses a purpose-built assistant cover, not a screenshot of this website', () => {
