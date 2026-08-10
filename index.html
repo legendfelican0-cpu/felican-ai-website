@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script src="/support.js?v=20260802"></script>
+<script src="/booking-config.js"></script>
 </head>
 <body>
 <x-dc>
@@ -41,18 +42,25 @@
   .lf-home input::placeholder,.lf-home textarea::placeholder { color:#7C9391 }
   .lf-home input:focus,.lf-home select:focus,.lf-home textarea:focus { outline:3px solid #2FB894; outline-offset:1px }
   @keyframes rise { from { opacity:0; transform:translateY(26px) } to { opacity:1; transform:none } }
-  .friction-row { position:relative; display:flex; align-items:center; gap:16px; padding:clamp(20px,2.2vw,26px) clamp(20px,2.2vw,28px); cursor:pointer; transition:background .2s ease }
-  .friction-row:hover { background:rgba(47,184,148,.07) }
-  .friction-input { position:absolute; opacity:0; width:24px; height:24px; margin:0; cursor:pointer }
-  .friction-box { width:23px; height:23px; flex-shrink:0; border:2px solid #3A5450; border-radius:5px; display:flex; align-items:center; justify-content:center; transition:background .15s ease,border-color .15s ease }
-  .friction-box::after { content:''; }
+  .friction-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px }
+  @media (max-width:920px) { .friction-grid { grid-template-columns:repeat(2,1fr) } }
+  @media (max-width:640px) { .friction-grid { grid-template-columns:1fr } }
+  .friction-card { position:relative; display:block; padding:26px 26px 28px; background:linear-gradient(160deg,#102026 0%,#0A1A20 100%); border-top:2px solid #2FB894; cursor:pointer; transition:background .2s ease,transform .2s ease }
+  .friction-card:hover { background:#142A31; transform:translateY(-2px) }
+  .friction-card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px }
+  .friction-n { font-size:12px; font-weight:700; letter-spacing:.14em; color:#7B9298 }
+  .friction-input { position:absolute; opacity:0; width:22px; height:22px; margin:0; cursor:pointer }
+  .friction-box { width:20px; height:20px; flex-shrink:0; border:2px solid #3A5450; border-radius:5px; display:flex; align-items:center; justify-content:center; transition:background .15s ease,border-color .15s ease }
   .friction-input:checked ~ .friction-box { background:#2FB894; border-color:#2FB894 }
-  .friction-input:checked ~ .friction-box::after { content:'\2713'; color:#080E13; font-weight:900; font-size:14px; line-height:1 }
+  .friction-input:checked ~ .friction-box::after { content:'\2713'; color:#080E13; font-weight:900; font-size:13px; line-height:1 }
   .friction-input:focus-visible ~ .friction-box { outline:3px solid #59D4B4; outline-offset:2px }
-  .friction-label { font-size:17px; font-weight:600; color:#EEF4F4; flex:1; transition:color .15s ease }
-  .friction-input:checked ~ .friction-label { color:#8FE0C8 }
-  .friction-noted { margin-left:auto; flex-shrink:0; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#2FB894; opacity:0; transform:translateX(-6px); transition:opacity .2s ease,transform .2s ease }
-  .friction-input:checked ~ .friction-noted { opacity:1; transform:none }
+  .friction-title { margin:0 0 10px; font-size:19px; font-weight:600; line-height:1.3; color:#EEF4F4; transition:color .15s ease,background .15s ease }
+  .friction-card:has(.friction-input:checked) { background:#12332E }
+  .friction-card:has(.friction-input:checked) .friction-title { color:#8FE0C8 }
+  .friction-body { margin:0; font-size:14.5px; line-height:1.62; color:#8FA3A8 }
+  .badge-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px }
+  @media (max-width:760px) { .badge-grid { grid-template-columns:repeat(3,minmax(0,1fr)) } }
+  @media (max-width:460px) { .badge-grid { grid-template-columns:repeat(2,minmax(0,1fr)) } }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -78,16 +86,23 @@
     </div>
   </section>
 
-  <!-- GOLD DIVIDER -->
-  <div aria-hidden="true" style="height:6px;background:linear-gradient(120deg,#D8A746 0%,#F2CD7A 45%,#C8963A 100%)"></div>
-
   <!-- CREDENTIALS -->
-  <section aria-label="Certifications" style="background:#0C1419;padding:clamp(36px,4vw,52px) 0">
-    <div style="max-width:1100px;margin:0 auto;padding:0 24px;text-align:center">
-      <p style="margin:0 0 26px;font-size:13px;font-weight:600;letter-spacing:0.14em;color:#8FA6A3">VERIFIED CREDENTIALS &middot; CERTIFIED AI PROFESSIONALS</p>
-      <div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:clamp(28px,4vw,56px)">
+  <section aria-label="Certifications" style="background:linear-gradient(120deg,#D8A746 0%,#F2CD7A 45%,#C8963A 100%);color:#10161B;padding:clamp(22px,3vw,32px) 24px">
+    <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:clamp(24px,4vw,40px);flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:18px">
+        <span aria-hidden="true" style="display:flex;align-items:center;justify-content:center;width:58px;height:58px;flex-shrink:0;border-radius:12px;background:#0C1419;border:2px solid rgba(16,22,27,.35)">
+          <img src="/logo-mark.png" alt="" style="width:38px;height:38px;object-fit:contain;display:block">
+        </span>
+        <div>
+          <p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#5C4718">Verified credentials</p>
+          <p style="margin:0;font-size:clamp(24px,3vw,36px);font-weight:800;line-height:1;letter-spacing:-.03em;text-transform:uppercase">Certified AI Professionals</p>
+        </div>
+      </div>
+      <div class="badge-grid">
         <sc-for list="{{ badges }}" as="b" hint-placeholder-count="5">
-          <img data-badge-src="{{ b.src }}" alt="{{ b.alt }}" style="height:34px;width:auto">
+          <div style="display:flex;align-items:center;justify-content:center;padding:10px 12px;border:1px solid rgba(15,20,24,.22);border-radius:10px;background:rgba(255,255,255,.72);width:100%;max-width:130px;min-width:0;height:82px">
+            <img data-badge-src="{{ b.src }}" alt="{{ b.alt }}" style="width:100%;max-width:100px;height:60px;object-fit:contain;display:block">
+          </div>
         </sc-for>
       </div>
     </div>
@@ -101,18 +116,22 @@
         <p style="margin:0;font-size:clamp(15px,1.2vw,17px);font-weight:600;letter-spacing:0.04em;color:#8FA6A3;text-transform:uppercase;text-wrap:pretty">Check the challenges that reflect current friction in your business</p>
       </div>
 
-      <ul style="list-style:none;margin:0;padding:0;max-width:720px;display:grid;gap:1px;background:#1C2A28;border:1px solid #1C2A28">
+      <div class="friction-grid">
         <sc-for list="{{ frictions }}" as="fr" hint-placeholder-count="6">
-          <li data-reveal="1" style="background:#0C1419">
-            <label class="friction-row">
-              <input class="friction-input" type="checkbox" name="friction" value="{{ fr }}">
-              <span class="friction-box" aria-hidden="true"></span>
-              <span class="friction-label">{{ fr }}</span>
-              <span class="friction-noted" aria-hidden="true">Noted</span>
-            </label>
-          </li>
+          <label class="friction-card" data-reveal="1">
+            <div class="friction-card-top">
+              <span class="friction-n">{{ fr.n }}</span>
+              <span style="position:relative;display:inline-flex">
+                <input class="friction-input" type="checkbox" checked="{{ fr.checked }}" onChange="{{ fr.toggle }}">
+                <span class="friction-box" aria-hidden="true"></span>
+              </span>
+            </div>
+            <h3 class="friction-title">{{ fr.title }}</h3>
+            <p class="friction-body">{{ fr.body }}</p>
+          </label>
         </sc-for>
-      </ul>
+      </div>
+      <p style="margin:28px 0 0;min-height:24px;font-size:17px;font-weight:600;color:#2FB894">{{ checkedLabel }}</p>
     </div>
   </section>
 
@@ -159,7 +178,19 @@
         <p style="margin:0;font-size:clamp(17px,1.4vw,19px);line-height:1.7;color:#C2D2D4;text-wrap:pretty">Thirty minutes with a certified AI professional. We review current AI use, workflows, and where friction is costing you.</p>
         <a href="/booking/" style="margin-top:28px;display:inline-flex;align-items:center;gap:10px;padding:16px 26px;background:#2FB894;color:#080E13;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-3px)" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Go to booking <span aria-hidden="true">&#8594;</span></a>
       </div>
-      <div aria-hidden="true" style="aspect-ratio:16/10;background-image:repeating-linear-gradient(135deg,#0E171C 0px,#0E171C 10px,#0F1A31 10px,#0F1A31 20px);border:1px solid #1C2A28"></div>
+      <div style="background:#080E13;border:1px solid #1C2A28;padding:clamp(24px,3vw,32px)">
+        <sc-if value="{{ hasCalendly }}" hint-placeholder-val="{{ false }}">
+          <a href="{{ calendlyUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;padding:15px 20px;background:#2FB894;color:#080E13;font-size:16px;font-weight:700;text-decoration:none" style-hover="background:#59D4B4" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Open Calendly <span aria-hidden="true">&#8594;</span></a>
+          <iframe title="Book a call with Felican AI" src="{{ calendlyEmbedUrl }}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;min-height:400px;margin-top:18px;border:1px solid #1C2A28;background:#0C1419"></iframe>
+        </sc-if>
+        <sc-if value="{{ showFallback }}" hint-placeholder-val="{{ true }}">
+          <div role="status" style="display:flex;flex-direction:column;justify-content:center;min-height:376px;padding:8px">
+            <p style="margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:0.14em;color:#2FB894;text-transform:uppercase">The calendar is being connected</p>
+            <p style="margin:0 0 22px;font-size:16px;line-height:1.6;color:#C2D2D4;max-width:32em">Until the Felican AI Calendly link is added, email us directly and we will find a time that works.</p>
+            <a href="{{ emailHref }}" style="display:inline-flex;align-self:start;align-items:center;gap:10px;padding:15px 20px;background:#2FB894;color:#080E13;font-size:16px;font-weight:700;text-decoration:none" style-hover="background:#59D4B4" style-focus="outline:3px solid #59D4B4;outline-offset:3px">{{ email }} <span aria-hidden="true">&#8594;</span></a>
+          </div>
+        </sc-if>
+      </div>
     </div>
   </section>
 
@@ -191,8 +222,8 @@
           <label style="display:grid;gap:8px">
             <span style="font-size:13px;font-weight:700;letter-spacing:0.1em;color:#8FA6A3">BIGGEST FRICTION</span>
             <select id="cf-friction" style="padding:14px 16px;background:#0C1419;border:1px solid #1C2A28;color:#EEF4F4">
-              <sc-for list="{{ frictions }}" as="fr" hint-placeholder-count="6">
-                <option value="{{ fr }}">{{ fr }}</option>
+              <sc-for list="{{ frictionLabels }}" as="fl" hint-placeholder-count="6">
+                <option value="{{ fl }}">{{ fl }}</option>
               </sc-for>
             </select>
           </label>
@@ -212,7 +243,17 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;revealMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;}}">
+const FRICTIONS = [
+  { n: '01', title: 'Data security & AI governance', body: "Sensitive data touches AI tools with no clear policy on what's allowed, logged, or retained." },
+  { n: '02', title: 'Manual workflows', body: 'The same steps get repeated by hand every week because nothing connects the tools you already use.' },
+  { n: '03', title: 'Knowledge loss', body: "Answers live in a few people's heads. When they're out, the business slows down." },
+  { n: '04', title: 'Slow sales cycles', body: 'Leads sit too long before follow-up, and deals stall waiting on someone to circle back.' },
+  { n: '05', title: 'Support overload', body: 'The same questions come in on repeat, leaving less time for everything else on the team.' },
+  { n: '06', title: 'Data paralysis', body: "There's more data than anyone has time to use, and no clear path from numbers to a decision." }
+];
+
 class Component extends DCLogic {
+  state = { checked: FRICTIONS.map(() => false) };
   componentDidMount() {
     setTimeout(() => document.querySelectorAll('img[data-badge-src]').forEach(img => { const src = img.getAttribute('data-badge-src'); if (src && src.indexOf('{{') === -1) img.src = src; }), 0);
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -236,9 +277,23 @@ class Component extends DCLogic {
   componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._fallback) clearTimeout(this._fallback); }
   renderVals() {
     const email = 'felican.ai.inc' + '@' + 'gmail.com';
+    const checkedCount = this.state.checked.filter(Boolean).length;
+    const configured = (window.FELICAN_BOOKING && window.FELICAN_BOOKING.calendlyUrl || '').trim();
+    let calendlyUrl = '';
+    try {
+      const parsed = new URL(configured);
+      const calendlyHost = parsed.hostname === 'calendly.com' || parsed.hostname.endsWith('.calendly.com');
+      if (parsed.protocol === 'https:' && calendlyHost) calendlyUrl = parsed.toString();
+    } catch (error) {
+      console.info('Felican booking calendar is not configured yet.');
+    }
     return {
       email,
       emailHref: 'mailto:' + email,
+      hasCalendly: Boolean(calendlyUrl),
+      showFallback: !calendlyUrl,
+      calendlyUrl,
+      calendlyEmbedUrl: calendlyUrl ? calendlyUrl + (calendlyUrl.includes('?') ? '&' : '?') + 'hide_gdpr_banner=1' : '',
       badges: [
         { src: '/badges/aws.svg', alt: 'AWS' },
         { src: '/badges/gcp.svg', alt: 'Google Cloud' },
@@ -246,14 +301,17 @@ class Component extends DCLogic {
         { src: '/badges/anthropic.svg', alt: 'Anthropic' },
         { src: '/badges/openai.svg', alt: 'OpenAI' }
       ],
-      frictions: [
-        'Data security & AI governance',
-        'Manual workflows',
-        'Knowledge loss',
-        'Slow sales cycles',
-        'Support overload',
-        'Data paralysis'
-      ],
+      frictions: FRICTIONS.map((f, i) => ({
+        n: f.n,
+        title: f.title,
+        body: f.body,
+        checked: this.state.checked[i],
+        toggle: () => this.setState(s => { const c = s.checked.slice(); c[i] = !c[i]; return { checked: c }; })
+      })),
+      frictionLabels: FRICTIONS.map(f => f.title),
+      checkedLabel: checkedCount === 0 ? '' : checkedCount === 1
+        ? "1 selected — that's exactly what we help fix."
+        : `${checkedCount} selected — that's exactly what we help fix.`,
       process: [
         { num: '01', label: 'Assessment — where AI helps, and where it should not' },
         { num: '02', label: 'Implementation — built around your existing workflow' },
@@ -262,7 +320,7 @@ class Component extends DCLogic {
       ],
       sendMessage: () => {
         const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
-        const checked = Array.from(document.querySelectorAll('input[name="friction"]:checked')).map(i => i.value);
+        const checked = FRICTIONS.filter((f, i) => this.state.checked[i]).map(f => f.title);
         const name = val('cf-name');
         const company = val('cf-company');
         const friction = val('cf-friction');

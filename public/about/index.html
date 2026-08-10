@@ -27,6 +27,9 @@
   a { color:#2FB894 } a:hover { color:#59D4B4 }
   ::selection { background:#2FB894; color:#080E13 }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
+  .focus-grid { grid-template-columns:repeat(3,1fr) }
+  @media (max-width:900px) { .focus-grid { grid-template-columns:repeat(2,1fr) } }
+  @media (max-width:560px) { .focus-grid { grid-template-columns:1fr } }
 </style>
 </helmet>
 
@@ -85,7 +88,7 @@
   <section aria-labelledby="focus" style="background:#080E13;padding:clamp(64px,8vw,104px) 0">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px">
       <h2 id="focus" style="margin:0 0 clamp(32px,4vw,48px);max-width:760px;font-family:Sora,sans-serif;font-size:clamp(30px,3.8vw,50px);font-weight:800;line-height:1.06;letter-spacing:-0.035em;color:#EEF4F4;text-wrap:balance">What we focus on</h2>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px, 100%), 1fr));gap:2px;background:#1C2A28;border:1px solid #1C2A28">
+      <div class="focus-grid" style="display:grid;gap:2px;background:#1C2A28;border:1px solid #1C2A28">
         <sc-for list="{{ focus }}" as="f" hint-placeholder-count="6">
           <article data-reveal="1" style="background:#0C1419;padding:clamp(26px,2.8vw,36px);display:flex;flex-direction:column;gap:12px;transition:background .25s ease" style-hover="background:#0E171C">
             <span aria-hidden="true" style="width:26px;height:3px;background:#2FB894"></span>

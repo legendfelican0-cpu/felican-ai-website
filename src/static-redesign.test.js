@@ -12,7 +12,7 @@ describe('Claude Design static website export', () => {
     expect(home).toContain('AI solutions for');
     expect(home).toContain('Sound familiar?');
     expect(home).toContain('Tell us where it hurts');
-    expect(home).toContain('name="friction"');
+    expect(home).toContain('friction-input');
     expect(home).not.toMatch(/(?:Home|Products|Services|Books|About|Contact)\.dc\.html/);
   });
 

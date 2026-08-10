@@ -124,9 +124,10 @@ test.describe('Claude Design website export', () => {
   test('homepage friction checklist and contact form are usable', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-    const firstFriction = page.locator('input[name="friction"]').first();
+    const firstFriction = page.locator('.friction-input').first();
     await firstFriction.check();
     await expect(firstFriction).toBeChecked();
+    await expect(page.getByText("selected — that's exactly what we help fix.")).toBeVisible();
 
     await page.locator('#cf-name').fill('Test User');
     await page.locator('#cf-message').fill('Testing the contact flow.');
