@@ -94,7 +94,7 @@ describe('Felican AI contact endpoint', () => {
       method: 'POST', headers: browserHeaders, body: JSON.stringify(goodBody),
     });
     expect(response.status).toBe(502);
-    await expect(response.json()).resolves.toMatchObject({ error: expect.stringContaining('felican.ai.inc@gmail.com') });
+    await expect(response.json()).resolves.toMatchObject({ error: expect.stringContaining('ai@felican.ai') });
   });
 
   it('rate limits repeated submissions from one address', async () => {

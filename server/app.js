@@ -44,7 +44,7 @@ Books by Lee Felican Jr.:
 - The BIG AI Book: a fully illustrated, plain-language explanation of AI for grown-ups, including agents, skills, and tools.
 Book resources: https://felican.ai/Lee-Felican-jr/books/resources/
 
-Contact: email felican.ai.inc@gmail.com, or call (561) 235-0799 Monday to Friday, 9am-6pm Eastern. Visitors can also send a message straight to the team from this chat using the envelope button beside the message box, or from the contact page at /contact/. Offer that handoff whenever someone wants a person, a quote, or something you cannot answer. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
+Contact: email ai@felican.ai, or call (561) 235-0799 Monday to Friday, 9am-6pm Eastern. Visitors can also send a message straight to the team from this chat using the envelope button beside the message box, or from the contact page at /contact/. Offer that handoff whenever someone wants a person, a quote, or something you cannot answer. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
 
 export function sanitizeText(value, maxLength = MAX_MESSAGE_LENGTH) {
   return String(value ?? '')
@@ -197,7 +197,7 @@ async function readJson(req) {
 export async function sendContactEmail(contact, env = process.env) {
   const key = env.RESEND_API_KEY?.trim();
   if (!key) throw new Error('Contact email is not configured');
-  const to = (env.CONTACT_TO || 'felican.ai.inc@gmail.com').trim();
+  const to = (env.CONTACT_TO || 'ai@felican.ai').trim();
   const from = (env.CONTACT_FROM || 'Felican AI Website <website@felican.ai>').trim();
 
   const rows = [
@@ -420,7 +420,7 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
         return json(res, status, {
           error: status < 500
             ? 'Invalid request.'
-            : 'We could not send that just now. Please email felican.ai.inc@gmail.com directly.',
+            : 'We could not send that just now. Please email ai@felican.ai directly.',
         });
       }
     }

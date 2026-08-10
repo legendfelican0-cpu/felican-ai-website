@@ -147,7 +147,7 @@ Services: AI agents and bots, business automation, custom integrations, private 
 
 Lee Felican Jr. has published four books: The Big Balla's Guide to Making Money with AI, Don't Be Replaced, Stop Being Nice to AI, and The BIG AI Book.
 
-Contact: email felican.ai.inc@gmail.com, or call (561) 235-0799 Monday to Friday, 9am-6pm Eastern. Visitors can also send a message straight to the team from this chat using the envelope button next to the message box, or from the contact page at /contact/.
+Contact: email ai@felican.ai, or call (561) 235-0799 Monday to Friday, 9am-6pm Eastern. Visitors can also send a message straight to the team from this chat using the envelope button next to the message box, or from the contact page at /contact/.
 
 Felican AI is a team of more than ten certified AI professionals with backgrounds across every major industry, led by Lee Felican Jr.
 
@@ -203,7 +203,7 @@ class Component extends DCLogic {
         role: 'assistant',
         text: ok
           ? 'Sent — a certified AI professional will reply to ' + email + ' within one business day.'
-          : "That didn't go through. Please email felican.ai.inc@gmail.com or call (561) 235-0799 and we'll pick it up."
+          : "That didn't go through. Please email ai@felican.ai or call (561) 235-0799 and we'll pick it up."
       }]
     }));
   }
@@ -228,7 +228,7 @@ class Component extends DCLogic {
       if (!response.ok || !payload.reply) throw new Error(payload.error || 'Assistant request failed');
       reply = payload.reply;
     } catch (e) {
-      reply = "I couldn't reach the assistant just now. Email felican.ai.inc@gmail.com and we'll help directly.";
+      reply = "I couldn't reach the assistant just now. Email ai@felican.ai and we'll help directly.";
     }
     this.setState(s => ({ messages: [...s.messages, { role: 'assistant', text: (reply || '').trim() || 'Sorry — could you rephrase that?' }], busy: false }));
   }

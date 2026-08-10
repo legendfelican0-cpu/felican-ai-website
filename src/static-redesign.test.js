@@ -209,13 +209,14 @@ describe('Claude Design static website export', () => {
     expect(everything).not.toMatch(/resydoc/i);
   });
 
-  it('uses a purpose-built assistant cover, not a screenshot of this website', () => {
+  it('uses a purpose-built assistant cover, not a screenshot of any website', () => {
     const cover = fs.readFileSync(path.join(projectRoot, 'public/product-ai-assistant.png'));
     expect(cover.slice(1, 4).toString()).toBe('PNG');
-    // The retired cover was a 1440x900 grab of the old blue homepage, complete with
-    // a phone number that is no longer in service. The replacement is 808x505.
-    expect(cover.readUInt32BE(16)).toBe(808);
-    expect(cover.readUInt32BE(20)).toBe(505);
+    // Two covers have been retired here: a grab of the old blue homepage carrying a
+    // dead phone number, then a mock of the widget UI that still read as a website.
+    // The current one is illustrated artwork matching the rest of the lineup.
+    expect(cover.readUInt32BE(16)).toBe(947);
+    expect(cover.readUInt32BE(20)).toBe(592);
   });
 
   it('places World of Agents directly after Felican Auto', () => {
@@ -226,7 +227,7 @@ describe('Claude Design static website export', () => {
 
   it('offers a real contact form alongside direct email and phone', () => {
     const contact = read('public/contact/index.html');
-    expect(contact).toContain("'felican.ai.inc' + '@' + 'gmail.com'");
+    expect(contact).toContain("'ai' + '@' + 'felican.ai'");
     expect(contact).toContain("'mailto:' + EMAIL");
     expect(contact).toContain('<form');
     expect(contact).toContain("fetch('/api/contact'");

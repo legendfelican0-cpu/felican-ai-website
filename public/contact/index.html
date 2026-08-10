@@ -15,7 +15,7 @@
 <link rel="canonical" href="https://felican.ai/contact/">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Felican AI"><meta property="og:locale" content="en_US"><meta property="og:title" content="Contact Felican AI — Talk to a certified AI team"><meta property="og:description" content="Send us a message, email us, or call (561) 235-0799. A certified AI professional replies within one business day."><meta property="og:url" content="https://felican.ai/contact/"><meta property="og:image" content="https://felican.ai/og.png"><meta property="og:image:width" content="1102"><meta property="og:image:height" content="579"><meta property="og:image:alt" content="Felican AI">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Contact Felican AI — Talk to a certified AI team"><meta name="twitter:description" content="Send us a message, email us, or call (561) 235-0799."><meta name="twitter:image" content="https://felican.ai/og.png"><meta name="twitter:image:alt" content="Felican AI — AI solutions for private businesses">
-<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://felican.ai/#organization","name":"Felican AI","url":"https://felican.ai/","logo":{"@type":"ImageObject","url":"https://felican.ai/logo-mark.png"},"image":"https://felican.ai/og.png","description":"Felican AI is a team of more than ten certified AI professionals building practical AI products, private AI systems, custom automations, integrations, and training for businesses in any industry.","email":"felican.ai.inc@gmail.com","telephone":"+1-561-235-0799","founder":{"@type":"Person","name":"Lee Felican Jr.","jobTitle":"Founder and Enterprise Architect"},"contactPoint":[{"@type":"ContactPoint","telephone":"+1-561-235-0799","email":"felican.ai.inc@gmail.com","contactType":"sales","areaServed":"US","availableLanguage":"English"}],"knowsAbout":["Artificial intelligence","Private AI deployment","Business automation","AI integration","AI training"]},{"@type":"WebSite","@id":"https://felican.ai/#website","url":"https://felican.ai/","name":"Felican AI","publisher":{"@id":"https://felican.ai/#organization"},"inLanguage":"en-US"},{"@type":"ContactPage","url":"https://felican.ai/contact/","name":"Contact Felican AI","about":{"@id":"https://felican.ai/#organization"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://felican.ai/#organization","name":"Felican AI","url":"https://felican.ai/","logo":{"@type":"ImageObject","url":"https://felican.ai/logo-mark.png"},"image":"https://felican.ai/og.png","description":"Felican AI is a team of more than ten certified AI professionals building practical AI products, private AI systems, custom automations, integrations, and training for businesses in any industry.","email":"ai@felican.ai","telephone":"+1-561-235-0799","founder":{"@type":"Person","name":"Lee Felican Jr.","jobTitle":"Founder and Enterprise Architect"},"contactPoint":[{"@type":"ContactPoint","telephone":"+1-561-235-0799","email":"ai@felican.ai","contactType":"sales","areaServed":"US","availableLanguage":"English"}],"knowsAbout":["Artificial intelligence","Private AI deployment","Business automation","AI integration","AI training"]},{"@type":"WebSite","@id":"https://felican.ai/#website","url":"https://felican.ai/","name":"Felican AI","publisher":{"@id":"https://felican.ai/#organization"},"inLanguage":"en-US"},{"@type":"ContactPage","url":"https://felican.ai/contact/","name":"Contact Felican AI","about":{"@id":"https://felican.ai/#organization"}}]}</script>
 </head>
 <body>
 <x-dc>
@@ -220,7 +220,7 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
-const EMAIL = 'felican.ai.inc' + '@' + 'gmail.com';
+const EMAIL = 'ai' + '@' + 'felican.ai';
 const PHONE_DISPLAY = '(561) 235-0799';
 const PHONE_HREF = 'tel:+15612350799';
 const GENERAL = 'General enquiry';
@@ -291,6 +291,15 @@ class Component extends DCLogic {
     if (!cfg) return;
     this.setState({ liveChatOn: true });
     window.Tawk_API = window.Tawk_API || {};
+    // Park tawk in the bottom-LEFT. The Felican assistant launcher owns the
+    // bottom-right on every page, and tawk's bubble sat straight on top of it.
+    // Must be set before the script loads.
+    window.Tawk_API.customStyle = {
+      visibility: {
+        desktop: { position: 'bl', xOffset: 24, yOffset: 24 },
+        mobile: { position: 'bl', xOffset: 14, yOffset: 76 },
+      },
+    };
     window.Tawk_LoadStart = new Date();
     const syncStatus = () => {
       try {
@@ -303,11 +312,20 @@ class Component extends DCLogic {
       syncStatus();
     };
     window.Tawk_API.onStatusChange = syncStatus;
-    // Keep the two chat launchers out of each other's corner.
+    // Belt and braces: the widget lives bottom-left, but on a narrow screen the
+    // open window still covers most of the page, so stand the assistant down
+    // while chat is maximised and bring it back when it closes.
     const standDownAssistant = on => document.body.classList.toggle('tawk-open', on);
     window.Tawk_API.onChatMaximized = () => standDownAssistant(true);
-    window.Tawk_API.onChatMinimized = () => standDownAssistant(false);
-    window.Tawk_API.onChatHidden = () => standDownAssistant(false);
+    // On minimise, put tawk's own bubble away again. The "Live chat" card is the
+    // single entry point; leaving the bubble up gives a second launcher and lets
+    // tawk's attention grabber pop over the contact details.
+    const retire = () => {
+      standDownAssistant(false);
+      try { window.Tawk_API.hideWidget && window.Tawk_API.hideWidget(); } catch (e) { /* optional */ }
+    };
+    window.Tawk_API.onChatMinimized = retire;
+    window.Tawk_API.onChatHidden = retire;
     const s = document.createElement('script');
     s.async = true;
     s.src = 'https://embed.tawk.to/' + cfg.propertyId + '/' + cfg.widgetId;
