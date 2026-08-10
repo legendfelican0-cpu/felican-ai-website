@@ -1,0 +1,160 @@
+{
+  "email": "ai@felican.ai",
+  "phone": "(561) 235-0799",
+  "bookingLabel": "felican.ai/contact",
+  "bookingUrl": "https://felican.ai/contact",
+  "checklist": [
+    {
+      "title": "Data security &amp; AI governance",
+      "prompt": "Do you know what your team is pasting into public AI tools, and who approved it?"
+    },
+    {
+      "title": "Manual workflows",
+      "prompt": "How many hours a week disappear into copying data between systems by hand?"
+    },
+    {
+      "title": "Knowledge loss",
+      "prompt": "When someone leaves or changes roles, what walks out the door with them?"
+    },
+    {
+      "title": "Slow sales cycles",
+      "prompt": "How long does a quote, proposal, or follow-up sit before it reaches the customer?"
+    },
+    {
+      "title": "Support overload",
+      "prompt": "Is your team answering the same handful of questions over and over again?"
+    },
+    {
+      "title": "Data paralysis",
+      "prompt": "You already have the dashboards. Are they actually changing any decisions?"
+    }
+  ],
+  "benefitsTitle": "10 ways AI can benefit your business",
+  "benefits": [
+    {
+      "title": "Turn More Leads Into Customers",
+      "body": "Respond to leads instantly, qualify prospects, and schedule appointments automatically."
+    },
+    {
+      "title": "Serve Customers 24/7",
+      "body": "Answer questions, resolve common issues, and capture opportunities whenever customers need help."
+    },
+    {
+      "title": "Help Employees Find Answers Instantly",
+      "body": "Give authorized employees secure access to company procedures, policies, products, and internal knowledge."
+    },
+    {
+      "title": "Eliminate Repetitive Work",
+      "body": "Automate tasks across email, CRM, accounting, scheduling, inventory, and other systems."
+    },
+    {
+      "title": "Find and Fix Operational Inefficiencies",
+      "body": "Discover bottlenecks, duplicated work, unnecessary costs, and missed revenue opportunities."
+    },
+    {
+      "title": "Process Documents and Data Automatically",
+      "body": "Extract and organize information from invoices, contracts, forms, receipts, and PDFs."
+    },
+    {
+      "title": "Increase Revenue From Existing Customers",
+      "body": "Recommend relevant products and services to each customer at the right time."
+    },
+    {
+      "title": "Improve Cash Flow and Protect Profits",
+      "body": "Follow up on unpaid invoices and uncover waste, billing errors, excessive discounts, and hidden profit leaks."
+    },
+    {
+      "title": "Make Faster, Better Business Decisions",
+      "body": "Give leadership a clear view of performance, risks, opportunities, and recommended next actions."
+    },
+    {
+      "title": "Protect Sensitive Business and Customer Data",
+      "body": "Build AI around privacy, encryption, access controls, secure data handling, and the company&rsquo;s compliance requirements."
+    }
+  ],
+  "credBar": {
+    "kicker": "Verified credentials",
+    "title": "A team of 10+ certified AI professionals",
+    "badges": [
+      {
+        "file": "assets/aws.png",
+        "alt": "AWS",
+        "scale": 1.3
+      },
+      {
+        "file": "gcp.svg",
+        "alt": "Google Cloud",
+        "scale": 1.0
+      },
+      {
+        "file": "azure.svg",
+        "alt": "Microsoft Azure",
+        "scale": 1.12
+      },
+      {
+        "file": "anthropic.svg",
+        "alt": "Anthropic",
+        "scale": 1.0
+      },
+      {
+        "file": "openai.svg",
+        "alt": "OpenAI",
+        "scale": 1.35
+      }
+    ]
+  },
+  "services": [
+    {
+      "title": "AI agents and bots",
+      "body": "Answering customers, qualifying leads, and routing requests &mdash; escalating to a person when they should."
+    },
+    {
+      "title": "Business automation",
+      "body": "We map the steps your team repeats by hand every week, and remove them."
+    },
+    {
+      "title": "Custom integrations",
+      "body": "AI connected to your real data: CRM, phone, scheduling, billing, and back office."
+    },
+    {
+      "title": "Private AI systems",
+      "body": "For data that cannot leave. Runs inside your environment, under your access controls."
+    },
+    {
+      "title": "AI implementation and consulting",
+      "body": "A clear plan for what to build, in what order, and what to skip."
+    },
+    {
+      "title": "Business solutions",
+      "body": "A complete build aimed at one operational problem, handed over working."
+    },
+    {
+      "title": "AI training and workshops",
+      "body": "Practical sessions for leadership and staff, so adoption does not stall after launch."
+    }
+  ],
+  "process": [
+    {
+      "title": "Assess",
+      "body": "We review current AI use, workflows, and where friction is costing you."
+    },
+    {
+      "title": "Implement",
+      "body": "We build and deploy against the friction you named, in priority order."
+    },
+    {
+      "title": "Manage",
+      "body": "Governance, monitoring, and maintenance keep it working as you change."
+    }
+  ],
+  "images": {
+    "hero": {
+      "file": "home-hero.jpg",
+      "alt": "Human and AI handshake"
+    },
+    "team": {
+      "file": "home-team.jpg",
+      "alt": "Global team connected by a network"
+    }
+  }
+}

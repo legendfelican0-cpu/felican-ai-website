@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Felican AI — Bifold Pamphlet</title>
+<style>{{FONTS}}</style>
+<style>
+  html, body { margin: 0; padding: 0; background: #55606a; }
+  * { box-sizing: border-box; }
+  body { -webkit-font-smoothing: antialiased; }
+
+  /* US Letter, portrait, full bleed to the sheet edge.
+     Named size (not "8.5in 11in") so print dialogs select Letter instead of Custom. */
+  @page { size: letter portrait; margin: 0; }
+
+  .page {
+    width: {{SHEET_W}};
+    height: {{SHEET_H}};
+    overflow: hidden;
+    display: grid;
+    /* minmax(0, 1fr), not 1fr: a bare 1fr track is minmax(auto, 1fr) and can be
+       pushed past 50% by content that refuses to shrink (a long unbreakable
+       token, a fixed-width child). That moves the fold off the paper centre. */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    background: #080e13;
+    color: #eef4f4;
+    font-family: 'Libre Franklin', Helvetica, Arial, sans-serif;
+    break-after: page;
+    page-break-after: always;
+  }
+  .page:last-of-type { break-after: auto; page-break-after: auto; }
+
+  /* Screen-only affordances; print sees only the two sheets. */
+  @media screen {
+    body { padding: 24px; display: grid; gap: 24px; justify-content: center; }
+    .page { box-shadow: 0 8px 40px rgba(0,0,0,.45); }
+  }
+  @media print {
+    html, body { background: #fff; }
+    .page { box-shadow: none; }
+  }
+
+  /* Force the dark background to actually print. */
+  .page, .page * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  /* Panels are only 4.25in wide now, so the gutters are tighter than the
+     landscape version had them; 0.34in still clears the fold comfortably. */
+  .panel { display: flex; flex-direction: column; padding: 0.45in 0.42in 0.4in; }
+  .panel--left  { padding-right: 0.34in; border-right: 1px dashed rgba(238,244,244,.18); }
+  .panel--right { padding-left: 0.34in; }
+
+  .eyebrow {
+    margin: 0 0 10px;
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 8.5pt; letter-spacing: .22em; text-transform: uppercase;
+    color: #2fb894;
+  }
+  h2.section-title {
+    margin: 0 0 26px;
+    font-size: 29pt; font-weight: 700; letter-spacing: -.035em; line-height: 1.02;
+    text-wrap: balance;
+  }
+  /* The two halves of the inside photo band: same height so the picture lines
+     up across the fold, each painting the sheet-wide image at its own offset. */
+  .photo-band {
+    min-height: 2.28in;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    background-repeat: no-repeat;
+    background-size: 100% 100%, {{SHEET_W}} 100%;
+  }
+  .rule-list { display: grid; gap: 1px; background: rgba(238,244,244,.14); }
+  .rule-list > * { background: #080e13; }
+</style>
+</head>
+<body>
+
+<!-- ============================ OUTSIDE SHEET ============================ -->
+<!-- Left half = back panel · Right half = front cover -->
+<section class="page" data-label="Outside">
+
+  <div class="panel panel--left">
+    <p class="eyebrow" style="margin-bottom: 5px; font-size: 9pt; letter-spacing: .2em;">Diagnostics</p>
+    <h2 style="margin: 0 0 6px; font-size: 28pt; font-weight: 700; letter-spacing: -.035em; line-height: 1;">Sound familiar?</h2>
+    <p style="margin: 0 0 16px; font-family: 'IBM Plex Mono', monospace; font-size: 7.6pt; line-height: 1.5; letter-spacing: .08em; text-transform: uppercase; color: #8fa3a8;">Check every one that applies to your business</p>
+
+    <div style="display: grid; gap: 7px; flex: 1; align-content: stretch;">
+      {{CHECKLIST}}
+    </div>
+
+    <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(238,244,244,.14);">
+      <p style="margin: 0 0 6px; font-size: 11pt; line-height: 1.45; color: #cbdadc;">Bring this to your call. Whatever you checked is where we start.</p>
+      <!-- No text-transform here: the URL path is case-sensitive to the client-side router. -->
+      <p style="margin: 0; font-family: 'IBM Plex Mono', monospace; font-size: 9pt; letter-spacing: .04em; line-height: 1.7; color: #c2d2d4;">{{EMAIL}}<br>{{PHONE}}<br><span style="color: #2fb894;">{{BOOKING_LABEL}}</span></p>
+    </div>
+  </div>
+
+  <div class="panel panel--right">
+    <div style="margin: -0.45in -0.42in 8px -0.34in; padding: 0.45in 0.42in 10px 0.34in; background-image: linear-gradient(180deg, rgba(8,14,19,.80) 0%, rgba(8,14,19,.58) 42%, rgba(8,14,19,.98) 100%), url({{HERO_IMG}}); background-size: cover; background-position: center;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <img src="{{LOGO}}" alt="Felican AI" style="width: 46px; height: 46px; object-fit: contain; display: block;">
+        <span style="font-size: 14pt; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;">Felican AI</span>
+      </div>
+
+      <h1 style="margin: 18px 0 6px; font-size: 28pt; font-weight: 700; line-height: 1; letter-spacing: -.04em; text-wrap: balance;">{{BENEFITS_TITLE}}</h1>
+      <div style="width: 64px; height: 3px; background: #2fb894;"></div>
+    </div>
+
+    <ol class="rule-list" style="margin: 0; padding: 0; list-style: none;">
+      {{BENEFITS}}
+    </ol>
+
+    <!-- Bleeds left/right to the panel edges but stops short of the bottom:
+         the badge logos must stay clear of a printer's non-printable margin. -->
+    <div style="margin: auto -0.42in 0 -0.34in;">{{CREDBAR}}</div>
+  </div>
+</section>
+
+<!-- ============================ INSIDE SHEET ============================= -->
+<section class="page" data-label="Inside">
+
+  <div class="panel panel--left">
+    <div class="photo-band" style="margin: -0.45in -0.34in 22px -0.42in; padding: 0.45in 0.34in 20px 0.42in; background-image: linear-gradient(180deg, rgba(8,14,19,.50) 0%, rgba(8,14,19,.62) 40%, rgba(8,14,19,.97) 100%), url({{TEAM_IMG}}); background-position: 0 0, left center;">
+      <p class="eyebrow">Services</p>
+      <h2 class="section-title" style="margin-bottom: 0;">AI that fits the business</h2>
+    </div>
+
+    <div class="rule-list" style="flex: 1; align-content: stretch;">
+      {{SERVICES}}
+    </div>
+  </div>
+
+  <div class="panel panel--right">
+    <div class="photo-band" style="margin: -0.45in -0.42in 22px -0.34in; padding: 0.45in 0.42in 20px 0.34in; background-image: linear-gradient(180deg, rgba(8,14,19,.50) 0%, rgba(8,14,19,.62) 40%, rgba(8,14,19,.97) 100%), url({{TEAM_IMG}}); background-position: 0 0, right center;">
+      <p class="eyebrow">Process</p>
+      <h2 class="section-title" style="margin-bottom: 0;">From first assessment to ongoing value</h2>
+    </div>
+
+    <div style="display: grid; gap: 22px; flex: 1; align-content: space-evenly;">
+      {{PROCESS}}
+    </div>
+
+    <p style="margin: 26px 0 22px; padding-top: 16px; border-top: 1px solid rgba(238,244,244,.16); font-size: 10.5pt; line-height: 1.55; color: #88a0a5;">Private and responsible by design. Human intervention remains available. Authorized Auto AI can be configured where the business decides it is appropriate.</p>
+
+    <div style="margin-top: auto; padding: 24px 26px; background: #0c1419; border: 1px solid rgba(238,244,244,.14); display: flex; gap: 16px; align-items: center;">
+      <div style="flex: 1; min-width: 0;">
+        <h3 style="margin: 0 0 8px; font-size: 22pt; font-weight: 700; letter-spacing: -.03em;">Book a call</h3>
+        <p style="margin: 0 0 14px; font-size: 11pt; line-height: 1.5; color: #8fa3a8;">Fifteen minutes with a certified AI professional. We reply within one business day.</p>
+        <div style="display: grid; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9pt; overflow-wrap: anywhere; color: #c2d2d4;">
+          <span>{{EMAIL}}</span>
+          <span>{{PHONE}}</span>
+          <span style="color: #2fb894;">{{BOOKING_LABEL}}</span>
+        </div>
+      </div>
+      <div style="flex: none; width: 96px; height: 96px; padding: 7px; background: #eef4f4; border-radius: 8px;" aria-label="QR code to {{BOOKING_LABEL}}">{{QR}}</div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

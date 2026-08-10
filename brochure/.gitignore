@@ -1,0 +1,10 @@
+# Build output. `node build.mjs` regenerates all of it.
+#
+# The root .gitignore excludes `dist/` as a directory, and git cannot re-include
+# a file whose parent directory is excluded — so un-ignore the directory first,
+# then re-ignore its contents, then keep the one file we do want versioned.
+!dist/
+dist/*
+# The PDF is the deliverable, so it is tracked. The preview HTML and the proof
+# PNGs are large and rewritten on every build, so they are not.
+!dist/felican-bifold.pdf
