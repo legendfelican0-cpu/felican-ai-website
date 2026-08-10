@@ -33,8 +33,6 @@
 .fa-input:focus { outline:2px solid #2FB894;outline-offset:1px;border-color:#2FB894;background:#080E13 }
 .fa-send { width:50px;height:50px;display:grid;place-items:center;flex:0 0 50px;background:linear-gradient(135deg,#2FB894,#59D4B4);border:0;color:#080E13;font-family:Sora,sans-serif;font-size:22px;font-weight:700;padding:0;border-radius:50%;cursor:pointer;box-shadow:0 8px 20px rgba(47,184,148,.28);transition:transform .18s ease,box-shadow .18s ease }
 .fa-send:hover { transform:translateY(-2px);box-shadow:0 11px 25px rgba(47,184,148,.38) }
-.fa-live { width:50px;height:50px;display:grid;place-items:center;flex:0 0 50px;background:rgba(47,184,148,.16);border:1px solid #2FB894;color:#8FE0C8;font-size:18px;padding:0;border-radius:50%;cursor:pointer;transition:background .18s ease,transform .18s ease }
-.fa-live:hover { background:rgba(47,184,148,.3);transform:translateY(-2px) }
 .fa-human { width:50px;height:50px;display:grid;place-items:center;flex:0 0 50px;background:#12181C;border:1px solid #1C2A28;color:#8FE0C8;font-size:19px;padding:0;border-radius:50%;cursor:pointer;transition:background .18s ease,border-color .18s ease,transform .18s ease }
 .fa-human:hover { background:rgba(47,184,148,.18);border-color:#2FB894;transform:translateY(-2px) }
 .fa-handoff { display:flex;flex-direction:column;gap:9px;padding:15px 16px;background:#0C1419;border-top:1px solid #1C2A28;flex-shrink:0 }
@@ -123,9 +121,6 @@
           <label for="fa-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your message</label>
           <input type="text" name="website" value="{{ website }}" onChange="{{ onWebsite }}" tabindex="-1" autoComplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden">
           <input class="fa-input" id="fa-input" type="text" value="{{ draft }}" onChange="{{ onDraft }}" placeholder="Ask anything about Felican AI" maxlength="800" autoComplete="off">
-          <sc-if value="{{ liveChatReady }}" hint-placeholder-val="{{ false }}">
-            <button class="fa-live" type="button" onClick="{{ openLiveChat }}" title="Talk to a person now" aria-label="Talk to a person now" style-focus="outline:2px solid #2FB894;outline-offset:2px">&#128172;</button>
-          </sc-if>
           <button class="fa-human" type="button" onClick="{{ openHandoff }}" title="Email a person" aria-label="Email a person at Felican AI" style-focus="outline:2px solid #2FB894;outline-offset:2px">&#9993;</button>
           <button class="fa-send" type="submit" aria-label="Send message" title="{{ sendLabel }}" style-focus="outline:2px solid #080E13;outline-offset:2px">&#8593;</button>
         </form>
@@ -161,86 +156,10 @@ Answer in 2-4 short sentences, plainly and helpfully. Use plain text only: no Ma
 class Component extends DCLogic {
   state = {
     open: new URLSearchParams(window.location.search).has('assistant'), busy: false, draft: '', website: '',
-    handoff: false, hName: '', hEmail: '', hMsg: '', hBusy: false, liveChatReady: false,
+    handoff: false, hName: '', hEmail: '', hMsg: '', hBusy: false,
     messages: [{ role: 'assistant', text: "Hi — I'm the Felican AI agent. Ask me about our products, services, training, or Lee's books." }]
   };
   scrollRef = React.createRef();
-
-  // ---- tawk.to live-chat escalation -------------------------------------------------
-  // The script is NOT loaded on page view. It only downloads when a visitor asks for a
-  // person, so ordinary visitors never touch a third-party script. The button is then
-  // shown only while an agent is genuinely online — an unattended chat box is worse
-  // than none, and offline visitors get the email handoff instead.
-  tawkConfig() {
-    const c = window.FELICAN_TAWK || {};
-    const propertyId = String(c.propertyId || '').trim();
-    return propertyId ? { propertyId, widgetId: String(c.widgetId || 'default').trim() } : null;
-  }
-
-  loadTawk() {
-    if (this._tawkPromise) return this._tawkPromise;
-    const cfg = this.tawkConfig();
-    if (!cfg) return Promise.reject(new Error('tawk.to is not configured'));
-    this._tawkPromise = new Promise((resolve, reject) => {
-      window.Tawk_API = window.Tawk_API || {};
-      window.Tawk_LoadStart = new Date();
-      window.Tawk_API.onLoad = () => resolve(window.Tawk_API);
-      const s = document.createElement('script');
-      s.async = true;
-      s.src = 'https://embed.tawk.to/' + cfg.propertyId + '/' + cfg.widgetId;
-      s.charset = 'UTF-8';
-      s.setAttribute('crossorigin', '*');
-      s.onerror = () => reject(new Error('tawk.to failed to load'));
-      document.head.appendChild(s);
-      setTimeout(() => reject(new Error('tawk.to timed out')), 12000);
-    }).then(api => {
-      try { api.hideWidget && api.hideWidget(); } catch (e) { /* widget styling is optional */ }
-      this.setState({ liveChatReady: this.isAgentOnline(api) });
-      return api;
-    });
-    return this._tawkPromise;
-  }
-
-  isAgentOnline(api) {
-    try { return typeof api.getStatus === 'function' && api.getStatus() === 'online'; }
-    catch (e) { return false; }
-  }
-
-  async openLiveChat() {
-    let api;
-    try { api = await this.loadTawk(); } catch (e) {
-      this.setState(s => ({
-        handoff: true,
-        messages: [...s.messages, { role: 'assistant', text: "Live chat isn't available right now. Leave your details and a person will email you back." }]
-      }));
-      return;
-    }
-    if (!this.isAgentOnline(api)) {
-      this.setState(s => ({
-        liveChatReady: false,
-        handoff: true,
-        messages: [...s.messages, { role: 'assistant', text: 'Nobody is on live chat at the moment. Leave your details here and a person will email you back.' }]
-      }));
-      return;
-    }
-    // Give the human the conversation so far instead of a cold start.
-    const transcript = this.state.messages
-      .map(m => (m.role === 'user' ? 'Visitor: ' : 'Assistant: ') + m.text)
-      .join('\n');
-    try {
-      api.setAttributes({ 'felican-transcript': transcript.slice(0, 4000) }, () => {});
-      api.addEvent('assistant-escalation', { source: 'felican-assistant' }, () => {});
-    } catch (e) { /* attributes are best-effort */ }
-    try { api.showWidget && api.showWidget(); api.maximize(); } catch (e) { /* ignore */ }
-    this.setState({ open: false });
-  }
-
-  // Probe availability once the panel opens, so the button reflects real status.
-  probeLiveChat() {
-    if (!this.tawkConfig() || this._tawkProbed) return;
-    this._tawkProbed = true;
-    this.loadTawk().catch(() => this.setState({ liveChatReady: false }));
-  }
 
   // Hand the conversation to a human by emailing it through /api/contact.
   async submitHandoff(event) {
@@ -331,8 +250,6 @@ class Component extends DCLogic {
         ? { ...m, align: 'flex-end', bg: '#2FB894', fg: '#080E13', border: '#2FB894' }
         : { ...m, align: 'flex-start', bg: '#12181C', fg: '#EEF4F4', border: '#1C2A28' }),
       chips: [chip('What products do you offer?'), chip('Can you automate my business?'), chip('Tell me about the books')],
-      liveChatReady: this.state.liveChatReady,
-      openLiveChat: () => this.openLiveChat(),
       handoff: this.state.handoff,
       handoffNote: 'We email this to the Felican AI team along with the chat above, and a person replies to you directly.',
       hName: this.state.hName,
@@ -346,10 +263,7 @@ class Component extends DCLogic {
       onHEmail: e => this.setState({ hEmail: e.target.value }),
       onHMsg: e => this.setState({ hMsg: e.target.value }),
       sendHandoff: e => this.submitHandoff(e),
-      toggle: () => this.setState(s => {
-        if (!s.open) this.probeLiveChat();
-        return { open: !s.open };
-      }),
+      toggle: () => this.setState(s => ({ open: !s.open })),
       close: () => this.setState({ open: false }),
       onDraft: e => this.setState({ draft: e.target.value }),
       onWebsite: e => this.setState({ website: e.target.value }),

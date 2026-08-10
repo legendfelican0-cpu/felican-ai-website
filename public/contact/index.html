@@ -45,8 +45,13 @@
   ::selection { background:#2FB894; color:#080E13 }
   .ct-grid { display:grid; grid-template-columns:1.25fr 1fr; gap:clamp(32px,4vw,64px); align-items:start }
   @media (max-width:940px) { .ct-grid { grid-template-columns:1fr } }
-  .ct-methods { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(14px,1.8vw,20px) }
+  .ct-methods { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:clamp(14px,1.8vw,20px) }
   @media (max-width:860px) { .ct-methods { grid-template-columns:1fr } }
+  .ct-method-btn { font:inherit; cursor:pointer; text-align:left; width:100% }
+  /* Live chat only appears once a tawk.to property ID is configured. */
+  .ct-method-btn.is-off { display:none }
+  .ct-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-left:7px; vertical-align:middle; background:#7C9391 }
+  .ct-dot[data-on="true"] { background:#76F0B3; box-shadow:0 0 0 3px rgba(118,240,179,.22) }
   .ct-method { display:flex; flex-direction:column; gap:9px; padding:24px 22px; background:#0C1419; border:1px solid #1C2A28; border-top:3px solid #2FB894; text-decoration:none; color:#EEF4F4; transition:background .2s ease,transform .2s ease,border-color .2s ease }
   .ct-method:hover { background:#12232A; transform:translateY(-3px); border-color:#2FB894; color:#EEF4F4 }
   .ct-method-k { font-family:Sora,sans-serif; font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#2FB894 }
@@ -111,6 +116,11 @@
         <span class="ct-method-v">Pick a time</span>
         <span class="ct-method-n">A 30-minute working session on your actual process.</span>
       </a>
+      <button class="ct-method ct-method-btn {{ liveChatClass }}" type="button" onClick="{{ openLiveChat }}" aria-hidden="{{ liveChatHiddenStr }}">
+        <span class="ct-method-k">Live chat <span class="ct-dot" data-on="{{ liveOnlineStr }}" aria-hidden="true"></span></span>
+        <span class="ct-method-v">{{ liveChatLabel }}</span>
+        <span class="ct-method-n">{{ liveChatNote }}</span>
+      </button>
     </div>
   </section>
 
@@ -254,8 +264,55 @@ class Component extends DCLogic {
       picked: known || '',
       status: 'idle',
       alert: '',
-      invalid: {}
+      invalid: {},
+      liveChatOn: false,
+      liveOnline: false,
+      liveReady: false
     };
+  }
+
+  // ---- tawk.to live chat (contact page only) ----------------------------------------
+  // Loaded here rather than site-wide: this is the page where someone is actively
+  // trying to reach us, so it is the only page that needs a third-party chat script.
+  // Its own bubble stays hidden — the card below opens it — so it never collides
+  // with the Felican AI assistant launcher in the same corner.
+  tawkConfig() {
+    const c = window.FELICAN_TAWK || {};
+    const propertyId = String(c.propertyId || '').trim();
+    return propertyId ? { propertyId, widgetId: String(c.widgetId || 'default').trim() } : null;
+  }
+
+  componentDidMount() {
+    const cfg = this.tawkConfig();
+    if (!cfg) return;
+    this.setState({ liveChatOn: true });
+    window.Tawk_API = window.Tawk_API || {};
+    window.Tawk_LoadStart = new Date();
+    const syncStatus = () => {
+      try {
+        const online = typeof window.Tawk_API.getStatus === 'function' && window.Tawk_API.getStatus() === 'online';
+        this.setState({ liveOnline: online, liveReady: true });
+      } catch (e) { this.setState({ liveOnline: false, liveReady: true }); }
+    };
+    window.Tawk_API.onLoad = () => {
+      try { window.Tawk_API.hideWidget && window.Tawk_API.hideWidget(); } catch (e) { /* optional */ }
+      syncStatus();
+    };
+    window.Tawk_API.onStatusChange = syncStatus;
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://embed.tawk.to/' + cfg.propertyId + '/' + cfg.widgetId;
+    s.charset = 'UTF-8';
+    s.setAttribute('crossorigin', '*');
+    s.onerror = () => this.setState({ liveChatOn: false });
+    document.head.appendChild(s);
+    this._tawkScript = s;
+  }
+
+  openLiveChat() {
+    const api = window.Tawk_API;
+    if (!api || typeof api.maximize !== 'function') return;
+    try { api.showWidget && api.showWidget(); api.maximize(); } catch (e) { /* ignore */ }
   }
 
   setField(key, value) {
@@ -320,6 +377,14 @@ class Component extends DCLogic {
       phone: PHONE_DISPLAY,
       phoneHref: PHONE_HREF,
       topics: TOPICS,
+      liveChatClass: this.state.liveChatOn ? '' : 'is-off',
+      liveChatHiddenStr: this.state.liveChatOn ? 'false' : 'true',
+      liveOnlineStr: this.state.liveOnline ? 'true' : 'false',
+      liveChatLabel: this.state.liveOnline ? 'Chat with us now' : 'Leave a message',
+      liveChatNote: this.state.liveOnline
+        ? 'Someone is online right now. Quickest way to get an answer.'
+        : 'Nobody is on chat at the moment — leave a note and we will reply by email.',
+      openLiveChat: () => this.openLiveChat(),
       form: this.state.form,
       invalid: {
         name: this.state.invalid.name ? 'true' : 'false',
