@@ -50,6 +50,10 @@
   .ct-method-btn { font:inherit; cursor:pointer; text-align:left; width:100% }
   /* Live chat only appears once a tawk.to property ID is configured. */
   .ct-method-btn.is-off { display:none }
+  /* While the tawk window is open its minimise button occupies the bottom-right
+     corner, which is where the Felican assistant launcher lives. Stand the
+     assistant down until the visitor closes live chat. */
+  body.tawk-open .fa-shell { display:none !important }
   .ct-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-left:7px; vertical-align:middle; background:#7C9391 }
   .ct-dot[data-on="true"] { background:#76F0B3; box-shadow:0 0 0 3px rgba(118,240,179,.22) }
   .ct-method { display:flex; flex-direction:column; gap:9px; padding:24px 22px; background:#0C1419; border:1px solid #1C2A28; border-top:3px solid #2FB894; text-decoration:none; color:#EEF4F4; transition:background .2s ease,transform .2s ease,border-color .2s ease }
@@ -299,6 +303,11 @@ class Component extends DCLogic {
       syncStatus();
     };
     window.Tawk_API.onStatusChange = syncStatus;
+    // Keep the two chat launchers out of each other's corner.
+    const standDownAssistant = on => document.body.classList.toggle('tawk-open', on);
+    window.Tawk_API.onChatMaximized = () => standDownAssistant(true);
+    window.Tawk_API.onChatMinimized = () => standDownAssistant(false);
+    window.Tawk_API.onChatHidden = () => standDownAssistant(false);
     const s = document.createElement('script');
     s.async = true;
     s.src = 'https://embed.tawk.to/' + cfg.propertyId + '/' + cfg.widgetId;

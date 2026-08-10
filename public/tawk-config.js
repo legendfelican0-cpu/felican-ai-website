@@ -13,6 +13,6 @@
  * back to a message-and-email prompt automatically.
  */
 window.FELICAN_TAWK = {
-  propertyId: '',
-  widgetId: 'default',
+  propertyId: '6a7a17446f4cb41d46e4af90',
+  widgetId: '1jvmelp8f',
 };
