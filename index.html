@@ -80,7 +80,7 @@
       <h1 id="hero-h" style="margin:0;font-weight:700;font-size:clamp(42px,6.2vw,72px);line-height:1.02;letter-spacing:-0.02em;text-wrap:balance">AI solutions for <span style="color:#2FB894">private businesses</span></h1>
       <p style="margin:clamp(24px,3vw,32px) auto 0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#EEF4F4;max-width:640px;text-wrap:pretty">Practical systems. Private by design. Built around how your business works — from strategy and implementation through governance, management, and maintenance.</p>
       <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:clamp(30px,3.6vw,38px)">
-        <a href="/booking/" style="flex:0 1 auto;min-width:200px;text-align:center;padding:15px 30px;background:#2FB894;color:#080E13;font-size:17px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-3px)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">Book a call</a>
+        <a href="{{ bookingUrl }}" target="_blank" rel="noopener noreferrer" style="flex:0 1 auto;min-width:200px;text-align:center;padding:15px 30px;background:#2FB894;color:#080E13;font-size:17px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-3px)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">Book a call</a>
         <a href="#contact" style="flex:0 1 auto;min-width:200px;text-align:center;padding:15px 30px;background:transparent;color:#EEF4F4;border:1px solid rgba(238,244,244,0.3);text-decoration:none;transition:background .2s ease,border-color .2s ease" style-hover="background:rgba(47,184,148,0.14);border-color:#2FB894" style-focus="outline:3px solid #2FB894;outline-offset:4px">Contact form</a>
       </div>
     </div>
@@ -179,14 +179,14 @@
         <a href="/booking/" style="margin-top:28px;display:inline-flex;align-items:center;gap:10px;padding:16px 26px;background:#2FB894;color:#080E13;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-3px)" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Go to booking <span aria-hidden="true">&#8594;</span></a>
       </div>
       <div style="background:#080E13;border:1px solid #1C2A28;padding:clamp(24px,3vw,32px)">
-        <sc-if value="{{ hasCalendly }}" hint-placeholder-val="{{ false }}">
-          <a href="{{ calendlyUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;padding:15px 20px;background:#2FB894;color:#080E13;font-size:16px;font-weight:700;text-decoration:none" style-hover="background:#59D4B4" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Open Calendly <span aria-hidden="true">&#8594;</span></a>
-          <iframe title="Book a call with Felican AI" src="{{ calendlyEmbedUrl }}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;min-height:400px;margin-top:18px;border:1px solid #1C2A28;background:#0C1419"></iframe>
+        <sc-if value="{{ hasBooking }}" hint-placeholder-val="{{ false }}">
+          <a href="{{ bookingUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;padding:15px 20px;background:#2FB894;color:#080E13;font-size:16px;font-weight:700;text-decoration:none" style-hover="background:#59D4B4" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Open booking page <span aria-hidden="true">&#8594;</span></a>
+          <iframe title="Book a call with Felican AI" src="{{ bookingEmbedUrl }}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;min-height:400px;margin-top:18px;border:1px solid #1C2A28;background:#0C1419"></iframe>
         </sc-if>
         <sc-if value="{{ showFallback }}" hint-placeholder-val="{{ true }}">
           <div role="status" style="display:flex;flex-direction:column;justify-content:center;min-height:376px;padding:8px">
             <p style="margin:0 0 10px;font-size:13px;font-weight:700;letter-spacing:0.14em;color:#2FB894;text-transform:uppercase">The calendar is being connected</p>
-            <p style="margin:0 0 22px;font-size:16px;line-height:1.6;color:#C2D2D4;max-width:32em">Until the Felican AI Calendly link is added, email us directly and we will find a time that works.</p>
+            <p style="margin:0 0 22px;font-size:16px;line-height:1.6;color:#C2D2D4;max-width:32em">Until the Felican AI booking link is added, email us directly and we will find a time that works.</p>
             <a href="{{ emailHref }}" style="display:inline-flex;align-self:start;align-items:center;gap:10px;padding:15px 20px;background:#2FB894;color:#080E13;font-size:16px;font-weight:700;text-decoration:none" style-hover="background:#59D4B4" style-focus="outline:3px solid #59D4B4;outline-offset:3px">{{ email }} <span aria-hidden="true">&#8594;</span></a>
           </div>
         </sc-if>
@@ -278,22 +278,24 @@ class Component extends DCLogic {
   renderVals() {
     const email = 'felican.ai.inc' + '@' + 'gmail.com';
     const checkedCount = this.state.checked.filter(Boolean).length;
-    const configured = (window.FELICAN_BOOKING && window.FELICAN_BOOKING.calendlyUrl || '').trim();
-    let calendlyUrl = '';
+    const configured = (window.FELICAN_BOOKING && window.FELICAN_BOOKING.bookingUrl || '').trim();
+    let bookingUrl = '';
+    let isCalendly = false;
     try {
       const parsed = new URL(configured);
-      const calendlyHost = parsed.hostname === 'calendly.com' || parsed.hostname.endsWith('.calendly.com');
-      if (parsed.protocol === 'https:' && calendlyHost) calendlyUrl = parsed.toString();
+      isCalendly = parsed.hostname === 'calendly.com' || parsed.hostname.endsWith('.calendly.com');
+      const isCal = parsed.hostname === 'cal.com' || parsed.hostname.endsWith('.cal.com');
+      if (parsed.protocol === 'https:' && (isCalendly || isCal)) bookingUrl = parsed.toString();
     } catch (error) {
       console.info('Felican booking calendar is not configured yet.');
     }
     return {
       email,
       emailHref: 'mailto:' + email,
-      hasCalendly: Boolean(calendlyUrl),
-      showFallback: !calendlyUrl,
-      calendlyUrl,
-      calendlyEmbedUrl: calendlyUrl ? calendlyUrl + (calendlyUrl.includes('?') ? '&' : '?') + 'hide_gdpr_banner=1' : '',
+      hasBooking: Boolean(bookingUrl),
+      showFallback: !bookingUrl,
+      bookingUrl,
+      bookingEmbedUrl: bookingUrl && isCalendly ? bookingUrl + (bookingUrl.includes('?') ? '&' : '?') + 'hide_gdpr_banner=1' : bookingUrl,
       badges: [
         { src: '/badges/aws.svg', alt: 'AWS' },
         { src: '/badges/gcp.svg', alt: 'Google Cloud' },

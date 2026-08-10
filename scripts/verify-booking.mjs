@@ -56,17 +56,22 @@ try {
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
 
-  const response = await page.goto(`${origin}/booking/`, { waitUntil: 'networkidle' });
+  await page.route('https://cal.com/**', route => route.abort());
+  const response = await page.goto(`${origin}/booking/`, { waitUntil: 'domcontentloaded' });
   if (!response?.ok()) throw new Error(`Booking page returned ${response?.status() || 'no response'}`);
   const policy = (await response.allHeaders())['content-security-policy'] || '';
-  if (!policy.includes('frame-src https://calendly.com https://*.calendly.com')) {
-    throw new Error('Booking page security policy does not allow the validated Calendly frame');
+  if (!policy.includes('frame-src https://calendly.com https://*.calendly.com https://cal.com https://*.cal.com')) {
+    throw new Error('Booking page security policy does not allow the validated Calendly/Cal.com frame');
   }
   if (!(await page.getByRole('heading', { name: /where AI can create leverage/i }).isVisible())) {
     throw new Error('Booking headline is not visible');
   }
-  if (!(await page.getByText('The calendar is being connected.').isVisible())) {
-    throw new Error('Unconfigured Calendly fallback is not visible');
+  const bookingLink = page.getByRole('link', { name: /open booking page/i });
+  if (!(await bookingLink.getAttribute('href') || '').includes('cal.com/felican-ai-inc-n68piw')) {
+    throw new Error('Live Cal.com booking link did not render correctly');
+  }
+  if ((await page.locator('iframe[title="Book a call with Felican AI"]').count()) !== 1) {
+    throw new Error('Live Cal.com iframe did not render');
   }
   if (await page.locator('main form').count()) throw new Error('Booking page unexpectedly contains a local form');
   if (consoleErrors.length) throw new Error(`Browser console errors: ${consoleErrors.join(' | ')}`);
@@ -96,19 +101,20 @@ try {
   });
   await configured.route('**/booking-config.js', route => route.fulfill({
     contentType: 'application/javascript',
-    body: "window.FELICAN_BOOKING = Object.freeze({ calendlyUrl: 'https://calendly.com/felican-ai/test-event' });",
+    body: "window.FELICAN_BOOKING = Object.freeze({ bookingUrl: 'https://calendly.com/felican-ai/test-event' });",
   }));
   await configured.route('https://calendly.com/**', route => route.abort());
   await configured.goto(`${origin}/booking/`, { waitUntil: 'domcontentloaded' });
-  const calendlyLink = configured.getByRole('link', { name: /Open Calendly/i });
+  const calendlyLink = configured.getByRole('link', { name: /open booking page/i });
   if ((await calendlyLink.getAttribute('href')) !== 'https://calendly.com/felican-ai/test-event') {
     throw new Error('Configured Calendly link did not render correctly');
   }
-  if ((await configured.locator('iframe[title="Book a call with Felican AI"]').count()) !== 1) {
-    throw new Error('Configured Calendly iframe did not render');
+  const calendlyIframeSrc = await configured.locator('iframe[title="Book a call with Felican AI"]').getAttribute('src');
+  if (!calendlyIframeSrc || !calendlyIframeSrc.includes('hide_gdpr_banner=1')) {
+    throw new Error('Configured Calendly iframe did not render with the expected embed params');
   }
 
-  log('info', 'booking.verify', { ok: true, screenshotPath, mobileScreenshotPath, configuredCalendly: true });
+  log('info', 'booking.verify', { ok: true, screenshotPath, mobileScreenshotPath, defaultProvider: 'cal.com', configuredCalendly: true });
 } catch (error) {
   log('error', 'booking.verify', { ok: false, reason: error.stack || error.message });
   process.exitCode = 1;

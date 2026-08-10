@@ -77,19 +77,20 @@ describe('Claude Design static website export', () => {
     expect(contact).not.toContain('<form');
   });
 
-  it('ships a stable booking route with validated Calendly configuration and direct fallbacks', () => {
+  it('ships a stable booking route with validated Calendly/Cal.com configuration and direct fallbacks', () => {
     const booking = read('public/booking/index.html');
     const config = read('public/booking-config.js');
     const nav = read('public/SiteNav.dc.html');
 
     expect(booking).toContain('https://felican.ai/booking/');
     expect(booking).toContain("parsed.hostname === 'calendly.com'");
+    expect(booking).toContain("parsed.hostname === 'cal.com'");
     expect(booking).toContain('The calendar is being connected.');
     expect(booking).not.toContain('tel:+13465150361');
     expect(booking).not.toContain('<form');
-    expect(config).toContain("calendlyUrl: ''");
-    expect(nav).toContain('href="/booking/"');
+    expect(config).toMatch(/bookingUrl:\s*'https:\/\/(calendly\.com|cal\.com)\//);
     expect(nav).toContain('Book a call');
+    expect(nav).toMatch(/href="\{\{ bookingUrl \}\}" target="_blank"/);
     expect(read('public/sitemap.xml')).toContain('https://felican.ai/booking/');
   });
 

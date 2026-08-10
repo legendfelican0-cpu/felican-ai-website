@@ -50,14 +50,14 @@
       <aside aria-label="Schedule with Felican AI" style="background:#0C1419;color:#EEF4F4;padding:clamp(30px,4vw,46px);box-shadow:14px 14px 0 #2FB894">
         <p style="margin:0 0 12px;font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:.14em;color:#2FB894">INTRODUCTORY CALL</p>
         <h2 style="margin:0 0 24px;font-family:Sora,sans-serif;font-size:clamp(30px,3.4vw,44px);line-height:1.06;letter-spacing:-.03em">Choose a time that works for you.</h2>
-        <sc-if value="{{ hasCalendly }}" hint-placeholder-val="{{ false }}">
-          <a href="{{ calendlyUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;padding:17px 20px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none" style-hover="background:#59D4B4" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Open Calendly <span aria-hidden="true">&#8594;</span></a>
-          <iframe title="Book a call with Felican AI" src="{{ calendlyEmbedUrl }}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;min-height:670px;margin-top:22px;border:1px solid #1C2A28;background:#0C1419"></iframe>
+        <sc-if value="{{ hasBooking }}" hint-placeholder-val="{{ false }}">
+          <a href="{{ bookingUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;padding:17px 20px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none" style-hover="background:#59D4B4" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Open booking page <span aria-hidden="true">&#8594;</span></a>
+          <iframe title="Book a call with Felican AI" src="{{ bookingEmbedUrl }}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;min-height:670px;margin-top:22px;border:1px solid #1C2A28;background:#0C1419"></iframe>
         </sc-if>
         <sc-if value="{{ showFallback }}" hint-placeholder-val="{{ true }}">
           <div role="status" style="margin-top:20px;padding:26px;background:#0C1419;border-left:4px solid #2FB894">
             <h3 style="margin:0 0 9px;font-family:Sora,sans-serif;font-size:21px">The calendar is being connected.</h3>
-            <p style="margin:0 0 20px;font-size:16px;line-height:1.65;color:#C2D2D4">The booking page is ready. Until the Felican AI Calendly event link is added, email us directly.</p>
+            <p style="margin:0 0 20px;font-size:16px;line-height:1.65;color:#C2D2D4">The booking page is ready. Until the Felican AI booking link is added, email us directly.</p>
             <div style="display:grid;gap:12px">
               <a href="{{ emailHref }}" style="font-size:17px;font-weight:700;text-decoration:none;overflow-wrap:anywhere">{{ email }}</a>
             </div>
@@ -81,21 +81,23 @@
 <script type="text/x-dc" data-dc-script data-props="{}">
 class Component extends DCLogic {
   renderVals() {
-    const configured = (window.FELICAN_BOOKING && window.FELICAN_BOOKING.calendlyUrl || '').trim();
-    let calendlyUrl = '';
+    const configured = (window.FELICAN_BOOKING && window.FELICAN_BOOKING.bookingUrl || '').trim();
+    let bookingUrl = '';
+    let isCalendly = false;
     try {
       const parsed = new URL(configured);
-      const calendlyHost = parsed.hostname === 'calendly.com' || parsed.hostname.endsWith('.calendly.com');
-      if (parsed.protocol === 'https:' && calendlyHost) calendlyUrl = parsed.toString();
+      isCalendly = parsed.hostname === 'calendly.com' || parsed.hostname.endsWith('.calendly.com');
+      const isCal = parsed.hostname === 'cal.com' || parsed.hostname.endsWith('.cal.com');
+      if (parsed.protocol === 'https:' && (isCalendly || isCal)) bookingUrl = parsed.toString();
     } catch (error) {
       console.info('Felican booking calendar is not configured yet.');
     }
     const email = 'felican.ai.inc' + '@' + 'gmail.com';
     return {
-      hasCalendly: Boolean(calendlyUrl),
-      showFallback: !calendlyUrl,
-      calendlyUrl,
-      calendlyEmbedUrl: calendlyUrl ? calendlyUrl + (calendlyUrl.includes('?') ? '&' : '?') + 'hide_gdpr_banner=1' : '',
+      hasBooking: Boolean(bookingUrl),
+      showFallback: !bookingUrl,
+      bookingUrl,
+      bookingEmbedUrl: bookingUrl && isCalendly ? bookingUrl + (bookingUrl.includes('?') ? '&' : '?') + 'hide_gdpr_banner=1' : bookingUrl,
       email,
       emailHref: 'mailto:' + email + '?subject=Felican%20AI%20booking%20request'
     };
