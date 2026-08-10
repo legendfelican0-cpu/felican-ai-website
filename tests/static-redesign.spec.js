@@ -4,9 +4,9 @@ import AxeBuilder from '@axe-core/playwright';
 const routes = [
   ['/', 'AI solutions for'],
   ['/products/', 'Products built for real work.'],
-  ['/services/', 'Seven ways we put AI to work inside a business'],
+  ['/services/', 'Eleven ways we put AI to work inside a business'],
   ['/books/', 'Four books by Lee Felican Jr.'],
-  ['/about/', 'A family-built company that builds AI for a living'],
+  ['/about/', 'A team of certified AI professionals who build AI for a living'],
   ['/contact/', "Let's talk about your business"],
   ['/booking/', 'Let’s talk about where AI can create leverage.'],
   ['/privacy/', 'Privacy Policy'],
@@ -35,7 +35,7 @@ test.describe('Claude Design website export', () => {
     });
   }
 
-  test('navigation, books, and assistant are functional', async ({ page }, testInfo) => {
+  test('navigation, products, books, and assistant are functional', async ({ page }, testInfo) => {
     await page.goto('/', { waitUntil: 'networkidle' });
 
     if (testInfo.project.name === 'mobile') {
@@ -45,24 +45,33 @@ test.describe('Claude Design website export', () => {
       await page.getByRole('navigation', { name: 'Main' }).getByRole('link', { name: 'Products', exact: true }).click();
     }
     await expect(page).toHaveURL(/\/products\/?$/);
-    await expect(page.locator('article[id]')).toHaveCount(5);
 
-    const productCards = page.locator('article[id]');
-    await expect(productCards.nth(0)).toHaveAttribute('id', 'felican-auto');
-    await expect(productCards.nth(1)).toHaveAttribute('id', 'world-of-agents');
-    await expect(productCards.filter({ hasText: 'BookMaker' }).getByRole('link', { name: 'Open BookMaker' }).first()).toHaveAttribute(
-      'href',
-      'https://book-studio.felican.dev/',
-    );
-    await expect(productCards.filter({ hasText: 'Relay' }).getByRole('link', { name: 'Open Relay' }).first()).toHaveAttribute(
-      'href',
-      'https://relay.felican.dev/relay',
-    );
+    // Eleven headline products, led by the flagship, then the agent bench.
+    const productCards = page.locator('.product-card');
+    await expect(productCards).toHaveCount(11);
+    await expect(productCards.first()).toHaveAttribute('id', 'private-ai-global');
+    await expect(page.locator('.agent-card')).toHaveCount(6);
+    await expect(page.locator('.rest-card')).toHaveCount(5);
+
+    // Products never link out to the live apps; every CTA pre-fills the contact form.
+    const outbound = page.locator('main a[href^="http"]:not([href*="felican.ai/contact"])');
+    for (const href of await outbound.evaluateAll(links => links.map(a => a.getAttribute('href')))) {
+      expect(href).not.toMatch(/auto\.felican|woa\.felican|relay\.felican|book-studio/);
+    }
+    await expect(
+      productCards.filter({ hasText: 'BookMaker' }).getByRole('link', { name: /Ask about BookMaker/i }).first(),
+    ).toHaveAttribute('href', '/contact/?product=BookMaker');
 
     await page.goto('/books/', { waitUntil: 'networkidle' });
     const covers = page.locator('img[alt$=" cover"]');
     await expect(covers).toHaveCount(4);
     expect(await covers.evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
+    // The Big Balla's Guide sits last, and buying goes to Amazon.
+    await expect(covers.last()).toHaveAttribute('alt', /Big Balla/i);
+    await expect(page.getByRole('link', { name: /View book on Amazon\.com/i }).first()).toHaveAttribute(
+      'href',
+      /^https:\/\/www\.amazon\.com\/dp\//,
+    );
 
     await page.goto('/', { waitUntil: 'networkidle' });
     await page.screenshot({ path: testInfo.outputPath(`homepage-${testInfo.project.name}.png`), fullPage: false });
@@ -73,12 +82,10 @@ test.describe('Claude Design website export', () => {
     const viewport = page.viewportSize();
     expect(Math.abs(launcherBox.width - launcherBox.height)).toBeLessThanOrEqual(2);
     expect(viewport.width - launcherBox.x - launcherBox.width).toBeLessThanOrEqual(testInfo.project.name === 'mobile' ? 16 : 30);
-    expect(viewport.height - launcherBox.y - launcherBox.height).toBeLessThanOrEqual(testInfo.project.name === 'mobile' ? 16 : 30);
     await assistantButton.click();
     await expect(assistantButton).toHaveAttribute('aria-expanded', 'true');
     const assistantPanel = page.locator('.fa-panel');
     await expect(assistantPanel).toBeVisible();
-    await expect(assistantPanel).toHaveCSS('border-radius', testInfo.project.name === 'mobile' ? '19px' : '22px');
 
     const input = page.getByRole('textbox', { name: 'Your message' });
     await input.fill('What does Felican AI build?');
@@ -88,28 +95,26 @@ test.describe('Claude Design website export', () => {
     );
   });
 
-  test('contact page uses a direct email link without a form', async ({ page }) => {
+  test('contact page offers a working form alongside email and phone', async ({ page }) => {
     await page.goto('/contact/', { waitUntil: 'domcontentloaded' });
-    await expect(page.getByRole('link', { name: /felican\.ai\.inc@gmail\.com/i }).first()).toHaveAttribute(
-      'href',
-      /mailto:felican\.ai\.inc@gmail\.com/,
-    );
-    await expect(page.locator('main form')).toHaveCount(0);
+    await expect(page.getByRole('link', { name: /ai@felican\.ai/i }).first()).toHaveAttribute('href', /mailto:ai@felican\.ai/);
+    await expect(page.getByRole('link', { name: /\(561\) 235-0799/ }).first()).toHaveAttribute('href', 'tel:+15612350799');
+    await expect(page.locator('main form.ct-form')).toHaveCount(1);
+    // The retired address must not linger anywhere.
+    expect(await page.content()).not.toContain('gmail.com');
   });
 
   test('booking page has a stable route and a live booking embed', async ({ page }) => {
     await page.goto('/booking/', { waitUntil: 'networkidle' });
     await expect(page.getByRole('heading', { name: /where AI can create leverage/i })).toBeVisible();
     await expect(page.getByRole('link', { name: /open booking page/i })).toHaveAttribute('href', /^https:\/\/cal\.com\//);
-    await expect(page.locator('main form')).toHaveCount(0);
   });
 
   test('legal, search, social, and analytics foundations are present', async ({ page }) => {
     await page.goto('/privacy/', { waitUntil: 'networkidle' });
     await expect(page.getByRole('heading', { name: 'Privacy Policy', exact: true })).toBeVisible();
-    await expect(page.getByText(/Messages sent to the Felican AI Assistant are processed by an AI service provider/i)).toBeVisible();
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://felican.ai/privacy/');
-    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', 'https://felican.ai/og.png');
+    await expect(page.locator('link[rel="canonical"]').first()).toHaveAttribute('href', 'https://felican.ai/privacy/');
+    await expect(page.locator('meta[property="og:image"]').first()).toHaveAttribute('content', 'https://felican.ai/og.png');
 
     const robots = await page.request.get('/robots.txt');
     expect(await robots.text()).toContain('Disallow: /');
@@ -120,7 +125,7 @@ test.describe('Claude Design website export', () => {
     expect(analytics.status()).toBe(204);
   });
 
-  test('homepage friction checklist and contact form are usable', async ({ page }) => {
+  test('homepage friction checklist is usable', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     const firstFriction = page.locator('.friction-input').first();

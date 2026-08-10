@@ -136,7 +136,7 @@
         <h2 id="formh" style="margin:0 0 12px;font-family:Sora,sans-serif;font-size:clamp(28px,3.4vw,42px);font-weight:800;line-height:1.08;letter-spacing:-.03em;color:#EEF4F4;text-wrap:balance">{{ formHeading }}</h2>
         <p style="margin:0 0 26px;font-size:clamp(16px,1.3vw,18px);line-height:1.7;color:#C2D2D4;max-width:620px;text-wrap:pretty">{{ formIntro }}</p>
 
-        <form class="ct-form" onSubmit="{{ submit }}" novalidate="{{ novalidate }}">
+        <form class="ct-form" onSubmit="{{ submit }}" noValidate="{{ novalidate }}">
           <sc-if value="{{ hasAlert }}" hint-placeholder-val="{{ false }}">
             <p class="ct-alert {{ alertClass }}" role="status" aria-live="polite">{{ alertText }}</p>
           </sc-if>
