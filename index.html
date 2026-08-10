@@ -6,6 +6,16 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script src="/support.js?v=20260802"></script>
 <script src="/booking-config.js"></script>
+<!-- SEO tags live here in the static <head> so crawlers and link-preview
+     scrapers (which do not run JavaScript) can read them. The <helmet>
+     block below repeats them for the client-side runtime. -->
+<title>Felican AI — AI solutions for private businesses</title>
+<meta name="description" content="Felican AI designs and delivers AI systems for private businesses — strategy, implementation, governance, management, and maintenance, built around how you already operate.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://felican.ai/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Felican AI"><meta property="og:locale" content="en_US"><meta property="og:title" content="Felican AI — AI solutions for private businesses"><meta property="og:description" content="Practical systems. Private by design. Built around how your business works — from strategy and implementation through governance, management, and maintenance."><meta property="og:url" content="https://felican.ai/"><meta property="og:image" content="https://felican.ai/og.png"><meta property="og:image:width" content="1102"><meta property="og:image:height" content="579"><meta property="og:image:alt" content="Felican AI — AI solutions for private businesses">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Felican AI — AI solutions for private businesses"><meta name="twitter:description" content="Practical systems. Private by design. Built around how your business works."><meta name="twitter:image" content="https://felican.ai/og.png"><meta name="twitter:image:alt" content="Felican AI — AI solutions for private businesses">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://felican.ai/#organization","name":"Felican AI","url":"https://felican.ai/","logo":{"@type":"ImageObject","url":"https://felican.ai/logo-mark.png"},"image":"https://felican.ai/og.png","description":"Felican AI is a team of more than ten certified AI professionals building practical AI products, private AI systems, custom automations, integrations, and training for businesses in any industry.","email":"felican.ai.inc@gmail.com","telephone":"+1-561-235-0799","founder":{"@type":"Person","name":"Lee Felican Jr.","jobTitle":"Founder and Enterprise Architect"},"contactPoint":[{"@type":"ContactPoint","telephone":"+1-561-235-0799","email":"felican.ai.inc@gmail.com","contactType":"sales","areaServed":"US","availableLanguage":"English"}],"knowsAbout":["Artificial intelligence","Private AI deployment","Business automation","AI integration","AI training"]},{"@type":"WebSite","@id":"https://felican.ai/#website","url":"https://felican.ai/","name":"Felican AI","publisher":{"@id":"https://felican.ai/#organization"},"inLanguage":"en-US"}]}</script>
 </head>
 <body>
 <x-dc>
@@ -15,16 +25,16 @@
 <meta name="robots" content="index,follow">
 <link rel="canonical" href="https://felican.ai/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Felican AI">
+<meta property="og:site_name" content="Felican AI"><meta property="og:locale" content="en_US">
 <meta property="og:title" content="Felican AI — AI solutions for private businesses">
 <meta property="og:description" content="Practical systems. Private by design. Built around how your business works — from strategy and implementation through governance, management, and maintenance.">
 <meta property="og:url" content="https://felican.ai/">
 <meta property="og:image" content="https://felican.ai/og.png">
-<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:width" content="1102"><meta property="og:image:height" content="579"><meta property="og:image:alt" content="Felican AI — AI solutions for private businesses">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Felican AI — AI solutions for private businesses">
 <meta name="twitter:description" content="Practical systems. Private by design. Built around how your business works.">
-<meta name="twitter:image" content="https://felican.ai/og.png">
+<meta name="twitter:image" content="https://felican.ai/og.png"><meta name="twitter:image:alt" content="Felican AI — AI solutions for private businesses">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,9 +68,39 @@
   .friction-card:has(.friction-input:checked) { background:#12332E }
   .friction-card:has(.friction-input:checked) .friction-title { color:#8FE0C8 }
   .friction-body { margin:0; font-size:14.5px; line-height:1.62; color:#8FA3A8 }
-  .badge-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px }
-  @media (max-width:760px) { .badge-grid { grid-template-columns:repeat(3,minmax(0,1fr)) } }
-  @media (max-width:460px) { .badge-grid { grid-template-columns:repeat(2,minmax(0,1fr)) } }
+  .ways-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:18px }
+  @media (max-width:1120px) { .ways-grid { grid-template-columns:repeat(3,minmax(0,1fr)) } }
+  @media (max-width:760px) { .ways-grid { grid-template-columns:repeat(2,minmax(0,1fr)) } }
+  @media (max-width:460px) { .ways-grid { grid-template-columns:1fr } }
+  .ways-card { position:relative; padding:24px 22px 26px; background:#101E24; border:1px solid #1C2A28; border-left:3px solid #2FB894; transition:background .2s ease,transform .2s ease,border-color .2s ease }
+  .ways-card:hover { background:#142A31; transform:translateY(-3px); border-left-color:#59D4B4 }
+  .ways-n { display:block; margin-bottom:12px; font-size:12px; font-weight:700; letter-spacing:.14em; color:#7B9298 }
+  .ways-title { margin:0 0 9px; font-size:18px; font-weight:700; line-height:1.28; color:#EEF4F4; text-wrap:balance }
+  .ways-body { margin:0; font-size:14.5px; line-height:1.6; color:#8FA3A8; text-wrap:pretty }
+  /* Floating certified-professionals strip: slim, pinned to the viewport bottom while scrolling */
+  .cred-bar { position:fixed; left:0; right:0; bottom:0; z-index:900; background:linear-gradient(120deg,#D8A746 0%,#F2CD7A 45%,#C8963A 100%); color:#10161B; box-shadow:0 -6px 24px rgba(0,0,0,.34); transform:translateY(102%); transition:transform .32s cubic-bezier(.2,.8,.2,1) }
+  .cred-bar[data-shown="1"] { transform:none }
+  .cred-inner { max-width:1280px; margin:0 auto; padding:9px 24px; display:flex; align-items:center; justify-content:space-between; gap:20px }
+  /* keep the strip clear of the chat launcher parked in the bottom-right corner */
+  @media (min-width:641px) { .cred-inner { padding-right:120px } }
+  .cred-id { display:flex; align-items:center; gap:11px; min-width:0 }
+  .cred-mark { display:flex; align-items:center; justify-content:center; width:34px; height:34px; flex-shrink:0; border-radius:8px; background:#0C1419 }
+  .cred-mark img { width:22px; height:22px; object-fit:contain; display:block }
+  .cred-kicker { margin:0; font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:#5C4718; line-height:1 }
+  .cred-title { margin:2px 0 0; font-size:clamp(13px,1.5vw,17px); font-weight:800; line-height:1.1; letter-spacing:-.01em; text-transform:uppercase; white-space:nowrap }
+  .badge-grid { display:flex; align-items:center; gap:clamp(10px,1.8vw,24px); flex-shrink:0 }
+  /* transparent — no white plate behind the logos */
+  .badge-item { display:flex; align-items:center; justify-content:center; background:transparent; border:0; padding:0; height:30px; flex:0 0 auto }
+  .badge-item img { width:auto; max-width:76px; height:26px; object-fit:contain; display:block }
+  @media (max-width:900px) { .cred-title { font-size:12px; white-space:normal } .badge-item img { max-width:56px; height:22px } }
+  @media (max-width:640px) {
+    .cred-inner { padding:8px 14px; gap:12px }
+    .cred-kicker { display:none }
+    .cred-mark { width:28px; height:28px }
+    .badge-grid { gap:12px }
+    .badge-item { height:24px } .badge-item img { max-width:44px; height:20px }
+  }
+  @media (max-width:420px) { .cred-id { display:none } .badge-grid { width:100%; justify-content:space-between } }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -69,7 +109,7 @@
 
 <main class="lf-home" style="font-family:'Libre Franklin',Helvetica,sans-serif;background:#080E13">
   <!-- HERO -->
-  <section aria-labelledby="hero-h" style="position:relative;background:#080E13 url('/home-hero.jpg') center/cover no-repeat;color:#EEF4F4;overflow:hidden">
+  <section aria-labelledby="hero-h" data-cred-anchor="1" style="position:relative;background:#080E13 url('/home-hero.jpg') center/cover no-repeat;color:#EEF4F4;overflow:hidden">
     <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,14,19,0.55) 0%,rgba(8,14,19,0.2) 40%,rgba(8,14,19,0.96) 100%)"></div>
     <div style="position:relative;max-width:1000px;margin:0 auto;padding:clamp(64px,8vw,112px) 24px clamp(56px,7vw,88px);text-align:center">
       <p style="display:inline-flex;align-items:center;gap:12px;margin:0 0 clamp(22px,3vw,30px);font-size:14px;font-weight:600;letter-spacing:0.14em;color:#9FC0BE;text-shadow:0 1px 8px rgba(8,14,19,0.9)">
@@ -86,27 +126,27 @@
     </div>
   </section>
 
-  <!-- CREDENTIALS -->
-  <section aria-label="Certifications" style="background:linear-gradient(120deg,#D8A746 0%,#F2CD7A 45%,#C8963A 100%);color:#10161B;padding:clamp(22px,3vw,32px) 24px">
-    <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:clamp(24px,4vw,40px);flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:18px">
-        <span aria-hidden="true" style="display:flex;align-items:center;justify-content:center;width:58px;height:58px;flex-shrink:0;border-radius:12px;background:#0C1419;border:2px solid rgba(16,22,27,.35)">
-          <img src="/logo-mark.png" alt="" style="width:38px;height:38px;object-fit:contain;display:block">
+  <!-- CREDENTIALS — slim strip that floats at the bottom of the viewport while scrolling -->
+  <aside class="cred-bar" data-cred-bar="1" aria-label="Certifications">
+    <div class="cred-inner">
+      <div class="cred-id">
+        <span class="cred-mark" aria-hidden="true">
+          <img src="/logo-mark.png" alt="">
         </span>
-        <div>
-          <p style="margin:0 0 4px;font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#5C4718">Verified credentials</p>
-          <p style="margin:0;font-size:clamp(24px,3vw,36px);font-weight:800;line-height:1;letter-spacing:-.03em;text-transform:uppercase">Certified AI Professionals</p>
+        <div style="min-width:0">
+          <p class="cred-kicker">Verified credentials</p>
+          <p class="cred-title">Certified AI Professionals</p>
         </div>
       </div>
       <div class="badge-grid">
         <sc-for list="{{ badges }}" as="b" hint-placeholder-count="5">
-          <div style="display:flex;align-items:center;justify-content:center;padding:10px 12px;border:1px solid rgba(15,20,24,.22);border-radius:10px;background:rgba(255,255,255,.72);width:100%;max-width:130px;min-width:0;height:82px">
-            <img data-badge-src="{{ b.src }}" alt="{{ b.alt }}" style="width:100%;max-width:100px;height:60px;object-fit:contain;display:block">
+          <div class="badge-item">
+            <img data-badge-src="{{ b.src }}" alt="{{ b.alt }}">
           </div>
         </sc-for>
       </div>
     </div>
-  </section>
+  </aside>
 
   <!-- SOUND FAMILIAR — pain points -->
   <section aria-labelledby="pain-h" style="background:#080E13;padding:clamp(72px,8vw,112px) 0">
@@ -132,6 +172,32 @@
         </sc-for>
       </div>
       <p style="margin:28px 0 0;min-height:24px;font-size:17px;font-weight:600;color:#2FB894">{{ checkedLabel }}</p>
+    </div>
+  </section>
+
+  <!-- 10 WAYS AI CAN HELP -->
+  <section aria-labelledby="ways-h" style="background:#0C1419;padding:clamp(72px,8vw,112px) 0">
+    <div style="max-width:1280px;margin:0 auto;padding:0 24px">
+      <div style="margin-bottom:clamp(38px,4vw,54px);max-width:820px">
+        <p style="margin:0 0 14px;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2FB894">WHERE AI ACTUALLY PAYS OFF</p>
+        <h2 id="ways-h" style="margin:0 0 14px;font-size:clamp(34px,4.6vw,56px);font-weight:700;line-height:1.05;letter-spacing:-0.02em;color:#EEF4F4;text-wrap:balance">10 ways AI can help your business</h2>
+        <p style="margin:0;font-size:clamp(17px,1.4vw,20px);line-height:1.65;color:#C2D2D4;text-wrap:pretty">Concrete places we see AI return real time and money — not experiments, but work that runs every day.</p>
+      </div>
+
+      <div class="ways-grid">
+        <sc-for list="{{ ways }}" as="w" hint-placeholder-count="10">
+          <article class="ways-card" data-reveal="1">
+            <span class="ways-n" aria-hidden="true">{{ w.n }}</span>
+            <h3 class="ways-title">{{ w.title }}</h3>
+            <p class="ways-body">{{ w.body }}</p>
+          </article>
+        </sc-for>
+      </div>
+
+      <div style="margin-top:clamp(34px,4vw,48px);display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+        <a href="/contact/" style="display:inline-flex;align-items:center;gap:12px;padding:18px 26px;background:#2FB894;color:#080E13;font-size:17px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-3px)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">Talk through your use case <span aria-hidden="true">&#8594;</span></a>
+        <a href="/services/" style="display:inline-flex;align-items:center;padding:18px 26px;border:1px solid rgba(238,244,244,0.3);color:#EEF4F4;font-size:17px;font-weight:700;text-decoration:none;transition:background .2s ease" style-hover="background:rgba(47,184,148,0.14)" style-focus="outline:3px solid #2FB894;outline-offset:4px">See our services</a>
+      </div>
     </div>
   </section>
 
@@ -243,6 +309,19 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;revealMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;}}">
+const WAYS = [
+  { n: '01', title: 'Turn More Leads Into Customers', body: 'Respond to leads instantly, qualify prospects, and schedule appointments automatically.' },
+  { n: '02', title: 'Serve Customers 24/7', body: 'Answer questions, resolve common issues, and capture opportunities whenever customers need help.' },
+  { n: '03', title: 'Help Employees Find Answers Instantly', body: 'Give authorized employees secure access to company procedures, policies, products, and internal knowledge.' },
+  { n: '04', title: 'Eliminate Repetitive Work', body: 'Automate tasks across email, CRM, accounting, scheduling, inventory, and other systems.' },
+  { n: '05', title: 'Find and Fix Operational Inefficiencies', body: 'Discover bottlenecks, duplicated work, unnecessary costs, and missed revenue opportunities.' },
+  { n: '06', title: 'Process Documents and Data Automatically', body: 'Extract and organize information from invoices, contracts, forms, receipts, and PDFs.' },
+  { n: '07', title: 'Increase Revenue From Existing Customers', body: 'Recommend relevant products and services to each customer at the right time.' },
+  { n: '08', title: 'Improve Cash Flow and Protect Profits', body: 'Follow up on unpaid invoices and uncover waste, billing errors, excessive discounts, and hidden profit leaks.' },
+  { n: '09', title: 'Make Faster, Better Business Decisions', body: 'Give leadership a clear view of performance, risks, opportunities, and recommended next actions.' },
+  { n: '10', title: 'Protect Sensitive Business and Customer Data', body: 'Build AI around privacy, encryption, access controls, secure data handling, and the company’s compliance requirements.' }
+];
+
 const FRICTIONS = [
   { n: '01', title: 'Data security & AI governance', body: "Sensitive data touches AI tools with no clear policy on what's allowed, logged, or retained." },
   { n: '02', title: 'Manual workflows', body: 'The same steps get repeated by hand every week because nothing connects the tools you already use.' },
@@ -256,6 +335,7 @@ class Component extends DCLogic {
   state = { checked: FRICTIONS.map(() => false) };
   componentDidMount() {
     setTimeout(() => document.querySelectorAll('img[data-badge-src]').forEach(img => { const src = img.getAttribute('data-badge-src'); if (src && src.indexOf('{{') === -1) img.src = src; }), 0);
+    this.mountCredBar();
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduce || this.props.revealMotion === false || !('IntersectionObserver' in window)) return;
     const nodes = Array.from(document.querySelectorAll('[data-reveal]'));
@@ -274,7 +354,41 @@ class Component extends DCLogic {
     this._io = io;
     this._fallback = setTimeout(() => { hidden.forEach(n => { if (n.style.opacity === '0') show(n); }); }, 1400);
   }
-  componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._fallback) clearTimeout(this._fallback); }
+  // Reveal the floating credentials strip once past the hero, and tuck it away
+  // again over the footer so it never covers the closing content.
+  mountCredBar() {
+    const bar = document.querySelector('[data-cred-bar]');
+    const hero = document.querySelector('[data-cred-anchor]');
+    const footer = document.querySelector('footer');
+    // All three are rendered by the DC runtime, so wait (briefly) for them to exist.
+    if (!bar || !hero || !footer) {
+      this._credTries = (this._credTries || 0) + 1;
+      if (this._credTries < 25) { this._credRetry = setTimeout(() => this.mountCredBar(), 120); return; }
+      if (!bar) return;
+    }
+    // NOTE: html/body both set overflow-x:hidden, which makes <body> the scroll
+    // container — window.scrollY is always 0 here. So gate purely on element
+    // visibility rather than scroll offset.
+    if (!('IntersectionObserver' in window)) { bar.setAttribute('data-shown', '1'); return; }
+    let pastHero = false, nearFooter = false;
+    const sync = () => bar.setAttribute('data-shown', pastHero && !nearFooter ? '1' : '0');
+    this._credIo = new IntersectionObserver(es => {
+      es.forEach(e => {
+        if (e.target === hero) pastHero = !e.isIntersecting;
+        else if (e.target === footer) nearFooter = e.isIntersecting;
+      });
+      sync();
+    }, { rootMargin: '0px 0px -40px 0px', threshold: 0 });
+    if (hero) this._credIo.observe(hero);
+    if (footer) this._credIo.observe(footer);
+    sync();
+  }
+  componentWillUnmount() {
+    if (this._io) this._io.disconnect();
+    if (this._fallback) clearTimeout(this._fallback);
+    if (this._credRetry) clearTimeout(this._credRetry);
+    if (this._credIo) this._credIo.disconnect();
+  }
   renderVals() {
     const email = 'felican.ai.inc' + '@' + 'gmail.com';
     const checkedCount = this.state.checked.filter(Boolean).length;
@@ -303,6 +417,7 @@ class Component extends DCLogic {
         { src: '/badges/anthropic.svg', alt: 'Anthropic' },
         { src: '/badges/openai.svg', alt: 'OpenAI' }
       ],
+      ways: WAYS,
       frictions: FRICTIONS.map((f, i) => ({
         n: f.n,
         title: f.title,

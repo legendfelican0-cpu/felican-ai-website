@@ -5,6 +5,66 @@ import { describe, expect, it } from 'vitest';
 const projectRoot = process.cwd();
 const read = relativePath => fs.readFileSync(path.join(projectRoot, relativePath), 'utf8');
 
+describe('Discoverability and link previews', () => {
+  const PAGES = [
+    'index.html',
+    'public/about/index.html', 'public/booking/index.html', 'public/books/index.html',
+    'public/contact/index.html', 'public/privacy/index.html', 'public/products/index.html',
+    'public/services/index.html', 'public/terms/index.html',
+  ];
+  const headOf = file => {
+    const src = read(file);
+    return src.slice(0, src.indexOf('</head>'));
+  };
+
+  // The page body is rendered client-side, but link-preview scrapers (Facebook,
+  // LinkedIn, Slack, iMessage) never run JavaScript. These tags must therefore
+  // sit in the static <head> or a pasted link shows a bare URL.
+  it.each(PAGES)('%s exposes SEO tags in the static <head>', file => {
+    const head = headOf(file);
+    expect(head).toMatch(/<title>.+<\/title>/);
+    expect(head).toContain('name="description"');
+    expect(head).toContain('rel="canonical"');
+    expect(head).toContain('property="og:title"');
+    expect(head).toContain('property="og:description"');
+    expect(head).toContain('property="og:image"');
+    expect(head).toContain('name="twitter:card"');
+  });
+
+  it.each(PAGES)('%s declares the real og:image dimensions', file => {
+    const head = headOf(file);
+    expect(head).toContain('content="https://felican.ai/og.png"');
+    expect(head).toContain('property="og:image:width" content="1102"');
+    expect(head).toContain('property="og:image:height" content="579"');
+    expect(head).toContain('property="og:image:alt"');
+  });
+
+  it.each(PAGES)('%s carries valid Organization structured data', file => {
+    const match = headOf(file).match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+    expect(match).not.toBeNull();
+    const graph = JSON.parse(match[1])['@graph'];
+    const org = graph.find(node => node['@type'] === 'Organization');
+    expect(org).toBeTruthy();
+    expect(org.telephone).toBe('+1-561-235-0799');
+    expect(org.logo.url).toBe('https://felican.ai/logo-mark.png');
+  });
+
+  it('keeps the og image in sync with the file on disk', () => {
+    const png = fs.readFileSync(path.join(projectRoot, 'public/og.png'));
+    expect(png.slice(1, 4).toString()).toBe('PNG');
+    expect(png.readUInt32BE(16)).toBe(1102);
+    expect(png.readUInt32BE(20)).toBe(579);
+  });
+
+  it('lists every public route in the sitemap', () => {
+    const sitemap = read('public/sitemap.xml');
+    for (const route of ['/', '/products/', '/services/', '/books/', '/about/', '/contact/', '/booking/']) {
+      expect(sitemap).toContain(`<loc>https://felican.ai${route}</loc>`);
+    }
+    expect(sitemap).toContain('<lastmod>');
+  });
+});
+
 describe('Claude Design static website export', () => {
   it('ships the redesigned homepage and clean internal routes', () => {
     const home = read('index.html');
@@ -48,19 +108,71 @@ describe('Claude Design static website export', () => {
     expect(read('public/support.js')).not.toContain('https://unpkg.com');
   });
 
-  it('links every product to its live destination and includes a real screenshot', () => {
+  it('routes every product to the contact form instead of the live app', () => {
     const products = read('public/products/index.html');
-    for (const [url, image] of [
-      ['https://auto.felican.ai/', '/product-felican-auto.png'],
-      ['https://relay.felican.dev/relay', '/product-relay.png'],
-      ['/?assistant=1', '/product-ai-assistant.png'],
-      ['https://woa.felican.ai/', '/product-world-of-agents.png'],
-      ['https://book-studio.felican.dev/', '/product-bookmaker.png'],
+    // Products deliberately no longer link out; each CTA pre-fills the contact form.
+    for (const url of [
+      'https://auto.felican.ai/',
+      'https://relay.felican.dev/relay',
+      'https://woa.felican.ai/',
+      'https://book-studio.felican.dev/',
     ]) {
-      expect(products).toContain(url);
+      expect(products).not.toContain(url);
+    }
+    expect(products).toContain("'/contact/?product=' + encodeURIComponent(x.name)");
+    expect(products).not.toMatch(/BookMarketer|book-marketer|product-marketer/i);
+  });
+
+  it('leads the product list with Private AI Global as the flagship', () => {
+    const products = read('public/products/index.html');
+    expect(products).toContain("name: 'Private AI Global'");
+    expect(products).toContain('featured: true');
+    expect(products.indexOf("name: 'Private AI Global'")).toBeLessThan(products.indexOf("name: 'Felican Auto'"));
+    // The contact form must offer the same name so ?product= pre-selects it.
+    expect(read('public/contact/index.html')).toContain("'Private AI Global'");
+  });
+
+  it('shows the wider workshop lineup from the server registry', () => {
+    const products = read('public/products/index.html');
+    const contact = read('public/contact/index.html');
+    const lineup = [
+      'Felican Factory', 'Ora', 'ThreadPilot', 'AdPulse', 'Candyshop', 'Mira', 'FrameFire',
+      'Lumina', 'Avatar Comparison', 'Dendrite', 'Quorum', 'FloorDesk', 'QuantDesk', 'Felican Auto-Trading',
+    ];
+    for (const name of lineup) {
+      expect(products).toContain(`name: '${name}'`);
+      // Every product must be selectable on the contact form for ?product= to pre-fill.
+      expect(contact).toContain(`'${name}'`);
+    }
+  });
+
+  it('excludes the entries the owner asked to keep off the site', () => {
+    const products = read('public/products/index.html');
+    const contact = read('public/contact/index.html');
+    // BetIQ (sports betting) and the three real-estate apps were explicitly withdrawn.
+    for (const dropped of ['BetIQ', 'CasaSuite', 'LeadConcierge AI', 'InvestorHQ']) {
+      expect(products).not.toContain(dropped);
+      expect(contact).not.toContain(dropped);
+    }
+    // Internal infrastructure and client sites from the registry must never be published.
+    for (const internal of ['Portainer', 'n8n', 'Talons by Byrd', 'YWCA', 'IntakeMaster', 'Scraper tool']) {
+      expect(products).not.toContain(internal);
+    }
+  });
+
+  it('keeps a current screenshot for each product that shows one', () => {
+    const products = read('public/products/index.html');
+    for (const image of [
+      '/product-felican-auto.png',
+      '/product-relay.png',
+      '/product-ai-assistant.jpg',
+      '/product-world-of-agents.png',
+      '/product-bookmaker.png',
+    ]) {
       expect(products).toContain(image);
     }
-    expect(products).not.toMatch(/BookMarketer|book-marketer|product-marketer/i);
+    // The old assistant shot showed retired blue branding and a dead phone number.
+    expect(products).not.toContain('/product-ai-assistant.png');
   });
 
   it('places World of Agents directly after Felican Auto', () => {
@@ -69,12 +181,29 @@ describe('Claude Design static website export', () => {
     expect(productPage.indexOf("name: 'World of Agents'")).toBeLessThan(productPage.indexOf("name: 'Relay'"));
   });
 
-  it('uses direct contact links without a contact form', () => {
+  it('offers a real contact form alongside direct email and phone', () => {
     const contact = read('public/contact/index.html');
     expect(contact).toContain("'felican.ai.inc' + '@' + 'gmail.com'");
-    expect(contact).toContain("emailHref: 'mailto:' + email");
+    expect(contact).toContain("'mailto:' + EMAIL");
+    expect(contact).toContain('<form');
+    expect(contact).toContain("fetch('/api/contact'");
+    // Honeypot field must stay in place for spam filtering.
+    expect(contact).toContain('name="website"');
+    // The current company line, not the retired one.
+    expect(contact).toContain('tel:+15612350799');
     expect(contact).not.toContain('tel:+13465150361');
-    expect(contact).not.toContain('<form');
+  });
+
+  it('pre-fills the contact form from the ?product= link products use', () => {
+    const contact = read('public/contact/index.html');
+    expect(contact).toContain("new URLSearchParams(window.location.search).get('product')");
+    expect(contact).toContain("'Ask us about '");
+  });
+
+  it('foregrounds the certified team on the contact page', () => {
+    const contact = read('public/contact/index.html');
+    expect(contact).toContain('more than ten certified AI professionals');
+    expect(contact).toContain('Certified AI professionals on the team');
   });
 
   it('ships a stable booking route with validated Calendly/Cal.com configuration and direct fallbacks', () => {
@@ -133,13 +262,16 @@ describe('Claude Design static website export', () => {
   });
 
   it('does not publish a fixed product count', () => {
+    // Strip JSON-LD: its "position": N / "@type": "Product" pairs are structured
+    // data for crawlers, not a claim to visitors about how many products exist.
+    const stripLd = src => src.replace(/<script type="application\/ld\+json">[\s\S]*?<\/script>/g, '');
     const productCopy = [
       read('index.html'),
       read('public/products/index.html'),
       read('public/about/index.html'),
       read('public/books/index.html'),
       read('public/ChatAssistant.dc.html'),
-    ].join('\n');
+    ].map(stripLd).join('\n');
 
     expect(productCopy).not.toMatch(/\b(?:five|5)\b.{0,30}\bproducts?\b|\bproducts?\b.{0,30}\b(?:five|5)\b/i);
   });

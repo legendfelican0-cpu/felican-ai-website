@@ -33,6 +33,17 @@
 .fa-input:focus { outline:2px solid #2FB894;outline-offset:1px;border-color:#2FB894;background:#080E13 }
 .fa-send { width:50px;height:50px;display:grid;place-items:center;flex:0 0 50px;background:linear-gradient(135deg,#2FB894,#59D4B4);border:0;color:#080E13;font-family:Sora,sans-serif;font-size:22px;font-weight:700;padding:0;border-radius:50%;cursor:pointer;box-shadow:0 8px 20px rgba(47,184,148,.28);transition:transform .18s ease,box-shadow .18s ease }
 .fa-send:hover { transform:translateY(-2px);box-shadow:0 11px 25px rgba(47,184,148,.38) }
+.fa-human { width:50px;height:50px;display:grid;place-items:center;flex:0 0 50px;background:#12181C;border:1px solid #1C2A28;color:#8FE0C8;font-size:19px;padding:0;border-radius:50%;cursor:pointer;transition:background .18s ease,border-color .18s ease,transform .18s ease }
+.fa-human:hover { background:rgba(47,184,148,.18);border-color:#2FB894;transform:translateY(-2px) }
+.fa-handoff { display:flex;flex-direction:column;gap:9px;padding:15px 16px;background:#0C1419;border-top:1px solid #1C2A28;flex-shrink:0 }
+.fa-handoff-title { margin:0;font-family:Sora,sans-serif;font-size:14px;font-weight:700;color:#EEF4F4 }
+.fa-handoff-note { margin:0;font-size:12.5px;line-height:1.5;color:#8FA3A8 }
+.fa-hf { width:100%;border:1px solid #1C2A28;background:#05090C;color:#EEF4F4;font-family:Inter,sans-serif;font-size:15px;padding:11px 13px;border-radius:9px;resize:vertical }
+.fa-hf:focus { outline:2px solid #2FB894;outline-offset:1px;border-color:#2FB894 }
+.fa-handoff-row { display:flex;gap:9px;align-items:center }
+.fa-hf-send { flex:1;padding:11px 15px;background:linear-gradient(135deg,#2FB894,#59D4B4);border:0;color:#080E13;font-family:Sora,sans-serif;font-size:14px;font-weight:700;border-radius:999px;cursor:pointer }
+.fa-hf-send:disabled { opacity:.6;cursor:not-allowed }
+.fa-hf-cancel { padding:11px 15px;background:transparent;border:1px solid #1C2A28;color:#9FC0BE;font-family:Inter,sans-serif;font-size:14px;font-weight:600;border-radius:999px;cursor:pointer }
 .fa-launch-row { display:flex;align-items:center;gap:12px }
 .fa-launch-label { padding:11px 15px;border:1px solid rgba(47,184,148,.4);border-radius:999px;background:rgba(12,20,25,.94);color:#EEF4F4;font-family:Sora,Inter,sans-serif;font-size:14px;font-weight:700;box-shadow:0 10px 30px rgba(5,9,12,.4);backdrop-filter:blur(10px) }
 .fa-launcher { position:relative;width:68px;height:68px;display:grid;place-items:center;flex:0 0 68px;padding:0;border:1px solid rgba(255,255,255,.5);border-radius:50%;background:linear-gradient(145deg,#59D4B4 0%,#2FB894 55%,#12281F 100%);color:#FFFFFF;cursor:pointer;box-shadow:0 18px 44px rgba(47,184,148,.4),inset 0 1px 0 rgba(255,255,255,.32);transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .2s ease }
@@ -89,13 +100,31 @@
         </div>
       </sc-if>
 
+      <sc-if value="{{ handoff }}" hint-placeholder-val="{{ false }}">
+        <form class="fa-handoff" onSubmit="{{ sendHandoff }}">
+          <p class="fa-handoff-title">Send this to a person</p>
+          <p class="fa-handoff-note">{{ handoffNote }}</p>
+          <input class="fa-hf" type="text" value="{{ hName }}" onChange="{{ onHName }}" placeholder="Your name" maxlength="120" autoComplete="name">
+          <input class="fa-hf" type="email" value="{{ hEmail }}" onChange="{{ onHEmail }}" placeholder="Your email" maxlength="160" autoComplete="email">
+          <textarea class="fa-hf" rows="3" value="{{ hMsg }}" onChange="{{ onHMsg }}" placeholder="What should we help with?" maxlength="2000"></textarea>
+          <input type="text" name="website" value="{{ website }}" onChange="{{ onWebsite }}" tabindex="-1" autoComplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0;overflow:hidden">
+          <div class="fa-handoff-row">
+            <button class="fa-hf-send" type="submit" disabled="{{ hBusy }}" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">{{ hSendLabel }}</button>
+            <button class="fa-hf-cancel" type="button" onClick="{{ closeHandoff }}" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">Cancel</button>
+          </div>
+        </form>
+      </sc-if>
+
       <p class="fa-privacy">Please do not share confidential or sensitive information. See our <a href="/privacy/">Privacy Policy</a>.</p>
-      <form class="fa-composer" onSubmit="{{ submit }}">
-        <label for="fa-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your message</label>
-        <input type="text" name="website" value="{{ website }}" onChange="{{ onWebsite }}" tabindex="-1" autoComplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden">
-        <input class="fa-input" id="fa-input" type="text" value="{{ draft }}" onChange="{{ onDraft }}" placeholder="Ask anything about Felican AI" maxlength="800" autoComplete="off">
-        <button class="fa-send" type="submit" aria-label="Send message" title="{{ sendLabel }}" style-focus="outline:2px solid #080E13;outline-offset:2px">&#8593;</button>
-      </form>
+      <sc-if value="{{ composerOpen }}" hint-placeholder-val="{{ true }}">
+        <form class="fa-composer" onSubmit="{{ submit }}">
+          <label for="fa-input" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Your message</label>
+          <input type="text" name="website" value="{{ website }}" onChange="{{ onWebsite }}" tabindex="-1" autoComplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden">
+          <input class="fa-input" id="fa-input" type="text" value="{{ draft }}" onChange="{{ onDraft }}" placeholder="Ask anything about Felican AI" maxlength="800" autoComplete="off">
+          <button class="fa-human" type="button" onClick="{{ openHandoff }}" title="Email a person" aria-label="Email a person at Felican AI" style-focus="outline:2px solid #2FB894;outline-offset:2px">&#9993;</button>
+          <button class="fa-send" type="submit" aria-label="Send message" title="{{ sendLabel }}" style-focus="outline:2px solid #080E13;outline-offset:2px">&#8593;</button>
+        </form>
+      </sc-if>
     </section>
   </sc-if>
 
@@ -112,22 +141,72 @@
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:640}}">
 const SYS = `You are the Felican AI assistant running on the Felican AI website. Felican AI builds useful AI products, custom systems, business automations, integrations, assistants, solutions, and training for businesses in any industry. It is led by Lee Felican Jr., a software engineer and enterprise architect with 30+ years of experience.
 
-The current product lineup includes: Felican Auto (connected AI products, automations and workflows for automotive businesses); World of Agents (discover and work with specialized AI agents for focused business tasks); Relay (AI field-service software for HVAC, plumbing, and electrical companies with scheduling, AP invoice OCR, collections, quotes, crew management, and an AI operations assistant); Felican AI Assistant (a company-trained AI agent businesses can embed inside a website or app to answer questions, recommend services, capture inquiries, connect workflows, and hand off to people); BookMaker (an AI workspace for planning, writing, organizing and preparing books). The portfolio is growing, so describe it as the current lineup without stating a fixed product count.
+The current product lineup includes: Private AI Global, the flagship product (enterprise-grade private AI with zero data exposure, deployed securely inside the customer's own network — recommend this first for any business worried about sensitive data); Felican Auto (connected AI products, automations and workflows for automotive businesses); World of Agents (discover and work with specialized AI agents for focused business tasks); Relay (AI field-service software for HVAC, plumbing, and electrical companies with scheduling, AP invoice OCR, collections, quotes, crew management, and an AI operations assistant); Felican AI Assistant (a company-trained AI agent businesses can embed inside a website or app to answer questions, recommend services, capture inquiries, connect workflows, and hand off to people); BookMaker (an AI workspace for planning, writing, organizing and preparing books). The portfolio is growing, so describe it as the current lineup without stating a fixed product count.
 
 Services: AI agents and bots, business automation, custom integrations, private AI systems, AI implementation and consulting, business solutions, AI training and workshops. Felican AI works with businesses in any industry and designs solutions around how each company actually operates.
 
 Lee Felican Jr. has published four books: The Big Balla's Guide to Making Money with AI, Don't Be Replaced, Stop Being Nice to AI, and The BIG AI Book.
 
-Contact: email felican.ai.inc@gmail.com. There is no phone line — email only.
+Contact: email felican.ai.inc@gmail.com, or call (561) 235-0799 Monday to Friday, 9am-6pm Eastern. Visitors can also send a message straight to the team from this chat using the envelope button next to the message box, or from the contact page at /contact/.
+
+Felican AI is a team of more than ten certified AI professionals with backgrounds across every major industry, led by Lee Felican Jr.
 
 Answer in 2-4 short sentences, plainly and helpfully. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, statistics, pricing, awards, or products that are not listed above. If you do not know, say so and point the visitor to the contact page.`;
 
 class Component extends DCLogic {
   state = {
     open: new URLSearchParams(window.location.search).has('assistant'), busy: false, draft: '', website: '',
+    handoff: false, hName: '', hEmail: '', hMsg: '', hBusy: false,
     messages: [{ role: 'assistant', text: "Hi — I'm the Felican AI agent. Ask me about our products, services, training, or Lee's books." }]
   };
   scrollRef = React.createRef();
+
+  // Hand the conversation to a human by emailing it through /api/contact.
+  async submitHandoff(event) {
+    event.preventDefault();
+    if (this.state.hBusy) return;
+    const name = (this.state.hName || '').trim();
+    const email = (this.state.hEmail || '').trim();
+    const note = (this.state.hMsg || '').trim();
+    if (!name || !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email) || !note) {
+      this.setState(s => ({
+        messages: [...s.messages, { role: 'assistant', text: 'I need your name, a valid email, and a short note before I can send that on.' }]
+      }));
+      return;
+    }
+    this.setState({ hBusy: true });
+    // Include the conversation so far so the team has the context.
+    const transcript = this.state.messages
+      .map(m => (m.role === 'user' ? 'Visitor: ' : 'Assistant: ') + m.text)
+      .join('\n');
+    const message = note + '\n\n--- Chat transcript ---\n' + transcript;
+    let ok = false;
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name, email, message, source: 'assistant',
+          product: 'Asked via site assistant', website: this.state.website
+        })
+      });
+      const payload = await response.json().catch(() => ({}));
+      ok = response.ok && payload.ok;
+    } catch (e) {
+      ok = false;
+    }
+    this.setState(s => ({
+      hBusy: false,
+      handoff: !ok,
+      hName: ok ? '' : s.hName, hEmail: ok ? '' : s.hEmail, hMsg: ok ? '' : s.hMsg,
+      messages: [...s.messages, {
+        role: 'assistant',
+        text: ok
+          ? 'Sent — a certified AI professional will reply to ' + email + ' within one business day.'
+          : "That didn't go through. Please email felican.ai.inc@gmail.com or call (561) 235-0799 and we'll pick it up."
+      }]
+    }));
+  }
   componentDidUpdate() {
     const el = this.scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
@@ -164,12 +243,26 @@ class Component extends DCLogic {
       sendLabel: this.state.busy ? 'Thinking' : 'Send',
       draft: this.state.draft,
       website: this.state.website,
-      showChips: this.state.messages.length <= 1,
+      showChips: this.state.messages.length <= 1 && !this.state.handoff,
+      composerOpen: !this.state.handoff,
       scrollRef: this.scrollRef,
       messages: this.state.messages.map(m => m.role === 'user'
         ? { ...m, align: 'flex-end', bg: '#2FB894', fg: '#080E13', border: '#2FB894' }
         : { ...m, align: 'flex-start', bg: '#12181C', fg: '#EEF4F4', border: '#1C2A28' }),
       chips: [chip('What products do you offer?'), chip('Can you automate my business?'), chip('Tell me about the books')],
+      handoff: this.state.handoff,
+      handoffNote: 'We email this to the Felican AI team along with the chat above, and a person replies to you directly.',
+      hName: this.state.hName,
+      hEmail: this.state.hEmail,
+      hMsg: this.state.hMsg,
+      hBusy: this.state.hBusy,
+      hSendLabel: this.state.hBusy ? 'Sending…' : 'Send to the team',
+      openHandoff: () => this.setState(s => ({ handoff: true, hMsg: s.hMsg || s.draft })),
+      closeHandoff: () => this.setState({ handoff: false }),
+      onHName: e => this.setState({ hName: e.target.value }),
+      onHEmail: e => this.setState({ hEmail: e.target.value }),
+      onHMsg: e => this.setState({ hMsg: e.target.value }),
+      sendHandoff: e => this.submitHandoff(e),
       toggle: () => this.setState(s => ({ open: !s.open })),
       close: () => this.setState({ open: false }),
       onDraft: e => this.setState({ draft: e.target.value }),

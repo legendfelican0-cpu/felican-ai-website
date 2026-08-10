@@ -25,9 +25,10 @@ const MIME = new Map([
 
 export const FELICAN_SYSTEM_PROMPT = `You are the Felican AI assistant running on the Felican AI website. Be clear, brief, friendly, and honest. Answer in 2-4 short sentences unless the visitor asks for detail.
 
-Felican AI builds useful AI products, custom systems, business automations, integrations, assistants, solutions, and training for businesses in any industry. It is led by Lee Felican Jr., a software engineer and enterprise architect with 30+ years of experience.
+Felican AI builds useful AI products, custom systems, business automations, integrations, assistants, solutions, and training for businesses in any industry. It is a team of more than ten certified AI professionals with backgrounds across every major industry, led by Lee Felican Jr., a software engineer and enterprise architect with 30+ years of experience.
 
 Products and official links:
+- Private AI Global (the flagship product): enterprise-grade private AI with zero data exposure, deployed securely inside the customer's own network. Self-hosted models under their access controls, no data sent to a public model, and data residency, audit trails, and retention rules they set. Recommend this first for any business worried about sensitive data.
 - Felican Auto: an AI voice and web assistant for dealerships that answers calls and chats, uses live inventory, books test drives, and captures leads. https://auto.felican.ai/
 - Relay: AI field-service software for HVAC, plumbing, and electrical companies. It combines maintenance scheduling, AP invoice OCR and review, AR collections, quotes, crew management, reports, and an AI operations assistant. https://relay.felican.dev/relay
 - Felican AI Assistant: a company-trained AI agent businesses can embed inside a website or app. It answers questions, recommends services, captures inquiries, connects workflows, and hands off to people. The assistant on this site is a live example of the product.
@@ -43,7 +44,7 @@ Books by Lee Felican Jr.:
 - The BIG AI Book: a fully illustrated, plain-language explanation of AI for grown-ups, including agents, skills, and tools.
 Book resources: https://felican.ai/Lee-Felican-jr/books/resources/
 
-Contact: felican.ai.inc@gmail.com. There is no phone line — email only. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
+Contact: email felican.ai.inc@gmail.com, or call (561) 235-0799 Monday to Friday, 9am-6pm Eastern. Visitors can also send a message straight to the team from this chat using the envelope button beside the message box, or from the contact page at /contact/. Offer that handoff whenever someone wants a person, a quote, or something you cannot answer. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
 
 export function sanitizeText(value, maxLength = MAX_MESSAGE_LENGTH) {
   return String(value ?? '')
@@ -114,6 +115,45 @@ function providerIsConfigured(env) {
   return Boolean(env.ANTHROPIC_API_KEY?.trim() || (env.ASHER_API_KEY?.trim() && env.ASHER_BASE_URL?.trim()));
 }
 
+export function contactIsConfigured(env = process.env) {
+  return Boolean(env.RESEND_API_KEY?.trim());
+}
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+export function normalizeContact(input = {}) {
+  const name = sanitizeText(input.name, 120);
+  const email = sanitizeText(input.email, 160);
+  const message = sanitizeText(input.message, 4000);
+  const errors = [];
+  if (!name) errors.push('name');
+  if (!email || !EMAIL_RE.test(email)) errors.push('email');
+  if (!message) errors.push('message');
+  return {
+    errors,
+    value: {
+      name,
+      email,
+      message,
+      company: sanitizeText(input.company, 160),
+      phone: sanitizeText(input.phone, 60),
+      product: sanitizeText(input.product, 120),
+      // Where the enquiry came from: the contact form or the site assistant.
+      source: input.source === 'assistant' ? 'assistant' : 'contact-form',
+    },
+  };
+}
+
+
 function structuredLog(logger, level, event, fields = {}) {
   logger[level]?.(JSON.stringify({ timestamp: new Date().toISOString(), level, event, ...fields }));
 }
@@ -148,6 +188,48 @@ async function readJson(req) {
     const error = new Error('invalid_json');
     error.statusCode = 400;
     throw error;
+  }
+}
+
+export async function sendContactEmail(contact, env = process.env) {
+  const key = env.RESEND_API_KEY?.trim();
+  if (!key) throw new Error('Contact email is not configured');
+  const to = (env.CONTACT_TO || 'felican.ai.inc@gmail.com').trim();
+  const from = (env.CONTACT_FROM || 'Felican AI Website <website@felican.ai>').trim();
+
+  const rows = [
+    ['Name', contact.name],
+    ['Email', contact.email],
+    ['Company', contact.company],
+    ['Phone', contact.phone],
+    ['Product', contact.product],
+    ['Source', contact.source],
+  ].filter(([, v]) => v);
+
+  const subject = contact.product
+    ? `Website enquiry — ${contact.product} — ${contact.name}`
+    : `Website enquiry — ${contact.name}`;
+  const text = `${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}\n\n${contact.message}\n`;
+  const html = `<table style="font:15px/1.6 system-ui,sans-serif;border-collapse:collapse">${
+    rows.map(([k, v]) => `<tr><td style="padding:3px 14px 3px 0;color:#667"><strong>${escapeHtml(k)}</strong></td><td style="padding:3px 0">${escapeHtml(v)}</td></tr>`).join('')
+  }</table><hr style="border:0;border-top:1px solid #ddd;margin:18px 0"><div style="font:15px/1.65 system-ui,sans-serif;white-space:pre-wrap">${escapeHtml(contact.message)}</div>`;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15_000);
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({ from, to: [to], reply_to: contact.email, subject, text, html }),
+    });
+    if (!response.ok) {
+      const detail = await response.text().catch(() => '');
+      throw new Error(`Resend returned ${response.status}${detail ? `: ${detail.slice(0, 300)}` : ''}`);
+    }
+    return await response.json().catch(() => ({}));
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -212,8 +294,10 @@ function staticPath(rootDir, pathname) {
   return decoded === '/' ? join(rootDir, 'index.html') : null;
 }
 
-export function createAppServer({ rootDir, complete = completeWithConfiguredProvider, logger = console, env = process.env } = {}) {
+export function createAppServer({ rootDir, complete = completeWithConfiguredProvider, sendContact = sendContactEmail, logger = console, env = process.env } = {}) {
   const siteRoot = resolve(rootDir || join(process.cwd(), 'dist/client'));
+  const contactHourly = createWindowLimiter(5, 3_600_000);
+  const contactDaily = createWindowLimiter(20, 86_400_000);
   const perMinute = createWindowLimiter(10, 60_000);
   const perDay = createWindowLimiter(50, 86_400_000);
   const globalMinute = createWindowLimiter(300, 60_000);
@@ -295,6 +379,46 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
         const status = Number(error?.statusCode) || 503;
         structuredLog(logger, 'error', 'chat.failed', { requestId, status, durationMs: Date.now() - startedAt, reason: error?.message || 'unknown error' });
         return json(res, status, { error: status < 500 ? 'Invalid request.' : 'The assistant is temporarily unavailable.' });
+      }
+    }
+
+    if (url.pathname === '/api/contact') {
+      if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' }, { Allow: 'POST' });
+      const requestId = randomUUID();
+      const startedAt = Date.now();
+      const ip = requestIp(req);
+      try {
+        const body = await readJson(req);
+        // Honeypot: bots fill hidden fields. Report success without sending.
+        if (sanitizeText(body?.website, 80)) {
+          structuredLog(logger, 'warn', 'contact.honeypot', { requestId, ip });
+          return json(res, 200, { ok: true });
+        }
+        const { errors, value } = normalizeContact(body);
+        if (errors.length) return json(res, 400, { error: 'Please check the highlighted fields.', fields: errors });
+        if (!contactIsConfigured(env)) {
+          structuredLog(logger, 'error', 'contact.unconfigured', { requestId });
+          return json(res, 503, { error: 'The contact form is temporarily unavailable. Please email us directly.' });
+        }
+        if (!contactHourly(ip) || !contactDaily(ip)) {
+          structuredLog(logger, 'warn', 'contact.rate_limited', { requestId, ip });
+          return json(res, 429, { error: 'Too many messages. Please try again later.' }, { 'Retry-After': '3600' });
+        }
+        await sendContact(value, env);
+        structuredLog(logger, 'info', 'contact.sent', {
+          requestId, durationMs: Date.now() - startedAt, source: value.source, product: value.product || null,
+        });
+        return json(res, 200, { ok: true });
+      } catch (error) {
+        const status = error?.statusCode || 502;
+        structuredLog(logger, 'error', 'contact.failed', {
+          requestId, status, durationMs: Date.now() - startedAt, reason: error?.message || 'unknown error',
+        });
+        return json(res, status, {
+          error: status < 500
+            ? 'Invalid request.'
+            : 'We could not send that just now. Please email felican.ai.inc@gmail.com directly.',
+        });
       }
     }
 

@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script src="/support.js?v=20260802"></script>
+<!-- SEO tags live here in the static <head> so crawlers and link-preview
+     scrapers (which do not run JavaScript) can read them. The <helmet>
+     block below repeats them for the client-side runtime. -->
+<title>Books by Lee Felican Jr. — Felican AI</title>
+<meta name="description" content="Books by Lee Felican Jr. about making money with AI, staying valuable at work, prompting effectively, and understanding AI in plain language.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://felican.ai/books/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Felican AI"><meta property="og:locale" content="en_US"><meta property="og:title" content="Books by Lee Felican Jr."><meta property="og:description" content="Practical, plain-language books for people who want to put AI to work."><meta property="og:url" content="https://felican.ai/books/"><meta property="og:image" content="https://felican.ai/og.png"><meta property="og:image:width" content="1102"><meta property="og:image:height" content="579"><meta property="og:image:alt" content="Felican AI — AI solutions for private businesses">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://felican.ai/og.png"><meta name="twitter:image:alt" content="Felican AI — AI solutions for private businesses">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://felican.ai/#organization","name":"Felican AI","url":"https://felican.ai/","logo":{"@type":"ImageObject","url":"https://felican.ai/logo-mark.png"},"image":"https://felican.ai/og.png","description":"Felican AI is a team of more than ten certified AI professionals building practical AI products, private AI systems, custom automations, integrations, and training for businesses in any industry.","email":"felican.ai.inc@gmail.com","telephone":"+1-561-235-0799","founder":{"@type":"Person","name":"Lee Felican Jr.","jobTitle":"Founder and Enterprise Architect"},"contactPoint":[{"@type":"ContactPoint","telephone":"+1-561-235-0799","email":"felican.ai.inc@gmail.com","contactType":"sales","areaServed":"US","availableLanguage":"English"}],"knowsAbout":["Artificial intelligence","Private AI deployment","Business automation","AI integration","AI training"]},{"@type":"WebSite","@id":"https://felican.ai/#website","url":"https://felican.ai/","name":"Felican AI","publisher":{"@id":"https://felican.ai/#organization"},"inLanguage":"en-US"},{"@type":"ItemList","name":"Books by Lee Felican Jr.","itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"Book","name":"Don't Be Replaced","url":"https://www.amazon.com/dp/B0H9G68TVC","author":{"@type":"Person","name":"Lee Felican Jr."}}},{"@type":"ListItem","position":2,"item":{"@type":"Book","name":"Stop Being Nice to AI","url":"https://www.amazon.com/dp/B0H9G83R38","author":{"@type":"Person","name":"Lee Felican Jr."}}},{"@type":"ListItem","position":3,"item":{"@type":"Book","name":"The BIG AI Book","url":"https://www.amazon.com/dp/B0H9DVDF2R","author":{"@type":"Person","name":"Lee Felican Jr."}}},{"@type":"ListItem","position":4,"item":{"@type":"Book","name":"The Big Balla's Guide to Making Money with AI","url":"https://www.amazon.com/dp/B0H9FLWJFD","author":{"@type":"Person","name":"Lee Felican Jr."}}}]}]}</script>
 </head>
 <body>
 <x-dc>
@@ -12,10 +22,10 @@
 <title>Books by Lee Felican Jr. — Felican AI</title>
 <meta name="description" content="Books by Lee Felican Jr. about making money with AI, staying valuable at work, prompting effectively, and understanding AI in plain language.">
 <meta name="robots" content="index,follow"><link rel="canonical" href="https://felican.ai/books/">
-<meta property="og:type" content="website"><meta property="og:site_name" content="Felican AI">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Felican AI"><meta property="og:locale" content="en_US">
 <meta property="og:title" content="Books by Lee Felican Jr."><meta property="og:description" content="Practical, plain-language books for people who want to put AI to work.">
-<meta property="og:url" content="https://felican.ai/books/"><meta property="og:image" content="https://felican.ai/og.png">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://felican.ai/og.png">
+<meta property="og:url" content="https://felican.ai/books/"><meta property="og:image" content="https://felican.ai/og.png"><meta property="og:image:width" content="1102"><meta property="og:image:height" content="579"><meta property="og:image:alt" content="Felican AI — AI solutions for private businesses">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://felican.ai/og.png"><meta name="twitter:image:alt" content="Felican AI — AI solutions for private businesses">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -58,7 +68,7 @@
             <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:clamp(28px,3.2vw,44px);font-weight:800;line-height:1.06;letter-spacing:-0.035em;color:#EEF4F4;text-wrap:balance">{{ b.title }}</h2>
             <p style="margin:0 0 26px;font-size:clamp(17px,1.4vw,20px);line-height:1.7;color:#C2D2D4;max-width:600px;text-wrap:pretty">{{ b.sub }}</p>
             <div style="display:flex;flex-wrap:wrap;gap:12px">
-              <a href="{{ b.href }}" target="_blank" rel="noopener" style="flex:1 1 220px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-3px)" style-focus="outline:3px solid #59D4B4;outline-offset:3px">View the book <span aria-hidden="true">&#8594;</span></a>
+              <a href="{{ b.href }}" target="_blank" rel="noopener" style="flex:1 1 220px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-3px)" style-focus="outline:3px solid #59D4B4;outline-offset:3px">View book on Amazon.com <span aria-hidden="true">&#8594;</span></a>
               <a href="https://felican.ai/Lee-Felican-jr/books/resources" target="_blank" rel="noopener" style="flex:0 1 auto;display:inline-flex;align-items:center;padding:18px 22px;border:1px solid #1C2A28;color:#2FB894;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease" style-hover="background:rgba(47,184,148,0.14);border-color:#2FB894" style-focus="outline:3px solid #2FB894;outline-offset:3px">Book resources</a>
             </div>
           </div>
@@ -124,10 +134,10 @@ class Component extends DCLogic {
   renderVals() {
     return {
       books: [
-        { num: '01', kicker: 'MAKING MONEY WITH AI', title: "The Big Balla's Guide to Making Money with AI", sub: '100 real ways to make money with AI, sorted by startup cost and indexed by industry — plus beginner AI trading and a playbook for launching a legal business under $50.', href: 'https://www.amazon.com/dp/B0H9FLWJFD', image: '/book-big-ballas.jpg', slot: 'book-balla', slotHint: "Drop cover: The Big Balla's Guide to Making Money with AI" },
-        { num: '02', kicker: 'WORK AND CAREERS', title: "Don't Be Replaced", sub: "A working person's plan for staying valuable in the AI era: understand your exposure, separate routine work from the human work, and become the most AI-capable person on your team.", href: 'https://www.amazon.com/dp/B0H9G68TVC', image: '/book-dont-be-replaced.jpg', slot: 'book-replaced', slotHint: "Drop cover: Don't Be Replaced" },
-        { num: '03', kicker: 'PROMPTING', title: 'Stop Being Nice to AI', sub: 'A fast, practical guide to getting better results from any AI tool, built around the simple GRRRRR prompting method.', href: 'https://www.amazon.com/dp/B0H9G83R38', image: '/book-stop-being-nice.jpg', slot: 'book-stop-nice', slotHint: 'Drop cover: Stop Being Nice to AI' },
-        { num: '04', kicker: 'PLAIN-LANGUAGE AI', title: 'The BIG AI Book', sub: 'AI made wonderfully simple: what it is, where it appears in everyday life, how it works, and how agents use skills and tools — told as a fully illustrated, full-color storybook for grown-ups.', href: 'https://www.amazon.com/dp/B0H9DVDF2R', image: '/book-big-ai.jpg', slot: 'book-big-ai', slotHint: 'Drop cover: The BIG AI Book' }
+        { num: '01', kicker: 'WORK AND CAREERS', title: "Don't Be Replaced", sub: "A working person's plan for staying valuable in the AI era: understand your exposure, separate routine work from the human work, and become the most AI-capable person on your team.", href: 'https://www.amazon.com/dp/B0H9G68TVC', image: '/book-dont-be-replaced.jpg', slot: 'book-replaced', slotHint: "Drop cover: Don't Be Replaced" },
+        { num: '02', kicker: 'PROMPTING', title: 'Stop Being Nice to AI', sub: 'A fast, practical guide to getting better results from any AI tool, built around the simple GRRRRR prompting method.', href: 'https://www.amazon.com/dp/B0H9G83R38', image: '/book-stop-being-nice.jpg', slot: 'book-stop-nice', slotHint: 'Drop cover: Stop Being Nice to AI' },
+        { num: '03', kicker: 'PLAIN-LANGUAGE AI', title: 'The BIG AI Book', sub: 'AI made wonderfully simple: what it is, where it appears in everyday life, how it works, and how agents use skills and tools — told as a fully illustrated, full-color storybook for grown-ups.', href: 'https://www.amazon.com/dp/B0H9DVDF2R', image: '/book-big-ai.jpg', slot: 'book-big-ai', slotHint: 'Drop cover: The BIG AI Book' },
+        { num: '04', kicker: 'MAKING MONEY WITH AI', title: "The Big Balla's Guide to Making Money with AI", sub: '100 real ways to make money with AI, sorted by startup cost and indexed by industry — plus beginner AI trading and a playbook for launching a legal business under $50.', href: 'https://www.amazon.com/dp/B0H9FLWJFD', image: '/book-big-ballas.jpg', slot: 'book-balla', slotHint: "Drop cover: The Big Balla's Guide to Making Money with AI" }
       ],
       facts: [
         { k: '4', v: 'Books published on AI' },

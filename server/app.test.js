@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { createAppServer, normalizeMessages, sanitizeAssistantReply, sanitizeText } from './app.js';
+import { createAppServer, contactIsConfigured, normalizeContact, normalizeMessages, sanitizeAssistantReply, sanitizeText } from './app.js';
 
 const servers = [];
 
@@ -11,6 +11,7 @@ async function start(complete = async () => 'A real answer from Felican AI.', op
   const server = createAppServer({
     rootDir: process.cwd(),
     complete,
+    ...(options.sendContact ? { sendContact: options.sendContact } : {}),
     env: { ANTHROPIC_API_KEY: 'test-key', ...options.env },
     logger: options.logger || { error() {}, info() {}, warn() {} },
   });
@@ -20,6 +21,95 @@ async function start(complete = async () => 'A real answer from Felican AI.', op
 }
 
 const browserHeaders = { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 Chrome/126 Safari/537.36' };
+
+describe('Felican AI contact endpoint', () => {
+  const RESEND = { RESEND_API_KEY: 'test-resend-key' };
+  const goodBody = {
+    name: 'Dana Reyes', email: 'dana@example.com', company: 'Reyes HVAC',
+    phone: '555-0100', product: 'Relay', message: 'We are drowning in scheduling.', website: '',
+  };
+
+  it('validates required fields before attempting to send', () => {
+    expect(normalizeContact({ name: '', email: 'nope', message: '' }).errors).toEqual(['name', 'email', 'message']);
+    const ok = normalizeContact({ name: 'A', email: 'a@b.co', message: 'Hi', source: 'assistant' });
+    expect(ok.errors).toEqual([]);
+    expect(ok.value.source).toBe('assistant');
+    // Anything not explicitly the assistant is recorded as the form.
+    expect(normalizeContact({ name: 'A', email: 'a@b.co', message: 'Hi', source: 'spoofed' }).value.source).toBe('contact-form');
+  });
+
+  it('reports whether the mail provider is configured', () => {
+    expect(contactIsConfigured({})).toBe(false);
+    expect(contactIsConfigured({ RESEND_API_KEY: '  ' })).toBe(false);
+    expect(contactIsConfigured(RESEND)).toBe(true);
+  });
+
+  it('delivers a valid enquiry through the configured sender', async () => {
+    const sent = [];
+    const base = await start(undefined, { env: RESEND, sendContact: async contact => { sent.push(contact); } });
+    const response = await fetch(`${base}/api/contact`, {
+      method: 'POST', headers: browserHeaders, body: JSON.stringify(goodBody),
+    });
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ ok: true });
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toMatchObject({ name: 'Dana Reyes', email: 'dana@example.com', product: 'Relay', source: 'contact-form' });
+  });
+
+  it('rejects bad input and unsupported methods without sending', async () => {
+    const sent = [];
+    const base = await start(undefined, { env: RESEND, sendContact: async c => { sent.push(c); } });
+    const bad = await fetch(`${base}/api/contact`, {
+      method: 'POST', headers: browserHeaders, body: JSON.stringify({ name: '', email: 'x', message: '' }),
+    });
+    expect(bad.status).toBe(400);
+    await expect(bad.json()).resolves.toMatchObject({ fields: ['name', 'email', 'message'] });
+    const wrongMethod = await fetch(`${base}/api/contact`, { method: 'GET' });
+    expect(wrongMethod.status).toBe(405);
+    expect(sent).toHaveLength(0);
+  });
+
+  it('silently swallows honeypot submissions', async () => {
+    const sent = [];
+    const base = await start(undefined, { env: RESEND, sendContact: async c => { sent.push(c); } });
+    const response = await fetch(`${base}/api/contact`, {
+      method: 'POST', headers: browserHeaders, body: JSON.stringify({ ...goodBody, website: 'http://spam.example' }),
+    });
+    // A bot should see success and learn nothing.
+    expect(response.status).toBe(200);
+    expect(sent).toHaveLength(0);
+  });
+
+  it('returns 503 when the mail provider is not configured', async () => {
+    const base = await start(undefined, { env: {}, sendContact: async () => { throw new Error('should not be called'); } });
+    const response = await fetch(`${base}/api/contact`, {
+      method: 'POST', headers: browserHeaders, body: JSON.stringify(goodBody),
+    });
+    expect(response.status).toBe(503);
+  });
+
+  it('surfaces a usable error when the provider fails', async () => {
+    const base = await start(undefined, { env: RESEND, sendContact: async () => { throw new Error('Resend returned 422'); } });
+    const response = await fetch(`${base}/api/contact`, {
+      method: 'POST', headers: browserHeaders, body: JSON.stringify(goodBody),
+    });
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toMatchObject({ error: expect.stringContaining('felican.ai.inc@gmail.com') });
+  });
+
+  it('rate limits repeated submissions from one address', async () => {
+    const base = await start(undefined, { env: RESEND, sendContact: async () => {} });
+    const codes = [];
+    for (let i = 0; i < 7; i += 1) {
+      const response = await fetch(`${base}/api/contact`, {
+        method: 'POST', headers: browserHeaders, body: JSON.stringify(goodBody),
+      });
+      codes.push(response.status);
+    }
+    expect(codes.filter(c => c === 200)).toHaveLength(5);
+    expect(codes.filter(c => c === 429)).toHaveLength(2);
+  });
+});
 
 describe('Felican AI server', () => {
   it('sanitizes visitor input and limits conversation size', () => {

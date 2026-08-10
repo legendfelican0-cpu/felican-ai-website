@@ -5,17 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <script src="/support.js?v=20260802"></script>
+<!-- SEO tags live here in the static <head> so crawlers and link-preview
+     scrapers (which do not run JavaScript) can read them. The <helmet>
+     block below repeats them for the client-side runtime. -->
+<title>Contact Felican AI — Talk to a certified AI team</title>
+<meta name="description" content="Contact Felican AI by form, email, or phone at (561) 235-0799. Tell us what needs to work better and a certified AI professional will reply within one business day.">
+<meta name="robots" content="index,follow">
+<link rel="canonical" href="https://felican.ai/contact/">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Felican AI"><meta property="og:locale" content="en_US"><meta property="og:title" content="Contact Felican AI — Talk to a certified AI team"><meta property="og:description" content="Send us a message, email us, or call (561) 235-0799. A certified AI professional replies within one business day."><meta property="og:url" content="https://felican.ai/contact/"><meta property="og:image" content="https://felican.ai/og.png"><meta property="og:image:width" content="1102"><meta property="og:image:height" content="579"><meta property="og:image:alt" content="Felican AI">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Contact Felican AI — Talk to a certified AI team"><meta name="twitter:description" content="Send us a message, email us, or call (561) 235-0799."><meta name="twitter:image" content="https://felican.ai/og.png"><meta name="twitter:image:alt" content="Felican AI — AI solutions for private businesses">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://felican.ai/#organization","name":"Felican AI","url":"https://felican.ai/","logo":{"@type":"ImageObject","url":"https://felican.ai/logo-mark.png"},"image":"https://felican.ai/og.png","description":"Felican AI is a team of more than ten certified AI professionals building practical AI products, private AI systems, custom automations, integrations, and training for businesses in any industry.","email":"felican.ai.inc@gmail.com","telephone":"+1-561-235-0799","founder":{"@type":"Person","name":"Lee Felican Jr.","jobTitle":"Founder and Enterprise Architect"},"contactPoint":[{"@type":"ContactPoint","telephone":"+1-561-235-0799","email":"felican.ai.inc@gmail.com","contactType":"sales","areaServed":"US","availableLanguage":"English"}],"knowsAbout":["Artificial intelligence","Private AI deployment","Business automation","AI integration","AI training"]},{"@type":"WebSite","@id":"https://felican.ai/#website","url":"https://felican.ai/","name":"Felican AI","publisher":{"@id":"https://felican.ai/#organization"},"inLanguage":"en-US"},{"@type":"ContactPage","url":"https://felican.ai/contact/","name":"Contact Felican AI","about":{"@id":"https://felican.ai/#organization"}}]}</script>
 </head>
 <body>
 <x-dc>
 <helmet>
-<title>Contact — Felican AI</title>
-<meta name="description" content="Contact Felican AI by email or phone to discuss AI products, custom systems, automation, integrations, or training.">
+<title>Contact Felican AI — Talk to a certified AI team</title>
+<meta name="description" content="Contact Felican AI by form, email, or phone at (561) 235-0799. Tell us what needs to work better and a certified AI professional will reply within one business day.">
 <meta name="robots" content="index,follow"><link rel="canonical" href="https://felican.ai/contact/">
-<meta property="og:type" content="website"><meta property="og:site_name" content="Felican AI">
-<meta property="og:title" content="Contact — Felican AI"><meta property="og:description" content="Tell us what needs to work better in your business.">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Felican AI"><meta property="og:locale" content="en_US">
+<meta property="og:title" content="Contact Felican AI — Talk to a certified AI team">
+<meta property="og:description" content="Send us a message, email us, or call (561) 235-0799. A certified AI professional replies within one business day.">
 <meta property="og:url" content="https://felican.ai/contact/"><meta property="og:image" content="https://felican.ai/og.png">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://felican.ai/og.png">
+<meta property="og:image:width" content="1102"><meta property="og:image:height" content="579">
+<meta property="og:image:alt" content="Felican AI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Contact Felican AI — Talk to a certified AI team">
+<meta name="twitter:description" content="Send us a message, email us, or call (561) 235-0799.">
+<meta name="twitter:image" content="https://felican.ai/og.png"><meta name="twitter:image:alt" content="Felican AI — AI solutions for private businesses">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,6 +42,38 @@
   * { box-sizing:border-box }
   a { color:#2FB894 } a:hover { color:#59D4B4 }
   ::selection { background:#2FB894; color:#080E13 }
+  .ct-grid { display:grid; grid-template-columns:1.25fr 1fr; gap:clamp(32px,4vw,64px); align-items:start }
+  @media (max-width:940px) { .ct-grid { grid-template-columns:1fr } }
+  .ct-methods { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(14px,1.8vw,20px) }
+  @media (max-width:860px) { .ct-methods { grid-template-columns:1fr } }
+  .ct-method { display:flex; flex-direction:column; gap:9px; padding:24px 22px; background:#0C1419; border:1px solid #1C2A28; border-top:3px solid #2FB894; text-decoration:none; color:#EEF4F4; transition:background .2s ease,transform .2s ease,border-color .2s ease }
+  .ct-method:hover { background:#12232A; transform:translateY(-3px); border-color:#2FB894; color:#EEF4F4 }
+  .ct-method-k { font-family:Sora,sans-serif; font-size:12px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:#2FB894 }
+  .ct-method-v { font-family:Sora,sans-serif; font-size:clamp(17px,1.7vw,21px); font-weight:800; letter-spacing:-.02em; line-height:1.25; word-break:break-word }
+  .ct-method-n { font-size:14.5px; line-height:1.55; color:#8FA3A8 }
+  .ct-form { display:grid; gap:18px; padding:clamp(26px,3vw,38px); background:#0C1419; border:1px solid #1C2A28 }
+  .ct-row { display:grid; grid-template-columns:1fr 1fr; gap:16px }
+  @media (max-width:620px) { .ct-row { grid-template-columns:1fr } }
+  .ct-field { display:grid; gap:8px; min-width:0 }
+  .ct-label { font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#8FA6A3 }
+  .ct-input, .ct-select, .ct-textarea { width:100%; padding:14px 16px; background:#080E13; border:1px solid #1C2A28; color:#EEF4F4; font:inherit; border-radius:2px }
+  .ct-textarea { resize:vertical; min-height:132px }
+  .ct-input::placeholder, .ct-textarea::placeholder { color:#5E7371 }
+  .ct-input:focus, .ct-select:focus, .ct-textarea:focus { outline:3px solid #2FB894; outline-offset:1px; border-color:#2FB894 }
+  .ct-input[aria-invalid="true"], .ct-textarea[aria-invalid="true"] { border-color:#E4756A }
+  .ct-submit { justify-self:start; display:inline-flex; align-items:center; gap:12px; padding:17px 30px; background:#2FB894; color:#080E13; border:0; font-family:Sora,sans-serif; font-size:17px; font-weight:700; cursor:pointer; border-radius:2px; transition:background .2s ease,transform .2s ease }
+  .ct-submit:hover:enabled { background:#59D4B4; transform:translateY(-3px) }
+  .ct-submit:disabled { opacity:.6; cursor:not-allowed }
+  .ct-note { margin:0; font-size:14px; line-height:1.6; color:#7C9391 }
+  .ct-alert { margin:0; padding:15px 17px; border-radius:2px; font-size:15.5px; line-height:1.6 }
+  .ct-alert.is-ok { background:rgba(47,184,148,.13); border:1px solid #2FB894; color:#8FE0C8 }
+  .ct-alert.is-bad { background:rgba(228,117,106,.12); border:1px solid #E4756A; color:#F0A79E }
+  .ct-team { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:clamp(14px,1.8vw,22px) }
+  @media (max-width:860px) { .ct-team { grid-template-columns:repeat(2,minmax(0,1fr)) } }
+  @media (max-width:460px) { .ct-team { grid-template-columns:1fr } }
+  .ct-stat { padding:22px 20px; background:#0C1419; border:1px solid #1C2A28 }
+  .ct-stat-k { margin:0 0 7px; font-family:Sora,sans-serif; font-size:clamp(24px,2.6vw,34px); font-weight:800; letter-spacing:-.03em; color:#2FB894; line-height:1 }
+  .ct-stat-v { margin:0; font-size:15px; line-height:1.55; color:#C2D2D4 }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -33,37 +81,121 @@
 <dc-import name="SiteNav" active="Contact" hint-size="100%,74px"></dc-import>
 
 <main>
-  <section aria-labelledby="ch" style="position:relative;background:#080E13;color:#EEF4F4;overflow:hidden;padding:clamp(56px,7vw,96px) 0 clamp(56px,7vw,88px)">
+  <section aria-labelledby="ch" style="position:relative;background:#080E13;color:#EEF4F4;overflow:hidden;padding:clamp(56px,7vw,96px) 0 clamp(40px,5vw,56px)">
     <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,184,148,0.12) 0 1px,transparent 1px 8.3333%)"></div>
     <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:end">
       <div>
         <p style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.16em;color:#2FB894">CONTACT</p>
         <h1 id="ch" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(40px,6vw,80px);font-weight:800;line-height:1;letter-spacing:-0.04em;text-wrap:balance">Let's talk about your business</h1>
       </div>
-      <p style="margin:0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#C2D2D4;text-wrap:pretty">Email us directly or call the company line. No portal, no contact form, and no extra steps.</p>
+      <p style="margin:0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#C2D2D4;text-wrap:pretty">Send a message, email us, or pick up the phone. A certified AI professional — not a call centre — reads every enquiry and replies within one business day.</p>
     </div>
   </section>
 
-  <section aria-label="Contact methods" style="background:#080E13;padding:clamp(48px,6vw,80px) 0 0">
-    <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:flex;justify-content:center">
-      <a href="{{ emailHref }}" style="max-width:480px;width:100%;background:#2FB894;color:#080E13;padding:clamp(32px,3.6vw,48px);text-decoration:none;display:flex;flex-direction:column;gap:14px;transition:background .2s ease,transform .25s ease,box-shadow .25s ease" style-hover="background:#59D4B4;transform:translateY(-6px);box-shadow:0 22px 44px rgba(0,0,0,0.35)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">
-        <span style="font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:0.14em;color:rgba(8,14,19,0.65)">EMAIL FELICAN AI</span>
-        <span style="font-family:Sora,sans-serif;font-size:clamp(22px,2.3vw,32px);font-weight:800;letter-spacing:-0.025em;line-height:1.2;word-break:break-word">{{ email }}</span>
-        <span style="display:inline-flex;align-items:center;gap:10px;margin-top:auto;padding-top:12px;font-size:18px;font-weight:700">Open your email app <span aria-hidden="true">&#8594;</span></span>
+  <!-- DIRECT CONTACT METHODS -->
+  <section aria-label="Ways to reach Felican AI" style="background:#080E13;padding:0 0 clamp(44px,5vw,64px)">
+    <div class="ct-methods" style="max-width:1280px;margin:0 auto;padding:0 24px">
+      <a class="ct-method" href="{{ emailHref }}">
+        <span class="ct-method-k">Email</span>
+        <span class="ct-method-v">{{ email }}</span>
+        <span class="ct-method-n">Best for detail, documents, and anything you want in writing.</span>
+      </a>
+      <a class="ct-method" href="{{ phoneHref }}">
+        <span class="ct-method-k">Phone</span>
+        <span class="ct-method-v">{{ phone }}</span>
+        <span class="ct-method-n">Monday to Friday, 9am&ndash;6pm Eastern. Ask for the AI team.</span>
+      </a>
+      <a class="ct-method" href="/booking/">
+        <span class="ct-method-k">Book a call</span>
+        <span class="ct-method-v">Pick a time</span>
+        <span class="ct-method-n">A 30-minute working session on your actual process.</span>
       </a>
     </div>
   </section>
 
-  <section aria-labelledby="emailh" style="background:#080E13;padding:clamp(56px,7vw,88px) 0 clamp(72px,8vw,112px)">
-    <div style="max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(330px,100%),1fr));gap:clamp(32px,5vw,76px);align-items:start">
+  <!-- FORM + WHO YOU REACH -->
+  <section aria-labelledby="formh" style="background:#080E13;padding:0 0 clamp(72px,8vw,112px)">
+    <div class="ct-grid" style="max-width:1280px;margin:0 auto;padding:0 24px">
+
       <div>
-        <p style="margin:0 0 14px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:.16em;color:#2FB894">WHAT TO SEND</p>
-        <h2 id="emailh" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(32px,4.2vw,54px);font-weight:800;line-height:1.05;letter-spacing:-.035em;color:#EEF4F4;text-wrap:balance">A short email is enough.</h2>
+        <h2 id="formh" style="margin:0 0 12px;font-family:Sora,sans-serif;font-size:clamp(28px,3.4vw,42px);font-weight:800;line-height:1.08;letter-spacing:-.03em;color:#EEF4F4;text-wrap:balance">{{ formHeading }}</h2>
+        <p style="margin:0 0 26px;font-size:clamp(16px,1.3vw,18px);line-height:1.7;color:#C2D2D4;max-width:620px;text-wrap:pretty">{{ formIntro }}</p>
+
+        <form class="ct-form" onSubmit="{{ submit }}" novalidate="{{ novalidate }}">
+          <sc-if value="{{ hasAlert }}" hint-placeholder-val="{{ false }}">
+            <p class="ct-alert {{ alertClass }}" role="status" aria-live="polite">{{ alertText }}</p>
+          </sc-if>
+
+          <div class="ct-row">
+            <label class="ct-field">
+              <span class="ct-label">Your name <span aria-hidden="true" style="color:#2FB894">*</span></span>
+              <input class="ct-input" type="text" name="name" autoComplete="name" required="{{ required }}" aria-invalid="{{ invalid.name }}" value="{{ form.name }}" onChange="{{ onField.name }}">
+            </label>
+            <label class="ct-field">
+              <span class="ct-label">Work email <span aria-hidden="true" style="color:#2FB894">*</span></span>
+              <input class="ct-input" type="email" name="email" autoComplete="email" required="{{ required }}" aria-invalid="{{ invalid.email }}" value="{{ form.email }}" onChange="{{ onField.email }}">
+            </label>
+          </div>
+
+          <div class="ct-row">
+            <label class="ct-field">
+              <span class="ct-label">Company</span>
+              <input class="ct-input" type="text" name="company" autoComplete="organization" value="{{ form.company }}" onChange="{{ onField.company }}">
+            </label>
+            <label class="ct-field">
+              <span class="ct-label">Phone</span>
+              <input class="ct-input" type="tel" name="phone" autoComplete="tel" value="{{ form.phone }}" onChange="{{ onField.phone }}">
+            </label>
+          </div>
+
+          <label class="ct-field">
+            <span class="ct-label">What is this about?</span>
+            <select class="ct-select" name="product" value="{{ form.product }}" onChange="{{ onField.product }}">
+              <sc-for list="{{ topics }}" as="t" hint-placeholder-count="9">
+                <option value="{{ t }}">{{ t }}</option>
+              </sc-for>
+            </select>
+          </label>
+
+          <label class="ct-field">
+            <span class="ct-label">What are you trying to fix? <span aria-hidden="true" style="color:#2FB894">*</span></span>
+            <textarea class="ct-textarea" name="message" rows="5" required="{{ required }}" aria-invalid="{{ invalid.message }}" placeholder="A few sentences is plenty — what the work looks like today, and what you want it to look like." value="{{ form.message }}" onChange="{{ onField.message }}"></textarea>
+          </label>
+
+          <input type="text" name="website" tabindex="-1" autoComplete="off" aria-hidden="true" value="{{ form.website }}" onChange="{{ onField.website }}" style="position:absolute;left:-9999px;opacity:0;height:0;width:0;overflow:hidden">
+
+          <button class="ct-submit" type="submit" disabled="{{ busy }}">{{ submitLabel }} <span aria-hidden="true">&#8594;</span></button>
+          <p class="ct-note">We use what you send here only to answer you. No lists, no resale &mdash; see our <a href="/privacy/">Privacy Policy</a>. Prefer email? Write to <a href="{{ emailHref }}">{{ email }}</a>.</p>
+        </form>
       </div>
-      <div style="font-size:clamp(17px,1.45vw,20px);line-height:1.75;color:#C2D2D4">
-        <p style="margin:0 0 20px">Tell us what your business does, what you want to improve, and the best way to reach you. We will reply directly from the Felican AI inbox.</p>
-        <a href="{{ emailHref }}" style="display:inline-flex;align-items:center;gap:12px;padding:17px 22px;background:#0C1419;border:1px solid #1C2A28;color:#2FB894;font-family:Sora,sans-serif;font-size:17px;font-weight:700;text-decoration:none;transition:background .2s ease,border-color .2s ease" style-hover="background:rgba(47,184,148,0.14);border-color:#2FB894" style-focus="outline:3px solid #2FB894;outline-offset:3px">Write to Felican AI <span aria-hidden="true">&#8594;</span></a>
-      </div>
+
+      <aside aria-labelledby="whoh">
+        <h2 id="whoh" style="margin:0 0 16px;font-family:Sora,sans-serif;font-size:clamp(24px,2.6vw,32px);font-weight:800;line-height:1.12;letter-spacing:-.03em;color:#EEF4F4;text-wrap:balance">Who you're reaching</h2>
+        <p style="margin:0 0 24px;font-size:16.5px;line-height:1.7;color:#C2D2D4;text-wrap:pretty">Felican AI is a team of more than ten certified AI professionals with backgrounds across every major industry &mdash; finance, healthcare, legal, automotive, real estate, field service, retail, and the public sector. Your enquiry goes to the person who has actually done the work before.</p>
+
+        <div class="ct-team">
+          <sc-for list="{{ stats }}" as="s" hint-placeholder-count="4">
+            <div class="ct-stat">
+              <p class="ct-stat-k">{{ s.k }}</p>
+              <p class="ct-stat-v">{{ s.v }}</p>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="margin-top:clamp(26px,3vw,34px);padding:24px 22px;background:#0C1419;border:1px solid #1C2A28;border-left:3px solid #2FB894">
+          <p style="margin:0 0 6px;font-family:Sora,sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#2FB894">Led by</p>
+          <p style="margin:0 0 6px;font-family:Sora,sans-serif;font-size:21px;font-weight:800;letter-spacing:-.02em;color:#EEF4F4">Lee Felican Jr.</p>
+          <p style="margin:0;font-size:15.5px;line-height:1.6;color:#8FA3A8">Founder and enterprise architect. Thirty years in software engineering, Director of Artificial Intelligence at Resolution Economics, and author of four books on AI.</p>
+        </div>
+
+        <div style="margin-top:20px;padding:22px;background:#0C1419;border:1px solid #1C2A28">
+          <p style="margin:0 0 10px;font-family:Sora,sans-serif;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#2FB894">Company</p>
+          <p style="margin:0 0 4px;font-size:16px;line-height:1.6;color:#C2D2D4">Felican AI</p>
+          <p style="margin:0 0 4px;font-size:16px;line-height:1.6"><a href="{{ emailHref }}" style="text-decoration:none;word-break:break-word">{{ email }}</a></p>
+          <p style="margin:0;font-size:16px;line-height:1.6"><a href="{{ phoneHref }}" style="text-decoration:none">{{ phone }}</a></p>
+        </div>
+      </aside>
+
     </div>
   </section>
 </main>
@@ -73,10 +205,144 @@
 
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
+const EMAIL = 'felican.ai.inc' + '@' + 'gmail.com';
+const PHONE_DISPLAY = '(561) 235-0799';
+const PHONE_HREF = 'tel:+15612350799';
+const GENERAL = 'General enquiry';
+// Keep in step with the product lineup on /products/ — those cards link here as
+// /contact/?product=<name> and the matching topic is selected automatically.
+const TOPICS = [
+  GENERAL,
+  'Private AI Global',
+  'Felican Auto',
+  'World of Agents',
+  'Relay',
+  'Felican AI Assistant',
+  'BookMaker',
+  'Felican Factory',
+  'Ora',
+  'ThreadPilot',
+  'AdPulse',
+  'Candyshop',
+  'Mira',
+  'FrameFire',
+  'Lumina',
+  'Avatar Comparison',
+  'Dendrite',
+  'Quorum',
+  'FloorDesk',
+  'QuantDesk',
+  'Felican Auto-Trading',
+  'Custom AI system or automation',
+  'AI training and workshops'
+];
+
+const BLANK = { name: '', email: '', company: '', phone: '', product: GENERAL, message: '', website: '' };
+
 class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    // Products link here as /contact/?product=Relay so the enquiry arrives pre-labelled.
+    let product = '';
+    try { product = new URLSearchParams(window.location.search).get('product') || ''; } catch (e) { product = ''; }
+    const known = TOPICS.find(t => t.toLowerCase() === product.trim().toLowerCase());
+    this.state = {
+      form: { ...BLANK, product: known || GENERAL },
+      picked: known || '',
+      status: 'idle',
+      alert: '',
+      invalid: {}
+    };
+  }
+
+  setField(key, value) {
+    this.setState(s => ({
+      form: { ...s.form, [key]: value },
+      invalid: { ...s.invalid, [key]: false }
+    }));
+  }
+
+  validate(form) {
+    const invalid = {};
+    if (!form.name.trim()) invalid.name = true;
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(form.email.trim())) invalid.email = true;
+    if (!form.message.trim()) invalid.message = true;
+    return invalid;
+  }
+
+  async submit(event) {
+    event.preventDefault();
+    if (this.state.status === 'sending') return;
+    const form = this.state.form;
+    const invalid = this.validate(form);
+    if (Object.keys(invalid).length) {
+      this.setState({ invalid, status: 'error', alert: 'Please add your name, a valid email, and a short message.' });
+      return;
+    }
+    this.setState({ status: 'sending', alert: '', invalid: {} });
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name, email: form.email, company: form.company, phone: form.phone,
+          product: form.product === GENERAL ? '' : form.product,
+          message: form.message, website: form.website, source: 'contact-form'
+        })
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.ok) throw new Error(payload.error || 'Message failed to send.');
+      this.setState({
+        status: 'sent',
+        alert: 'Thank you — your message is on its way. We reply within one business day.',
+        form: { ...BLANK, product: this.state.picked || GENERAL }
+      });
+    } catch (error) {
+      this.setState({
+        status: 'error',
+        alert: (error && error.message) || 'We could not send that just now. Please email ' + EMAIL + ' directly.'
+      });
+    }
+  }
+
   renderVals() {
-    const email = 'felican.ai.inc' + '@' + 'gmail.com';
-    return { email, emailHref: 'mailto:' + email + '?subject=Felican%20AI%20inquiry' };
+    const picked = this.state.picked;
+    const sending = this.state.status === 'sending';
+    const onField = {};
+    ['name', 'email', 'company', 'phone', 'product', 'message', 'website']
+      .forEach(k => { onField[k] = e => this.setField(k, e.target.value); });
+    return {
+      email: EMAIL,
+      emailHref: 'mailto:' + EMAIL + '?subject=Felican%20AI%20inquiry',
+      phone: PHONE_DISPLAY,
+      phoneHref: PHONE_HREF,
+      topics: TOPICS,
+      form: this.state.form,
+      invalid: {
+        name: this.state.invalid.name ? 'true' : 'false',
+        email: this.state.invalid.email ? 'true' : 'false',
+        message: this.state.invalid.message ? 'true' : 'false'
+      },
+      busy: sending,
+      required: true,
+      novalidate: true,
+      submitLabel: sending ? 'Sending…' : 'Send message',
+      hasAlert: Boolean(this.state.alert),
+      alertText: this.state.alert,
+      alertClass: this.state.status === 'sent' ? 'is-ok' : 'is-bad',
+      formHeading: picked ? 'Ask us about ' + picked : 'Tell us where it hurts',
+      formIntro: picked
+        ? 'You came from the ' + picked + ' page, so we have filled that in already. Add a little about your business and we will come back with a straight answer.'
+        : 'No forms-in-triplicate. Tell us what the work looks like today and what you want it to look like, and we will tell you honestly whether AI is the right tool for it.',
+      stats: [
+        { k: '10+', v: 'Certified AI professionals on the team' },
+        { k: 'All', v: 'Major industries represented' },
+        { k: '30 yrs', v: 'Engineering leadership' },
+        { k: '1 day', v: 'Typical reply time' }
+      ],
+      submit: e => this.submit(e),
+      onField
+    };
   }
 }
 
