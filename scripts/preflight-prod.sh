@@ -88,3 +88,24 @@ done
 echo
 echo "  Re-run this section after promoting. Any path that changes from 200 to 404"
 echo "  means the sed caught a custom location; restore the conf backup above."
+
+say "4. tawk.to live chat"
+# Nothing to configure on the server: the property id is committed in
+# public/tawk-config.js and the CSP already allows tawk.to. The only thing that
+# can break it is the domain allowlist in the tawk dashboard.
+cfg="$(curl -sS -L --max-time 12 https://felican.dev/tawk-config.js 2>/dev/null | grep -o "propertyId: '[^']*'" || true)"
+if [[ -n "${cfg}" ]]; then ok "config ships with the site (${cfg}) — no server change needed"
+else warn "tawk-config.js has no property id; live chat stays hidden"; fi
+echo "  Ships on /contact/ only. CSP already permits embed.tawk.to and wss://*.tawk.to."
+echo
+echo "  In the tawk dashboard (Administration -> Property Settings), the domain"
+echo "  allowlist must contain BOTH of these or the widget refuses to load on prod:"
+echo "      felican.ai"
+echo "      www.felican.ai"
+echo "  Keep felican.dev listed too, otherwise DEV testing stops working."
+echo
+echo "  After promoting, open https://felican.ai/contact/ and confirm a fourth"
+echo "  card appears next to Email, Phone and Book a call. If it is missing, the"
+echo "  domain allowlist is the cause — nothing in the deploy."
+echo "  The card reads 'Chat with us now' only while an agent is online in the"
+echo "  dashboard; otherwise it correctly says 'Leave a message'."

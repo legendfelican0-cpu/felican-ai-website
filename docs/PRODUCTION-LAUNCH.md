@@ -135,5 +135,31 @@ the last check all of these were 200:
 - Rotate the Resend API key if it has been shared anywhere.
 - `felican.ai/robots.txt` switches from `Disallow: /` to `Allow: /`
   automatically; the rule is keyed on hostname, so DEV stays unindexed.
-- tawk.to live chat needs `felican.ai` and `www.felican.ai` in its domain
-  allowlist, alongside `felican.dev`.
+## tawk.to live chat
+
+**Nothing to deploy or configure on the server.** The property id is committed
+in `public/tawk-config.js`, so it ships with the site, and the Content Security
+Policy in `server/app.js` already permits `embed.tawk.to` and `wss://*.tawk.to`.
+The widget loads on `/contact/` only, and only when a visitor asks for a person,
+so no other page fetches third-party script.
+
+The one thing that can break it lives in the tawk dashboard, not in this repo:
+
+- **Domain allowlist** (Administration → Property Settings) must contain
+  `felican.ai` **and** `www.felican.ai`, or the widget silently refuses to load
+  on production. `www` matters because it currently resolves and is a CNAME to
+  the apex. Keep `felican.dev` listed as well or DEV testing stops working.
+- Setting the property's *website URL* to `https://felican.ai` is not the same
+  setting as the domain allowlist. The URL is a label; the allowlist is the
+  enforcement.
+
+After promoting, open `https://felican.ai/contact/` and confirm a fourth card
+appears beside Email, Phone and Book a call. If it is missing, the allowlist is
+the cause and nothing in the deploy is at fault.
+
+The card reads **Chat with us now** with a green dot only while someone is
+online in the tawk dashboard. With nobody online it reads **Leave a message**
+with a grey dot, which is deliberate: visitors are never invited into a chat
+that no one is watching. Its own bubble stays hidden and is opened from that
+card, and it sits bottom-left so it never collides with the Felican assistant
+launcher on the right.
