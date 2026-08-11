@@ -48,11 +48,11 @@ export function renderHtml() {
         </div>`).join('');
 
   const benefits = content.benefits.map((item, i) => `
-      <li style="display: grid; grid-template-columns: 26px 1fr; gap: 9px; align-items: start; padding: 5px 0 5px;">
+      <li style="display: grid; grid-template-columns: 26px 1fr; gap: 9px; align-items: start; padding: 4px 0 4px;">
         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 8.5pt; line-height: 1.55; color: #2fb894;">${pad2(i)}</span>
         <div>
           <div style="font-size: 10.5pt; font-weight: 600; line-height: 1.25; letter-spacing: -.01em; color: #eef4f4;">${item.title}</div>
-          <p style="margin: 3px 0 0; font-size: 8.4pt; line-height: 1.4; color: #8fa3a8;">${item.body}</p>
+          <p style="margin: 2px 0 0; font-size: 8.2pt; line-height: 1.36; color: #8fa3a8;">${item.body}</p>
         </div>
       </li>`).join('');
 

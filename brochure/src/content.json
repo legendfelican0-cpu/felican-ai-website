@@ -32,44 +32,44 @@
   "benefitsTitle": "10 ways AI can benefit your business",
   "benefits": [
     {
-      "title": "Turn More Leads Into Customers",
-      "body": "Respond to leads instantly, qualify prospects, and schedule appointments automatically."
+      "title": "Automated Content Generation &amp; Personalized Marketing",
+      "body": "On-brand copy, images, and videos created for you and tailored to every audience — more reach, less effort."
     },
     {
-      "title": "Serve Customers 24/7",
-      "body": "Answer questions, resolve common issues, and capture opportunities whenever customers need help."
+      "title": "Stay Ahead of Your Competition",
+      "body": "Track your market and rivals in real time, so you spot the opening before they do."
     },
     {
-      "title": "Help Employees Find Answers Instantly",
-      "body": "Give authorized employees secure access to company procedures, policies, products, and internal knowledge."
+      "title": "Internal Company Knowledge Bot",
+      "body": "Every policy and answer at your team’s fingertips — private, secured, and trained only on your data."
     },
     {
-      "title": "Eliminate Repetitive Work",
-      "body": "Automate tasks across email, CRM, accounting, scheduling, inventory, and other systems."
+      "title": "Document &amp; Data-Entry Automation",
+      "body": "Invoices, forms, and files fill themselves out — accurately, in seconds, with no manual typing."
     },
     {
-      "title": "Find and Fix Operational Inefficiencies",
-      "body": "Discover bottlenecks, duplicated work, unnecessary costs, and missed revenue opportunities."
+      "title": "Invoice &amp; Collections Assistant",
+      "body": "Get paid faster with automatic invoicing and friendly follow-ups that chase the money for you."
     },
     {
-      "title": "Process Documents and Data Automatically",
-      "body": "Extract and organize information from invoices, contracts, forms, receipts, and PDFs."
+      "title": "AI Scheduling &amp; Dispatch",
+      "body": "The right person, in the right place, at the right time — booked and routed automatically."
     },
     {
-      "title": "Increase Revenue From Existing Customers",
-      "body": "Recommend relevant products and services to each customer at the right time."
+      "title": "Fraud, Risk &amp; Anomaly Alerts",
+      "body": "Catch suspicious activity the instant it happens and protect your revenue in real time."
     },
     {
-      "title": "Improve Cash Flow and Protect Profits",
-      "body": "Follow up on unpaid invoices and uncover waste, billing errors, excessive discounts, and hidden profit leaks."
+      "title": "24/7 Customer Support &amp; Lead Generation",
+      "body": "Answer every question and capture every lead around the clock — even while you sleep."
     },
     {
-      "title": "Make Faster, Better Business Decisions",
-      "body": "Give leadership a clear view of performance, risks, opportunities, and recommended next actions."
+      "title": "Eliminate Repetitive Work &amp; Fix Operational Inefficiencies",
+      "body": "Automate routine tasks across email, CRM, accounting, and scheduling — clearing bottlenecks for smoother operations and lower costs."
     },
     {
-      "title": "Protect Sensitive Business and Customer Data",
-      "body": "Build AI around privacy, encryption, access controls, secure data handling, and the company&rsquo;s compliance requirements."
+      "title": "Protect Sensitive Business Data While Making Faster, Better Decisions",
+      "body": "Enterprise-grade security meets instant insight — decide with confidence, without the risk."
     }
   ],
   "credBar": {
