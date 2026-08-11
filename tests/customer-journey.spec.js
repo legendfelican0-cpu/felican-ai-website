@@ -35,13 +35,15 @@ test.describe('Customer journey', () => {
     await expect(page.getByRole('heading', { name: 'Sound familiar?' })).toBeVisible();
     await expect(page.locator('.friction-card')).toHaveCount(6);
     await expect(page.getByRole('heading', { name: /ways AI can help your business/i })).toBeVisible();
-    await expect(page.locator('.ways-card')).toHaveCount(13);
+    await expect(page.locator('.ways-card')).toHaveCount(10);
 
-    // Marketing, HR and finance must all be represented.
+    // The benefits span marketing, money, operations and security.
     const ways = (await page.locator('.ways-title').allTextContents()).join(' | ');
     expect(ways).toMatch(/Marketing/i);
-    expect(ways).toMatch(/HR/i);
-    expect(ways).toMatch(/Cash Flow|Books/i);
+    expect(ways).toMatch(/Invoice & Collections/i);
+    expect(ways).toMatch(/Scheduling & Dispatch/i);
+    expect(ways).toMatch(/Fraud, Risk/i);
+    expect(ways).toMatch(/Protect Sensitive Business Data/i);
   });
 
   test('the credentials strip stays put and opens the certifications detail', async ({ page }) => {
