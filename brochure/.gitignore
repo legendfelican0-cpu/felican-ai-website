@@ -8,3 +8,4 @@ dist/*
 # The PDF is the deliverable, so it is tracked. The preview HTML and the proof
 # PNGs are large and rewritten on every build, so they are not.
 !dist/felican-bifold.pdf
+!dist/Felican-AI-Bifold-PRINT-bleed.pdf

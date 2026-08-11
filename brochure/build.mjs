@@ -4,6 +4,8 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { renderHtml, p, SHEET } from './src/render.mjs';
 
+const BLEED_IN = 0.125;   // 1/8in, the standard commercial print bleed
+
 const html = renderHtml();
 mkdirSync(p('dist'), { recursive: true });
 writeFileSync(p('dist/felican-bifold.html'), html);
@@ -150,5 +152,35 @@ await page.pdf({
 for (const [i, label] of [[0, 'outside'], [1, 'inside']]) {
   await page.locator('section.page').nth(i).screenshot({ path: p(`dist/proof-${label}.png`) });
 }
-await browser.close();
 console.log('wrote dist/felican-bifold.pdf + proof PNGs');
+
+// Second deliverable: same layout, with bleed, for sending to a printer.
+// Same source, so the checks above cover its layout too.
+const bleedHtml = renderHtml({ bleedIn: BLEED_IN });
+writeFileSync(p('dist/felican-bifold-print-bleed.html'), bleedHtml);
+await page.goto('file://' + p('dist/felican-bifold-print-bleed.html'), { waitUntil: 'load' });
+await page.evaluate(() => document.fonts.ready);
+const bleedW = SHEET.widthIn + BLEED_IN * 2;
+const bleedH = SHEET.heightIn + BLEED_IN * 2;
+await page.pdf({
+  path: p('dist/Felican-AI-Bifold-PRINT-bleed.pdf'),
+  width: `${bleedW}in`,
+  height: `${bleedH}in`,
+  printBackground: true,
+  margin: { top: '0', right: '0', bottom: '0', left: '0' },
+  preferCSSPageSize: true,
+});
+// The fold must still land on the centre of the *trimmed* sheet.
+const foldOffset = await page.evaluate(() => {
+  const sheet = document.querySelector('section.page');
+  const base = sheet.getBoundingClientRect();
+  const left = sheet.querySelector('.panel--left').getBoundingClientRect();
+  return (left.right - base.left) - base.width / 2;
+});
+if (Math.abs(foldOffset) > 0.5) {
+  await browser.close();
+  throw new Error(`Bleed build: fold is ${foldOffset.toFixed(1)}px off the sheet centre.`);
+}
+console.log(`wrote dist/Felican-AI-Bifold-PRINT-bleed.pdf (${bleedW}x${bleedH}in, ${BLEED_IN}in bleed)`);
+
+await browser.close();

@@ -39,7 +39,9 @@ function readWaysFromSite() {
   return ways.map((w) => ({ title: escapeHtml(w.title), body: escapeHtml(w.body) }));
 }
 
-export function renderHtml() {
+// bleedIn: extra margin beyond the trim edge for professional printing. The
+// trim area and the fold do not move; the sheet just gets bigger around them.
+export function renderHtml({ bleedIn = 0 } = {}) {
   // Re-read every call so the watcher picks up edits without a restart.
   const content = JSON.parse(readFileSync(p('src/content.json'), 'utf8'));
   const template = readFileSync(p('src/brochure.template.html'), 'utf8');
@@ -156,6 +158,7 @@ export function renderHtml() {
       </div>`).join('');
 
   const html = template
+    .replaceAll('{{BLEED}}', () => `${bleedIn}in`)
     .replaceAll('{{SHEET_W}}', () => `${SHEET.widthIn}in`)
     .replaceAll('{{SHEET_H}}', () => `${SHEET.heightIn}in`)
     .replace('{{FONTS}}', () => fonts)

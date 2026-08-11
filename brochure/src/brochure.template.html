@@ -11,11 +11,14 @@
 
   /* US Letter, portrait, full bleed to the sheet edge.
      Named size (not "8.5in 11in") so print dialogs select Letter instead of Custom. */
-  @page { size: letter portrait; margin: 0; }
+  @page { size: calc({{SHEET_W}} + var(--bleed) * 2) calc({{SHEET_H}} + var(--bleed) * 2); margin: 0; }
+
+  :root { --bleed: {{BLEED}}; }
 
   .page {
-    width: {{SHEET_W}};
-    height: {{SHEET_H}};
+    width: calc({{SHEET_W}} + var(--bleed) * 2);
+    height: calc({{SHEET_H}} + var(--bleed) * 2);
+    padding: var(--bleed);
     overflow: hidden;
     display: grid;
     /* minmax(0, 1fr), not 1fr: a bare 1fr track is minmax(auto, 1fr) and can be
@@ -66,7 +69,7 @@
     min-height: 2.28in;
     display: flex; flex-direction: column; justify-content: flex-end;
     background-repeat: no-repeat;
-    background-size: 100% 100%, {{SHEET_W}} 100%;
+    background-size: 100% 100%, calc({{SHEET_W}} + var(--bleed) * 2) 100%;
   }
   .rule-list { display: grid; gap: 1px; background: rgba(238,244,244,.14); }
   .rule-list > * { background: #080e13; }
@@ -95,7 +98,7 @@
   </div>
 
   <div class="panel panel--right">
-    <div style="margin: -0.45in -0.42in 8px -0.34in; padding: 0.45in 0.42in 10px 0.34in; background-image: linear-gradient(180deg, rgba(8,14,19,.80) 0%, rgba(8,14,19,.58) 42%, rgba(8,14,19,.98) 100%), url({{HERO_IMG}}); background-size: cover; background-position: center;">
+    <div style="margin: calc(-0.45in - var(--bleed)) calc(-0.42in - var(--bleed)) 8px -0.34in; padding: 0.45in 0.42in 10px 0.34in; background-image: linear-gradient(180deg, rgba(8,14,19,.80) 0%, rgba(8,14,19,.58) 42%, rgba(8,14,19,.98) 100%), url({{HERO_IMG}}); background-size: cover; background-position: center;">
       <div style="display: flex; align-items: center; gap: 14px;">
         <img src="{{LOGO}}" alt="Felican AI" style="width: 46px; height: 46px; object-fit: contain; display: block;">
         <span style="font-size: 14pt; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;">Felican AI</span>
@@ -111,7 +114,7 @@
 
     <!-- Bleeds left/right to the panel edges but stops short of the bottom:
          the badge logos must stay clear of a printer's non-printable margin. -->
-    <div style="margin: auto -0.42in 0 -0.34in;">{{CREDBAR}}</div>
+    <div style="margin: auto calc(-0.42in - var(--bleed)) 0 -0.34in;">{{CREDBAR}}</div>
   </div>
 </section>
 
@@ -119,7 +122,7 @@
 <section class="page" data-label="Inside">
 
   <div class="panel panel--left">
-    <div class="photo-band" style="margin: -0.45in -0.34in 22px -0.42in; padding: 0.45in 0.34in 20px 0.42in; background-image: linear-gradient(180deg, rgba(8,14,19,.50) 0%, rgba(8,14,19,.62) 40%, rgba(8,14,19,.97) 100%), url({{TEAM_IMG}}); background-position: 0 0, left center;">
+    <div class="photo-band" style="margin: calc(-0.45in - var(--bleed)) -0.34in 22px calc(-0.42in - var(--bleed)); padding: 0.45in 0.34in 20px 0.42in; background-image: linear-gradient(180deg, rgba(8,14,19,.50) 0%, rgba(8,14,19,.62) 40%, rgba(8,14,19,.97) 100%), url({{TEAM_IMG}}); background-position: 0 0, left center;">
       <p class="eyebrow">Services</p>
       <h2 class="section-title" style="margin-bottom: 0;">AI that fits the business</h2>
     </div>
@@ -130,7 +133,7 @@
   </div>
 
   <div class="panel panel--right">
-    <div class="photo-band" style="margin: -0.45in -0.42in 22px -0.34in; padding: 0.45in 0.42in 20px 0.34in; background-image: linear-gradient(180deg, rgba(8,14,19,.50) 0%, rgba(8,14,19,.62) 40%, rgba(8,14,19,.97) 100%), url({{TEAM_IMG}}); background-position: 0 0, right center;">
+    <div class="photo-band" style="margin: calc(-0.45in - var(--bleed)) calc(-0.42in - var(--bleed)) 22px -0.34in; padding: 0.45in 0.42in 20px 0.34in; background-image: linear-gradient(180deg, rgba(8,14,19,.50) 0%, rgba(8,14,19,.62) 40%, rgba(8,14,19,.97) 100%), url({{TEAM_IMG}}); background-position: 0 0, right center;">
       <p class="eyebrow">Process</p>
       <h2 class="section-title" style="margin-bottom: 0;">From first assessment to ongoing value</h2>
     </div>

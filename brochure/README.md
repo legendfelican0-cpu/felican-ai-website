@@ -22,8 +22,24 @@ thirteen items has happened before.
 
 ```bash
 node serve.mjs     # live preview on http://localhost:5175, refreshes as you edit
-node build.mjs     # writes dist/felican-bifold.{html,pdf} + proof PNGs
+node build.mjs     # writes both PDFs + proof PNGs
 ```
+
+## The two PDFs
+
+| File | Size | Use it for |
+|---|---|---|
+| `dist/felican-bifold.pdf` | 8.5 × 11in (trim) | Editing in Canva, and printing on an office or home printer |
+| `dist/Felican-AI-Bifold-PRINT-bleed.pdf` | 8.75 × 11.25in | Sending to a commercial printer |
+
+Same layout and the same editable text in both. The second adds a 0.125in
+**bleed** — the design runs past the trim line on every edge that touches it, so
+that when the printer cuts the sheet, a fraction of a millimetre of drift still
+lands on artwork instead of leaving a white sliver along a dark panel. The trim
+area and the fold do not move; the sheet simply gets bigger around them.
+
+Do not print the bleed version on an office printer: it is oversized, so the
+printer will scale it down and the sheet will no longer be Letter.
 
 ## Build checks
 
