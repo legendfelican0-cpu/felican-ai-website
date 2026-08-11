@@ -10,9 +10,15 @@ middle into two 4.25 × 11in panels, printed as two sheets:
 
 ## Editing
 
-All copy lives in **`src/content.json`** — that is the only file you need for
-wording changes. `src/brochure.template.html` is layout; `src/render.mjs`
-assembles the two together.
+Most copy lives in **`src/content.json`**. `src/brochure.template.html` is
+layout; `src/render.mjs` assembles the two together.
+
+**The ten benefit statements are the exception.** They are read straight out of
+the `WAYS` array in the site's `index.html`, so the site is the single source of
+truth and the two cannot drift. Edit them there, not here. The build fails if
+that array cannot be found or parsed, and it also checks the number in
+`benefitsTitle` against the number of entries — a heading reading "10 ways" over
+thirteen items has happened before.
 
 ```bash
 node serve.mjs     # live preview on http://localhost:5175, refreshes as you edit

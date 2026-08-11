@@ -14,6 +14,31 @@ export const SHEET = { widthIn: 8.5, heightIn: 11 };
 
 const pad2 = (i) => String(i + 1).padStart(2, '0');
 
+const escapeHtml = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+// The ten benefit statements are the site's copy, so the site is the single
+// source of truth and the brochure reads them straight from it. Keeping a
+// second copy here meant editing one and silently leaving the other stale.
+function readWaysFromSite() {
+  const src = readFileSync(p('../index.html'), 'utf8');
+  const m = src.match(/const WAYS\s*=\s*(\[[\s\S]*?\n\]);/);
+  if (!m) {
+    throw new Error('Could not find the WAYS array in index.html. If the site ' +
+      'source moved or was renamed, update readWaysFromSite() in src/render.mjs.');
+  }
+  let ways;
+  try {
+    ways = new Function(`return ${m[1]}`)();   // a plain array literal in our own source
+  } catch (err) {
+    throw new Error('The WAYS array in index.html did not parse: ' + err.message);
+  }
+  if (!Array.isArray(ways) || ways.length === 0) throw new Error('WAYS in index.html is empty.');
+  ways.forEach((w, i) => {
+    if (!w?.title || !w?.body) throw new Error(`WAYS entry ${i + 1} in index.html has no title/body.`);
+  });
+  return ways.map((w) => ({ title: escapeHtml(w.title), body: escapeHtml(w.body) }));
+}
+
 export function renderHtml() {
   // Re-read every call so the watcher picks up edits without a restart.
   const content = JSON.parse(readFileSync(p('src/content.json'), 'utf8'));
@@ -47,7 +72,16 @@ export function renderHtml() {
           </div>
         </div>`).join('');
 
-  const benefits = content.benefits.map((item, i) => `
+  const ways = readWaysFromSite();
+
+  // The heading states a count; keep it honest against the list it introduces.
+  const claimed = content.benefitsTitle.match(/\d+/);
+  if (claimed && Number(claimed[0]) !== ways.length) {
+    throw new Error(`Heading says "${content.benefitsTitle}" but index.html has ` +
+      `${ways.length} entries. Update benefitsTitle in content.json.`);
+  }
+
+  const benefits = ways.map((item, i) => `
       <li style="display: grid; grid-template-columns: 26px 1fr; gap: 9px; align-items: start; padding: 4px 0 4px;">
         <span style="font-family: 'IBM Plex Mono', monospace; font-size: 8.5pt; line-height: 1.55; color: #2fb894;">${pad2(i)}</span>
         <div>

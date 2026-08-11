@@ -30,48 +30,6 @@
     }
   ],
   "benefitsTitle": "10 ways AI can benefit your business",
-  "benefits": [
-    {
-      "title": "Automated Content Generation &amp; Personalized Marketing",
-      "body": "On-brand copy, images, and videos created for you and tailored to every audience — more reach, less effort."
-    },
-    {
-      "title": "Stay Ahead of Your Competition",
-      "body": "Track your market and rivals in real time, so you spot the opening before they do."
-    },
-    {
-      "title": "Internal Company Knowledge Bot",
-      "body": "Every policy and answer at your team’s fingertips — private, secured, and trained only on your data."
-    },
-    {
-      "title": "Document &amp; Data-Entry Automation",
-      "body": "Invoices, forms, and files fill themselves out — accurately, in seconds, with no manual typing."
-    },
-    {
-      "title": "Invoice &amp; Collections Assistant",
-      "body": "Get paid faster with automatic invoicing and friendly follow-ups that chase the money for you."
-    },
-    {
-      "title": "AI Scheduling &amp; Dispatch",
-      "body": "The right person, in the right place, at the right time — booked and routed automatically."
-    },
-    {
-      "title": "Fraud, Risk &amp; Anomaly Alerts",
-      "body": "Catch suspicious activity the instant it happens and protect your revenue in real time."
-    },
-    {
-      "title": "24/7 Customer Support &amp; Lead Generation",
-      "body": "Answer every question and capture every lead around the clock — even while you sleep."
-    },
-    {
-      "title": "Eliminate Repetitive Work &amp; Fix Operational Inefficiencies",
-      "body": "Automate routine tasks across email, CRM, accounting, and scheduling — clearing bottlenecks for smoother operations and lower costs."
-    },
-    {
-      "title": "Protect Sensitive Business Data While Making Faster, Better Decisions",
-      "body": "Enterprise-grade security meets instant insight — decide with confidence, without the risk."
-    }
-  ],
   "credBar": {
     "kicker": "Verified credentials",
     "title": "A team of 10+ certified AI professionals",
