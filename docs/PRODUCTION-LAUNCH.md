@@ -53,3 +53,87 @@ No old container or proxy backup is deleted during promotion or rollback.
 - Check assistant error rate, latency, and daily budget warnings.
 - Spot-check Home, Products, Services, Books, About, Contact, Privacy, and Terms.
 - Confirm `www.felican.ai` only after its DNS/SSL change is separately approved.
+
+## Pre-flight before promoting (run this first)
+
+```sh
+bash scripts/preflight-prod.sh
+```
+
+Read-only. It checks the two things that are not covered by the test suite.
+
+### 1. Contact email variables must exist on prod
+
+`deploy-prod.sh` builds `ai.env` by harvesting only `ASHER_*` and `ANTHROPIC_*`
+keys. It does **not** carry the Resend variables across, and it does not warn
+when they are absent. Add them to `/opt/felicanai-site/config/ai.env` before
+promoting:
+
+```
+RESEND_API_KEY=<key from the Resend dashboard>
+CONTACT_TO=ai@felican.ai
+CONTACT_FROM=Felican AI Website <website@felican.ai>
+```
+
+Do not wrap `CONTACT_FROM` in quotes: the file is read by `docker --env-file`,
+which takes the line literally, so quotes would end up inside the value.
+
+Without these the site still works; `/api/contact` returns 503 and tells
+visitors to email directly rather than silently dropping enquiries.
+
+### 2. The felican.ai proxy host may use custom locations
+
+`felican.ai` serves the marketing site at `/` and roughly nineteen path apps
+underneath it — `/relay`, `/quorum`, `/ora`, `/factory`, `/Lehem-Felican-Jr`,
+`/Lee-Felican-jr/...` and so on. Those are nginx-proxy-manager *custom
+locations* on the same proxy host, and each one carries its own `set $server`
+line in the generated conf.
+
+To repoint the site, `deploy-prod.sh` runs:
+
+```sh
+sed -i -E 's/(set \$server[[:space:]]+)"[^"]+";/\1"felicanai-site";/' "${proxy_conf}"
+```
+
+`sed` with no line address rewrites **every** match in the file. If the custom
+locations live in that conf, all of them are repointed at the marketing
+container, which returns 404 for those paths.
+
+Two things limit the blast radius:
+
+- The script copies both the conf and the NPM database into
+  `/opt/felicanai-site/state/` before touching them.
+- After deploying it re-checks `https://felican.ai/Lee-Felican-jr/books/resources/`
+  and fails the deploy if that stops returning 200.
+
+The weak point is recovery: `rollback-prod.sh` uses the same indiscriminate
+`sed`, so it restores one uniform value rather than each location's original
+target. If path apps break, restore the backed-up conf directly instead:
+
+```sh
+sudo cp -p /opt/nginx-proxy-manager/data/nginx/proxy_host/<id>.conf.before-promotion \
+           /opt/nginx-proxy-manager/data/nginx/proxy_host/<id>.conf
+sudo docker exec nginx-proxy-manager nginx -t
+sudo docker exec nginx-proxy-manager nginx -s reload
+```
+
+The conf is generated from the NPM database, which the script does not modify
+beyond the single `forward_host` column, so re-saving the host in the NPM UI
+also regenerates correct custom locations.
+
+### 3. Baseline the path apps
+
+Record which paths return 200 before promoting, and compare afterwards. As of
+the last check all of these were 200:
+
+```
+/relay  /quorum  /ora  /factory  /Lehem-Felican-Jr  /Lee-Felican-jr/books/resources/
+```
+
+## After promoting
+
+- Rotate the Resend API key if it has been shared anywhere.
+- `felican.ai/robots.txt` switches from `Disallow: /` to `Allow: /`
+  automatically; the rule is keyed on hostname, so DEV stays unindexed.
+- tawk.to live chat needs `felican.ai` and `www.felican.ai` in its domain
+  allowlist, alongside `felican.dev`.
