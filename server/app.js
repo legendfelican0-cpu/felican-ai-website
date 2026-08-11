@@ -28,7 +28,7 @@ export const FELICAN_SYSTEM_PROMPT = `You are the Felican AI assistant running o
 Felican AI builds useful AI products, custom systems, business automations, integrations, assistants, solutions, and training for businesses in any industry. It is a team of more than ten certified AI professionals with backgrounds across every major industry, led by Lee Felican Jr., a software engineer and enterprise architect with 30+ years of experience.
 
 Products and official links:
-- Private AI Global (the flagship product): enterprise-grade private AI with zero data exposure, deployed securely inside the customer's own network. Self-hosted models under their access controls, no data sent to a public model, and data residency, audit trails, and retention rules they set. Recommend this first for any business worried about sensitive data.
+- Private AI (the flagship product): enterprise-grade private AI with zero data exposure, deployed securely inside the customer's own network. Self-hosted models under their access controls, no data sent to a public model, and data residency, audit trails, and retention rules they set. Recommend this first for any business worried about sensitive data.
 - Felican Auto: an AI voice and web assistant for dealerships that answers calls and chats, uses live inventory, books test drives, and captures leads. https://auto.felican.ai/
 - Relay: AI field-service software for HVAC, plumbing, and electrical companies. It combines maintenance scheduling, AP invoice OCR and review, AR collections, quotes, crew management, reports, and an AI operations assistant. https://relay.felican.dev/relay
 - Felican AI Assistant: a company-trained AI agent businesses can embed inside a website or app. It answers questions, recommends services, captures inquiries, connects workflows, and hands off to people. The assistant on this site is a live example of the product.
@@ -95,10 +95,12 @@ function createWindowLimiter(limit, windowMs) {
 function securityHeaders(contentType = 'application/json; charset=utf-8') {
   return {
     'Content-Type': contentType,
-    // tawk.to entries support the assistant's live-chat escalation. The script is
+    // tawk.to entries support the contact page's live chat. jsdelivr is where tawk
+    // loads its emoji library from, so it must be allowed too or the widget logs a
+    // CSP violation on every visit and loses emoji support. The script is
     // lazy-loaded only when a visitor asks for a person, so ordinary page views
     // still contact nothing but our own origin.
-    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://embed.tawk.to https://*.tawk.to; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.tawk.to; font-src 'self' data: https://fonts.gstatic.com https://*.tawk.to; img-src 'self' data: https:; media-src 'self' https://*.tawk.to; connect-src 'self' https://cloudflareinsights.com https://fonts.googleapis.com https://*.tawk.to wss://*.tawk.to; frame-src https://calendly.com https://*.calendly.com https://cal.com https://*.cal.com https://*.tawk.to; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:",
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://embed.tawk.to https://*.tawk.to https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.tawk.to; font-src 'self' data: https://fonts.gstatic.com https://*.tawk.to https://cdn.jsdelivr.net; img-src 'self' data: https:; media-src 'self' https://*.tawk.to; connect-src 'self' https://cloudflareinsights.com https://fonts.googleapis.com https://*.tawk.to wss://*.tawk.to; frame-src https://calendly.com https://*.calendly.com https://cal.com https://*.cal.com https://*.tawk.to; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:",
     'Cross-Origin-Opener-Policy': 'same-origin',
     'Cross-Origin-Resource-Policy': 'same-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',

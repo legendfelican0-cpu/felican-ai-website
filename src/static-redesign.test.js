@@ -123,19 +123,19 @@ describe('Claude Design static website export', () => {
     expect(products).not.toMatch(/BookMarketer|book-marketer|product-marketer/i);
   });
 
-  it('leads the product list with Private AI Global as the flagship', () => {
+  it('leads the product list with Private AI as the flagship', () => {
     const products = read('public/products/index.html');
-    expect(products).toContain("name: 'Private AI Global'");
+    expect(products).toContain("name: 'Private AI'");
     expect(products).toContain('featured: true');
-    expect(products.indexOf("name: 'Private AI Global'")).toBeLessThan(products.indexOf("name: 'Felican AI Assistant'"));
+    expect(products.indexOf("name: 'Private AI'")).toBeLessThan(products.indexOf("name: 'Felican AI Assistant'"));
     // The contact form must offer the same name so ?product= pre-selects it.
-    expect(read('public/contact/index.html')).toContain("'Private AI Global'");
+    expect(read('public/contact/index.html')).toContain("'Private AI'");
   });
 
   it('orders the headline products as the owner specified', () => {
     const products = read('public/products/index.html');
     const order = [
-      'Private AI Global', 'Felican AI Assistant', 'Felican IDP', 'CrossCheck AI',
+      'Private AI', 'Felican AI Assistant', 'Felican IDP', 'CrossCheck AI',
       'Felican AI Auto Marketer', 'World of Agents', 'AI Receptionist', 'Relay',
       'CandyShop', 'Felican AI Trading',
     ];

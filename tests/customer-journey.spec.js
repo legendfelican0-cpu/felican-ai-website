@@ -25,7 +25,7 @@ function stubContact(page, captured) {
 test.describe('Customer journey', () => {
   test('a prospect can size up the company from the homepage', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'load' });
 
     // The pitch is legible above the fold.
     await expect(page.locator('h1')).toContainText('AI solutions for');
@@ -48,7 +48,7 @@ test.describe('Customer journey', () => {
 
   test('the credentials strip stays put and opens the certifications detail', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'load' });
 
     // Visible immediately, not only after scrolling.
     const bar = page.locator('.cred-bar');
@@ -85,12 +85,12 @@ test.describe('Customer journey', () => {
     const captured = [];
     await stubContact(page, captured);
 
-    await page.goto('/products/', { waitUntil: 'networkidle' });
+    await page.goto('/products/', { waitUntil: 'load' });
 
     // The flagship leads and is flagged as such.
     const flagship = page.locator('.product-card.is-featured');
     await expect(flagship).toHaveCount(1);
-    await expect(flagship.locator('h2')).toHaveText('Private AI Global');
+    await expect(flagship.locator('h2')).toHaveText('Private AI');
     await expect(flagship.locator('.product-flag')).toHaveText('Flagship product');
 
     // Every headline product shows artwork that loaded.
@@ -135,7 +135,7 @@ test.describe('Customer journey', () => {
     const captured = [];
     await stubContact(page, captured);
 
-    await page.goto('/contact/', { waitUntil: 'networkidle' });
+    await page.goto('/contact/', { waitUntil: 'load' });
     await page.locator('input[name=email]').fill('not-an-email');
     await page.getByRole('button', { name: /send message/i }).click();
 
@@ -148,7 +148,7 @@ test.describe('Customer journey', () => {
     const captured = [];
     await stubContact(page, captured);
 
-    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.goto('/', { waitUntil: 'load' });
     await page.locator('[data-assistant-launcher]').click();
 
     // Ask something first, so the handoff carries a transcript.
@@ -176,7 +176,7 @@ test.describe('Customer journey', () => {
   });
 
   test('the about page backs up the credentials claim', async ({ page }) => {
-    await page.goto('/about/', { waitUntil: 'networkidle' });
+    await page.goto('/about/', { waitUntil: 'load' });
     await expect(page.getByText('Certified AI professionals on the team')).toBeVisible();
     await expect(page.locator('.ind')).toHaveCount(20);
     const industries = (await page.locator('.ind').allTextContents()).join(' | ');
@@ -186,7 +186,7 @@ test.describe('Customer journey', () => {
   });
 
   test('services cover the newer engagements', async ({ page }) => {
-    await page.goto('/services/', { waitUntil: 'networkidle' });
+    await page.goto('/services/', { waitUntil: 'load' });
     const names = (await page.locator('main h2').allTextContents()).join(' | ');
     for (const service of ['Custom-trained AI models', 'AI auditing', 'AI cost analysis', 'Corporate training']) {
       expect(names).toContain(service);
