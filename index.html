@@ -93,17 +93,18 @@
   .cred-mark img { width:22px; height:22px; object-fit:contain; display:block }
   .cred-kicker { margin:0; font-size:10px; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:#5C4718; line-height:1 }
   .cred-title { margin:2px 0 0; font-size:clamp(13px,1.5vw,17px); font-weight:800; line-height:1.1; letter-spacing:-.01em; text-transform:uppercase; white-space:nowrap }
-  .badge-grid { display:flex; align-items:center; gap:clamp(10px,1.8vw,24px); flex-shrink:0 }
-  /* transparent — no white plate behind the logos */
-  .badge-item { display:flex; align-items:center; justify-content:center; background:transparent; border:0; padding:0; height:30px; flex:0 0 auto }
-  .badge-item img { width:auto; max-width:76px; height:26px; object-fit:contain; display:block }
-  @media (max-width:900px) { .cred-title { font-size:12px; white-space:normal } .badge-item img { max-width:56px; height:22px } }
+  .badge-grid { display:flex; align-items:center; gap:clamp(12px,2vw,26px); flex-shrink:0 }
+  /* Every logo gets an identical box and scales to fit, so none reads bigger or
+     smaller than its neighbours. Transparent — no white plate behind them. */
+  .badge-item { background:transparent; border:0; padding:0; width:104px; height:40px; flex:0 0 auto }
+  .badge-item img { width:100%; height:100%; object-fit:contain; display:block }
+  @media (max-width:900px) { .cred-title { font-size:12px; white-space:normal } .badge-item { width:82px; height:32px } }
   @media (max-width:640px) {
     .cred-inner { padding:8px 14px; gap:12px }
     .cred-kicker { display:none }
     .cred-mark { width:28px; height:28px }
     .badge-grid { gap:12px }
-    .badge-item { height:24px } .badge-item img { max-width:44px; height:20px }
+    .badge-item { width:62px; height:26px }
   }
   @media (max-width:420px) { .cred-id { display:none } .badge-grid { width:100%; justify-content:space-between } }
   .cred-id { display:flex }
@@ -120,8 +121,11 @@
   .cert-lead { margin:0 0 clamp(22px,2.6vw,30px); font-size:clamp(16px,1.3vw,18px); line-height:1.7; color:#C2D2D4; max-width:760px; text-wrap:pretty }
   .cert-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr)); gap:16px }
   .cert-card { padding:22px 20px; background:#101E24; border:1px solid #1C2A28; border-left:3px solid #D8A746 }
-  .cert-logo { display:flex; align-items:center; height:34px; margin-bottom:14px }
-  .cert-logo img { height:30px; width:auto; max-width:96px; object-fit:contain; display:block; filter:brightness(0) invert(1); opacity:.9 }
+  /* One box for every mark so they read at a consistent size. */
+  .cert-logo { display:block; width:104px; height:36px; margin-bottom:14px }
+  .cert-logo img { width:100%; height:100%; object-fit:contain; object-position:left center; display:block }
+  /* Anthropic and OpenAI ship solid-black marks; lighten those so they read on the dark card. */
+  .cert-logo img.is-mono { filter:brightness(0) invert(1); opacity:.92 }
   .cert-name { margin:0 0 8px; font-size:18px; font-weight:700; letter-spacing:-.01em; color:#EEF4F4 }
   .cert-body { margin:0; font-size:14.5px; line-height:1.6; color:#8FA3A8; text-wrap:pretty }
   .cert-foot { margin-top:clamp(24px,3vw,32px); padding-top:22px; border-top:1px solid #1C2A28; display:flex; flex-wrap:wrap; gap:14px; align-items:center }
@@ -191,7 +195,7 @@
         <div class="cert-grid">
           <sc-for list="{{ certs }}" as="c" hint-placeholder-count="5">
             <div class="cert-card">
-              <span class="cert-logo"><img data-badge-src="{{ c.src }}" alt="{{ c.alt }}"></span>
+              <span class="cert-logo"><img class="{{ c.cls }}" data-badge-src="{{ c.src }}" alt="{{ c.alt }}"></span>
               <h3 class="cert-name">{{ c.name }}</h3>
               <p class="cert-body">{{ c.body }}</p>
             </div>
@@ -450,7 +454,7 @@ class Component extends DCLogic {
       bookingUrl,
       bookingEmbedUrl: bookingUrl && isCalendly ? bookingUrl + (bookingUrl.includes('?') ? '&' : '?') + 'hide_gdpr_banner=1' : bookingUrl,
       badges: [
-        { src: '/badges/aws.svg', alt: 'AWS' },
+        { src: '/badges/aws.png', alt: 'AWS' },
         { src: '/badges/gcp.svg', alt: 'Google Cloud' },
         { src: '/badges/azure.svg', alt: 'Microsoft Azure' },
         { src: '/badges/anthropic.svg', alt: 'Anthropic' },
@@ -463,15 +467,15 @@ class Component extends DCLogic {
       closeCerts: () => this.setState({ certsOpen: false }),
       stop: e => e.stopPropagation(),
       certs: [
-        { src: '/badges/aws.svg', alt: 'AWS', name: 'Amazon Web Services',
+        { src: '/badges/aws.png', alt: 'AWS', name: 'Amazon Web Services',
           body: 'Certified AWS cloud architecture, plus the Bedrock and SageMaker services we use to run models inside your own AWS account.' },
         { src: '/badges/azure.svg', alt: 'Microsoft Azure', name: 'Microsoft Azure',
           body: 'Azure AI and OpenAI Service, including private endpoints and the identity controls enterprises need for sign-off.' },
         { src: '/badges/gcp.svg', alt: 'Google Cloud', name: 'Google Cloud',
           body: 'Google Cloud AI and Vertex AI, covering model deployment, tuning, and data residency across regions.' },
-        { src: '/badges/anthropic.svg', alt: 'Anthropic', name: 'Anthropic Claude',
+        { src: '/badges/anthropic.svg', alt: 'Anthropic', name: 'Anthropic Claude', cls: 'is-mono',
           body: 'Building on Claude — agents, tool use, and long-context work — with the safety and evaluation practices that come with it.' },
-        { src: '/badges/openai.svg', alt: 'OpenAI', name: 'OpenAI ChatGPT',
+        { src: '/badges/openai.svg', alt: 'OpenAI', name: 'OpenAI ChatGPT', cls: 'is-mono',
           body: 'The OpenAI platform end to end: GPT models, assistants, embeddings, and ChatGPT Enterprise rollouts for staff.' }
       ],
       frictions: FRICTIONS.map((f, i) => ({
