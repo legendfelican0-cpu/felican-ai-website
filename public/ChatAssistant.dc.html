@@ -288,7 +288,11 @@ class Component extends DCLogic {
     try {
       // No import or other network work happens before this call, preserving
       // the browser's microphone permission gesture on mobile.
-      await this._vapi.start(this._voiceConfig.assistantId);
+      await this._vapi.start(this._voiceConfig.assistantId, {
+        firstMessage: ' ',
+        firstMessageMode: 'assistant-speaks-first',
+        firstMessageInterruptionsEnabled: false
+      });
     } catch (error) {
       this.setState({ voiceConnecting: false, voiceActive: false, speaking: false, userSpeaking: false, liveTranscript: '', voiceError: error && error.message ? error.message : 'Voice could not start. Please try again.' });
     }

@@ -177,14 +177,15 @@ test.describe('Claude Design website export', () => {
 
   test('Private AI carousel works and voice stays live until Stop voice', async ({ page }) => {
     await page.addInitScript(() => {
-      window.__vapiTest = { constructors: 0, starts: 0, stops: 0, assistantId: '' };
+      window.__vapiTest = { constructors: 0, starts: 0, stops: 0, assistantId: '', overrides: null };
       window.__FELICAN_VAPI_CONFIG__ = { publicKey: 'public-test', assistantId: 'assistant-test' };
       window.__FELICAN_VAPI_CLASS__ = class {
         constructor() { window.__vapiTest.constructors += 1; this.handlers = {}; window.__vapiTest.instance = this; }
         on(name, handler) { this.handlers[name] = handler; }
-        async start(assistantId) {
+        async start(assistantId, overrides) {
           window.__vapiTest.starts += 1;
           window.__vapiTest.assistantId = assistantId;
+          window.__vapiTest.overrides = overrides;
           this.handlers['call-start']?.();
         }
         stop() {
@@ -221,7 +222,10 @@ test.describe('Claude Design website export', () => {
     });
     // speech-end must return to listening, not end the ongoing conversation.
     await expect(page.getByText('Listening — start talking.')).toBeVisible();
-    expect(await page.evaluate(() => window.__vapiTest)).toMatchObject({ constructors: 1, starts: 2, stops: 1, assistantId: 'assistant-test' });
+    expect(await page.evaluate(() => window.__vapiTest)).toMatchObject({
+      constructors: 1, starts: 2, stops: 1, assistantId: 'assistant-test',
+      overrides: { firstMessage: ' ', firstMessageMode: 'assistant-speaks-first', firstMessageInterruptionsEnabled: false },
+    });
     await page.getByRole('button', { name: 'Stop voice' }).click();
     await expect(page.getByRole('button', { name: 'Start voice' })).toBeVisible();
     expect(await page.evaluate(() => window.__vapiTest.stops)).toBe(2);

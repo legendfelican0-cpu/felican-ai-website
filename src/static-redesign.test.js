@@ -149,6 +149,7 @@ describe('Claude Design static website export', () => {
     expect(assistant).toContain('Voice + text');
     expect(assistant).toContain("import('https://esm.sh/@vapi-ai/web@2')");
     expect(assistant).toContain("vapi.on('speech-end'");
+    expect(assistant).toContain("firstMessageMode: 'assistant-speaks-first'");
     expect(assistant).toContain('Stop voice');
     expect(assistant).toContain('Listening — start talking.');
     expect(assistant).toContain('We can hear you — keep talking.');
