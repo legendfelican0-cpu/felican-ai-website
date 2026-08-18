@@ -255,6 +255,52 @@ test.describe('Claude Design website export', () => {
     expect(await page.evaluate(() => window.__micTest)).toMatchObject({ requests: 2, stopped: 2 });
   });
 
+  test('the first voice tap waits for delayed setup instead of being discarded', async ({ page }) => {
+    await page.route('**/api/voice-config', async route => {
+      await new Promise(resolve => setTimeout(resolve, 800));
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ enabled: true, publicKey: 'public-test', assistantId: 'assistant-test' }),
+      });
+    });
+    await page.addInitScript(() => {
+      window.__fastVoiceTest = { starts: 0, micRequests: 0 };
+      Object.defineProperty(navigator, 'mediaDevices', {
+        configurable: true,
+        value: {
+          getUserMedia: async () => {
+            window.__fastVoiceTest.micRequests += 1;
+            return { getTracks: () => [{ stop: () => {} }] };
+          },
+        },
+      });
+      window.AudioContext = class {
+        constructor() { this.state = 'running'; }
+        createAnalyser() { return { fftSize: 256, smoothingTimeConstant: 0, getByteTimeDomainData: values => values.fill(128) }; }
+        createMediaStreamSource() { return { connect: () => {} }; }
+        close() { return Promise.resolve(); }
+      };
+      window.__FELICAN_VAPI_CLASS__ = class {
+        constructor() { this.handlers = {}; }
+        on(name, handler) { this.handlers[name] = handler; }
+        async start() {
+          window.__fastVoiceTest.starts += 1;
+          this.handlers['call-start']?.();
+        }
+        stop() { this.handlers['call-end']?.(); }
+      };
+    });
+
+    await page.goto('/products/', { waitUntil: 'domcontentloaded' });
+    await page.locator('[data-assistant-launcher]').click();
+    await page.getByRole('button', { name: 'Start voice' }).click();
+    await expect.poll(() => page.evaluate(() => window.__fastVoiceTest.micRequests)).toBe(1);
+    await expect(page.getByRole('button', { name: 'Stop voice' })).toBeVisible({ timeout: 5000 });
+    await expect.poll(() => page.evaluate(() => window.__fastVoiceTest.starts)).toBe(1);
+    await page.getByRole('button', { name: 'Stop voice' }).click();
+  });
+
   test('contact page offers a working form alongside email and phone', async ({ page }) => {
     await page.goto('/contact/', { waitUntil: 'domcontentloaded' });
     await expect(page.getByRole('link', { name: /ai@felican\.ai/i }).first()).toHaveAttribute('href', /mailto:ai@felican\.ai/);

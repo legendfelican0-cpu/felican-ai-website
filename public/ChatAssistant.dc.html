@@ -209,14 +209,14 @@ class Component extends DCLogic {
   componentDidMount() {
     const preset = window.__FELICAN_VAPI_CONFIG__;
     if (preset && preset.publicKey && preset.assistantId) {
-      this.prepareVoice(preset);
+      this._voiceReadyPromise = this.prepareVoice(preset);
       return;
     }
-    fetch('/api/voice-config', { headers: { Accept: 'application/json' } })
+    this._voiceReadyPromise = fetch('/api/voice-config', { headers: { Accept: 'application/json' } })
       .then(response => response.ok ? response.json() : Promise.reject(new Error('voice_unavailable')))
       .then(config => {
         if (!config.publicKey || !config.assistantId) throw new Error('voice_unavailable');
-        this.prepareVoice(config);
+        return this.prepareVoice(config);
       })
       .catch(() => this.setState({ voiceSupported: false }));
   }
@@ -282,9 +282,11 @@ class Component extends DCLogic {
     // Load the browser voice client before the visitor taps Start. Mobile
     // Safari and Chrome require the microphone request to stay inside that
     // direct tap instead of waiting on a network import first.
-    this.ensureVapi()
+    const ready = this.ensureVapi()
       .then(() => this.setState({ voiceSupported: true, voiceError: '' }))
       .catch(() => this.setState({ voiceSupported: false, voiceError: 'Voice could not load. You can still type below.' }));
+    this._voiceReadyPromise = ready;
+    return ready;
   }
   async ensureVapi() {
     if (this._vapi) return this._vapi;
@@ -339,10 +341,6 @@ class Component extends DCLogic {
     return this._vapiPromise;
   }
   async startVoice() {
-    if (!this.state.voiceSupported || !this._voiceConfig || !this._vapi) {
-      this.setState({ voiceError: 'Voice is still loading. Please tap Start voice again in a moment.' });
-      return;
-    }
     if (this.state.voiceConnecting || this.state.voiceActive) return;
     this.setState({ voiceConnecting: true, voiceError: '' });
     try {
@@ -350,9 +348,15 @@ class Component extends DCLogic {
       // waveform react immediately and turns a blocked microphone into a clear
       // error instead of leaving the visitor wondering whether voice is live.
       await this.startMicMonitor();
+      // A fast first tap must not be discarded while the CDN voice client or
+      // public configuration is still loading. The microphone is already live,
+      // so finish that same tap as soon as voice setup is ready.
+      if (!this._voiceConfig && this._voiceReadyPromise) await this._voiceReadyPromise;
+      if (!this._voiceConfig) throw new Error('Voice could not load. Please try again.');
+      const vapi = this._vapi || await this.ensureVapi();
       // Start the live room immediately after microphone permission resolves;
       // no unrelated work sits between the visitor's tap and the voice call.
-      await this._vapi.start(this._voiceConfig.assistantId, {
+      await vapi.start(this._voiceConfig.assistantId, {
         firstMessage: ' ',
         firstMessageMode: 'assistant-speaks-first',
         firstMessageInterruptionsEnabled: false

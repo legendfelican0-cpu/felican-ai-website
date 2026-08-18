@@ -157,6 +157,7 @@ describe('Claude Design static website export', () => {
     expect(assistant).toContain('createAnalyser');
     expect(assistant).toContain('The bars move when we hear you.');
     expect(assistant).toContain('Microphone access is blocked.');
+    expect(assistant).toContain('if (!this._voiceConfig && this._voiceReadyPromise) await this._voiceReadyPromise');
     expect(assistant).toContain('fa-voice-signal');
     expect(assistant).not.toContain('SpeechRecognition');
     expect(assistant).toContain("fetch('/api/chat'");
