@@ -8,6 +8,7 @@
 
 ## Recent changes
 
+- 2026-08-18: The website voice assistant now opens and monitors the visitor microphone directly before joining the Vapi call. Its five-bar indicator visibly distinguishes quiet listening, detected visitor speech, and assistant speech; permission failures show a clear browser-microphone message, and local microphone resources close when Stop voice is pressed.
 - 2026-08-18: Voice now preloads before the microphone tap, waits for the visitor to speak, keeps listening until Stop, applies the correct Felican pronunciation, restores the working COPS audio configuration, and visibly animates when the visitor or Felican AI is speaking. The mobile credential marks are centered with a larger OpenAI mark. Specialist product covers now use screenshots captured from their real app repositories.
 - 2026-08-18: Added the one-play homepage handshake background in WebM and MP4, with the existing handshake image as the poster/fallback. It stays silent, does not loop, and holds the final handshake frame.
 - 2026-08-18: Added continuous Vapi browser voice, aligned credential logos, product preview covers, and the interactive Start Here eBook entry.

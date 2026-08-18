@@ -201,7 +201,7 @@ class Component extends DCLogic {
   state = {
     open: new URLSearchParams(window.location.search).has('assistant'), busy: false, draft: '', website: '',
     handoff: false, hName: '', hEmail: '', hMsg: '', hBusy: false,
-    voiceSupported: false, voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '', voiceError: '',
+    voiceSupported: false, voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, micDetected: false, liveTranscript: '', voiceError: '',
     messages: [{ role: 'assistant', text: "Hi — I'm the Felican AI agent. Ask me about our products, services, training, or Lee's books." }]
   };
   scrollRef = React.createRef();
@@ -223,6 +223,60 @@ class Component extends DCLogic {
   componentWillUnmount() {
     this.stopVoice();
   }
+  async startMicMonitor() {
+    this.stopMicMonitor();
+    const mediaDevices = navigator.mediaDevices;
+    if (!mediaDevices || typeof mediaDevices.getUserMedia !== 'function') {
+      throw new Error('This browser cannot access your microphone. Try the latest Safari or Chrome.');
+    }
+    const stream = await mediaDevices.getUserMedia({
+      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+      video: false
+    });
+    this._micStream = stream;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    const context = new AudioContextClass();
+    this._micContext = context;
+    if (context.state === 'suspended' && context.resume) await context.resume();
+    const analyser = context.createAnalyser();
+    analyser.fftSize = 256;
+    analyser.smoothingTimeConstant = .72;
+    context.createMediaStreamSource(stream).connect(analyser);
+    const samples = new Uint8Array(analyser.fftSize);
+    this._micLastHeardAt = 0;
+    this._micWasDetected = false;
+    const measure = () => {
+      if (!this._micStream || this._micStream !== stream) return;
+      analyser.getByteTimeDomainData(samples);
+      let energy = 0;
+      for (let i = 0; i < samples.length; i += 1) {
+        const centered = (samples[i] - 128) / 128;
+        energy += centered * centered;
+      }
+      const level = Math.sqrt(energy / samples.length);
+      const now = performance.now();
+      if (level > .028) this._micLastHeardAt = now;
+      const detected = now - this._micLastHeardAt < 420;
+      if (detected !== this._micWasDetected) {
+        this._micWasDetected = detected;
+        this.setState({ micDetected: detected });
+      }
+      this._micFrame = requestAnimationFrame(measure);
+    };
+    this._micFrame = requestAnimationFrame(measure);
+  }
+  stopMicMonitor() {
+    if (this._micFrame) cancelAnimationFrame(this._micFrame);
+    this._micFrame = null;
+    if (this._micStream) this._micStream.getTracks().forEach(track => track.stop());
+    this._micStream = null;
+    if (this._micContext && this._micContext.close) {
+      try { this._micContext.close(); } catch (error) { /* already closed */ }
+    }
+    this._micContext = null;
+    this._micWasDetected = false;
+  }
   prepareVoice(config) {
     this._voiceConfig = config;
     // Load the browser voice client before the visitor taps Start. Mobile
@@ -239,15 +293,21 @@ class Component extends DCLogic {
       const Vapi = window.__FELICAN_VAPI_CLASS__ || (await import('https://esm.sh/@vapi-ai/web@2')).default;
       const vapi = new Vapi(this._voiceConfig.publicKey);
       vapi.on('call-start', () => this.setState({ voiceActive: true, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '', voiceError: '' }));
-      vapi.on('call-end', () => this.setState({ voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '' }));
+      vapi.on('call-end', () => {
+        this.stopMicMonitor();
+        this.setState({ voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, micDetected: false, liveTranscript: '' });
+      });
       vapi.on('speech-start', () => this.setState({ voiceActive: true, speaking: true, userSpeaking: false, voiceError: '' }));
       // A reply ending is not the end of voice mode. The call stays live and
       // immediately returns to listening until the visitor presses Stop voice.
       vapi.on('speech-end', () => this.setState({ voiceActive: true, speaking: false }));
-      vapi.on('error', error => this.setState({
-        voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '',
-        voiceError: error && error.message ? error.message : 'Voice had trouble connecting. You can still type below.'
-      }));
+      vapi.on('error', error => {
+        this.stopMicMonitor();
+        this.setState({
+          voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, micDetected: false, liveTranscript: '',
+          voiceError: error && error.message ? error.message : 'Voice had trouble connecting. You can still type below.'
+        });
+      });
       vapi.on('message', message => {
         if (message.type === 'speech-update' && message.role === 'user') {
           const started = message.status === 'started';
@@ -286,20 +346,27 @@ class Component extends DCLogic {
     if (this.state.voiceConnecting || this.state.voiceActive) return;
     this.setState({ voiceConnecting: true, voiceError: '' });
     try {
-      // No import or other network work happens before this call, preserving
-      // the browser's microphone permission gesture on mobile.
+      // Read the microphone locally as well as through Vapi. This makes the
+      // waveform react immediately and turns a blocked microphone into a clear
+      // error instead of leaving the visitor wondering whether voice is live.
+      await this.startMicMonitor();
+      // Start the live room immediately after microphone permission resolves;
+      // no unrelated work sits between the visitor's tap and the voice call.
       await this._vapi.start(this._voiceConfig.assistantId, {
         firstMessage: ' ',
         firstMessageMode: 'assistant-speaks-first',
         firstMessageInterruptionsEnabled: false
       });
     } catch (error) {
-      this.setState({ voiceConnecting: false, voiceActive: false, speaking: false, userSpeaking: false, liveTranscript: '', voiceError: error && error.message ? error.message : 'Voice could not start. Please try again.' });
+      this.stopMicMonitor();
+      const blocked = error && (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError');
+      this.setState({ voiceConnecting: false, voiceActive: false, speaking: false, userSpeaking: false, micDetected: false, liveTranscript: '', voiceError: blocked ? 'Microphone access is blocked. Allow microphone access in your browser, then tap Start voice again.' : error && error.message ? error.message : 'Voice could not start. Please try again.' });
     }
   }
   stopVoice() {
     try { if (this._vapi) this._vapi.stop(); } catch (error) { /* already stopped */ }
-    if (this.state) this.setState({ voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '' });
+    this.stopMicMonitor();
+    if (this.state) this.setState({ voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, micDetected: false, liveTranscript: '' });
   }
   toggleVoice() {
     if (this.state.voiceActive || this.state.voiceConnecting) this.stopVoice();
@@ -391,9 +458,9 @@ class Component extends DCLogic {
       website: this.state.website,
       showChips: this.state.messages.length <= 1 && !this.state.handoff,
       composerOpen: !this.state.handoff,
-      voiceStatus: this.state.voiceError || (this.state.voiceConnecting ? 'Connecting your microphone…' : this.state.speaking ? 'Felican AI is speaking — talk anytime to interrupt.' : this.state.userSpeaking ? (this.state.liveTranscript ? 'Hearing you: “' + this.state.liveTranscript.slice(0, 72) + '”' : 'We can hear you — keep talking.') : this.state.voiceActive ? 'Listening — start talking.' : this.state.voiceSupported ? 'Tap Start voice, allow microphone access, then talk until you press Stop.' : 'Voice is loading. Text chat is ready now.'),
+      voiceStatus: this.state.voiceError || (this.state.voiceConnecting ? (this.state.micDetected ? 'We can hear you — connecting the AI…' : 'Connecting your microphone…') : this.state.speaking ? 'Felican AI is speaking — talk anytime to interrupt.' : this.state.userSpeaking ? (this.state.liveTranscript ? 'Hearing you: “' + this.state.liveTranscript.slice(0, 72) + '”' : 'We can hear you — keep talking.') : this.state.micDetected ? 'We can hear you — keep talking.' : this.state.voiceActive ? 'Listening — start talking. The bars move when we hear you.' : this.state.voiceSupported ? 'Tap Start voice, allow microphone access, then talk until you press Stop.' : 'Voice is loading. Text chat is ready now.'),
       voiceLabel: this.state.voiceActive || this.state.voiceConnecting ? 'Stop voice' : 'Start voice',
-      voiceClass: this.state.speaking ? 'speaking' : this.state.userSpeaking ? 'hearing' : this.state.voiceActive || this.state.voiceConnecting ? 'listening' : '',
+      voiceClass: this.state.speaking ? 'speaking' : this.state.userSpeaking || this.state.micDetected ? 'hearing' : this.state.voiceActive || this.state.voiceConnecting ? 'listening' : '',
       listeningStr: this.state.voiceActive || this.state.voiceConnecting ? 'true' : 'false',
       toggleVoice: () => this.toggleVoice(),
       scrollRef: this.scrollRef,

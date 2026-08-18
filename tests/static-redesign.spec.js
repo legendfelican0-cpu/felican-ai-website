@@ -178,6 +178,22 @@ test.describe('Claude Design website export', () => {
   test('Private AI carousel works and voice stays live until Stop voice', async ({ page }) => {
     await page.addInitScript(() => {
       window.__vapiTest = { constructors: 0, starts: 0, stops: 0, assistantId: '', overrides: null };
+      window.__micTest = { requests: 0, stopped: 0 };
+      Object.defineProperty(navigator, 'mediaDevices', {
+        configurable: true,
+        value: {
+          getUserMedia: async () => {
+            window.__micTest.requests += 1;
+            return { getTracks: () => [{ stop: () => { window.__micTest.stopped += 1; } }] };
+          },
+        },
+      });
+      window.AudioContext = class {
+        constructor() { this.state = 'running'; }
+        createAnalyser() { return { fftSize: 256, smoothingTimeConstant: 0, getByteTimeDomainData: values => values.fill(150) }; }
+        createMediaStreamSource() { return { connect: () => {} }; }
+        close() { return Promise.resolve(); }
+      };
       window.__FELICAN_VAPI_CONFIG__ = { publicKey: 'public-test', assistantId: 'assistant-test' };
       window.__FELICAN_VAPI_CLASS__ = class {
         constructor() { window.__vapiTest.constructors += 1; this.handlers = {}; window.__vapiTest.instance = this; }
@@ -204,6 +220,10 @@ test.describe('Claude Design website export', () => {
     await page.locator('[data-assistant-launcher]').click();
     await page.getByRole('button', { name: 'Start voice' }).click();
     await expect(page.getByRole('button', { name: 'Stop voice' })).toBeVisible();
+    // The browser's own microphone level must animate before Vapi returns a
+    // transcript event, so visitors immediately know they are being heard.
+    await expect(page.locator('.fa-voice-signal.hearing')).toBeVisible();
+    await expect(page.getByText('We can hear you — keep talking.')).toBeVisible();
     await page.evaluate(() => window.__vapiTest.instance.handlers.message({ type: 'speech-update', role: 'user', status: 'started' }));
     await expect(page.getByText('We can hear you — keep talking.')).toBeVisible();
     await expect(page.locator('.fa-voice-signal.hearing')).toBeVisible();
@@ -220,8 +240,11 @@ test.describe('Claude Design website export', () => {
       window.__vapiTest.instance.handlers['speech-start']();
       window.__vapiTest.instance.handlers['speech-end']();
     });
-    // speech-end must return to listening, not end the ongoing conversation.
-    await expect(page.getByText('Listening — start talking.')).toBeVisible();
+    // speech-end must return to the live microphone, not end the ongoing
+    // conversation. This mock is intentionally loud, so the local meter says
+    // it can hear us instead of showing the quiet-room listening copy.
+    await expect(page.getByText('We can hear you — keep talking.')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Stop voice' })).toBeVisible();
     expect(await page.evaluate(() => window.__vapiTest)).toMatchObject({
       constructors: 1, starts: 2, stops: 1, assistantId: 'assistant-test',
       overrides: { firstMessage: ' ', firstMessageMode: 'assistant-speaks-first', firstMessageInterruptionsEnabled: false },
@@ -229,6 +252,7 @@ test.describe('Claude Design website export', () => {
     await page.getByRole('button', { name: 'Stop voice' }).click();
     await expect(page.getByRole('button', { name: 'Start voice' })).toBeVisible();
     expect(await page.evaluate(() => window.__vapiTest.stops)).toBe(2);
+    expect(await page.evaluate(() => window.__micTest)).toMatchObject({ requests: 2, stopped: 2 });
   });
 
   test('contact page offers a working form alongside email and phone', async ({ page }) => {
