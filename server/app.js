@@ -10,10 +10,10 @@ const MAX_MESSAGES = 10;
 const RATE_MAP_CAP = 10_000;
 const ANALYTICS_EVENTS = new Set(['page_view', 'contact_click', 'product_click', 'assistant_open']);
 const EDUCATION_GUIDES = new Map([
-  ['12-ways-ai-can-help-your-business', '12 Ways AI Can Help Your Business'],
-  ['ai-starter-pack-for-kids-teens-and-adults', 'AI Starter Pack for Kids, Teens, and Adults'],
-  ['ai-for-entrepreneurs', 'AI for Entrepreneurs'],
-  ['no-more-excuses-12-ai-side-hustles', 'No More Excuses — 12 AI Side Hustles'],
+  ['12-ways-ai-can-help-your-business', { title: '12 Ways AI Can Help Your Business', url: 'https://felican.ai/ebooks/12-ways-ai-can-help-your-business' }],
+  ['ai-starter-pack-for-kids-teens-and-adults', { title: 'AI Starter Pack for Kids, Teens, and Adults', url: 'https://felican.ai/ebooks/ai-starter-pack-for-kids-teens-and-adults' }],
+  ['ai-for-entrepreneurs', { title: 'AI for Entrepreneurs', url: 'https://felican.ai/ebooks/ai-for-entrepreneurs' }],
+  ['no-more-excuses-12-ai-side-hustles', { title: 'No More Excuses — 12 AI Side Hustles', url: 'https://felican.ai/ebooks/no-more-excuses-12-ai-side-hustles' }],
 ]);
 
 const MIME = new Map([
@@ -39,11 +39,10 @@ Products and official links:
 - Relay: AI field-service software for HVAC, plumbing, and electrical companies. It combines maintenance scheduling, AP invoice OCR and review, AR collections, quotes, crew management, reports, and an AI operations assistant. https://relay.felican.dev/relay
 - Felican AI Assistant: a company-trained AI agent businesses can embed inside a website or app. It answers questions, recommends services, captures inquiries, connects workflows, and hands off to people. The assistant on this site is a live example of the product.
 - World of Agents: a trusted AI presence and AI Twin product that helps people stay available across conversations, circles, messages, and calls while controlling access. https://woa.felican.ai/
-- BookMaker (live as Book Studio): an AI-guided workspace that turns an idea or manuscript into a publish-ready Kindle eBook, paperback, and hardcover. https://book-studio.felican.dev/
 
 Services: AI agents and bots, business automation, custom integrations, private AI systems, AI implementation and consulting, business solutions, AI training and workshops.
 
-Education: the /education/ page includes Felican AI eBooks, books by Lee Felican Jr., upcoming courses, Tiny Techs for early learners, nonprofit partnerships, school partnerships, and corporate training. Visitors can enter an email address or phone number to open the shared eBook library at https://felican.ai/ebooks/.
+Education: the /education/ page includes Felican AI eBooks, books by Lee Felican Jr., upcoming courses, Tiny Techs for early learners, nonprofit partnerships, school partnerships, and corporate training. After a visitor enters an email address or phone number, open the specific eBook they selected.
 
 Books by Lee Felican Jr.:
 - The Big Balla's Guide to Making Money with AI: 100 real ways to make money with AI, organized by startup cost and industry, plus beginner AI trading and a legal-business-under-$50 playbook.
@@ -217,7 +216,8 @@ function normalizeEducationLead(body) {
   return {
     lead: {
       guideId,
-      guideTitle: EDUCATION_GUIDES.get(guideId),
+      guideTitle: EDUCATION_GUIDES.get(guideId).title,
+      guideUrl: EDUCATION_GUIDES.get(guideId).url,
       email,
       phone,
       phoneE164: phone ? `+${phoneDigits.length === 10 ? `1${phoneDigits}` : phoneDigits}` : '',
@@ -227,8 +227,6 @@ function normalizeEducationLead(body) {
 }
 
 const EDUCATION_CONSENT_TEXT = 'I agree that Felican AI may email or text me the requested eBook. If I provide a mobile number, I consent to one automated text per request. Message and data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase.';
-const EBOOK_LIBRARY_URL = 'https://felican.ai/ebooks/';
-
 async function requireOk(response, label) {
   if (!response.ok) throw new Error(`${label} returned ${response.status}`);
   return response;
@@ -254,7 +252,7 @@ export async function deliverEducationLead(lead, env = process.env, fetchImpl = 
           'Content-Type': 'application/json',
           ...(env.EDUCATION_LEADS_WEBHOOK_TOKEN ? { Authorization: `Bearer ${env.EDUCATION_LEADS_WEBHOOK_TOKEN}` } : {}),
         },
-        body: JSON.stringify({ event: 'education.guide_requested', consentText: EDUCATION_CONSENT_TEXT, guideUrl: EBOOK_LIBRARY_URL, ...lead }),
+        body: JSON.stringify({ event: 'education.guide_requested', consentText: EDUCATION_CONSENT_TEXT, ...lead }),
       }).then(response => requireOk(response, 'Education lead webhook')));
     } else if (resendKey && resendFrom) {
       const to = env.EDUCATION_LEADS_TO?.trim() || 'ai@felican.ai';
@@ -284,8 +282,8 @@ export async function deliverEducationLead(lead, env = process.env, fetchImpl = 
           from: resendFrom,
           to: [lead.email],
           subject: `Your Felican AI eBook — ${lead.guideTitle}`,
-          text: `Your Felican AI eBook access is ready.\n\n${lead.guideTitle}\n${EBOOK_LIBRARY_URL}\n\nOpen the Felican AI eBook library to read the available interactive eBooks.\n\nFelican AI\nai@felican.ai`,
-          html: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#0b1828"><p>Your Felican AI eBook access is ready.</p><h1 style="font-size:26px">${lead.guideTitle}</h1><p><a href="${EBOOK_LIBRARY_URL}" style="display:inline-block;padding:13px 18px;background:#1768e5;color:#fff;text-decoration:none;font-weight:700">Open the eBook library</a></p><p>Explore the available Felican AI eBooks online.</p><p>Felican AI<br><a href="mailto:ai@felican.ai">ai@felican.ai</a></p></div>`,
+          text: `Your Felican AI eBook access is ready.\n\n${lead.guideTitle}\n${lead.guideUrl}\n\nOpen your selected interactive eBook online.\n\nFelican AI\nai@felican.ai`,
+          html: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#0b1828"><p>Your Felican AI eBook access is ready.</p><h1 style="font-size:26px">${escapeHtml(lead.guideTitle)}</h1><p><a href="${escapeHtml(lead.guideUrl)}" style="display:inline-block;padding:13px 18px;background:#1768e5;color:#fff;text-decoration:none;font-weight:700">Open your eBook</a></p><p>Read your selected interactive Felican AI eBook online.</p><p>Felican AI<br><a href="mailto:ai@felican.ai">ai@felican.ai</a></p></div>`,
         }),
       }).then(response => requireOk(response, 'Education email delivery')));
     }
@@ -300,7 +298,7 @@ export async function deliverEducationLead(lead, env = process.env, fetchImpl = 
         headers: { Authorization: `Bearer ${relayToken}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: lead.phoneE164,
-          text: `Felican AI: Your eBook access for “${lead.guideTitle}” is ready: ${EBOOK_LIBRARY_URL} Message and data rates may apply. Reply STOP to opt out, HELP for help.`,
+          text: `Felican AI: Your eBook access for “${lead.guideTitle}” is ready: ${lead.guideUrl} Message and data rates may apply. Reply STOP to opt out, HELP for help.`,
         }),
       }).then(response => requireOk(response, 'Education text delivery')));
     }
@@ -472,7 +470,8 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
 
     const legacyEbookMatch = url.pathname.match(/^\/ebooks\/([^/]+)\/?$/);
     if (req.method === 'GET' && legacyEbookMatch && EDUCATION_GUIDES.has(legacyEbookMatch[1])) {
-      res.writeHead(302, { Location: EBOOK_LIBRARY_URL, 'Cache-Control': 'no-store' });
+      const guide = EDUCATION_GUIDES.get(legacyEbookMatch[1]);
+      res.writeHead(302, { Location: guide.url, 'Cache-Control': 'no-store' });
       res.end();
       return;
     }
@@ -498,7 +497,7 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
           guideId: lead.guideId,
           contactMethod: lead.email && lead.phone ? 'email_and_phone' : lead.email ? 'email' : 'phone',
         });
-        return json(res, 200, { ok: true, guideUrl: EBOOK_LIBRARY_URL });
+        return json(res, 200, { ok: true, guideUrl: lead.guideUrl });
       } catch (error) {
         const status = Number(error?.statusCode) || 503;
         structuredLog(logger, 'error', 'education.ebook_request_failed', { requestId, status, reason: error?.message || 'unknown error' });

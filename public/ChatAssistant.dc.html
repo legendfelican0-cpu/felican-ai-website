@@ -13,7 +13,7 @@
 @keyframes fa-in { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:none } }
 @keyframes fa-dot { 0%,80%,100% { opacity:.25 } 40% { opacity:1 } }
 @keyframes fa-pulse { 0%,100% { box-shadow:0 0 0 0 rgba(47,184,148,.42) } 50% { box-shadow:0 0 0 7px rgba(47,184,148,0) } }
-.fa-shell { position:fixed;right:28px;bottom:28px;z-index:1000;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;align-items:flex-end;gap:14px;max-width:calc(100vw - 56px);pointer-events:none }
+.fa-shell { position:fixed;right:28px;bottom:94px;z-index:1000;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;align-items:flex-end;gap:14px;max-width:calc(100vw - 56px);pointer-events:none }
 .fa-shell > * { pointer-events:auto }
 .fa-panel { position:relative;width:min(430px,calc(100vw - 56px));height:min(650px,calc(100vh - 124px));background:#0C1419;border:1px solid rgba(47,184,148,.3);border-radius:22px;box-shadow:0 28px 80px rgba(5,9,12,.55),0 4px 16px rgba(47,184,148,.12);display:flex;flex-direction:column;overflow:hidden;animation:fa-in .24s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom right }
 .fa-panel::before { content:'';position:absolute;z-index:2;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#2FB894,#8FE0C8,#2FB894) }
@@ -32,7 +32,7 @@
 .fa-voice { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;background:#0C1419;border-top:1px solid #1C2A28;flex-shrink:0 }
 .fa-voice-copy { min-width:0 }.fa-voice-copy strong { display:block;color:#EEF4F4;font:700 13px Sora,sans-serif }.fa-voice-copy span { display:block;margin-top:3px;color:#7C9391;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis }
 .fa-voice-btn { flex:0 0 auto;border:1px solid #2FB894;background:rgba(47,184,148,.12);color:#8FE0C8;border-radius:999px;padding:10px 14px;font:700 12px Sora,sans-serif;cursor:pointer;transition:.18s ease }
-.fa-voice-btn:hover { background:#2FB894;color:#080E13 }.fa-voice-btn.listening { background:#2FB894;color:#080E13;box-shadow:0 0 0 5px rgba(47,184,148,.14) }
+.fa-voice-btn:hover { background:#2FB894;color:#080E13 }.fa-voice-btn.listening { background:#2FB894;color:#080E13;box-shadow:0 0 0 5px rgba(47,184,148,.14) }.fa-voice-btn.speaking { background:#F2CD7A;border-color:#F2CD7A;color:#080E13;box-shadow:0 0 0 5px rgba(242,205,122,.14) }
 .fa-input { flex:1;min-width:0;border:1px solid #1C2A28;background:#05090C;color:#EEF4F4;font-family:Inter,sans-serif;font-size:16px;padding:13px 17px;border-radius:999px }
 .fa-input:focus { outline:2px solid #2FB894;outline-offset:1px;border-color:#2FB894;background:#080E13 }
 .fa-send { width:50px;height:50px;display:grid;place-items:center;flex:0 0 50px;background:linear-gradient(135deg,#2FB894,#59D4B4);border:0;color:#080E13;font-family:Sora,sans-serif;font-size:22px;font-weight:700;padding:0;border-radius:50%;cursor:pointer;box-shadow:0 8px 20px rgba(47,184,148,.28);transition:transform .18s ease,box-shadow .18s ease }
@@ -54,15 +54,26 @@
 .fa-launch-mark { width:34px;height:34px;object-fit:contain }
 .fa-launch-status { position:absolute;z-index:2;right:1px;bottom:3px;width:14px;height:14px;border:3px solid #0A1115;border-radius:50%;background:#55E6A5;animation:fa-pulse 2.2s ease-in-out infinite }
 .fa-launch-copy { display:block;min-width:124px }.fa-launch-copy strong { display:block;font:700 14px Sora,sans-serif;color:#FFFFFF }.fa-launch-copy small { display:block;margin-top:4px;color:#8FE0C8;font-size:12px;letter-spacing:.02em }
+.fa-cred { position:fixed;z-index:950;left:0;right:0;bottom:0;min-height:76px;background:linear-gradient(112deg,#D9A944 0%,#F2CE7B 52%,#C89435 100%);box-shadow:0 -8px 30px rgba(0,0,0,.34);font-family:Inter,system-ui,sans-serif;color:#10161B }
+.fa-cred-inner { width:min(1280px,100%);min-height:76px;margin:0 auto;padding:10px 24px;display:grid;grid-template-columns:minmax(250px,1fr) auto;align-items:center;gap:22px;color:inherit;text-decoration:none }
+.fa-cred-copy { display:flex;align-items:center;gap:11px;min-width:0 }.fa-cred-copy > span:first-child { width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:10px;background:#0C1419 }.fa-cred-copy img { width:25px;height:25px;object-fit:contain }.fa-cred-copy small { display:block;font-size:10px;font-weight:800;line-height:1;letter-spacing:.18em;text-transform:uppercase;color:#5C4718 }.fa-cred-copy strong { display:block;margin-top:4px;font:800 clamp(13px,1.5vw,17px)/1.05 Sora,sans-serif;letter-spacing:-.01em;text-transform:uppercase }
+.fa-cred-logos { display:flex;align-items:center;justify-content:flex-end;gap:clamp(10px,1.5vw,20px);min-width:0 }.fa-cred-logo { width:88px;height:42px;display:grid;place-items:center;flex:0 1 88px }.fa-cred-logo img { display:block;width:100%;height:100%;object-fit:contain }.fa-cred-logo.aws { width:82px;flex-basis:82px;padding:2px 0 }
 @media (max-width:640px) {
-  .fa-shell { right:14px;bottom:14px;max-width:calc(100vw - 28px) }
+  .fa-shell { right:10px;bottom:88px;max-width:calc(100vw - 20px) }
   .fa-panel { width:calc(100vw - 28px);height:min(600px,calc(100vh - 104px));border-radius:19px }
-  .fa-launcher { min-height:64px;padding:6px 15px 6px 7px }
-  .fa-launch-portrait { width:50px;height:50px;flex-basis:50px }
-  .fa-launch-copy { min-width:112px }
+  .fa-launcher { min-height:58px;padding:5px 13px 5px 6px }
+  .fa-launch-portrait { width:46px;height:46px;flex-basis:46px }
+  .fa-launch-mark { width:29px;height:29px }
+  .fa-launch-copy { min-width:105px }.fa-launch-copy strong { font-size:13px }.fa-launch-copy small { font-size:11px }
   .fa-head { padding:18px }
   .fa-messages { padding:16px }
+  .fa-cred { min-height:78px }
+  .fa-cred-inner { min-height:78px;padding:8px 10px;grid-template-columns:minmax(118px,.8fr) minmax(0,1.2fr);gap:8px }
+  .fa-cred-copy { gap:7px }.fa-cred-copy > span:first-child { width:30px;height:30px;flex-basis:30px;border-radius:8px }.fa-cred-copy img { width:19px;height:19px }.fa-cred-copy small { display:none }.fa-cred-copy strong { margin:0;font-size:10.5px;line-height:1.08;letter-spacing:.01em }
+  .fa-cred-logos { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;justify-items:center }
+  .fa-cred-logo,.fa-cred-logo.aws { width:100%;height:30px;max-width:42px;padding:0;min-width:0 }
 }
+@media (max-width:380px) { .fa-cred-inner { grid-template-columns:108px minmax(0,1fr) }.fa-cred-copy > span:first-child { display:none }.fa-cred-copy strong { font-size:10px }.fa-shell { bottom:88px }.fa-launch-copy { min-width:96px } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -144,15 +155,31 @@
   </button>
 </div>
 
+<aside class="fa-cred" aria-label="Verified AI credentials">
+  <a class="fa-cred-inner" href="/about/#certifications">
+    <span class="fa-cred-copy">
+      <span aria-hidden="true"><img src="/logo-mark.png" alt=""></span>
+      <span><small>Verified credentials</small><strong>Certified AI professionals</strong></span>
+    </span>
+    <span class="fa-cred-logos" aria-label="Certified platforms">
+      <span class="fa-cred-logo aws"><img src="/badges/aws.png" alt="AWS"></span>
+      <span class="fa-cred-logo"><img src="/badges/gcp.svg" alt="Google Cloud"></span>
+      <span class="fa-cred-logo"><img src="/badges/azure.svg" alt="Microsoft Azure"></span>
+      <span class="fa-cred-logo"><img src="/badges/anthropic.svg" alt="Anthropic"></span>
+      <span class="fa-cred-logo"><img src="/badges/openai.svg" alt="OpenAI"></span>
+    </span>
+  </a>
+</aside>
+
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:640}}">
 const SYS = `You are the Felican AI assistant running on the Felican AI website. Felican AI builds useful AI products, custom systems, business automations, integrations, assistants, solutions, and training for businesses in any industry. It is led by Lee Felican Jr., a software engineer and enterprise architect with 30+ years of experience.
 
-The current product lineup includes: Private AI, the flagship product (enterprise-grade private AI with zero data exposure, deployed securely inside the customer's own network — recommend this first for any business worried about sensitive data); Felican Auto (connected AI products, automations and workflows for automotive businesses); World of Agents (discover and work with specialized AI agents for focused business tasks); Relay (AI field-service software for HVAC, plumbing, and electrical companies with scheduling, AP invoice OCR, collections, quotes, crew management, and an AI operations assistant); Felican AI Assistant (a company-trained AI agent businesses can embed inside a website or app to answer questions, recommend services, capture inquiries, connect workflows, and hand off to people); BookMaker (an AI workspace for planning, writing, organizing and preparing books). The portfolio is growing, so describe it as the current lineup without stating a fixed product count.
+The current product lineup includes: Private AI, the flagship product (enterprise-grade private AI with zero data exposure, deployed securely inside the customer's own network — recommend this first for any business worried about sensitive data); Felican Auto (connected AI products, automations and workflows for automotive businesses); World of Agents (discover and work with specialized AI agents for focused business tasks); Relay (AI field-service software for HVAC, plumbing, and electrical companies with scheduling, AP invoice OCR, collections, quotes, crew management, and an AI operations assistant); and Felican AI Assistant (a company-trained AI agent businesses can embed inside a website or app to answer questions, recommend services, capture inquiries, connect workflows, and hand off to people). The portfolio is growing, so describe it as the current lineup without stating a fixed product count.
 
 Services: AI agents and bots, business automation, custom integrations, private AI systems, AI implementation and consulting, business solutions, AI training and workshops. Felican AI works with businesses in any industry and designs solutions around how each company actually operates.
 
-Education: the Education page includes Felican AI eBooks, books by Lee Felican Jr., upcoming courses, Tiny Techs for early learners, nonprofit partnerships, school partnerships, and corporate training. Visitors can enter an email address or phone number to open the shared eBook library.
+Education: the Education page includes Felican AI eBooks, books by Lee Felican Jr., upcoming courses, Tiny Techs for early learners, nonprofit partnerships, school partnerships, and corporate training. After visitors enter an email address or phone number, they are sent directly to the specific eBook they selected.
 
 Lee Felican Jr. has published four books: The Big Balla's Guide to Making Money with AI, Don't Be Replaced, Stop Being Nice to AI, and The BIG AI Book.
 
@@ -166,7 +193,7 @@ class Component extends DCLogic {
   state = {
     open: new URLSearchParams(window.location.search).has('assistant'), busy: false, draft: '', website: '',
     handoff: false, hName: '', hEmail: '', hMsg: '', hBusy: false,
-    voiceSupported: false, listening: false, voiceMode: false, voiceError: '',
+    voiceSupported: false, listening: false, speaking: false, voiceMode: false, voiceError: '',
     messages: [{ role: 'assistant', text: "Hi — I'm the Felican AI agent. Ask me about our products, services, training, or Lee's books." }]
   };
   scrollRef = React.createRef();
@@ -193,11 +220,20 @@ class Component extends DCLogic {
   }
   componentWillUnmount() {
     if (this._recognition) this._recognition.abort();
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    this.stopSpeaking();
   }
   toggleVoice() {
+    if (this.state.speaking) {
+      this.stopSpeaking();
+      return;
+    }
     if (!this.state.voiceSupported || !this._recognition) {
-      this.setState({ voiceError: 'Voice input is not available in this browser. You can still type below.' });
+      if ('speechSynthesis' in window) {
+        this.setState({ voiceMode: true, voiceError: 'Voice replies are on. Type a question and I will answer aloud.' });
+        this.unlockMobileSpeech();
+      } else {
+        this.setState({ voiceError: 'Voice is not available in this browser. You can still type below.' });
+      }
       return;
     }
     if (this.state.listening) {
@@ -205,15 +241,38 @@ class Component extends DCLogic {
       return;
     }
     this.setState({ voiceMode: true, voiceError: '' });
+    this.unlockMobileSpeech();
     try { this._recognition.start(); }
     catch (error) { this.setState({ listening: false, voiceError: 'Voice is already starting. Please wait a moment.' }); }
+  }
+  unlockMobileSpeech() {
+    if (!('speechSynthesis' in window) || this._speechUnlocked) return;
+    this._speechUnlocked = true;
+    const primer = new SpeechSynthesisUtterance('Voice replies are on.');
+    primer.rate = 1;
+    primer.onstart = () => this.setState({ speaking: true });
+    primer.onend = () => this.setState({ speaking: false });
+    primer.onerror = () => this.setState({ speaking: false });
+    this._utterance = primer;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(primer);
+  }
+  stopSpeaking() {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    this._utterance = null;
+    if (this.state && this.state.speaking) this.setState({ speaking: false });
   }
   speak(text) {
     if (!this.state.voiceMode || !('speechSynthesis' in window) || !text) return;
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 1;
+    utterance.lang = 'en-US';
+    utterance.rate = 0.98;
     utterance.pitch = 1;
+    utterance.onstart = () => this.setState({ speaking: true, voiceError: '' });
+    utterance.onend = () => { this._utterance = null; this.setState({ speaking: false }); };
+    utterance.onerror = event => { this._utterance = null; this.setState({ speaking: false, voiceError: event && event.error === 'canceled' ? '' : 'Audio playback stopped. Tap Start voice to try again.' }); };
+    this._utterance = utterance;
     window.speechSynthesis.speak(utterance);
   }
 
@@ -302,9 +361,9 @@ class Component extends DCLogic {
       website: this.state.website,
       showChips: this.state.messages.length <= 1 && !this.state.handoff,
       composerOpen: !this.state.handoff,
-      voiceStatus: this.state.voiceError || (this.state.listening ? 'Listening — ask your question now.' : this.state.voiceSupported ? 'Tap to speak. Replies can play aloud.' : 'Voice input is unavailable here; text still works.'),
-      voiceLabel: this.state.listening ? 'Stop listening' : 'Start voice',
-      voiceClass: this.state.listening ? 'listening' : '',
+      voiceStatus: this.state.voiceError || (this.state.speaking ? 'Speaking now — tap Stop speaking at any time.' : this.state.listening ? 'Listening — ask your question now.' : this.state.voiceMode ? 'Voice replies are on.' : this.state.voiceSupported ? 'Tap to speak. Replies play aloud.' : 'Tap to turn on spoken replies.'),
+      voiceLabel: this.state.speaking ? 'Stop speaking' : this.state.listening ? 'Stop listening' : 'Start voice',
+      voiceClass: this.state.speaking ? 'speaking' : this.state.listening ? 'listening' : '',
       listeningStr: this.state.listening ? 'true' : 'false',
       toggleVoice: () => this.toggleVoice(),
       scrollRef: this.scrollRef,
@@ -325,8 +384,8 @@ class Component extends DCLogic {
       onHEmail: e => this.setState({ hEmail: e.target.value }),
       onHMsg: e => this.setState({ hMsg: e.target.value }),
       sendHandoff: e => this.submitHandoff(e),
-      toggle: () => this.setState(s => ({ open: !s.open })),
-      close: () => this.setState({ open: false }),
+      toggle: () => { if (this.state.open) this.stopSpeaking(); this.setState(s => ({ open: !s.open })); },
+      close: () => { this.stopSpeaking(); this.setState({ open: false }); },
       onDraft: e => this.setState({ draft: e.target.value }),
       onWebsite: e => this.setState({ website: e.target.value }),
       submit: e => { e.preventDefault(); this.send(this.state.draft); }

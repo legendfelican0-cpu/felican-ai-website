@@ -133,11 +133,13 @@ describe('Claude Design static website export', () => {
     expect(read('public/contact/index.html')).toContain("'Private AI'");
   });
 
-  it('includes a compact interactive Private AI preview', () => {
+  it('includes a responsive Private AI screenshot carousel', () => {
     const products = read('public/products/index.html');
-    expect(products).toContain('INTERACTIVE PREVIEW');
-    expect(products).toContain('Felican Private AI');
-    expect(products).toContain('runPreview(item)');
+    expect(products).toContain('PRODUCT TOUR');
+    expect(products).toContain('/private-ai-knowledge.png');
+    expect(products).toContain('/private-ai-client-brief.png');
+    expect(products).toContain('/private-ai-training.png');
+    expect(products).toContain('nextSlide');
     expect(products).toContain('grid-template-columns:repeat(3,minmax(0,1fr))');
   });
 
@@ -146,10 +148,13 @@ describe('Claude Design static website export', () => {
     expect(assistant).toContain('Talk to Felican AI');
     expect(assistant).toContain('Voice + text');
     expect(assistant).toContain('window.SpeechRecognition || window.webkitSpeechRecognition');
+    expect(assistant).toContain('Stop speaking');
+    expect(assistant).toContain('window.speechSynthesis.cancel()');
+    expect(assistant).toContain('Voice replies are on.');
     expect(assistant).toContain("fetch('/api/chat'");
   });
 
-  it('gates every education eBook before opening the shared library', () => {
+  it('gates every education eBook before opening the selected title', () => {
     const education = read('public/education/index.html');
     for (const id of [
       '12-ways-ai-can-help-your-business',
@@ -159,6 +164,7 @@ describe('Claude Design static website export', () => {
     ]) expect(education).toContain(id);
     expect(education).toContain("fetch('/api/education-interest'");
     expect(education).toContain('window.location.assign(payload.guideUrl)');
+    expect(education).toContain('Opening the eBook you selected now.');
     expect(education).not.toContain('Open the PDF');
   });
 
@@ -166,8 +172,7 @@ describe('Claude Design static website export', () => {
     const products = read('public/products/index.html');
     const order = [
       'Private AI', 'Felican AI Assistant', 'Felican IDP', 'CrossCheck AI',
-      'Felican AI Auto Marketer', 'World of Agents', 'AI Receptionist', 'Relay',
-      'CandyShop', 'Felican AI Trading',
+      'World of Agents', 'AI Receptionist', 'Relay',
     ];
     const positions = order.map(name => products.indexOf(`name: '${name}'`));
     positions.forEach((pos, i) => expect(pos, `${order[i]} missing`).toBeGreaterThan(-1));
@@ -204,7 +209,7 @@ describe('Claude Design static website export', () => {
     const products = read('public/products/index.html');
     const contact = read('public/contact/index.html');
     // BetIQ (sports betting) and the three real-estate apps were explicitly withdrawn.
-    for (const dropped of ['BetIQ', 'CasaSuite', 'LeadConcierge AI', 'InvestorHQ']) {
+    for (const dropped of ['BetIQ', 'CasaSuite', 'LeadConcierge AI', 'InvestorHQ', 'Felican AI Auto Marketer', 'CandyShop', 'Felican AI Trading', 'BookMaker']) {
       expect(products).not.toContain(dropped);
       expect(contact).not.toContain(dropped);
     }
@@ -217,8 +222,8 @@ describe('Claude Design static website export', () => {
   it('gives every headline product a cover image that exists on disk', () => {
     const products = read('public/products/index.html');
     const covers = [...products.matchAll(/image: '(\/product-[a-z0-9-]+\.png)'/g)].map(m => m[1]);
-    // All eleven cards above the agent sections carry artwork.
-    expect(covers.length).toBe(11);
+    // All seven headline products carry artwork or use the Private AI tour captures.
+    expect(covers.length).toBe(7);
     for (const cover of covers) {
       const file = path.join(projectRoot, 'public', cover.replace(/^\//, ''));
       expect(fs.existsSync(file), `${cover} missing from public/`).toBe(true);
@@ -249,10 +254,20 @@ describe('Claude Design static website export', () => {
     expect(cover.readUInt32BE(20)).toBe(592);
   });
 
-  it('places World of Agents directly after Felican Auto', () => {
+  it('keeps World of Agents in the visible headline lineup', () => {
     const productPage = read('public/products/index.html');
-    expect(productPage.indexOf("name: 'Felican Auto'")).toBeLessThan(productPage.indexOf("name: 'World of Agents'"));
+    expect(productPage).toContain("name: 'World of Agents'");
     expect(productPage.indexOf("name: 'World of Agents'")).toBeLessThan(productPage.indexOf("name: 'Relay'"));
+  });
+
+  it('shares the verified-professionals bar across every page without covering the mobile assistant', () => {
+    const assistant = read('public/ChatAssistant.dc.html');
+    expect(assistant).toContain('class="fa-cred"');
+    expect(assistant).toContain('/badges/aws.png');
+    expect(assistant).toContain('bottom:88px');
+    for (const file of ['index.html', 'public/products/index.html', 'public/services/index.html', 'public/education/index.html', 'public/books/index.html', 'public/about/index.html', 'public/contact/index.html', 'public/booking/index.html', 'public/privacy/index.html', 'public/terms/index.html']) {
+      expect(read(file), `${file} must import the shared assistant and credential bar`).toContain('name="ChatAssistant"');
+    }
   });
 
   it('offers a real contact form alongside direct email and phone', () => {

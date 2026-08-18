@@ -19,6 +19,7 @@ export default defineConfig({
   projects: [
     { name: 'desktop', use: { viewport: { width: 1440, height: 900 } } },
     { name: 'mobile', use: { ...devices['iPhone 13'], browserName: 'chromium' } },
+    { name: 'mobile-safari', use: { ...devices['iPhone 13'], browserName: 'webkit' } },
     { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
     { name: 'webkit', use: { ...devices['Desktop Safari'] } },
   ],

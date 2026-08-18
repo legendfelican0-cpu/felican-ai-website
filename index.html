@@ -158,57 +158,6 @@
     </div>
   </section>
 
-  <!-- CREDENTIALS — slim strip permanently pinned to the bottom; opens the detail modal -->
-  <aside class="cred-bar" aria-label="Certifications">
-    <button class="cred-inner" type="button" onClick="{{ openCerts }}" aria-haspopup="dialog" aria-expanded="{{ certsOpenStr }}">
-      <span class="cred-id">
-        <span class="cred-mark" aria-hidden="true">
-          <img src="/logo-mark.png" alt="">
-        </span>
-        <span style="min-width:0">
-          <span class="cred-kicker">Verified credentials</span>
-          <span class="cred-title">Certified AI Professionals</span>
-        </span>
-      </span>
-      <span class="badge-grid">
-        <sc-for list="{{ badges }}" as="b" hint-placeholder-count="5">
-          <span class="badge-item">
-            <img data-badge-src="{{ b.src }}" alt="{{ b.alt }}">
-          </span>
-        </sc-for>
-      </span>
-    </button>
-  </aside>
-
-  <!-- CERTIFICATIONS MODAL -->
-  <sc-if value="{{ certsOpen }}" hint-placeholder-val="{{ false }}">
-    <div class="cert-scrim" onClick="{{ closeCerts }}">
-      <div class="cert-modal" role="dialog" aria-modal="true" aria-labelledby="cert-h" onClick="{{ stop }}">
-        <div class="cert-head">
-          <div>
-            <p class="cert-kicker">Verified credentials</p>
-            <h2 id="cert-h" class="cert-title">Certified AI Professionals</h2>
-          </div>
-          <button class="cert-close" type="button" onClick="{{ closeCerts }}" aria-label="Close">&#215;</button>
-        </div>
-        <p class="cert-lead">Our team holds current certifications across every major AI and cloud platform we build on. That means the people designing your system have been assessed on it, not just read about it.</p>
-        <div class="cert-grid">
-          <sc-for list="{{ certs }}" as="c" hint-placeholder-count="5">
-            <div class="cert-card">
-              <span class="cert-logo"><img class="{{ c.cls }}" data-badge-src="{{ c.src }}" alt="{{ c.alt }}"></span>
-              <h3 class="cert-name">{{ c.name }}</h3>
-              <p class="cert-body">{{ c.body }}</p>
-            </div>
-          </sc-for>
-        </div>
-        <div class="cert-foot">
-          <a class="cert-cta" href="/contact/">Talk to a certified professional <span aria-hidden="true">&#8594;</span></a>
-          <a class="cert-alt" href="/about/">More about the team</a>
-        </div>
-      </div>
-    </div>
-  </sc-if>
-
   <!-- SOUND FAMILIAR — pain points -->
   <section aria-labelledby="pain-h" style="background:#080E13;padding:clamp(72px,8vw,112px) 0">
     <div style="max-width:1280px;margin:0 auto;padding:0 24px">

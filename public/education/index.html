@@ -206,8 +206,8 @@
         <div role="status" style="padding-top:28px">
           <div aria-hidden="true" style="width:54px;height:54px;border-radius:50%;background:#2FB894;display:grid;place-items:center;font-size:28px;font-weight:800;margin-bottom:20px">&#10003;</div>
           <h3 style="margin:0 0 12px;font:800 28px Sora,sans-serif">Your eBook access is ready.</h3>
-          <p style="margin:0 0 24px;color:#405653;font-size:17px;line-height:1.6">Opening the Felican AI eBook library now. We also sent the link to the email address or phone number you entered.</p>
-          <a href="{{ guideUrl }}" style="display:flex;justify-content:space-between;align-items:center;padding:17px 20px;background:#16866C;color:#FFFFFF;font-weight:700;text-decoration:none">Open the eBook library <span aria-hidden="true">&#8594;</span></a>
+          <p style="margin:0 0 24px;color:#405653;font-size:17px;line-height:1.6">Opening the eBook you selected now. We also sent its direct link to the email address or phone number you entered.</p>
+          <a href="{{ guideUrl }}" style="display:flex;justify-content:space-between;align-items:center;padding:17px 20px;background:#16866C;color:#FFFFFF;font-weight:700;text-decoration:none">Open your eBook <span aria-hidden="true">&#8594;</span></a>
         </div>
       </sc-if>
     </section>
@@ -258,7 +258,7 @@ class Component extends DCLogic {
       if(!response.ok)throw new Error(payload.error||'We could not send the guide right now.');
       if(!payload.guideUrl)throw new Error('The guide link is temporarily unavailable.');
       this.setState({submitting:false,success:true,guideUrl:payload.guideUrl});
-      setTimeout(()=>window.location.assign(payload.guideUrl),350);
+      setTimeout(()=>window.location.assign(payload.guideUrl),700);
     }catch(error){this.setState({submitting:false,error:error.message||'We could not send the guide right now.'});}
   }
   renderVals(){
@@ -270,7 +270,7 @@ class Component extends DCLogic {
       closeDialog:()=>this.closeDialog(),
       submitGuide:()=>this.submitGuide(),
       submitting:this.state.submitting,
-      submitLabel:this.state.submitting?'Opening the library…':'Get eBook access',
+      submitLabel:this.state.submitting?'Opening your eBook…':'Get eBook access',
       formError:this.state.error,
       errorDisplay:this.state.error?'block':'none',
       success:this.state.success,

@@ -8,6 +8,7 @@ const routes = [
   ['/', 'AI solutions for'],
   ['/products/', 'Products built for real work.'],
   ['/services/', 'Eleven ways we put AI to work inside a business'],
+  ['/education/', 'AI learning that meets people where they are.'],
   ['/books/', 'Four books by Lee Felican Jr.'],
   ['/about/', 'A team of certified AI professionals who build AI for a living'],
   ['/contact/', "Let's talk about your business"],
@@ -29,6 +30,7 @@ test.describe('Claude Design website export', () => {
 
       await expect(page.locator('h1').first()).toContainText(headline);
       await expect(page.locator('body')).not.toBeEmpty();
+      await expect(page.locator('.fa-cred')).toBeVisible();
       // The runtime tags unresolved interpolations with .sc-missing. Waiting for
       // zero of them means the client render finished, so the console check and
       // the axe scan below see the real page rather than the placeholder skeleton.
@@ -50,8 +52,9 @@ test.describe('Claude Design website export', () => {
 
   test('navigation, products, books, and assistant are functional', async ({ page }, testInfo) => {
     await page.goto('/', { waitUntil: 'load' });
+    const isMobile = testInfo.project.name.startsWith('mobile');
 
-    if (testInfo.project.name === 'mobile') {
+    if (isMobile) {
       await page.getByRole('button', { name: /toggle navigation menu/i }).click();
       await page.getByRole('navigation', { name: 'Mobile' }).getByRole('link', { name: 'Products', exact: true }).click();
     } else {
@@ -59,9 +62,9 @@ test.describe('Claude Design website export', () => {
     }
     await expect(page).toHaveURL(/\/products\/?$/);
 
-    // Eleven headline products, led by the flagship, then the agent bench.
+    // Seven headline products, led by the flagship, then the agent bench.
     const productCards = page.locator('.product-card');
-    await expect(productCards).toHaveCount(11);
+    await expect(productCards).toHaveCount(7);
     await expect(productCards.first()).toHaveAttribute('id', 'private-ai');
     await expect(page.locator('.agent-card')).toHaveCount(6);
     await expect(page.locator('.rest-card')).toHaveCount(5);
@@ -71,9 +74,7 @@ test.describe('Claude Design website export', () => {
     for (const href of await outbound.evaluateAll(links => links.map(a => a.getAttribute('href')))) {
       expect(href).not.toMatch(/auto\.felican|woa\.felican|relay\.felican|book-studio/);
     }
-    await expect(
-      productCards.filter({ hasText: 'BookMaker' }).getByRole('link', { name: /Ask about BookMaker/i }).first(),
-    ).toHaveAttribute('href', '/contact/?product=BookMaker');
+    await expect(productCards.filter({ hasText: 'BookMaker' })).toHaveCount(0);
 
     await page.goto('/books/', { waitUntil: 'load' });
     const covers = page.locator('img[alt$=" cover"]');
@@ -93,8 +94,11 @@ test.describe('Claude Design website export', () => {
     await expect(assistantButton).toBeVisible();
     const launcherBox = await assistantButton.boundingBox();
     const viewport = page.viewportSize();
-    expect(Math.abs(launcherBox.width - launcherBox.height)).toBeLessThanOrEqual(2);
-    expect(viewport.width - launcherBox.x - launcherBox.width).toBeLessThanOrEqual(testInfo.project.name === 'mobile' ? 16 : 30);
+    expect(launcherBox.width).toBeGreaterThan(launcherBox.height * 2);
+    expect(viewport.width - launcherBox.x - launcherBox.width).toBeLessThanOrEqual(isMobile ? 16 : 30);
+    const credentialBox = await page.locator('.fa-cred').boundingBox();
+    expect(launcherBox.y).toBeGreaterThanOrEqual(credentialBox.y - launcherBox.height - 22);
+    expect(launcherBox.y + launcherBox.height).toBeLessThanOrEqual(credentialBox.y);
     await assistantButton.click();
     await expect(assistantButton).toHaveAttribute('aria-expanded', 'true');
     const assistantPanel = page.locator('.fa-panel');
@@ -106,6 +110,36 @@ test.describe('Claude Design website export', () => {
     await expect(page.getByRole('log')).toContainText(
       'Felican AI builds products, custom systems, automations, integrations, and training for businesses.',
     );
+  });
+
+  test('Private AI carousel works and voice can be interrupted', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.__speechTest = { spoken: [], cancels: 0 };
+      window.SpeechSynthesisUtterance = class {
+        constructor(text) { this.text = text; this.rate = 1; this.pitch = 1; this.lang = ''; }
+      };
+      Object.defineProperty(window, 'speechSynthesis', { configurable: true, value: {
+        cancel() { window.__speechTest.cancels += 1; },
+        speak(utterance) { window.__speechTest.spoken.push(utterance.text); setTimeout(() => utterance.onstart?.(), 0); },
+      } });
+      window.SpeechRecognition = class {
+        start() { this.onstart?.(); }
+        stop() { this.onend?.(); }
+        abort() { this.onend?.(); }
+      };
+    });
+
+    await page.goto('/products/', { waitUntil: 'load' });
+    await expect(page.locator('.pc-slide:visible img')).toHaveAttribute('src', '/private-ai-knowledge.png');
+    await page.getByRole('button', { name: 'Next Private AI feature' }).click();
+    await expect(page.locator('.pc-slide:visible img')).toHaveAttribute('src', '/private-ai-client-brief.png');
+
+    await page.locator('[data-assistant-launcher]').click();
+    await page.getByRole('button', { name: 'Start voice' }).click();
+    await expect(page.getByRole('button', { name: 'Stop speaking' })).toBeVisible();
+    await page.getByRole('button', { name: 'Stop speaking' }).click();
+    expect(await page.evaluate(() => window.__speechTest.spoken)).toContain('Voice replies are on.');
+    expect(await page.evaluate(() => window.__speechTest.cancels)).toBeGreaterThan(0);
   });
 
   test('contact page offers a working form alongside email and phone', async ({ page }) => {

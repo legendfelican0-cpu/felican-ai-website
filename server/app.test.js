@@ -113,31 +113,31 @@ describe('Felican AI contact endpoint', () => {
 });
 
 describe('Felican AI education eBook access', () => {
-  it('accepts every eBook id and always returns the shared library', async () => {
+  it('accepts every eBook id and returns that eBook direct link', async () => {
     const delivered = [];
     const base = await start(undefined, { deliverLead: async lead => delivered.push(lead) });
-    const ids = [
-      '12-ways-ai-can-help-your-business',
-      'ai-starter-pack-for-kids-teens-and-adults',
-      'ai-for-entrepreneurs',
-      'no-more-excuses-12-ai-side-hustles',
+    const guides = [
+      ['12-ways-ai-can-help-your-business', 'https://felican.ai/ebooks/12-ways-ai-can-help-your-business'],
+      ['ai-starter-pack-for-kids-teens-and-adults', 'https://felican.ai/ebooks/ai-starter-pack-for-kids-teens-and-adults'],
+      ['ai-for-entrepreneurs', 'https://felican.ai/ebooks/ai-for-entrepreneurs'],
+      ['no-more-excuses-12-ai-side-hustles', 'https://felican.ai/ebooks/no-more-excuses-12-ai-side-hustles'],
     ];
-    for (const [index, guideId] of ids.entries()) {
+    for (const [index, [guideId, guideUrl]] of guides.entries()) {
       const response = await fetch(`${base}/api/education-interest`, {
         method: 'POST',
         headers: { ...browserHeaders, 'X-Forwarded-For': `203.0.113.${20 + index}` },
         body: JSON.stringify({ guideId, email: 'reader@example.com', phone: '', consent: true, website: '' }),
       });
       expect(response.status).toBe(200);
-      await expect(response.json()).resolves.toEqual({ ok: true, guideUrl: 'https://felican.ai/ebooks/' });
+      await expect(response.json()).resolves.toEqual({ ok: true, guideUrl });
       const legacy = await fetch(`${base}/ebooks/${guideId}`, { redirect: 'manual' });
       expect(legacy.status).toBe(302);
-      expect(legacy.headers.get('location')).toBe('https://felican.ai/ebooks/');
+      expect(legacy.headers.get('location')).toBe(guideUrl);
     }
     expect(delivered).toHaveLength(4);
   });
 
-  it('sends the same library link by email and the Jarvis text relay', async () => {
+  it('sends the selected eBook link by email and the Jarvis text relay', async () => {
     const requests = [];
     const fakeFetch = async (url, options) => {
       requests.push({ url: String(url), ...options, json: JSON.parse(options.body) });
@@ -146,6 +146,7 @@ describe('Felican AI education eBook access', () => {
     await deliverEducationLead({
       guideId: 'ai-for-entrepreneurs',
       guideTitle: 'AI for Entrepreneurs',
+      guideUrl: 'https://felican.ai/ebooks/ai-for-entrepreneurs',
       email: 'reader@example.com',
       phone: '(346) 555-0199',
       phoneE164: '+13465550199',
@@ -160,10 +161,10 @@ describe('Felican AI education eBook access', () => {
     }, fakeFetch);
     expect(requests).toHaveLength(3);
     expect(requests[1].json.to).toEqual(['reader@example.com']);
-    expect(requests[1].json.text).toContain('https://felican.ai/ebooks/');
+    expect(requests[1].json.text).toContain('https://felican.ai/ebooks/ai-for-entrepreneurs');
     expect(requests[2].url).toBe('https://imessage.felican.ai/send');
     expect(requests[2].headers.Authorization).toBe('Bearer relay-test');
-    expect(requests[2].json.text).toContain('https://felican.ai/ebooks/');
+    expect(requests[2].json.text).toContain('https://felican.ai/ebooks/ai-for-entrepreneurs');
   });
 
   it('rejects invalid or non-consensual eBook requests and ignores the honeypot', async () => {
