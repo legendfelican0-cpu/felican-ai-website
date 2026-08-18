@@ -55,9 +55,9 @@
 .fa-launch-status { position:absolute;z-index:2;right:1px;bottom:3px;width:14px;height:14px;border:3px solid #0A1115;border-radius:50%;background:#55E6A5;animation:fa-pulse 2.2s ease-in-out infinite }
 .fa-launch-copy { display:block;min-width:124px }.fa-launch-copy strong { display:block;font:700 14px Sora,sans-serif;color:#FFFFFF }.fa-launch-copy small { display:block;margin-top:4px;color:#8FE0C8;font-size:12px;letter-spacing:.02em }
 .fa-cred { position:fixed;z-index:950;left:0;right:0;bottom:0;min-height:76px;background:linear-gradient(112deg,#D9A944 0%,#F2CE7B 52%,#C89435 100%);box-shadow:0 -8px 30px rgba(0,0,0,.34);font-family:Inter,system-ui,sans-serif;color:#10161B }
-.fa-cred-inner { width:min(1280px,100%);min-height:76px;margin:0 auto;padding:10px 24px;display:grid;grid-template-columns:minmax(250px,1fr) auto;align-items:center;gap:22px;color:inherit;text-decoration:none }
+.fa-cred-inner { width:min(1280px,100%);min-height:76px;margin:0 auto;padding:10px 24px;display:grid;grid-template-columns:minmax(250px,1fr) minmax(420px,1fr);align-items:center;gap:22px;color:inherit;text-decoration:none }
 .fa-cred-copy { display:flex;align-items:center;gap:11px;min-width:0 }.fa-cred-copy > span:first-child { width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:10px;background:#0C1419 }.fa-cred-copy img { width:25px;height:25px;object-fit:contain }.fa-cred-copy small { display:block;font-size:10px;font-weight:800;line-height:1;letter-spacing:.18em;text-transform:uppercase;color:#5C4718 }.fa-cred-copy strong { display:block;margin-top:4px;font:800 clamp(13px,1.5vw,17px)/1.05 Sora,sans-serif;letter-spacing:-.01em;text-transform:uppercase }
-.fa-cred-logos { display:grid;grid-template-columns:repeat(5,72px);align-items:center;justify-content:end;gap:clamp(9px,1.2vw,16px);min-width:0 }.fa-cred-logo { width:72px;height:40px;display:grid;place-items:center;overflow:hidden }.fa-cred-logo img { display:block;max-width:64px;max-height:32px;width:auto;height:auto;object-fit:contain }.fa-cred-logo.aws img { max-width:58px;max-height:30px }.fa-cred-logo.azure img,.fa-cred-logo.openai img { max-width:30px;max-height:30px }
+.fa-cred-logos { display:grid;grid-template-columns:repeat(5,72px);align-items:center;justify-content:center;justify-items:center;gap:clamp(9px,1.2vw,16px);min-width:0 }.fa-cred-logo { width:72px;height:44px;display:grid;place-items:center;overflow:hidden }.fa-cred-logo img { display:block;max-width:64px;max-height:32px;width:auto;height:auto;object-fit:contain }.fa-cred-logo.aws img { max-width:58px;max-height:30px }.fa-cred-logo.azure img { max-width:30px;max-height:30px }.fa-cred-logo.openai img { max-width:42px;max-height:42px }
 @media (max-width:640px) {
   .fa-shell { right:10px;bottom:88px;max-width:calc(100vw - 20px) }
   .fa-panel { width:calc(100vw - 28px);height:min(600px,calc(100vh - 104px));border-radius:19px }
@@ -68,15 +68,15 @@
   .fa-head { padding:18px }
   .fa-messages { padding:16px }
   .fa-cred { min-height:78px }
-  .fa-cred-inner { min-height:78px;padding:8px 10px;grid-template-columns:minmax(118px,.8fr) minmax(0,1.2fr);gap:8px }
-  .fa-cred-copy { gap:7px }.fa-cred-copy > span:first-child { width:30px;height:30px;flex-basis:30px;border-radius:8px }.fa-cred-copy img { width:19px;height:19px }.fa-cred-copy small { display:none }.fa-cred-copy strong { margin:0;font-size:10.5px;line-height:1.08;letter-spacing:.01em }
-  .fa-cred-logos { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;justify-items:center }
-  .fa-cred-logo { width:100%;height:32px;max-width:42px;min-width:0;overflow:hidden }
-  .fa-cred-logo img { max-width:36px;max-height:25px;width:auto;height:auto }
-  .fa-cred-logo.aws img { max-width:36px;max-height:23px }.fa-cred-logo.azure img,.fa-cred-logo.openai img { max-width:25px;max-height:25px }
+  .fa-cred-inner { min-height:78px;padding:8px 12px;display:flex;justify-content:center;gap:0 }
+  .fa-cred-copy { display:none }
+  .fa-cred-logos { width:min(340px,100%);display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;justify-items:center }
+  .fa-cred-logo { width:100%;height:44px;max-width:56px;min-width:0;overflow:hidden }
+  .fa-cred-logo img { max-width:46px;max-height:30px;width:auto;height:auto }
+  .fa-cred-logo.aws img { max-width:46px;max-height:28px }.fa-cred-logo.azure img { max-width:30px;max-height:30px }.fa-cred-logo.openai img { max-width:40px;max-height:40px }
   .fa-voice { padding:13px 14px;gap:10px }.fa-voice-copy strong { font-size:13px }.fa-voice-copy span { font-size:11px }.fa-voice-btn { padding:10px 13px }
 }
-@media (max-width:380px) { .fa-cred-inner { grid-template-columns:108px minmax(0,1fr) }.fa-cred-copy > span:first-child { display:none }.fa-cred-copy strong { font-size:10px }.fa-shell { bottom:88px }.fa-launch-copy { min-width:96px } }
+@media (max-width:380px) { .fa-shell { bottom:88px }.fa-launch-copy { min-width:96px } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -205,60 +205,75 @@ class Component extends DCLogic {
   componentDidMount() {
     const preset = window.__FELICAN_VAPI_CONFIG__;
     if (preset && preset.publicKey && preset.assistantId) {
-      this._voiceConfig = preset;
-      this.setState({ voiceSupported: true });
+      this.prepareVoice(preset);
       return;
     }
     fetch('/api/voice-config', { headers: { Accept: 'application/json' } })
       .then(response => response.ok ? response.json() : Promise.reject(new Error('voice_unavailable')))
       .then(config => {
         if (!config.publicKey || !config.assistantId) throw new Error('voice_unavailable');
-        this._voiceConfig = config;
-        this.setState({ voiceSupported: true, voiceError: '' });
+        this.prepareVoice(config);
       })
       .catch(() => this.setState({ voiceSupported: false }));
   }
   componentWillUnmount() {
     this.stopVoice();
   }
+  prepareVoice(config) {
+    this._voiceConfig = config;
+    // Load the browser voice client before the visitor taps Start. Mobile
+    // Safari and Chrome require the microphone request to stay inside that
+    // direct tap instead of waiting on a network import first.
+    this.ensureVapi()
+      .then(() => this.setState({ voiceSupported: true, voiceError: '' }))
+      .catch(() => this.setState({ voiceSupported: false, voiceError: 'Voice could not load. You can still type below.' }));
+  }
   async ensureVapi() {
     if (this._vapi) return this._vapi;
-    const Vapi = window.__FELICAN_VAPI_CLASS__ || (await import('https://esm.sh/@vapi-ai/web@2')).default;
-    const vapi = new Vapi(this._voiceConfig.publicKey);
-    vapi.on('call-start', () => this.setState({ voiceActive: true, voiceConnecting: false, speaking: false, voiceError: '' }));
-    vapi.on('call-end', () => this.setState({ voiceActive: false, voiceConnecting: false, speaking: false }));
-    vapi.on('speech-start', () => this.setState({ voiceActive: true, speaking: true, voiceError: '' }));
-    // A reply ending is not the end of voice mode. The call stays live and
-    // immediately returns to listening until the visitor presses Stop voice.
-    vapi.on('speech-end', () => this.setState({ voiceActive: true, speaking: false }));
-    vapi.on('error', error => this.setState({
-      voiceConnecting: false,
-      voiceError: error && error.message ? error.message : 'Voice had trouble connecting. You can still type below.'
-    }));
-    vapi.on('message', message => {
-      if (message.type !== 'transcript' || message.transcriptType !== 'final') return;
-      const text = String(message.transcript || '').trim();
-      if (!text) return;
-      const role = message.role === 'user' ? 'user' : 'assistant';
-      this.setState(state => {
-        const last = state.messages[state.messages.length - 1];
-        if (last && last.role === role && last.text === text) return {};
-        return { messages: [...state.messages, { role, text }] };
+    if (this._vapiPromise) return this._vapiPromise;
+    this._vapiPromise = (async () => {
+      const Vapi = window.__FELICAN_VAPI_CLASS__ || (await import('https://esm.sh/@vapi-ai/web@2')).default;
+      const vapi = new Vapi(this._voiceConfig.publicKey);
+      vapi.on('call-start', () => this.setState({ voiceActive: true, voiceConnecting: false, speaking: false, voiceError: '' }));
+      vapi.on('call-end', () => this.setState({ voiceActive: false, voiceConnecting: false, speaking: false }));
+      vapi.on('speech-start', () => this.setState({ voiceActive: true, speaking: true, voiceError: '' }));
+      // A reply ending is not the end of voice mode. The call stays live and
+      // immediately returns to listening until the visitor presses Stop voice.
+      vapi.on('speech-end', () => this.setState({ voiceActive: true, speaking: false }));
+      vapi.on('error', error => this.setState({
+        voiceActive: false, voiceConnecting: false, speaking: false,
+        voiceError: error && error.message ? error.message : 'Voice had trouble connecting. You can still type below.'
+      }));
+      vapi.on('message', message => {
+        if (message.type !== 'transcript' || message.transcriptType !== 'final') return;
+        const text = String(message.transcript || '').trim();
+        if (!text) return;
+        const role = message.role === 'user' ? 'user' : 'assistant';
+        this.setState(state => {
+          const last = state.messages[state.messages.length - 1];
+          if (last && last.role === role && last.text === text) return {};
+          return { messages: [...state.messages, { role, text }] };
+        });
       });
+      this._vapi = vapi;
+      return vapi;
+    })().catch(error => {
+      this._vapiPromise = null;
+      throw error;
     });
-    this._vapi = vapi;
-    return vapi;
+    return this._vapiPromise;
   }
   async startVoice() {
-    if (!this.state.voiceSupported || !this._voiceConfig) {
-      this.setState({ voiceError: 'Voice is temporarily unavailable. You can still type below.' });
+    if (!this.state.voiceSupported || !this._voiceConfig || !this._vapi) {
+      this.setState({ voiceError: 'Voice is still loading. Please tap Start voice again in a moment.' });
       return;
     }
     if (this.state.voiceConnecting || this.state.voiceActive) return;
     this.setState({ voiceConnecting: true, voiceError: '' });
     try {
-      const vapi = await this.ensureVapi();
-      await vapi.start(this._voiceConfig.assistantId);
+      // No import or other network work happens before this call, preserving
+      // the browser's microphone permission gesture on mobile.
+      await this._vapi.start(this._voiceConfig.assistantId);
     } catch (error) {
       this.setState({ voiceConnecting: false, voiceActive: false, speaking: false, voiceError: error && error.message ? error.message : 'Voice could not start. Please try again.' });
     }
@@ -357,7 +372,7 @@ class Component extends DCLogic {
       website: this.state.website,
       showChips: this.state.messages.length <= 1 && !this.state.handoff,
       composerOpen: !this.state.handoff,
-      voiceStatus: this.state.voiceError || (this.state.voiceConnecting ? 'Connecting your microphone…' : this.state.speaking ? 'Speaking — talk anytime to interrupt.' : this.state.voiceActive ? 'Listening — keep talking naturally.' : this.state.voiceSupported ? 'Start once, then keep talking until you stop.' : 'Voice is loading. Text chat is ready now.'),
+      voiceStatus: this.state.voiceError || (this.state.voiceConnecting ? 'Connecting your microphone…' : this.state.speaking ? 'Speaking — talk anytime to interrupt.' : this.state.voiceActive ? 'Listening — keep talking naturally.' : this.state.voiceSupported ? 'Tap Start voice, allow microphone access, then talk until you press Stop.' : 'Voice is loading. Text chat is ready now.'),
       voiceLabel: this.state.voiceActive || this.state.voiceConnecting ? 'Stop voice' : 'Start voice',
       voiceClass: this.state.speaking ? 'speaking' : this.state.voiceActive || this.state.voiceConnecting ? 'listening' : '',
       listeningStr: this.state.voiceActive || this.state.voiceConnecting ? 'true' : 'false',

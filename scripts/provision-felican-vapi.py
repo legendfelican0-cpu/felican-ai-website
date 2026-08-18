@@ -82,11 +82,12 @@ def api(method: str, route: str, key: str, body: dict | None = None) -> dict | l
 def assistant_payload(public_url: str, webhook_secret: str) -> dict:
     return {
         "name": ASSISTANT_NAME,
-        "firstMessage": (
-            "Hi, this is Felican AI. Ask me about our products, services, "
-            "training, education, or books. How can I help?"
-        ),
+        # The visitor speaks first. Explicit null removes the old greeting when
+        # this payload PATCHes an existing assistant.
+        "firstMessage": None,
+        "firstMessageMode": "assistant-waits-for-user",
         "firstMessageInterruptionsEnabled": True,
+        "backgroundDenoisingEnabled": True,
         "model": {
             "provider": "custom-llm",
             "url": f"{public_url.rstrip('/')}/v1",
@@ -96,7 +97,8 @@ def assistant_payload(public_url: str, webhook_secret: str) -> dict:
                 "role": "system",
                 "content": (
                     "You are the Felican AI website voice assistant. The Felican "
-                    "gateway supplies the current business knowledge on every turn."
+                    "gateway supplies the current business knowledge on every turn. "
+                    "Felican is pronounced FELL-ih-can. Never call the company Falcon."
                 ),
             }],
         },
@@ -109,6 +111,16 @@ def assistant_payload(public_url: str, webhook_secret: str) -> dict:
             "style": 0.35,
             "useSpeakerBoost": True,
             "speed": 1.0,
+            "chunkPlan": {
+                "formatPlan": {
+                    "replacements": [{
+                        "type": "exact",
+                        "key": "Felican",
+                        "value": "Fell-ih-can",
+                        "replaceAllEnabled": True,
+                    }],
+                },
+            },
         },
         "transcriber": {"provider": "deepgram", "model": "nova-3", "language": "en"},
         "startSpeakingPlan": {"waitSeconds": 0.4},

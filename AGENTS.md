@@ -8,5 +8,6 @@
 
 ## Recent changes
 
+- 2026-08-18: Voice now preloads before the microphone tap, waits for the visitor to speak, keeps listening until Stop, and applies the correct Felican pronunciation. The mobile credential marks are centered with a larger OpenAI mark. Specialist product covers now use screenshots captured from their real app repositories.
 - 2026-08-18: Added the one-play homepage handshake background in WebM and MP4, with the existing handshake image as the poster/fallback. It stays silent, does not loop, and holds the final handshake frame.
 - 2026-08-18: Added continuous Vapi browser voice, aligned credential logos, product preview covers, and the interactive Start Here eBook entry.

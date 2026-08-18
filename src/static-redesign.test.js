@@ -155,6 +155,15 @@ describe('Claude Design static website export', () => {
     expect(assistant).toContain("fetch('/api/chat'");
   });
 
+  it('waits for the visitor to speak and pronounces Felican correctly', () => {
+    const provisioner = read('scripts/provision-felican-vapi.py');
+    expect(provisioner).toContain('"firstMessage": None');
+    expect(provisioner).toContain('"firstMessageMode": "assistant-waits-for-user"');
+    expect(provisioner).toContain('"backgroundDenoisingEnabled": True');
+    expect(provisioner).toContain('"key": "Felican"');
+    expect(provisioner).toContain('"value": "Fell-ih-can"');
+  });
+
   it('gates every education eBook before opening the selected title', () => {
     const education = read('public/education/index.html');
     for (const id of [
@@ -247,6 +256,15 @@ describe('Claude Design static website export', () => {
     expect((products.match(/coverScore:/g) || []).length).toBe(11);
   });
 
+  it('keeps a repeatable capture map for the real specialist app interfaces', () => {
+    const capture = read('scripts/capture-product-screenshots.mjs');
+    for (const product of ['quorum', 'floordesk', 'quantdesk', 'threadpilot', 'adpulse', 'dendrite', 'ora', 'mira', 'framefire', 'lumina']) {
+      expect(capture).toContain(`product-${product}.png`);
+    }
+    expect(capture).toContain("page.screenshot({ path: output, type: 'png' })");
+    expect(capture).toContain("redirected to authentication instead of rendering its app preview");
+  });
+
   it('never mentions the internal ResyDoc name', () => {
     const everything = [
       'index.html', 'public/products/index.html', 'public/contact/index.html',
@@ -255,14 +273,11 @@ describe('Claude Design static website export', () => {
     expect(everything).not.toMatch(/resydoc/i);
   });
 
-  it('uses a purpose-built assistant cover, not a screenshot of any website', () => {
+  it('uses a real screenshot of the embeddable assistant interface', () => {
     const cover = fs.readFileSync(path.join(projectRoot, 'public/product-ai-assistant.png'));
     expect(cover.slice(1, 4).toString()).toBe('PNG');
-    // Two covers have been retired here: a grab of the old blue homepage carrying a
-    // dead phone number, then a mock of the widget UI that still read as a website.
-    // The current one is illustrated artwork matching the rest of the lineup.
-    expect(cover.readUInt32BE(16)).toBe(947);
-    expect(cover.readUInt32BE(20)).toBe(592);
+    expect(cover.readUInt32BE(16)).toBeGreaterThanOrEqual(400);
+    expect(cover.readUInt32BE(20)).toBeGreaterThanOrEqual(600);
   });
 
   it('keeps World of Agents in the visible headline lineup', () => {

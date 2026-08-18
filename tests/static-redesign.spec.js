@@ -31,17 +31,38 @@ test.describe('Claude Design website export', () => {
       await expect(page.locator('h1').first()).toContainText(headline);
       await expect(page.locator('body')).not.toBeEmpty();
       await expect(page.locator('.fa-cred')).toBeVisible();
-      const credentialLogosFit = await page.locator('.fa-cred-logo').evaluateAll(items => items.every(item => {
+      // The runtime tags unresolved imports/interpolations with .sc-missing.
+      // Wait before measuring imported assistant styles or Safari may briefly
+      // report the badge images at their intrinsic document dimensions.
+      await expect(page.locator('.sc-missing')).toHaveCount(0);
+      await expect.poll(() => page.locator('.fa-cred-logo img').evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
+      await expect.poll(() => page.locator('.fa-cred-logo').first().evaluate(item => {
+        const box = item.getBoundingClientRect();
+        return box.width <= 72 && box.height <= 44;
+      })).toBe(true);
+      const credentialLogoLayout = await page.locator('.fa-cred-logo').evaluateAll(items => items.map(item => {
         const box = item.getBoundingClientRect();
         const image = item.querySelector('img').getBoundingClientRect();
-        return image.left >= box.left - 0.5 && image.right <= box.right + 0.5
-          && image.top >= box.top - 0.5 && image.bottom <= box.bottom + 0.5;
+        return {
+          alt: item.querySelector('img').alt,
+          box: { left: box.left, right: box.right, top: box.top, bottom: box.bottom },
+          image: { left: image.left, right: image.right, top: image.top, bottom: image.bottom },
+          fits: image.left >= box.left - 0.5 && image.right <= box.right + 0.5
+            && image.top >= box.top - 0.5 && image.bottom <= box.bottom + 0.5,
+        };
       }));
-      expect(credentialLogosFit).toBe(true);
-      // The runtime tags unresolved interpolations with .sc-missing. Waiting for
-      // zero of them means the client render finished, so the console check and
-      // the axe scan below see the real page rather than the placeholder skeleton.
-      await expect(page.locator('.sc-missing')).toHaveCount(0);
+      expect(credentialLogoLayout.filter(item => !item.fits), JSON.stringify(credentialLogoLayout, null, 2)).toEqual([]);
+      const logoLayout = await page.locator('.fa-cred-logos').evaluate(element => {
+        const box = element.getBoundingClientRect();
+        const openai = element.querySelector('.openai img').getBoundingClientRect();
+        return {
+          centerDelta: Math.abs((box.left + box.width / 2) - window.innerWidth / 2),
+          openaiWidth: openai.width,
+          openaiHeight: openai.height,
+        };
+      });
+      if (page.viewportSize().width <= 640) expect(logoLayout.centerDelta).toBeLessThanOrEqual(2);
+      expect(Math.max(logoLayout.openaiWidth, logoLayout.openaiHeight)).toBeGreaterThanOrEqual(34);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
         await page.evaluate(() => document.documentElement.clientWidth),
       );
@@ -156,17 +177,15 @@ test.describe('Claude Design website export', () => {
 
   test('Private AI carousel works and voice stays live until Stop voice', async ({ page }) => {
     await page.addInitScript(() => {
-      window.__vapiTest = { starts: 0, stops: 0, assistantId: '' };
+      window.__vapiTest = { constructors: 0, starts: 0, stops: 0, assistantId: '' };
       window.__FELICAN_VAPI_CONFIG__ = { publicKey: 'public-test', assistantId: 'assistant-test' };
       window.__FELICAN_VAPI_CLASS__ = class {
-        constructor() { this.handlers = {}; }
+        constructor() { window.__vapiTest.constructors += 1; this.handlers = {}; window.__vapiTest.instance = this; }
         on(name, handler) { this.handlers[name] = handler; }
         async start(assistantId) {
           window.__vapiTest.starts += 1;
           window.__vapiTest.assistantId = assistantId;
           this.handlers['call-start']?.();
-          this.handlers['speech-start']?.();
-          this.handlers['speech-end']?.();
         }
         stop() {
           window.__vapiTest.stops += 1;
@@ -176,6 +195,7 @@ test.describe('Claude Design website export', () => {
     });
 
     await page.goto('/products/', { waitUntil: 'load' });
+    await expect.poll(() => page.evaluate(() => window.__vapiTest.constructors)).toBe(1);
     await expect(page.locator('.pc-slide:visible img')).toHaveAttribute('src', '/private-ai-knowledge.png');
     await page.getByRole('button', { name: 'Next Private AI feature' }).click();
     await expect(page.locator('.pc-slide:visible img')).toHaveAttribute('src', '/private-ai-client-brief.png');
@@ -183,12 +203,23 @@ test.describe('Claude Design website export', () => {
     await page.locator('[data-assistant-launcher]').click();
     await page.getByRole('button', { name: 'Start voice' }).click();
     await expect(page.getByRole('button', { name: 'Stop voice' })).toBeVisible();
+    await page.evaluate(() => window.__vapiTest.instance.handlers['speech-start']());
+    await expect(page.getByText('Speaking — talk anytime to interrupt.')).toBeVisible();
+    // Stop must remain usable while audio is playing so a reply can be cut off.
+    await page.getByRole('button', { name: 'Stop voice' }).click();
+    expect(await page.evaluate(() => window.__vapiTest.stops)).toBe(1);
+
+    await page.getByRole('button', { name: 'Start voice' }).click();
+    await page.evaluate(() => {
+      window.__vapiTest.instance.handlers['speech-start']();
+      window.__vapiTest.instance.handlers['speech-end']();
+    });
     // speech-end must return to listening, not end the ongoing conversation.
     await expect(page.getByText('Listening — keep talking naturally.')).toBeVisible();
-    expect(await page.evaluate(() => window.__vapiTest)).toMatchObject({ starts: 1, stops: 0, assistantId: 'assistant-test' });
+    expect(await page.evaluate(() => window.__vapiTest)).toMatchObject({ constructors: 1, starts: 2, stops: 1, assistantId: 'assistant-test' });
     await page.getByRole('button', { name: 'Stop voice' }).click();
     await expect(page.getByRole('button', { name: 'Start voice' })).toBeVisible();
-    expect(await page.evaluate(() => window.__vapiTest.stops)).toBe(1);
+    expect(await page.evaluate(() => window.__vapiTest.stops)).toBe(2);
   });
 
   test('contact page offers a working form alongside email and phone', async ({ page }) => {
