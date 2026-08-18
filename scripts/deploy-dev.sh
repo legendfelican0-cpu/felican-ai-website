@@ -30,10 +30,11 @@ trap on_error ERR
 [[ -f "${PROJECT_ROOT}/dist/client/index.html" ]] || fail "dist/client is missing; run npm run build first"
 [[ -f "${PROJECT_ROOT}/deploy/Dockerfile.dev" ]] || fail "deploy/Dockerfile.dev is missing"
 [[ -f "${PROJECT_ROOT}/deploy/nginx.dev.conf" ]] || fail "deploy/nginx.dev.conf is missing"
+[[ -f "${PROJECT_ROOT}/scripts/provision-felican-vapi.py" ]] || fail "Vapi provisioner is missing"
 
 log "creating immutable DEV release ${RELEASE_ID}"
 ssh -o BatchMode=yes -o ConnectTimeout=15 "${DEV_HOST}" \
-  "sudo -n install -d -m 0755 '${RELEASE_DIR}/dist/client' '${RELEASE_DIR}/deploy' '${RELEASE_DIR}/server'"
+  "sudo -n install -d -m 0755 '${RELEASE_DIR}/dist/client' '${RELEASE_DIR}/deploy' '${RELEASE_DIR}/server' '${RELEASE_DIR}/scripts'"
 
 rsync -az --rsync-path="sudo -n rsync" \
   -e "ssh -o BatchMode=yes -o ConnectTimeout=15" \
@@ -47,6 +48,10 @@ rsync -az --rsync-path="sudo -n rsync" \
 rsync -az --rsync-path="sudo -n rsync" \
   -e "ssh -o BatchMode=yes -o ConnectTimeout=15" \
   "${PROJECT_ROOT}/server/" "${DEV_HOST}:${RELEASE_DIR}/server/"
+
+rsync -az --rsync-path="sudo -n rsync" \
+  -e "ssh -o BatchMode=yes -o ConnectTimeout=15" \
+  "${PROJECT_ROOT}/scripts/provision-felican-vapi.py" "${DEV_HOST}:${RELEASE_DIR}/scripts/"
 
 log "building ${IMAGE} and replacing only the DEV container"
 ssh -o BatchMode=yes -o ConnectTimeout=15 "${DEV_HOST}" \
@@ -100,6 +105,14 @@ if ! grep -Eq '^ANTHROPIC_API_KEY=.+' "${ai_env_file}" && \
   echo "Felican AI provider configuration is incomplete" >&2
   false
 fi
+
+# Upsert the browser voice assistant before replacing the running container.
+# If provisioning fails, DEV remains untouched because the old container has
+# not been stopped yet.
+python3 "${release_dir}/scripts/provision-felican-vapi.py" \
+  --private-env /etc/felican/cops-voice.env \
+  --site-env "${ai_env_file}" \
+  --public-url https://felican.dev
 
 if docker inspect "${app_name}" >/dev/null 2>&1; then
   docker stop "${app_name}"

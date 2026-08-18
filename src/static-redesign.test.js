@@ -143,14 +143,15 @@ describe('Claude Design static website export', () => {
     expect(products).toContain('grid-template-columns:repeat(3,minmax(0,1fr))');
   });
 
-  it('offers text and browser voice from the Felican AI assistant', () => {
+  it('offers text and continuous COPS-style Vapi voice from the Felican AI assistant', () => {
     const assistant = read('public/ChatAssistant.dc.html');
     expect(assistant).toContain('Talk to Felican AI');
     expect(assistant).toContain('Voice + text');
-    expect(assistant).toContain('window.SpeechRecognition || window.webkitSpeechRecognition');
-    expect(assistant).toContain('Stop speaking');
-    expect(assistant).toContain('window.speechSynthesis.cancel()');
-    expect(assistant).toContain('Voice replies are on.');
+    expect(assistant).toContain("import('https://esm.sh/@vapi-ai/web@2')");
+    expect(assistant).toContain("vapi.on('speech-end'");
+    expect(assistant).toContain('Stop voice');
+    expect(assistant).toContain('Listening — keep talking naturally.');
+    expect(assistant).not.toContain('SpeechRecognition');
     expect(assistant).toContain("fetch('/api/chat'");
   });
 
@@ -161,6 +162,7 @@ describe('Claude Design static website export', () => {
       'ai-starter-pack-for-kids-teens-and-adults',
       'ai-for-entrepreneurs',
       'no-more-excuses-12-ai-side-hustles',
+      'ai-start-here',
     ]) expect(education).toContain(id);
     expect(education).toContain("fetch('/api/education-interest'");
     expect(education).toContain('window.location.assign(payload.guideUrl)');
@@ -219,11 +221,11 @@ describe('Claude Design static website export', () => {
     }
   });
 
-  it('gives every headline product a cover image that exists on disk', () => {
+  it('gives every listed product a cover image that exists on disk', () => {
     const products = read('public/products/index.html');
     const covers = [...products.matchAll(/image: '(\/product-[a-z0-9-]+\.png)'/g)].map(m => m[1]);
-    // All seven headline products carry artwork or use the Private AI tour captures.
-    expect(covers.length).toBe(7);
+    // Seven headline products plus every specialist and bench product.
+    expect(covers.length).toBe(18);
     for (const cover of covers) {
       const file = path.join(projectRoot, 'public', cover.replace(/^\//, ''));
       expect(fs.existsSync(file), `${cover} missing from public/`).toBe(true);
@@ -236,11 +238,11 @@ describe('Claude Design static website export', () => {
     }
   });
 
-  it('gives every specialist and bench product an app-style preview cover', () => {
+  it('gives every specialist and bench product a real preview image', () => {
     const products = read('public/products/index.html');
-    expect(products).toContain('class="app-cover"');
-    expect(products).toContain('aria-label="{{ a.name }} app preview"');
-    expect(products).toContain('aria-label="{{ r.name }} app preview"');
+    expect(products).toContain('class="app-cover-image"');
+    expect(products).toContain('data-product-image="{{ a.image }}"');
+    expect(products).toContain('data-product-image="{{ r.image }}"');
     expect((products.match(/coverTitle:/g) || []).length).toBe(11);
     expect((products.match(/coverScore:/g) || []).length).toBe(11);
   });

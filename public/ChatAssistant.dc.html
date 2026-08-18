@@ -29,10 +29,10 @@
 .fa-composer { padding:14px;background:#0C1419;border-top:1px solid #1C2A28;display:flex;gap:9px;flex-shrink:0 }
 .fa-privacy { margin:0;padding:8px 16px 0;background:#0C1419;color:#7C9391;font-size:11px;line-height:1.4;text-align:center }
 .fa-privacy a { color:#59D4B4;font-weight:600 }
-.fa-voice { display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;background:#0C1419;border-top:1px solid #1C2A28;flex-shrink:0 }
-.fa-voice-copy { min-width:0 }.fa-voice-copy strong { display:block;color:#EEF4F4;font:700 13px Sora,sans-serif }.fa-voice-copy span { display:block;margin-top:3px;color:#7C9391;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis }
-.fa-voice-btn { flex:0 0 auto;border:1px solid #2FB894;background:rgba(47,184,148,.12);color:#8FE0C8;border-radius:999px;padding:10px 14px;font:700 12px Sora,sans-serif;cursor:pointer;transition:.18s ease }
-.fa-voice-btn:hover { background:#2FB894;color:#080E13 }.fa-voice-btn.listening { background:#2FB894;color:#080E13;box-shadow:0 0 0 5px rgba(47,184,148,.14) }.fa-voice-btn.speaking { background:#F2CD7A;border-color:#F2CD7A;color:#080E13;box-shadow:0 0 0 5px rgba(242,205,122,.14) }
+.fa-voice { display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0;padding:15px 18px;background:linear-gradient(105deg,rgba(47,184,148,.2),rgba(47,184,148,.06));border-top:1px solid rgba(143,224,200,.22);border-bottom:1px solid rgba(143,224,200,.22);flex-shrink:0;box-shadow:inset 4px 0 0 #2FB894 }
+.fa-voice-copy { min-width:0 }.fa-voice-copy strong { display:block;color:#FFFFFF;font:800 14px Sora,sans-serif }.fa-voice-copy span { display:block;margin-top:4px;color:#AFCAC6;font-size:12px;line-height:1.35 }
+.fa-voice-btn { flex:0 0 auto;border:1px solid #59D4B4;background:#2FB894;color:#080E13;border-radius:999px;padding:11px 16px;font:800 12px Sora,sans-serif;cursor:pointer;box-shadow:0 8px 22px rgba(47,184,148,.24);transition:.18s ease }
+.fa-voice-btn:hover { background:#59D4B4;transform:translateY(-1px) }.fa-voice-btn.listening { background:#59D4B4;color:#080E13;box-shadow:0 0 0 5px rgba(47,184,148,.14) }.fa-voice-btn.speaking { background:#F2CD7A;border-color:#F2CD7A;color:#080E13;box-shadow:0 0 0 5px rgba(242,205,122,.14) }
 .fa-input { flex:1;min-width:0;border:1px solid #1C2A28;background:#05090C;color:#EEF4F4;font-family:Inter,sans-serif;font-size:16px;padding:13px 17px;border-radius:999px }
 .fa-input:focus { outline:2px solid #2FB894;outline-offset:1px;border-color:#2FB894;background:#080E13 }
 .fa-send { width:50px;height:50px;display:grid;place-items:center;flex:0 0 50px;background:linear-gradient(135deg,#2FB894,#59D4B4);border:0;color:#080E13;font-family:Sora,sans-serif;font-size:22px;font-weight:700;padding:0;border-radius:50%;cursor:pointer;box-shadow:0 8px 20px rgba(47,184,148,.28);transition:transform .18s ease,box-shadow .18s ease }
@@ -57,7 +57,7 @@
 .fa-cred { position:fixed;z-index:950;left:0;right:0;bottom:0;min-height:76px;background:linear-gradient(112deg,#D9A944 0%,#F2CE7B 52%,#C89435 100%);box-shadow:0 -8px 30px rgba(0,0,0,.34);font-family:Inter,system-ui,sans-serif;color:#10161B }
 .fa-cred-inner { width:min(1280px,100%);min-height:76px;margin:0 auto;padding:10px 24px;display:grid;grid-template-columns:minmax(250px,1fr) auto;align-items:center;gap:22px;color:inherit;text-decoration:none }
 .fa-cred-copy { display:flex;align-items:center;gap:11px;min-width:0 }.fa-cred-copy > span:first-child { width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;border-radius:10px;background:#0C1419 }.fa-cred-copy img { width:25px;height:25px;object-fit:contain }.fa-cred-copy small { display:block;font-size:10px;font-weight:800;line-height:1;letter-spacing:.18em;text-transform:uppercase;color:#5C4718 }.fa-cred-copy strong { display:block;margin-top:4px;font:800 clamp(13px,1.5vw,17px)/1.05 Sora,sans-serif;letter-spacing:-.01em;text-transform:uppercase }
-.fa-cred-logos { display:flex;align-items:center;justify-content:flex-end;gap:clamp(10px,1.5vw,20px);min-width:0 }.fa-cred-logo { width:88px;height:42px;display:grid;place-items:center;flex:0 1 88px }.fa-cred-logo img { display:block;width:100%;height:100%;object-fit:contain }.fa-cred-logo.aws { width:82px;flex-basis:82px;padding:2px 0 }
+.fa-cred-logos { display:grid;grid-template-columns:repeat(5,72px);align-items:center;justify-content:end;gap:clamp(9px,1.2vw,16px);min-width:0 }.fa-cred-logo { width:72px;height:40px;display:grid;place-items:center;overflow:hidden }.fa-cred-logo img { display:block;max-width:64px;max-height:32px;width:auto;height:auto;object-fit:contain }.fa-cred-logo.aws img { max-width:58px;max-height:30px }.fa-cred-logo.azure img,.fa-cred-logo.openai img { max-width:30px;max-height:30px }
 @media (max-width:640px) {
   .fa-shell { right:10px;bottom:88px;max-width:calc(100vw - 20px) }
   .fa-panel { width:calc(100vw - 28px);height:min(600px,calc(100vh - 104px));border-radius:19px }
@@ -71,7 +71,10 @@
   .fa-cred-inner { min-height:78px;padding:8px 10px;grid-template-columns:minmax(118px,.8fr) minmax(0,1.2fr);gap:8px }
   .fa-cred-copy { gap:7px }.fa-cred-copy > span:first-child { width:30px;height:30px;flex-basis:30px;border-radius:8px }.fa-cred-copy img { width:19px;height:19px }.fa-cred-copy small { display:none }.fa-cred-copy strong { margin:0;font-size:10.5px;line-height:1.08;letter-spacing:.01em }
   .fa-cred-logos { display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;justify-items:center }
-  .fa-cred-logo,.fa-cred-logo.aws { width:100%;height:30px;max-width:42px;padding:0;min-width:0 }
+  .fa-cred-logo { width:100%;height:32px;max-width:42px;min-width:0;overflow:hidden }
+  .fa-cred-logo img { max-width:36px;max-height:25px;width:auto;height:auto }
+  .fa-cred-logo.aws img { max-width:36px;max-height:23px }.fa-cred-logo.azure img,.fa-cred-logo.openai img { max-width:25px;max-height:25px }
+  .fa-voice { padding:13px 14px;gap:10px }.fa-voice-copy strong { font-size:13px }.fa-voice-copy span { font-size:11px }.fa-voice-btn { padding:10px 13px }
 }
 @media (max-width:380px) { .fa-cred-inner { grid-template-columns:108px minmax(0,1fr) }.fa-cred-copy > span:first-child { display:none }.fa-cred-copy strong { font-size:10px }.fa-shell { bottom:88px }.fa-launch-copy { min-width:96px } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
@@ -93,6 +96,13 @@
         </div>
         <button class="fa-close" type="button" onClick="{{ close }}" aria-label="Close assistant" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">&#215;</button>
       </div>
+
+      <sc-if value="{{ composerOpen }}" hint-placeholder-val="{{ true }}">
+        <div class="fa-voice">
+          <div class="fa-voice-copy"><strong>Talk naturally with Felican AI</strong><span>{{ voiceStatus }}</span></div>
+          <button class="fa-voice-btn {{ voiceClass }}" type="button" onClick="{{ toggleVoice }}" aria-pressed="{{ listeningStr }}" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">{{ voiceLabel }}</button>
+        </div>
+      </sc-if>
 
       <div class="fa-messages" ref="{{ scrollRef }}" role="log" aria-live="polite">
         <sc-for list="{{ messages }}" as="m" hint-placeholder-count="1">
@@ -130,12 +140,6 @@
         </form>
       </sc-if>
 
-      <sc-if value="{{ composerOpen }}" hint-placeholder-val="{{ true }}">
-        <div class="fa-voice">
-          <div class="fa-voice-copy"><strong>Talk naturally</strong><span>{{ voiceStatus }}</span></div>
-          <button class="fa-voice-btn {{ voiceClass }}" type="button" onClick="{{ toggleVoice }}" aria-pressed="{{ listeningStr }}" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">{{ voiceLabel }}</button>
-        </div>
-      </sc-if>
       <p class="fa-privacy">Please do not share confidential or sensitive information. See our <a href="/privacy/">Privacy Policy</a>.</p>
       <sc-if value="{{ composerOpen }}" hint-placeholder-val="{{ true }}">
         <form class="fa-composer" onSubmit="{{ submit }}">
@@ -164,9 +168,9 @@
     <span class="fa-cred-logos" aria-label="Certified platforms">
       <span class="fa-cred-logo aws"><img src="/badges/aws.png" alt="AWS"></span>
       <span class="fa-cred-logo"><img src="/badges/gcp.svg" alt="Google Cloud"></span>
-      <span class="fa-cred-logo"><img src="/badges/azure.svg" alt="Microsoft Azure"></span>
+      <span class="fa-cred-logo azure"><img src="/badges/azure.svg" alt="Microsoft Azure"></span>
       <span class="fa-cred-logo"><img src="/badges/anthropic.svg" alt="Anthropic"></span>
-      <span class="fa-cred-logo"><img src="/badges/openai.svg" alt="OpenAI"></span>
+      <span class="fa-cred-logo openai"><img src="/badges/openai.svg" alt="OpenAI"></span>
     </span>
   </a>
 </aside>
@@ -193,87 +197,79 @@ class Component extends DCLogic {
   state = {
     open: new URLSearchParams(window.location.search).has('assistant'), busy: false, draft: '', website: '',
     handoff: false, hName: '', hEmail: '', hMsg: '', hBusy: false,
-    voiceSupported: false, listening: false, speaking: false, voiceMode: false, voiceError: '',
+    voiceSupported: false, voiceActive: false, voiceConnecting: false, speaking: false, voiceError: '',
     messages: [{ role: 'assistant', text: "Hi — I'm the Felican AI agent. Ask me about our products, services, training, or Lee's books." }]
   };
   scrollRef = React.createRef();
 
   componentDidMount() {
-    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!Recognition) return;
-    const recognition = new Recognition();
-    recognition.lang = 'en-US';
-    recognition.interimResults = false;
-    recognition.continuous = false;
-    recognition.onstart = () => this.setState({ listening: true, voiceError: '' });
-    recognition.onend = () => this.setState({ listening: false });
-    recognition.onerror = event => this.setState({
-      listening: false,
-      voiceError: event && event.error === 'not-allowed' ? 'Microphone access was not allowed. You can still type below.' : 'I could not hear that. Try again or type below.'
-    });
-    recognition.onresult = event => {
-      const transcript = Array.from(event.results || []).map(result => result[0] && result[0].transcript || '').join(' ').trim();
-      if (transcript) this.send(transcript);
-    };
-    this._recognition = recognition;
-    this.setState({ voiceSupported: true });
+    const preset = window.__FELICAN_VAPI_CONFIG__;
+    if (preset && preset.publicKey && preset.assistantId) {
+      this._voiceConfig = preset;
+      this.setState({ voiceSupported: true });
+      return;
+    }
+    fetch('/api/voice-config', { headers: { Accept: 'application/json' } })
+      .then(response => response.ok ? response.json() : Promise.reject(new Error('voice_unavailable')))
+      .then(config => {
+        if (!config.publicKey || !config.assistantId) throw new Error('voice_unavailable');
+        this._voiceConfig = config;
+        this.setState({ voiceSupported: true, voiceError: '' });
+      })
+      .catch(() => this.setState({ voiceSupported: false }));
   }
   componentWillUnmount() {
-    if (this._recognition) this._recognition.abort();
-    this.stopSpeaking();
+    this.stopVoice();
+  }
+  async ensureVapi() {
+    if (this._vapi) return this._vapi;
+    const Vapi = window.__FELICAN_VAPI_CLASS__ || (await import('https://esm.sh/@vapi-ai/web@2')).default;
+    const vapi = new Vapi(this._voiceConfig.publicKey);
+    vapi.on('call-start', () => this.setState({ voiceActive: true, voiceConnecting: false, speaking: false, voiceError: '' }));
+    vapi.on('call-end', () => this.setState({ voiceActive: false, voiceConnecting: false, speaking: false }));
+    vapi.on('speech-start', () => this.setState({ voiceActive: true, speaking: true, voiceError: '' }));
+    // A reply ending is not the end of voice mode. The call stays live and
+    // immediately returns to listening until the visitor presses Stop voice.
+    vapi.on('speech-end', () => this.setState({ voiceActive: true, speaking: false }));
+    vapi.on('error', error => this.setState({
+      voiceConnecting: false,
+      voiceError: error && error.message ? error.message : 'Voice had trouble connecting. You can still type below.'
+    }));
+    vapi.on('message', message => {
+      if (message.type !== 'transcript' || message.transcriptType !== 'final') return;
+      const text = String(message.transcript || '').trim();
+      if (!text) return;
+      const role = message.role === 'user' ? 'user' : 'assistant';
+      this.setState(state => {
+        const last = state.messages[state.messages.length - 1];
+        if (last && last.role === role && last.text === text) return {};
+        return { messages: [...state.messages, { role, text }] };
+      });
+    });
+    this._vapi = vapi;
+    return vapi;
+  }
+  async startVoice() {
+    if (!this.state.voiceSupported || !this._voiceConfig) {
+      this.setState({ voiceError: 'Voice is temporarily unavailable. You can still type below.' });
+      return;
+    }
+    if (this.state.voiceConnecting || this.state.voiceActive) return;
+    this.setState({ voiceConnecting: true, voiceError: '' });
+    try {
+      const vapi = await this.ensureVapi();
+      await vapi.start(this._voiceConfig.assistantId);
+    } catch (error) {
+      this.setState({ voiceConnecting: false, voiceActive: false, speaking: false, voiceError: error && error.message ? error.message : 'Voice could not start. Please try again.' });
+    }
+  }
+  stopVoice() {
+    try { if (this._vapi) this._vapi.stop(); } catch (error) { /* already stopped */ }
+    if (this.state) this.setState({ voiceActive: false, voiceConnecting: false, speaking: false });
   }
   toggleVoice() {
-    if (this.state.speaking) {
-      this.stopSpeaking();
-      return;
-    }
-    if (!this.state.voiceSupported || !this._recognition) {
-      if ('speechSynthesis' in window) {
-        this.setState({ voiceMode: true, voiceError: 'Voice replies are on. Type a question and I will answer aloud.' });
-        this.unlockMobileSpeech();
-      } else {
-        this.setState({ voiceError: 'Voice is not available in this browser. You can still type below.' });
-      }
-      return;
-    }
-    if (this.state.listening) {
-      this._recognition.stop();
-      return;
-    }
-    this.setState({ voiceMode: true, voiceError: '' });
-    this.unlockMobileSpeech();
-    try { this._recognition.start(); }
-    catch (error) { this.setState({ listening: false, voiceError: 'Voice is already starting. Please wait a moment.' }); }
-  }
-  unlockMobileSpeech() {
-    if (!('speechSynthesis' in window) || this._speechUnlocked) return;
-    this._speechUnlocked = true;
-    const primer = new SpeechSynthesisUtterance('Voice replies are on.');
-    primer.rate = 1;
-    primer.onstart = () => this.setState({ speaking: true });
-    primer.onend = () => this.setState({ speaking: false });
-    primer.onerror = () => this.setState({ speaking: false });
-    this._utterance = primer;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(primer);
-  }
-  stopSpeaking() {
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-    this._utterance = null;
-    if (this.state && this.state.speaking) this.setState({ speaking: false });
-  }
-  speak(text) {
-    if (!this.state.voiceMode || !('speechSynthesis' in window) || !text) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.98;
-    utterance.pitch = 1;
-    utterance.onstart = () => this.setState({ speaking: true, voiceError: '' });
-    utterance.onend = () => { this._utterance = null; this.setState({ speaking: false }); };
-    utterance.onerror = event => { this._utterance = null; this.setState({ speaking: false, voiceError: event && event.error === 'canceled' ? '' : 'Audio playback stopped. Tap Start voice to try again.' }); };
-    this._utterance = utterance;
-    window.speechSynthesis.speak(utterance);
+    if (this.state.voiceActive || this.state.voiceConnecting) this.stopVoice();
+    else this.startVoice();
   }
 
   // Hand the conversation to a human by emailing it through /api/contact.
@@ -346,7 +342,7 @@ class Component extends DCLogic {
       reply = "I couldn't reach the assistant just now. Email ai@felican.ai and we'll help directly.";
     }
     const finalReply = (reply || '').trim() || 'Sorry — could you rephrase that?';
-    this.setState(s => ({ messages: [...s.messages, { role: 'assistant', text: finalReply }], busy: false }), () => this.speak(finalReply));
+    this.setState(s => ({ messages: [...s.messages, { role: 'assistant', text: finalReply }], busy: false }));
   }
   renderVals() {
     const chip = label => ({ label, go: () => this.send(label) });
@@ -361,10 +357,10 @@ class Component extends DCLogic {
       website: this.state.website,
       showChips: this.state.messages.length <= 1 && !this.state.handoff,
       composerOpen: !this.state.handoff,
-      voiceStatus: this.state.voiceError || (this.state.speaking ? 'Speaking now — tap Stop speaking at any time.' : this.state.listening ? 'Listening — ask your question now.' : this.state.voiceMode ? 'Voice replies are on.' : this.state.voiceSupported ? 'Tap to speak. Replies play aloud.' : 'Tap to turn on spoken replies.'),
-      voiceLabel: this.state.speaking ? 'Stop speaking' : this.state.listening ? 'Stop listening' : 'Start voice',
-      voiceClass: this.state.speaking ? 'speaking' : this.state.listening ? 'listening' : '',
-      listeningStr: this.state.listening ? 'true' : 'false',
+      voiceStatus: this.state.voiceError || (this.state.voiceConnecting ? 'Connecting your microphone…' : this.state.speaking ? 'Speaking — talk anytime to interrupt.' : this.state.voiceActive ? 'Listening — keep talking naturally.' : this.state.voiceSupported ? 'Start once, then keep talking until you stop.' : 'Voice is loading. Text chat is ready now.'),
+      voiceLabel: this.state.voiceActive || this.state.voiceConnecting ? 'Stop voice' : 'Start voice',
+      voiceClass: this.state.speaking ? 'speaking' : this.state.voiceActive || this.state.voiceConnecting ? 'listening' : '',
+      listeningStr: this.state.voiceActive || this.state.voiceConnecting ? 'true' : 'false',
       toggleVoice: () => this.toggleVoice(),
       scrollRef: this.scrollRef,
       messages: this.state.messages.map(m => m.role === 'user'
@@ -384,8 +380,8 @@ class Component extends DCLogic {
       onHEmail: e => this.setState({ hEmail: e.target.value }),
       onHMsg: e => this.setState({ hMsg: e.target.value }),
       sendHandoff: e => this.submitHandoff(e),
-      toggle: () => { if (this.state.open) this.stopSpeaking(); this.setState(s => ({ open: !s.open })); },
-      close: () => { this.stopSpeaking(); this.setState({ open: false }); },
+      toggle: () => { if (this.state.open) this.stopVoice(); this.setState(s => ({ open: !s.open })); },
+      close: () => { this.stopVoice(); this.setState({ open: false }); },
       onDraft: e => this.setState({ draft: e.target.value }),
       onWebsite: e => this.setState({ website: e.target.value }),
       submit: e => { e.preventDefault(); this.send(this.state.draft); }

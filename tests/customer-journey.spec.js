@@ -51,34 +51,27 @@ test.describe('Customer journey', () => {
     await page.goto('/', { waitUntil: 'load' });
 
     // Visible immediately, not only after scrolling.
-    const bar = page.locator('.cred-bar');
+    const bar = page.locator('.fa-cred');
     await expect(bar).toBeVisible();
     const viewport = page.viewportSize();
     let box = await bar.boundingBox();
     expect(Math.abs(viewport.height - (box.y + box.height))).toBeLessThanOrEqual(2);
 
-    // Still pinned after scrolling, and the header stays with it.
+    // Still pinned after scrolling.
     await page.mouse.wheel(0, 2000);
     await page.waitForTimeout(400);
     box = await bar.boundingBox();
     expect(Math.abs(viewport.height - (box.y + box.height))).toBeLessThanOrEqual(2);
-    const header = await page.locator('header').boundingBox();
-    expect(Math.abs(header.y)).toBeLessThanOrEqual(2);
 
     // Every certification logo actually loaded.
-    const badges = page.locator('.badge-item img');
+    const badges = page.locator('.fa-cred-logo img');
     await expect(badges).toHaveCount(5);
     expect(await badges.evaluateAll(imgs => imgs.every(i => i.complete && i.naturalWidth > 0))).toBe(true);
 
-    // Clicking opens the modal, which names all five platforms.
-    await bar.getByRole('button').click();
-    const modal = page.getByRole('dialog');
-    await expect(modal).toBeVisible();
-    const certs = await modal.locator('.cert-name').allTextContents();
-    expect(certs.join(' | ')).toMatch(/Amazon Web Services.*Azure.*Google Cloud.*Anthropic.*OpenAI/s);
-
-    await page.keyboard.press('Escape');
-    await expect(modal).toHaveCount(0);
+    // Clicking opens the certifications detail on the About page.
+    await bar.getByRole('link').click();
+    await expect(page).toHaveURL(/\/about\/#certifications$/);
+    await expect(page.locator('#certifications')).toBeVisible();
   });
 
   test('a prospect picks a product and the enquiry arrives pre-labelled', async ({ page }) => {
@@ -95,7 +88,7 @@ test.describe('Customer journey', () => {
 
     // Every headline product shows artwork that loaded.
     const shots = page.locator('.product-card .product-shot img');
-    await expect(shots).toHaveCount(11);
+    await expect(shots).toHaveCount(6);
     expect(await shots.evaluateAll(imgs => imgs.every(i => i.complete && i.naturalWidth > 0))).toBe(true);
 
     // Withdrawn names must not appear.

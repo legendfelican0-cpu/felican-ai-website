@@ -10,3 +10,5 @@ test-results/
 qa/*.png
 *.log
 .wrangler/
+__pycache__/
+*.pyc

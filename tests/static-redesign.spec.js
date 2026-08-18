@@ -1,9 +1,9 @@
 import { expect, test } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-// NOTE: use 'load', never 'networkidle'. The contact page holds a tawk.to
-// WebSocket open, so the network never goes idle and networkidle times out at
-// random. Playwright's auto-waiting assertions cover readiness instead.
+// NOTE: use 'domcontentloaded', never 'networkidle'. Third-party fonts and the
+// contact chat can stay open or respond slowly in WebKit; the rendered-heading
+// and .sc-missing assertions below are the reliable readiness checks.
 const routes = [
   ['/', 'AI solutions for'],
   ['/products/', 'Products built for real work.'],
@@ -26,11 +26,18 @@ test.describe('Claude Design website export', () => {
       });
 
       await page.emulateMedia({ reducedMotion: 'reduce' });
-      await page.goto(route, { waitUntil: 'load' });
+      await page.goto(route, { waitUntil: 'domcontentloaded' });
 
       await expect(page.locator('h1').first()).toContainText(headline);
       await expect(page.locator('body')).not.toBeEmpty();
       await expect(page.locator('.fa-cred')).toBeVisible();
+      const credentialLogosFit = await page.locator('.fa-cred-logo').evaluateAll(items => items.every(item => {
+        const box = item.getBoundingClientRect();
+        const image = item.querySelector('img').getBoundingClientRect();
+        return image.left >= box.left - 0.5 && image.right <= box.right + 0.5
+          && image.top >= box.top - 0.5 && image.bottom <= box.bottom + 0.5;
+      }));
+      expect(credentialLogosFit).toBe(true);
       // The runtime tags unresolved interpolations with .sc-missing. Waiting for
       // zero of them means the client render finished, so the console check and
       // the axe scan below see the real page rather than the placeholder skeleton.
@@ -68,8 +75,9 @@ test.describe('Claude Design website export', () => {
     await expect(productCards.first()).toHaveAttribute('id', 'private-ai');
     await expect(page.locator('.agent-card')).toHaveCount(6);
     await expect(page.locator('.rest-card')).toHaveCount(5);
-    await expect(page.locator('.agent-card .app-cover')).toHaveCount(6);
-    await expect(page.locator('.rest-card .app-cover')).toHaveCount(5);
+    await expect(page.locator('.agent-card .app-cover-image img')).toHaveCount(6);
+    await expect(page.locator('.rest-card .app-cover-image img')).toHaveCount(5);
+    expect(await page.locator('.app-cover-image img').evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
 
     // Products never link out to the live apps; every CTA pre-fills the contact form.
     const outbound = page.locator('main a[href^="http"]:not([href*="felican.ai/contact"])');
@@ -114,20 +122,24 @@ test.describe('Claude Design website export', () => {
     );
   });
 
-  test('Private AI carousel works and voice can be interrupted', async ({ page }) => {
+  test('Private AI carousel works and voice stays live until Stop voice', async ({ page }) => {
     await page.addInitScript(() => {
-      window.__speechTest = { spoken: [], cancels: 0 };
-      window.SpeechSynthesisUtterance = class {
-        constructor(text) { this.text = text; this.rate = 1; this.pitch = 1; this.lang = ''; }
-      };
-      Object.defineProperty(window, 'speechSynthesis', { configurable: true, value: {
-        cancel() { window.__speechTest.cancels += 1; },
-        speak(utterance) { window.__speechTest.spoken.push(utterance.text); setTimeout(() => utterance.onstart?.(), 0); },
-      } });
-      window.SpeechRecognition = class {
-        start() { this.onstart?.(); }
-        stop() { this.onend?.(); }
-        abort() { this.onend?.(); }
+      window.__vapiTest = { starts: 0, stops: 0, assistantId: '' };
+      window.__FELICAN_VAPI_CONFIG__ = { publicKey: 'public-test', assistantId: 'assistant-test' };
+      window.__FELICAN_VAPI_CLASS__ = class {
+        constructor() { this.handlers = {}; }
+        on(name, handler) { this.handlers[name] = handler; }
+        async start(assistantId) {
+          window.__vapiTest.starts += 1;
+          window.__vapiTest.assistantId = assistantId;
+          this.handlers['call-start']?.();
+          this.handlers['speech-start']?.();
+          this.handlers['speech-end']?.();
+        }
+        stop() {
+          window.__vapiTest.stops += 1;
+          this.handlers['call-end']?.();
+        }
       };
     });
 
@@ -138,10 +150,13 @@ test.describe('Claude Design website export', () => {
 
     await page.locator('[data-assistant-launcher]').click();
     await page.getByRole('button', { name: 'Start voice' }).click();
-    await expect(page.getByRole('button', { name: 'Stop speaking' })).toBeVisible();
-    await page.getByRole('button', { name: 'Stop speaking' }).click();
-    expect(await page.evaluate(() => window.__speechTest.spoken)).toContain('Voice replies are on.');
-    expect(await page.evaluate(() => window.__speechTest.cancels)).toBeGreaterThan(0);
+    await expect(page.getByRole('button', { name: 'Stop voice' })).toBeVisible();
+    // speech-end must return to listening, not end the ongoing conversation.
+    await expect(page.getByText('Listening — keep talking naturally.')).toBeVisible();
+    expect(await page.evaluate(() => window.__vapiTest)).toMatchObject({ starts: 1, stops: 0, assistantId: 'assistant-test' });
+    await page.getByRole('button', { name: 'Stop voice' }).click();
+    await expect(page.getByRole('button', { name: 'Start voice' })).toBeVisible();
+    expect(await page.evaluate(() => window.__vapiTest.stops)).toBe(1);
   });
 
   test('contact page offers a working form alongside email and phone', async ({ page }) => {

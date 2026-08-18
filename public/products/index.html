@@ -77,20 +77,9 @@
   @media (max-width:620px) { .agent-grid { grid-template-columns:1fr } }
   .agent-card { display:flex; flex-direction:column; gap:12px; min-width:0; padding:26px 24px 24px; background:#101E24; border:1px solid #1C2A28; transition:transform .25s ease,border-color .25s ease,background .25s ease }
   .agent-card:hover { transform:translateY(-4px); border-color:#2FB894; background:#142A31 }
-  .app-cover { position:relative;min-height:190px;overflow:hidden;background:#071014;border:1px solid #29413D;color:#EEF4F4;isolation:isolate }
-  .app-cover::before { content:'';position:absolute;inset:0;background:linear-gradient(135deg,color-mix(in srgb,var(--cover-accent) 18%,transparent),transparent 54%),repeating-linear-gradient(90deg,rgba(255,255,255,.035) 0 1px,transparent 1px 25%);z-index:-1 }
-  .app-cover-bar { height:34px;padding:0 10px;border-bottom:1px solid #29413D;background:#101A1F;display:flex;align-items:center;justify-content:space-between;gap:10px }
-  .app-cover-dots { display:flex;gap:5px }.app-cover-dots i { width:6px;height:6px;border-radius:50%;background:#3B514E }.app-cover-dots i:first-child { background:var(--cover-accent) }
-  .app-cover-live { display:flex;align-items:center;gap:6px;color:#AFC4C6;font:700 8px Sora,sans-serif;letter-spacing:.13em;text-transform:uppercase }.app-cover-live::before { content:'';width:6px;height:6px;border-radius:50%;background:var(--cover-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--cover-accent) 18%,transparent) }
-  .app-cover-body { min-height:155px;padding:17px;display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:13px;align-items:stretch }
-  .app-cover-copy { display:flex;flex-direction:column;min-width:0 }
-  .app-cover-eyebrow { color:var(--cover-accent);font:700 9px Sora,sans-serif;letter-spacing:.14em;text-transform:uppercase }
-  .app-cover-title { margin-top:7px;color:#F5FAFA;font:800 20px/1.08 Sora,sans-serif;letter-spacing:-.025em }
-  .app-cover-detail { margin-top:7px;color:#8FA3A8;font-size:10.5px;line-height:1.45 }
-  .app-cover-lines { margin-top:auto;display:grid;gap:6px }.app-cover-line { height:7px;background:#17272B;border-left:2px solid var(--cover-accent) }.app-cover-line:nth-child(2) { width:78% }.app-cover-line:nth-child(3) { width:58% }
-  .app-cover-panel { padding:10px;background:#0D1A1F;border:1px solid #29413D;display:flex;flex-direction:column;justify-content:space-between }
-  .app-cover-score { color:var(--cover-accent);font:800 26px/1 Sora,sans-serif }.app-cover-unit { color:#71888C;font:700 8px Sora,sans-serif;letter-spacing:.12em;text-transform:uppercase }
-  .app-cover-bars { display:flex;align-items:flex-end;gap:4px;height:48px }.app-cover-bars i { flex:1;background:var(--cover-accent);opacity:.38 }.app-cover-bars i:nth-child(1) { height:42% }.app-cover-bars i:nth-child(2) { height:72%;opacity:.62 }.app-cover-bars i:nth-child(3) { height:55% }.app-cover-bars i:nth-child(4) { height:92%;opacity:1 }
+  .app-cover-image { display:block;aspect-ratio:720/453;overflow:hidden;background:#071014;border:1px solid #29413D }
+  .app-cover-image img { display:block;width:100%;height:100%;object-fit:cover;object-position:center;transition:transform .35s cubic-bezier(.2,.8,.2,1) }
+  .agent-card:hover .app-cover-image img,.rest-card:hover .app-cover-image img { transform:scale(1.02) }
   .agent-top { display:flex; align-items:center; justify-content:space-between; gap:12px }
   .agent-num { font-family:Sora,sans-serif; font-size:12px; font-weight:700; letter-spacing:.14em; color:#7B9298 }
   .agent-tag { font-family:Sora,sans-serif; font-size:11px; font-weight:700; letter-spacing:.12em; color:#8FE0C8; text-align:right }
@@ -109,13 +98,13 @@
   .rest-name { font-family:Sora,sans-serif; font-size:19px; font-weight:800; letter-spacing:-.02em; color:#EEF4F4 }
   .rest-desc { font-size:14px; line-height:1.55; color:#8FA3A8 }
   .rest-cta { margin-top:auto; padding-top:6px; font-size:13.5px; font-weight:700; color:#2FB894 }
-  .rest-card .app-cover { min-height:145px;margin-bottom:5px }.rest-card .app-cover-body { min-height:110px;padding:12px;grid-template-columns:1fr 62px;gap:9px }.rest-card .app-cover-title { font-size:15px }.rest-card .app-cover-detail { font-size:9px }.rest-card .app-cover-panel { padding:7px }.rest-card .app-cover-score { font-size:19px }.rest-card .app-cover-bars { height:33px }
+  .rest-card .app-cover-image { margin-bottom:5px }
   .product-shot { display:block; aspect-ratio:16/10; overflow:hidden; background:#080E13; border:1px solid #1C2A28 }
   .product-shot img { display:block; width:100%; height:100%; object-fit:cover; object-position:top; transition:transform .35s cubic-bezier(.2,.8,.2,1) }
   .product-card:hover .product-shot img { transform:scale(1.025) }
   @media (max-width:850px) { .product-grid { grid-template-columns:1fr }.product-card.is-featured { grid-template-columns:1fr }.is-featured .private-carousel { grid-column:1;grid-row:auto } }
   @media (max-width:520px) { .pc-slide img { object-fit:contain }.pc-caption { padding:12px 14px 14px }.pc-caption span { font-size:11.5px }.pc-controls { min-height:52px } }
-  @media (max-width:460px) { .app-cover { min-height:175px }.app-cover-body { min-height:140px }.rest-card .app-cover { min-height:165px }.rest-card .app-cover-body { min-height:130px;grid-template-columns:1fr 78px } }
+  @media (max-width:460px) { .app-cover-image { aspect-ratio:16/10 } }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -205,13 +194,7 @@
       <div class="agent-grid">
         <sc-for list="{{ agents }}" as="a" hint-placeholder-count="6">
           <article class="agent-card" id="{{ a.id }}" style="border-top:3px solid {{ a.accent }}">
-            <div class="app-cover" style="--cover-accent:{{ a.accent }}" aria-label="{{ a.name }} app preview">
-              <div class="app-cover-bar"><span class="app-cover-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="app-cover-live">Preview</span></div>
-              <div class="app-cover-body">
-                <div class="app-cover-copy"><span class="app-cover-eyebrow">{{ a.coverEyebrow }}</span><strong class="app-cover-title">{{ a.coverTitle }}</strong><span class="app-cover-detail">{{ a.coverDetail }}</span><span class="app-cover-lines" aria-hidden="true"><i class="app-cover-line"></i><i class="app-cover-line"></i><i class="app-cover-line"></i></span></div>
-                <div class="app-cover-panel"><span class="app-cover-unit">{{ a.coverUnit }}</span><strong class="app-cover-score">{{ a.coverScore }}</strong><span class="app-cover-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></div>
-              </div>
-            </div>
+            <div class="app-cover-image"><img data-product-image="{{ a.image }}" alt="{{ a.name }} app preview"></div>
             <div class="agent-top">
               <span class="agent-num">{{ a.num }}</span>
               <span class="agent-tag">{{ a.tag }}</span>
@@ -236,10 +219,7 @@
       <div class="rest-grid">
         <sc-for list="{{ rest }}" as="r" hint-placeholder-count="5">
           <a class="rest-card" id="{{ r.id }}" href="{{ r.askHref }}">
-            <span class="app-cover" style="--cover-accent:{{ r.accent }}" aria-label="{{ r.name }} app preview">
-              <span class="app-cover-bar"><span class="app-cover-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="app-cover-live">Preview</span></span>
-              <span class="app-cover-body"><span class="app-cover-copy"><span class="app-cover-eyebrow">{{ r.coverEyebrow }}</span><strong class="app-cover-title">{{ r.coverTitle }}</strong><span class="app-cover-detail">{{ r.coverDetail }}</span><span class="app-cover-lines" aria-hidden="true"><i class="app-cover-line"></i><i class="app-cover-line"></i><i class="app-cover-line"></i></span></span><span class="app-cover-panel"><span class="app-cover-unit">{{ r.coverUnit }}</span><strong class="app-cover-score">{{ r.coverScore }}</strong><span class="app-cover-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></span></span>
-            </span>
+            <span class="app-cover-image"><img data-product-image="{{ r.image }}" alt="{{ r.name }} app preview"></span>
             <span class="rest-tag">{{ r.tag }}</span>
             <span class="rest-name">{{ r.name }}</span>
             <span class="rest-desc">{{ r.desc }}</span>
@@ -321,27 +301,27 @@ class Component extends DCLogic {
 
     // Agents that do real work \u2014 the strongest of the apps from the factory.
     const agents = [
-      { id: 'quorum', name: 'Quorum', tag: 'INVESTMENT RESEARCH', accent: '#2FB894',
+      { id: 'quorum', name: 'Quorum', tag: 'INVESTMENT RESEARCH', accent: '#2FB894', image: '/product-quorum.png',
         desc: 'An AI investment committee: four agents debate a stock or ETF and return a paper-trade thesis with a quant score.', coverEyebrow: 'Committee review', coverTitle: 'NVDA investment memo', coverDetail: 'Bull, bear, quant, and risk views combined.', coverUnit: 'Conviction', coverScore: '82' },
-      { id: 'floordesk', name: 'FloorDesk', tag: 'TRADING FLOOR', accent: '#22876B',
+      { id: 'floordesk', name: 'FloorDesk', tag: 'TRADING FLOOR', accent: '#22876B', image: '/product-floordesk.png',
         desc: 'A personal trading war room staffed by four agents \u2014 Bull, Bear, Risk Officer, and PM.', coverEyebrow: 'Live desk', coverTitle: 'Market war room', coverDetail: 'Four agents tracking the same position in real time.', coverUnit: 'Signals', coverScore: '14' },
-      { id: 'quantdesk', name: 'QuantDesk', tag: 'MARKET ANALYTICS', accent: '#59D4B4',
+      { id: 'quantdesk', name: 'QuantDesk', tag: 'MARKET ANALYTICS', accent: '#59D4B4', image: '/product-quantdesk.png',
         desc: 'An institutional market workstation pairing investor AI personas with CFA-level quant analytics.', coverEyebrow: 'Quant screen', coverTitle: 'Factor analysis', coverDetail: 'Risk, momentum, value, and quality in one view.', coverUnit: 'Factors', coverScore: '24' },
-      { id: 'threadpilot', name: 'ThreadPilot', tag: 'EMAIL CHIEF OF STAFF', accent: '#1F6E5C',
+      { id: 'threadpilot', name: 'ThreadPilot', tag: 'EMAIL CHIEF OF STAFF', accent: '#1F6E5C', image: '/product-threadpilot.png',
         desc: 'Triages your inbox into Urgent, Important, FYI, and Noise, then drafts the replies.', coverEyebrow: 'Inbox briefing', coverTitle: 'Today\'s priorities', coverDetail: 'Important threads sorted with replies ready to review.', coverUnit: 'Handled', coverScore: '36' },
-      { id: 'adpulse', name: 'AdPulse', tag: 'AD AUDITING', accent: '#7BC9A8',
+      { id: 'adpulse', name: 'AdPulse', tag: 'AD AUDITING', accent: '#7BC9A8', image: '/product-adpulse.png',
         desc: 'Instant ad-account audits \u2014 upload your ad data and get an Ads Health Score plus prioritized fixes.', coverEyebrow: 'Account audit', coverTitle: 'Ads health report', coverDetail: 'Waste, creative fatigue, and budget fixes ranked.', coverUnit: 'Health', coverScore: '74' },
-      { id: 'dendrite', name: 'Dendrite', tag: 'WEB EXTRACTION', accent: '#2FB894',
+      { id: 'dendrite', name: 'Dendrite', tag: 'WEB EXTRACTION', accent: '#2FB894', image: '/product-dendrite.png',
         desc: 'An LLM-optimized web-extraction API \u2014 a URL in, clean markdown out.', coverEyebrow: 'Extraction job', coverTitle: 'Clean web data', coverDetail: 'Structured markdown ready for agents and workflows.', coverUnit: 'Parsed', coverScore: '98%' }
     ];
 
     // The rest of the bench from the factory.
     const rest = [
-      { id: 'ora', name: 'Ora', tag: 'AI WORKSPACE', accent: '#2FB894', desc: 'Premium multi-model AI chat. Claude, GPT-4o, Gemini, Grok, and DeepSeek in one workspace.', coverEyebrow: 'Model workspace', coverTitle: 'One prompt, five views', coverDetail: 'Compare responses without switching tools.', coverUnit: 'Models', coverScore: '05' },
-      { id: 'mira', name: 'Mira', tag: 'AI COMPANION', accent: '#59D4B4', desc: 'An animated AI companion with memory, so context carries between conversations.', coverEyebrow: 'Memory online', coverTitle: 'Context that continues', coverDetail: 'Your conversations carry forward naturally.', coverUnit: 'Memory', coverScore: 'ON' },
-      { id: 'framefire', name: 'FrameFire', tag: 'VIDEO', accent: '#F59E66', desc: 'Brief-to-video generator: a one-line brief in, a finished vertical video out.', coverEyebrow: 'Video queue', coverTitle: 'Brief to finished cut', coverDetail: 'Scenes, voice, captions, and export prepared.', coverUnit: 'Scenes', coverScore: '08' },
-      { id: 'lumina', name: 'Lumina', tag: 'IMAGE STUDIO', accent: '#B79CFF', desc: 'An AI image studio for turning written ideas into finished visual concepts.', coverEyebrow: 'Creative canvas', coverTitle: 'Concepts made visual', coverDetail: 'Explore, refine, and export a finished direction.', coverUnit: 'Renders', coverScore: '12' },
-      { id: 'avatar-comparison', name: 'Avatar Comparison', tag: 'AVATARS', accent: '#7BC9A8', desc: 'Compare AI avatar engines side by side before committing to one.', coverEyebrow: 'Side-by-side test', coverTitle: 'Choose the right avatar', coverDetail: 'Compare motion, voice, realism, and speed.', coverUnit: 'Engines', coverScore: '04' }
+      { id: 'ora', name: 'Ora', tag: 'AI WORKSPACE', accent: '#2FB894', image: '/product-ora.png', desc: 'Premium multi-model AI chat. Claude, GPT-4o, Gemini, Grok, and DeepSeek in one workspace.', coverEyebrow: 'Model workspace', coverTitle: 'One prompt, five views', coverDetail: 'Compare responses without switching tools.', coverUnit: 'Models', coverScore: '05' },
+      { id: 'mira', name: 'Mira', tag: 'AI COMPANION', accent: '#59D4B4', image: '/product-mira.png', desc: 'An animated AI companion with memory, so context carries between conversations.', coverEyebrow: 'Memory online', coverTitle: 'Context that continues', coverDetail: 'Your conversations carry forward naturally.', coverUnit: 'Memory', coverScore: 'ON' },
+      { id: 'framefire', name: 'FrameFire', tag: 'VIDEO', accent: '#F59E66', image: '/product-framefire.png', desc: 'Brief-to-video generator: a one-line brief in, a finished vertical video out.', coverEyebrow: 'Video queue', coverTitle: 'Brief to finished cut', coverDetail: 'Scenes, voice, captions, and export prepared.', coverUnit: 'Scenes', coverScore: '08' },
+      { id: 'lumina', name: 'Lumina', tag: 'IMAGE STUDIO', accent: '#B79CFF', image: '/product-lumina.png', desc: 'An AI image studio for turning written ideas into finished visual concepts.', coverEyebrow: 'Creative canvas', coverTitle: 'Concepts made visual', coverDetail: 'Explore, refine, and export a finished direction.', coverUnit: 'Renders', coverScore: '12' },
+      { id: 'avatar-comparison', name: 'Avatar Comparison', tag: 'AVATARS', accent: '#7BC9A8', image: '/product-avatar-comparison.png', desc: 'Compare AI avatar engines side by side before committing to one.', coverEyebrow: 'Side-by-side test', coverTitle: 'Choose the right avatar', coverDetail: 'Compare motion, voice, realism, and speed.', coverUnit: 'Engines', coverScore: '04' }
     ];
     // Products deliberately do NOT link out to the live apps. Every CTA routes to
     // the contact form, which reads ?product= and pre-fills the enquiry.

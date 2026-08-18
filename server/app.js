@@ -1,5 +1,5 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
-import { randomUUID } from 'node:crypto';
+import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { createServer } from 'node:http';
 
@@ -14,6 +14,7 @@ const EDUCATION_GUIDES = new Map([
   ['ai-starter-pack-for-kids-teens-and-adults', { title: 'AI Starter Pack for Kids, Teens, and Adults', url: 'https://felican.ai/ebooks/ai-starter-pack-for-kids-teens-and-adults' }],
   ['ai-for-entrepreneurs', { title: 'AI for Entrepreneurs', url: 'https://felican.ai/ebooks/ai-for-entrepreneurs' }],
   ['no-more-excuses-12-ai-side-hustles', { title: 'No More Excuses — 12 AI Side Hustles', url: 'https://felican.ai/ebooks/no-more-excuses-12-ai-side-hustles' }],
+  ['ai-start-here', { title: 'Start Here: 1 Hour AI', url: 'https://ebooks.felican.dev/ebooks/ai-start-here' }],
 ]);
 
 const MIME = new Map([
@@ -107,7 +108,7 @@ function securityHeaders(contentType = 'application/json; charset=utf-8') {
     // CSP violation on every visit and loses emoji support. The script is
     // lazy-loaded only when a visitor asks for a person, so ordinary page views
     // still contact nothing but our own origin.
-    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://embed.tawk.to https://*.tawk.to https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.tawk.to; font-src 'self' data: https://fonts.gstatic.com https://*.tawk.to https://cdn.jsdelivr.net; img-src 'self' data: https:; media-src 'self' https://*.tawk.to; connect-src 'self' https://cloudflareinsights.com https://fonts.googleapis.com https://*.tawk.to wss://*.tawk.to; frame-src https://calendly.com https://*.calendly.com https://cal.com https://*.cal.com https://*.tawk.to; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:",
+    'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://embed.tawk.to https://*.tawk.to https://cdn.jsdelivr.net https://esm.sh; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.tawk.to; font-src 'self' data: https://fonts.gstatic.com https://*.tawk.to https://cdn.jsdelivr.net; img-src 'self' data: https:; media-src 'self' blob: https://*.tawk.to https://*.daily.co; connect-src 'self' https://cloudflareinsights.com https://fonts.googleapis.com https://*.tawk.to wss://*.tawk.to https://esm.sh https://api.vapi.ai https://*.vapi.ai wss://*.vapi.ai https://*.daily.co wss://*.daily.co; worker-src 'self' blob:; frame-src https://calendly.com https://*.calendly.com https://cal.com https://*.cal.com https://*.tawk.to; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:",
     'Cross-Origin-Opener-Policy': 'same-origin',
     'Cross-Origin-Resource-Policy': 'same-origin',
     'Permissions-Policy': 'camera=(), microphone=(self), geolocation=()',
@@ -182,12 +183,12 @@ function requestIp(req) {
   ) || 'unknown';
 }
 
-async function readJson(req) {
+async function readJson(req, maxBytes = MAX_BODY_BYTES) {
   const chunks = [];
   let size = 0;
   for await (const chunk of req) {
     size += chunk.length;
-    if (size > MAX_BODY_BYTES) {
+    if (size > maxBytes) {
       const error = new Error('payload_too_large');
       error.statusCode = 413;
       throw error;
@@ -201,6 +202,22 @@ async function readJson(req) {
     error.statusCode = 400;
     throw error;
   }
+}
+
+function secretsMatch(received, expected) {
+  const left = Buffer.from(String(received || ''));
+  const right = Buffer.from(String(expected || ''));
+  return left.length > 0 && left.length === right.length && timingSafeEqual(left, right);
+}
+
+function openAiChunk(id, created, delta, finishReason = null) {
+  return {
+    id,
+    object: 'chat.completion.chunk',
+    created,
+    model: 'felican-voice',
+    choices: [{ index: 0, delta, finish_reason: finishReason }],
+  };
 }
 
 function normalizeEducationLead(body) {
@@ -423,6 +440,7 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
   const educationMinute = createWindowLimiter(5, 60_000);
   const educationDay = createWindowLimiter(30, 86_400_000);
   const educationGlobalMinute = createWindowLimiter(200, 60_000);
+  const voiceMinute = createWindowLimiter(60, 60_000);
   const globalDailyLimit = Math.max(100, Number.parseInt(env.AI_DAILY_LIMIT || '2500', 10) || 2500);
   let globalDailyUsed = 0;
   let globalDailyResetAt = Date.now() + 86_400_000;
@@ -445,6 +463,56 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
     if (url.pathname === '/api/ready') {
       const ready = providerIsConfigured(env);
       return json(res, ready ? 200 : 503, { ok: ready, dependencies: { ai: ready ? 'configured' : 'unavailable' } });
+    }
+
+    if (url.pathname === '/api/voice-config') {
+      if (req.method !== 'GET') return json(res, 405, { error: 'Method not allowed' }, { Allow: 'GET' });
+      const publicKey = sanitizeText(env.FELICAN_VAPI_PUBLIC_KEY, 160);
+      const assistantId = sanitizeText(env.FELICAN_VAPI_ASSISTANT_ID, 160);
+      if (!publicKey || !assistantId) return json(res, 200, { enabled: false });
+      return json(res, 200, { enabled: true, publicKey, assistantId });
+    }
+
+    if (url.pathname === '/v1/chat/completions') {
+      if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' }, { Allow: 'POST' });
+      if (!secretsMatch(req.headers['x-vapi-secret'], env.FELICAN_VAPI_WEBHOOK_SECRET)) {
+        return json(res, 401, { error: 'Unauthorized' });
+      }
+      const ip = requestIp(req);
+      if (!voiceMinute(ip) || !consumeDailyBudget()) {
+        return json(res, 429, { error: 'Too many voice requests.' }, { 'Retry-After': '60' });
+      }
+      const requestId = randomUUID();
+      const startedAt = Date.now();
+      try {
+        const body = await readJson(req, 64 * 1024);
+        const messages = normalizeMessages(body.messages);
+        if (!messages.length || messages.at(-1).role !== 'user') {
+          return json(res, 400, { error: 'A user message is required.' });
+        }
+        const completion = await complete(messages);
+        const reply = sanitizeAssistantReply(typeof completion === 'string' ? completion : completion?.reply);
+        if (!reply) throw new Error('empty_voice_reply');
+        const id = `chatcmpl-${requestId}`;
+        const created = Math.floor(Date.now() / 1000);
+        res.writeHead(200, {
+          ...securityHeaders('text/event-stream; charset=utf-8'),
+          'Cache-Control': 'no-cache, no-store',
+          Connection: 'keep-alive',
+          'X-Accel-Buffering': 'no',
+        });
+        res.write(`data: ${JSON.stringify(openAiChunk(id, created, { role: 'assistant' }))}\n\n`);
+        res.write(`data: ${JSON.stringify(openAiChunk(id, created, { content: reply }))}\n\n`);
+        res.write(`data: ${JSON.stringify(openAiChunk(id, created, {}, 'stop'))}\n\n`);
+        res.end('data: [DONE]\n\n');
+        structuredLog(logger, 'info', 'voice.completed', { requestId, durationMs: Date.now() - startedAt });
+      } catch (error) {
+        const status = Number(error?.statusCode) || 503;
+        structuredLog(logger, 'error', 'voice.failed', { requestId, status, durationMs: Date.now() - startedAt, reason: error?.message || 'unknown error' });
+        if (!res.headersSent) return json(res, status, { error: status < 500 ? 'Invalid request.' : 'Voice is temporarily unavailable.' });
+        res.end();
+      }
+      return;
     }
 
     if (url.pathname === '/api/analytics') {

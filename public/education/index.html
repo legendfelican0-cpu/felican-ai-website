@@ -222,7 +222,8 @@ const GUIDES = [
   { id:'12-ways-ai-can-help-your-business', title:'12 Ways AI Can Help Your Business', audience:'FOR BUSINESS OWNERS', description:'A practical look at where AI can save time, improve service, and strengthen everyday operations.' },
   { id:'ai-starter-pack-for-kids-teens-and-adults', title:'AI Starter Pack for Kids, Teens, and Adults', audience:'FOR EVERY AGE', description:'A friendly starting point for understanding AI, trying it safely, and building confidence.' },
   { id:'ai-for-entrepreneurs', title:'AI for Entrepreneurs', audience:'FOR FOUNDERS & BUILDERS', description:'Ways entrepreneurs can use AI to think, create, validate ideas, and run a sharper business.' },
-  { id:'no-more-excuses-12-ai-side-hustles', title:'No More Excuses — 12 AI Side Hustles', audience:'FOR ACTION TAKERS', description:'Twelve approachable ideas for turning AI skills into useful services and new income.' }
+  { id:'no-more-excuses-12-ai-side-hustles', title:'No More Excuses — 12 AI Side Hustles', audience:'FOR ACTION TAKERS', description:'Twelve approachable ideas for turning AI skills into useful services and new income.' },
+  { id:'ai-start-here', title:'Start Here: 1 Hour AI', audience:'INTERACTIVE CRASH COURSE', description:'A practical, interactive one-hour introduction with flipping pages, video, and a clear path for starting with AI.', cover:'/ebook-ai-start-here.png' }
 ];
 class Component extends DCLogic {
   state={selected:null,submitting:false,error:'',success:false,guideUrl:''};
@@ -264,7 +265,7 @@ class Component extends DCLogic {
   renderVals(){
     const selected=this.state.selected;
     return{
-      guides:GUIDES.map(g=>({...g,cover:`https://felican.ai/ebooks/${g.id}/pages/v1/page-01.png`,open:()=>this.openGuide(g)})),
+      guides:GUIDES.map(g=>({...g,cover:g.cover||`https://felican.ai/ebooks/${g.id}/pages/v1/page-01.png`,open:()=>this.openGuide(g)})),
       dialogOpen:Boolean(selected),
       selectedTitle:selected?selected.title:'',
       closeDialog:()=>this.closeDialog(),

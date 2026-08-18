@@ -121,6 +121,7 @@ describe('Felican AI education eBook access', () => {
       ['ai-starter-pack-for-kids-teens-and-adults', 'https://felican.ai/ebooks/ai-starter-pack-for-kids-teens-and-adults'],
       ['ai-for-entrepreneurs', 'https://felican.ai/ebooks/ai-for-entrepreneurs'],
       ['no-more-excuses-12-ai-side-hustles', 'https://felican.ai/ebooks/no-more-excuses-12-ai-side-hustles'],
+      ['ai-start-here', 'https://ebooks.felican.dev/ebooks/ai-start-here'],
     ];
     for (const [index, [guideId, guideUrl]] of guides.entries()) {
       const response = await fetch(`${base}/api/education-interest`, {
@@ -134,7 +135,7 @@ describe('Felican AI education eBook access', () => {
       expect(legacy.status).toBe(302);
       expect(legacy.headers.get('location')).toBe(guideUrl);
     }
-    expect(delivered).toHaveLength(4);
+    expect(delivered).toHaveLength(5);
   });
 
   it('sends the selected eBook link by email and the Jarvis text relay', async () => {
@@ -207,6 +208,48 @@ describe('Felican AI server', () => {
     });
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ reply: 'You asked: What do you build?' });
+  });
+
+  it('serves public browser voice configuration without exposing the webhook secret', async () => {
+    const base = await start(undefined, { env: {
+      FELICAN_VAPI_PUBLIC_KEY: 'public-test-key',
+      FELICAN_VAPI_ASSISTANT_ID: 'assistant-test-id',
+      FELICAN_VAPI_WEBHOOK_SECRET: 'never-return-this',
+    } });
+    const response = await fetch(`${base}/api/voice-config`);
+    expect(response.status).toBe(200);
+    const payload = await response.json();
+    expect(payload).toEqual({ enabled: true, publicKey: 'public-test-key', assistantId: 'assistant-test-id' });
+    expect(JSON.stringify(payload)).not.toContain('never-return-this');
+  });
+
+  it('streams an authenticated OpenAI-compatible reply for the Vapi voice assistant', async () => {
+    const base = await start(async messages => `Voice answer: ${messages.at(-1).content}`, {
+      env: { FELICAN_VAPI_WEBHOOK_SECRET: 'voice-test-secret' },
+    });
+    const unauthorized = await fetch(`${base}/v1/chat/completions`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'x-vapi-secret': 'wrong' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'Hello' }] }),
+    });
+    expect(unauthorized.status).toBe(401);
+
+    const response = await fetch(`${base}/v1/chat/completions`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'x-vapi-secret': 'voice-test-secret' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'Tell me about training' }] }),
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/event-stream');
+    const stream = await response.text();
+    expect(stream).toContain('Voice answer: Tell me about training');
+    expect(stream).toContain('"finish_reason":"stop"');
+    expect(stream).toContain('data: [DONE]');
+  });
+
+  it('keeps browser voice disabled when Vapi has not been configured', async () => {
+    const base = await start(undefined, { env: { FELICAN_VAPI_PUBLIC_KEY: '', FELICAN_VAPI_ASSISTANT_ID: '' } });
+    const response = await fetch(`${base}/api/voice-config`);
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ enabled: false });
   });
 
   it('rejects malformed JSON, empty questions, bots, and unsupported methods', async () => {
