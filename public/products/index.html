@@ -36,11 +36,31 @@
   * { box-sizing:border-box }
   a { color:#2FB894 } a:hover { color:#59D4B4 }
   ::selection { background:#2FB894; color:#080E13 }
-  .product-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(22px,2.4vw,32px) }
+  .product-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px }
   .product-card { min-width:0; overflow:hidden; border-radius:4px; box-shadow:0 14px 34px rgba(0,0,0,.35) }
-  /* Flagship card spans the full grid width */
-  .product-card.is-featured { grid-column:1/-1 }
+  .product-card.is-featured { grid-column:1/-1;display:grid!important;grid-template-columns:minmax(280px,.82fr) minmax(430px,1.18fr);align-items:start }
+  .is-featured .product-meta,.is-featured .product-flag,.is-featured .product-title,.is-featured .product-desc,.is-featured .product-points,.is-featured .product-actions { grid-column:1 }
+  .is-featured .private-demo { grid-column:2;grid-row:1/span 7 }
+  .is-featured .product-title { font-size:clamp(32px,3.4vw,48px)!important }
   .product-flag { display:inline-flex; align-items:center; gap:8px; align-self:flex-start; padding:7px 13px; background:rgba(47,184,148,.16); border:1px solid #2FB894; color:#8FE0C8; font-family:Sora,sans-serif; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase }
+  .private-demo { min-height:390px;border:1px solid #29413D;background:#071014;box-shadow:0 18px 44px rgba(0,0,0,.36);overflow:hidden }
+  .pd-bar { height:38px;padding:0 13px;border-bottom:1px solid #1C2A28;background:#101A1F;display:flex;align-items:center;justify-content:space-between;gap:12px }
+  .pd-dots { display:flex;gap:6px }.pd-dots i { width:8px;height:8px;border-radius:50%;background:#405653 }.pd-dots i:first-child { background:#2FB894 }
+  .pd-live { display:inline-flex;align-items:center;gap:7px;color:#8FE0C8;font-size:11px;font-weight:700;letter-spacing:.1em }.pd-live::before { content:'';width:7px;height:7px;border-radius:50%;background:#55E6A5;box-shadow:0 0 0 4px rgba(85,230,165,.12) }
+  .pd-body { min-height:350px;display:grid;grid-template-columns:145px 1fr }
+  .pd-side { padding:16px 12px;background:#0A151A;border-right:1px solid #1C2A28;display:flex;flex-direction:column;gap:7px }
+  .pd-brand { display:flex;align-items:center;gap:8px;padding:0 7px 14px;margin-bottom:7px;border-bottom:1px solid #1C2A28;font:700 13px Sora,sans-serif;color:#EEF4F4 }
+  .pd-brand img { width:23px;height:23px }
+  .pd-nav { padding:9px 10px;color:#83999D;font-size:12px;border:1px solid transparent }.pd-nav.active { color:#DFF8EF;background:rgba(47,184,148,.12);border-color:rgba(47,184,148,.26) }
+  .pd-main { padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0 }
+  .pd-kicker { margin:0;color:#2FB894;font:700 11px Sora,sans-serif;letter-spacing:.13em }
+  .pd-title { margin:0;color:#EEF4F4;font:700 clamp(18px,2vw,24px)/1.18 Sora,sans-serif }
+  .pd-prompts { display:flex;flex-wrap:wrap;gap:8px }
+  .pd-prompt { border:1px solid #29413D;background:#0D1B20;color:#C2D2D4;padding:9px 11px;font:600 12px Inter,sans-serif;text-align:left;cursor:pointer;transition:.18s ease }
+  .pd-prompt:hover,.pd-prompt:focus { border-color:#2FB894;color:#FFFFFF;background:#122B28;outline:none;transform:translateY(-1px) }
+  .pd-answer { flex:1;min-height:114px;padding:15px;background:#0C171C;border-left:3px solid #2FB894;color:#BFD1D3;font-size:13.5px;line-height:1.6 }
+  .pd-answer strong { display:block;margin-bottom:7px;color:#FFFFFF;font-family:Sora,sans-serif;font-size:13px }
+  @media (max-width:1080px) { .product-grid { grid-template-columns:repeat(2,minmax(0,1fr)) }.product-card.is-featured { grid-template-columns:minmax(250px,.75fr) minmax(390px,1.25fr) } }
   /* Agents that do real work */
   .agent-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:clamp(16px,1.9vw,24px) }
   @media (max-width:980px) { .agent-grid { grid-template-columns:repeat(2,minmax(0,1fr)) } }
@@ -68,7 +88,8 @@
   .product-shot { display:block; aspect-ratio:16/10; overflow:hidden; background:#080E13; border:1px solid #1C2A28 }
   .product-shot img { display:block; width:100%; height:100%; object-fit:cover; object-position:top; transition:transform .35s cubic-bezier(.2,.8,.2,1) }
   .product-card:hover .product-shot img { transform:scale(1.025) }
-  @media (max-width:850px) { .product-grid { grid-template-columns:1fr } }
+  @media (max-width:850px) { .product-grid { grid-template-columns:1fr }.product-card.is-featured { grid-template-columns:1fr }.is-featured .private-demo { grid-column:1;grid-row:auto }.pd-body { grid-template-columns:112px 1fr } }
+  @media (max-width:520px) { .pd-body { grid-template-columns:1fr }.pd-side { display:none }.private-demo { min-height:360px }.pd-main { padding:17px } }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto } *,*::before,*::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
@@ -76,7 +97,7 @@
 <dc-import name="SiteNav" active="Products" hint-size="100%,74px"></dc-import>
 
 <main>
-  <section aria-labelledby="ph" style="position:relative;background:#080E13;color:#EEF4F4;overflow:hidden;padding:clamp(56px,7vw,96px) 0 clamp(56px,7vw,88px)">
+  <section aria-labelledby="ph" style="position:relative;background:#080E13;color:#EEF4F4;overflow:hidden;padding:clamp(42px,5vw,68px) 0 clamp(42px,5vw,64px)">
     <div aria-hidden="true" style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,rgba(47,184,148,0.12) 0 1px,transparent 1px 8.3333%)"></div>
     <div aria-hidden="true" style="position:absolute;right:-4%;top:0;bottom:0;width:34%;background:linear-gradient(200deg,#2FB894 0%,rgba(8,14,19,0) 70%);opacity:.5"></div>
     <div style="position:relative;max-width:1280px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px, 100%), 1fr));gap:clamp(30px,4vw,64px);align-items:end">
@@ -88,11 +109,11 @@
     </div>
   </section>
 
-  <section aria-label="All Felican AI products" style="background:#080E13;padding:clamp(56px,7vw,96px) 0 clamp(72px,8vw,112px)">
+  <section aria-label="All Felican AI products" style="background:#080E13;padding:clamp(34px,5vw,66px) 0 clamp(56px,7vw,84px)">
     <div class="product-grid" style="max-width:1280px;margin:0 auto;padding:0 24px">
       <sc-for list="{{ products }}" as="p" hint-placeholder-count="5">
-        <article class="product-card {{ p.cls }}" id="{{ p.id }}" style="scroll-margin-top:100px;background:#0C1419;border:1px solid #1C2A28;border-top:6px solid {{ p.accent }};padding:clamp(30px,3vw,44px);display:flex;flex-direction:column;gap:22px;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease,border-color .3s ease" style-hover="transform:translateY(-8px);box-shadow:0 28px 56px rgba(0,0,0,0.45);border-color:#2FB894">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
+        <article class="product-card {{ p.cls }}" id="{{ p.id }}" style="scroll-margin-top:100px;background:#0C1419;border:1px solid #1C2A28;border-top:5px solid {{ p.accent }};padding:clamp(20px,2vw,28px);display:flex;flex-direction:column;gap:14px;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease,border-color .3s ease" style-hover="transform:translateY(-6px);box-shadow:0 24px 48px rgba(0,0,0,0.42);border-color:#2FB894">
+          <div class="product-meta" style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
             <span aria-hidden="true" style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:4px;width:44px;height:44px;flex-shrink:0">
               <span style="background:{{ p.accent }}"></span><span style="background:#1C2A28"></span>
               <span style="background:#1C2A28"></span><span style="background:{{ p.accent }}"></span>
@@ -106,22 +127,44 @@
           </sc-if>
           <sc-if value="{{ p.featured }}" hint-placeholder-val="{{ false }}">
             <span class="product-flag">Flagship product</span>
+            <section class="private-demo" aria-label="Interactive preview of Felican Private AI">
+              <div class="pd-bar"><span class="pd-dots" aria-hidden="true"><i></i><i></i><i></i></span><span class="pd-live">INTERACTIVE PREVIEW</span></div>
+              <div class="pd-body">
+                <aside class="pd-side" aria-label="Preview workspace">
+                  <div class="pd-brand"><img src="/logo-mark.png" alt=""> Felican Private AI</div>
+                  <span class="pd-nav active">New conversation</span>
+                  <span class="pd-nav">Company knowledge</span>
+                  <span class="pd-nav">Secure workspace</span>
+                  <span class="pd-nav">Team agents</span>
+                </aside>
+                <div class="pd-main">
+                  <p class="pd-kicker">YOUR BUSINESS KNOWLEDGE, PRIVATE</p>
+                  <h3 class="pd-title">Ask your company. Get a useful answer.</h3>
+                  <div class="pd-prompts">
+                    <sc-for list="{{ previewPrompts }}" as="q" hint-placeholder-count="3">
+                      <button class="pd-prompt" type="button" onClick="{{ q.go }}">{{ q.label }}</button>
+                    </sc-for>
+                  </div>
+                  <div class="pd-answer" role="status" aria-live="polite"><strong>{{ previewStatus }}</strong>{{ previewAnswer }}</div>
+                </div>
+              </div>
+            </section>
           </sc-if>
-          <h2 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(28px,2.7vw,38px);font-weight:800;line-height:1.08;letter-spacing:-0.03em;color:#EEF4F4;text-wrap:balance">{{ p.name }}</h2>
-          <p style="margin:0;font-size:clamp(17px,1.35vw,19px);line-height:1.7;color:#C2D2D4;text-wrap:pretty">{{ p.desc }}</p>
+          <h2 class="product-title" style="margin:0;font-family:Sora,sans-serif;font-size:clamp(24px,2.2vw,31px);font-weight:800;line-height:1.08;letter-spacing:-0.03em;color:#EEF4F4;text-wrap:balance">{{ p.name }}</h2>
+          <p class="product-desc" style="margin:0;font-size:15.5px;line-height:1.62;color:#C2D2D4;text-wrap:pretty">{{ p.desc }}</p>
           <sc-if value="{{ p.hasPoints }}" hint-placeholder-val="{{ true }}">
-            <ul style="list-style:none;margin:0;padding:0;display:grid;gap:12px;border-top:1px solid #1C2A28;padding-top:20px">
+            <ul class="product-points" style="list-style:none;margin:0;padding:14px 0 0;display:grid;gap:8px;border-top:1px solid #1C2A28">
               <sc-for list="{{ p.points }}" as="pt" hint-placeholder-count="3">
-                <li style="display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;font-size:17px;line-height:1.6;color:#EEF4F4">
-                  <span aria-hidden="true" style="width:9px;height:9px;background:{{ p.accent }};margin-top:8px"></span>
+                <li style="display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:start;font-size:14.5px;line-height:1.48;color:#EEF4F4">
+                  <span aria-hidden="true" style="width:7px;height:7px;background:{{ p.accent }};margin-top:7px"></span>
                   {{ pt }}
                 </li>
               </sc-for>
             </ul>
           </sc-if>
-          <div style="margin-top:auto;display:flex;flex-wrap:wrap;gap:12px;padding-top:8px">
-            <a href="{{ p.askHref }}" style="flex:1 1 200px;display:inline-flex;align-items:center;justify-content:space-between;gap:12px;padding:17px 20px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-2px)" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Ask about {{ p.name }} <span aria-hidden="true">&#8594;</span></a>
-            <a href="/booking/" style="flex:0 1 auto;display:inline-flex;align-items:center;padding:17px 20px;border:1px solid #1C2A28;color:#2FB894;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s ease" style-hover="background:rgba(47,184,148,0.14)" style-focus="outline:3px solid #2FB894;outline-offset:3px">Book a call</a>
+          <div class="product-actions" style="margin-top:auto;display:flex;flex-wrap:wrap;gap:9px;padding-top:5px">
+            <a href="{{ p.askHref }}" style="flex:1 1 150px;display:inline-flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 15px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:14px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-2px)" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Ask about {{ p.name }} <span aria-hidden="true">&#8594;</span></a>
+            <a href="/booking/" style="flex:0 1 auto;display:inline-flex;align-items:center;padding:13px 15px;border:1px solid #1C2A28;color:#2FB894;font-family:Sora,sans-serif;font-size:14px;font-weight:700;text-decoration:none;transition:background .2s ease" style-hover="background:rgba(47,184,148,0.14)" style-focus="outline:3px solid #2FB894;outline-offset:3px">Book a call</a>
           </div>
         </article>
       </sc-for>
@@ -194,6 +237,15 @@
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
 class Component extends DCLogic {
+  state = {
+    previewBusy: false,
+    previewAnswer: 'Choose a sample question to see how a private, company-grounded workspace can respond without sending business data to a public model.'
+  };
+  runPreview(item) {
+    if (this._previewTimer) clearTimeout(this._previewTimer);
+    this.setState({ previewBusy: true, previewAnswer: 'Searching approved company knowledge…' });
+    this._previewTimer = setTimeout(() => this.setState({ previewBusy: false, previewAnswer: item.answer }), 420);
+  }
   componentDidMount() {
     setTimeout(() => document.querySelectorAll('img[data-product-image]').forEach(img => {
       const src = img.getAttribute('data-product-image');
@@ -214,7 +266,7 @@ class Component extends DCLogic {
     this._io = io;
     this._fallback = setTimeout(() => { hidden.forEach(n => { if (n.style.opacity === '0') show(n); }); }, 1400);
   }
-  componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._fallback) clearTimeout(this._fallback); }
+  componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._fallback) clearTimeout(this._fallback); if (this._previewTimer) clearTimeout(this._previewTimer); }
   renderVals() {
     const p = [
       { id: 'private-ai', num: '01', name: 'Private AI', tag: 'SECURE ENTERPRISE AI', accent: '#2FB894', featured: true, image: '/product-private-ai.png',
@@ -289,11 +341,18 @@ class Component extends DCLogic {
         ...x,
         cls: x.featured ? 'is-featured' : '',
         featured: !!x.featured,
-        hasImage: !!x.image,
+        hasImage: !!x.image && !x.featured,
         hasPoints: Array.isArray(x.points) && x.points.length > 0,
         points: x.points || [],
         askHref: ask(x)
       })),
+      previewPrompts: [
+        { label: 'Summarize our policies', answer: 'Here are the five policies employees ask about most, summarized from your approved handbook with source references for each answer.' },
+        { label: 'Prepare a client brief', answer: 'I found the latest approved account notes, open action items, and service history. Here is a concise brief your team can review before the meeting.' },
+        { label: 'Build a training outline', answer: 'I created a role-specific training outline using your procedures, terminology, and compliance requirements—without exposing the source material outside your environment.' }
+      ].map(item => ({ ...item, go: () => this.runPreview(item) })),
+      previewStatus: this.state.previewBusy ? 'Working securely…' : 'Felican Private AI',
+      previewAnswer: this.state.previewAnswer,
       agents: agents.map((x, i) => ({ ...x, num: String(i + 1).padStart(2, '0'), askHref: ask(x) })),
       rest: rest.map(x => ({ ...x, askHref: ask(x) }))
     };

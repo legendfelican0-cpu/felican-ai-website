@@ -23,7 +23,7 @@
     <nav aria-label="Site">
       <h2 style="margin:0 0 18px;font-family:Sora,sans-serif;font-size:14px;font-weight:700;letter-spacing:0.14em;color:#2FB894">SITE</h2>
       <ul style="list-style:none;margin:0;padding:0;display:grid;gap:12px">
-        <sc-for list="{{ nav }}" as="l" hint-placeholder-count="6">
+        <sc-for list="{{ nav }}" as="l" hint-placeholder-count="7">
           <li><a href="{{ l.href }}" style="font-size:17px;color:#C2D2D4;text-decoration:none" style-hover="color:#FFFFFF" style-focus="outline:2px solid #2FB894;outline-offset:3px">{{ l.label }}</a></li>
         </sc-for>
       </ul>
@@ -65,7 +65,7 @@ class Component extends DCLogic {
       email: 'ai' + '@' + 'felican.ai',
       emailHref: 'mailto:' + 'ai' + '@' + 'felican.ai',
       bookingUrl: 'https://cal.com/felican-ai-inc-n68piw/15min',
-      nav: [['Home','/'],['Products','/products/'],['Services','/services/'],['Books','/books/'],['About Us','/about/'],['Contact','/contact/'],['Book a Call','/booking/']].map(([label,href])=>({label,href})),
+      nav: [['Home','/'],['Products','/products/'],['Services','/services/'],['Education','/education/'],['Books','/books/'],['About Us','/about/'],['Contact','/contact/'],['Book a Call','/booking/']].map(([label,href])=>({label,href})),
       prods: [
         { label: 'Felican Auto', href: '/products/#felican-auto' },
         { label: 'World of Agents', href: '/products/#world-of-agents' },

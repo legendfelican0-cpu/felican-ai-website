@@ -9,6 +9,12 @@ const MAX_MESSAGE_LENGTH = 800;
 const MAX_MESSAGES = 10;
 const RATE_MAP_CAP = 10_000;
 const ANALYTICS_EVENTS = new Set(['page_view', 'contact_click', 'product_click', 'assistant_open']);
+const EDUCATION_GUIDES = new Map([
+  ['12-ways-ai-can-help-your-business', '12 Ways AI Can Help Your Business'],
+  ['ai-starter-pack-for-kids-teens-and-adults', 'AI Starter Pack for Kids, Teens, and Adults'],
+  ['ai-for-entrepreneurs', 'AI for Entrepreneurs'],
+  ['no-more-excuses-12-ai-side-hustles', 'No More Excuses — 12 AI Side Hustles'],
+]);
 
 const MIME = new Map([
   ['.css', 'text/css; charset=utf-8'],
@@ -36,6 +42,8 @@ Products and official links:
 - BookMaker (live as Book Studio): an AI-guided workspace that turns an idea or manuscript into a publish-ready Kindle eBook, paperback, and hardcover. https://book-studio.felican.dev/
 
 Services: AI agents and bots, business automation, custom integrations, private AI systems, AI implementation and consulting, business solutions, AI training and workshops.
+
+Education: the /education/ page includes Felican AI eBooks, books by Lee Felican Jr., upcoming courses, Tiny Techs for early learners, nonprofit partnerships, school partnerships, and corporate training. Visitors can enter an email address or phone number to open the shared eBook library at https://felican.ai/ebooks/.
 
 Books by Lee Felican Jr.:
 - The Big Balla's Guide to Making Money with AI: 100 real ways to make money with AI, organized by startup cost and industry, plus beginner AI trading and a legal-business-under-$50 playbook.
@@ -103,7 +111,7 @@ function securityHeaders(contentType = 'application/json; charset=utf-8') {
     'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com https://embed.tawk.to https://*.tawk.to https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.tawk.to; font-src 'self' data: https://fonts.gstatic.com https://*.tawk.to https://cdn.jsdelivr.net; img-src 'self' data: https:; media-src 'self' https://*.tawk.to; connect-src 'self' https://cloudflareinsights.com https://fonts.googleapis.com https://*.tawk.to wss://*.tawk.to; frame-src https://calendly.com https://*.calendly.com https://cal.com https://*.cal.com https://*.tawk.to; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:",
     'Cross-Origin-Opener-Policy': 'same-origin',
     'Cross-Origin-Resource-Policy': 'same-origin',
-    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+    'Permissions-Policy': 'camera=(), microphone=(self), geolocation=()',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
     'X-Content-Type-Options': 'nosniff',
@@ -193,6 +201,113 @@ async function readJson(req) {
     const error = new Error('invalid_json');
     error.statusCode = 400;
     throw error;
+  }
+}
+
+function normalizeEducationLead(body) {
+  const guideId = sanitizeText(body.guideId, 100);
+  const email = sanitizeText(body.email, 254).toLowerCase();
+  const phone = sanitizeText(body.phone, 40);
+  const phoneDigits = phone.replace(/\D/g, '');
+  if (!EDUCATION_GUIDES.has(guideId)) return { error: 'Please choose a guide.' };
+  if (!email && !phone) return { error: 'Enter an email address or phone number.' };
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Enter a valid email address.' };
+  if (phone && (phoneDigits.length < 10 || phoneDigits.length > 15)) return { error: 'Enter a valid phone number.' };
+  if (body.consent !== true) return { error: 'Please confirm that Felican AI may contact you about this request.' };
+  return {
+    lead: {
+      guideId,
+      guideTitle: EDUCATION_GUIDES.get(guideId),
+      email,
+      phone,
+      phoneE164: phone ? `+${phoneDigits.length === 10 ? `1${phoneDigits}` : phoneDigits}` : '',
+      submittedAt: new Date().toISOString(),
+    },
+  };
+}
+
+const EDUCATION_CONSENT_TEXT = 'I agree that Felican AI may email or text me the requested eBook. If I provide a mobile number, I consent to one automated text per request. Message and data rates may apply. Reply STOP to opt out, HELP for help. Consent is not a condition of purchase.';
+const EBOOK_LIBRARY_URL = 'https://felican.ai/ebooks/';
+
+async function requireOk(response, label) {
+  if (!response.ok) throw new Error(`${label} returned ${response.status}`);
+  return response;
+}
+
+export async function deliverEducationLead(lead, env = process.env, fetchImpl = fetch) {
+  const webhookUrl = env.EDUCATION_LEADS_WEBHOOK_URL?.trim();
+  const resendKey = env.RESEND_API_KEY?.trim();
+  const resendFrom = env.EDUCATION_LEADS_FROM?.trim();
+  const relayUrl = env.IMESSAGE_RELAY_URL?.trim() || 'https://imessage.felican.ai/send';
+  const relayToken = env.IMESSAGE_RELAY_TOKEN?.trim();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
+  try {
+    const deliveries = [];
+    if (webhookUrl) {
+      const parsed = new URL(webhookUrl);
+      if (parsed.protocol !== 'https:') throw new Error('Education lead webhook must use HTTPS');
+      deliveries.push(fetchImpl(parsed, {
+        method: 'POST',
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+          ...(env.EDUCATION_LEADS_WEBHOOK_TOKEN ? { Authorization: `Bearer ${env.EDUCATION_LEADS_WEBHOOK_TOKEN}` } : {}),
+        },
+        body: JSON.stringify({ event: 'education.guide_requested', consentText: EDUCATION_CONSENT_TEXT, guideUrl: EBOOK_LIBRARY_URL, ...lead }),
+      }).then(response => requireOk(response, 'Education lead webhook')));
+    } else if (resendKey && resendFrom) {
+      const to = env.EDUCATION_LEADS_TO?.trim() || 'ai@felican.ai';
+      const contact = [lead.email && `Email: ${lead.email}`, lead.phone && `Phone: ${lead.phone}`].filter(Boolean).join('\n');
+      deliveries.push(fetchImpl('https://api.resend.com/emails', {
+        method: 'POST',
+        signal: controller.signal,
+        headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: resendFrom,
+          to: [to],
+          subject: `Felican AI eBook request — ${lead.guideTitle}`,
+          text: `A visitor requested an eBook.\n\nTitle: ${lead.guideTitle}\n${contact}\nSubmitted: ${lead.submittedAt}\nSource IP: ${lead.sourceIp || 'unavailable'}\nConsent: ${EDUCATION_CONSENT_TEXT}`,
+        }),
+      }).then(response => requireOk(response, 'Education lead notification')));
+    } else {
+      throw new Error('Education lead delivery is not configured');
+    }
+
+    if (lead.email) {
+      if (!resendKey || !resendFrom) throw new Error('Education email delivery is not configured');
+      deliveries.push(fetchImpl('https://api.resend.com/emails', {
+        method: 'POST',
+        signal: controller.signal,
+        headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: resendFrom,
+          to: [lead.email],
+          subject: `Your Felican AI eBook — ${lead.guideTitle}`,
+          text: `Your Felican AI eBook access is ready.\n\n${lead.guideTitle}\n${EBOOK_LIBRARY_URL}\n\nOpen the Felican AI eBook library to read the available interactive eBooks.\n\nFelican AI\nai@felican.ai`,
+          html: `<div style="font-family:Arial,sans-serif;line-height:1.6;color:#0b1828"><p>Your Felican AI eBook access is ready.</p><h1 style="font-size:26px">${lead.guideTitle}</h1><p><a href="${EBOOK_LIBRARY_URL}" style="display:inline-block;padding:13px 18px;background:#1768e5;color:#fff;text-decoration:none;font-weight:700">Open the eBook library</a></p><p>Explore the available Felican AI eBooks online.</p><p>Felican AI<br><a href="mailto:ai@felican.ai">ai@felican.ai</a></p></div>`,
+        }),
+      }).then(response => requireOk(response, 'Education email delivery')));
+    }
+
+    if (lead.phoneE164) {
+      if (!relayToken) throw new Error('Education text delivery is not configured');
+      const parsedRelay = new URL(relayUrl);
+      if (parsedRelay.protocol !== 'https:') throw new Error('Education text relay must use HTTPS');
+      deliveries.push(fetchImpl(parsedRelay, {
+        method: 'POST',
+        signal: controller.signal,
+        headers: { Authorization: `Bearer ${relayToken}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: lead.phoneE164,
+          text: `Felican AI: Your eBook access for “${lead.guideTitle}” is ready: ${EBOOK_LIBRARY_URL} Message and data rates may apply. Reply STOP to opt out, HELP for help.`,
+        }),
+      }).then(response => requireOk(response, 'Education text delivery')));
+    }
+
+    await Promise.all(deliveries);
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -299,7 +414,7 @@ function staticPath(rootDir, pathname) {
   return decoded === '/' ? join(rootDir, 'index.html') : null;
 }
 
-export function createAppServer({ rootDir, complete = completeWithConfiguredProvider, sendContact = sendContactEmail, logger = console, env = process.env } = {}) {
+export function createAppServer({ rootDir, complete = completeWithConfiguredProvider, sendContact = sendContactEmail, deliverLead, logger = console, env = process.env } = {}) {
   const siteRoot = resolve(rootDir || join(process.cwd(), 'dist/client'));
   const contactHourly = createWindowLimiter(5, 3_600_000);
   const contactDaily = createWindowLimiter(20, 86_400_000);
@@ -307,6 +422,9 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
   const perDay = createWindowLimiter(50, 86_400_000);
   const globalMinute = createWindowLimiter(300, 60_000);
   const analyticsMinute = createWindowLimiter(120, 60_000);
+  const educationMinute = createWindowLimiter(5, 60_000);
+  const educationDay = createWindowLimiter(30, 86_400_000);
+  const educationGlobalMinute = createWindowLimiter(200, 60_000);
   const globalDailyLimit = Math.max(100, Number.parseInt(env.AI_DAILY_LIMIT || '2500', 10) || 2500);
   let globalDailyUsed = 0;
   let globalDailyResetAt = Date.now() + 86_400_000;
@@ -350,6 +468,42 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
         structuredLog(logger, 'warn', 'site.analytics_rejected', { reason: error?.message || 'invalid' });
       }
       return empty(res, 204);
+    }
+
+    const legacyEbookMatch = url.pathname.match(/^\/ebooks\/([^/]+)\/?$/);
+    if (req.method === 'GET' && legacyEbookMatch && EDUCATION_GUIDES.has(legacyEbookMatch[1])) {
+      res.writeHead(302, { Location: EBOOK_LIBRARY_URL, 'Cache-Control': 'no-store' });
+      res.end();
+      return;
+    }
+
+    if (url.pathname === '/api/education-interest') {
+      if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' }, { Allow: 'POST' });
+      const ua = String(req.headers['user-agent'] || '');
+      if (!ua || BOT_UA.test(ua)) return json(res, 403, { error: 'Request unavailable' });
+      const ip = requestIp(req);
+      if (!educationGlobalMinute('global') || !educationMinute(ip) || !educationDay(ip)) {
+        return json(res, 429, { error: 'Too many requests. Please try again later.' }, { 'Retry-After': '60' });
+      }
+      const requestId = randomUUID();
+      try {
+        const body = await readJson(req);
+        if (sanitizeText(body.website, 200)) return json(res, 200, { ok: true });
+        const normalized = normalizeEducationLead(body);
+        if (normalized.error) return json(res, 400, { error: normalized.error });
+        const lead = { ...normalized.lead, sourceIp: ip, consentText: EDUCATION_CONSENT_TEXT };
+        await (deliverLead || (value => deliverEducationLead(value, env)))(lead);
+        structuredLog(logger, 'info', 'education.ebook_requested', {
+          requestId,
+          guideId: lead.guideId,
+          contactMethod: lead.email && lead.phone ? 'email_and_phone' : lead.email ? 'email' : 'phone',
+        });
+        return json(res, 200, { ok: true, guideUrl: EBOOK_LIBRARY_URL });
+      } catch (error) {
+        const status = Number(error?.statusCode) || 503;
+        structuredLog(logger, 'error', 'education.ebook_request_failed', { requestId, status, reason: error?.message || 'unknown error' });
+        return json(res, status, { error: status < 500 ? 'Invalid request.' : 'We could not send access right now. Please email us and we will help.' });
+      }
     }
 
     if (url.pathname === '/api/chat') {

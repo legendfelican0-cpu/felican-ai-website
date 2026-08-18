@@ -9,7 +9,7 @@ describe('Discoverability and link previews', () => {
   const PAGES = [
     'index.html',
     'public/about/index.html', 'public/booking/index.html', 'public/books/index.html',
-    'public/contact/index.html', 'public/privacy/index.html', 'public/products/index.html',
+    'public/contact/index.html', 'public/education/index.html', 'public/privacy/index.html', 'public/products/index.html',
     'public/services/index.html', 'public/terms/index.html',
   ];
   const headOf = file => {
@@ -58,7 +58,7 @@ describe('Discoverability and link previews', () => {
 
   it('lists every public route in the sitemap', () => {
     const sitemap = read('public/sitemap.xml');
-    for (const route of ['/', '/products/', '/services/', '/books/', '/about/', '/contact/', '/booking/']) {
+    for (const route of ['/', '/products/', '/services/', '/education/', '/books/', '/about/', '/contact/', '/booking/']) {
       expect(sitemap).toContain(`<loc>https://felican.ai${route}</loc>`);
     }
     expect(sitemap).toContain('<lastmod>');
@@ -83,6 +83,7 @@ describe('Claude Design static website export', () => {
     ['about', 'A family-built company that builds AI for a living'],
     ['contact', "Let's talk about your business"],
     ['booking', 'Let’s talk about where AI can create leverage.'],
+    ['education', 'AI learning that meets people where they are.'],
     ['privacy', 'Privacy Policy'],
     ['terms', 'Terms of Use'],
   ])('includes the %s page', (route, expectedText) => {
@@ -130,6 +131,35 @@ describe('Claude Design static website export', () => {
     expect(products.indexOf("name: 'Private AI'")).toBeLessThan(products.indexOf("name: 'Felican AI Assistant'"));
     // The contact form must offer the same name so ?product= pre-selects it.
     expect(read('public/contact/index.html')).toContain("'Private AI'");
+  });
+
+  it('includes a compact interactive Private AI preview', () => {
+    const products = read('public/products/index.html');
+    expect(products).toContain('INTERACTIVE PREVIEW');
+    expect(products).toContain('Felican Private AI');
+    expect(products).toContain('runPreview(item)');
+    expect(products).toContain('grid-template-columns:repeat(3,minmax(0,1fr))');
+  });
+
+  it('offers text and browser voice from the Felican AI assistant', () => {
+    const assistant = read('public/ChatAssistant.dc.html');
+    expect(assistant).toContain('Talk to Felican AI');
+    expect(assistant).toContain('Voice + text');
+    expect(assistant).toContain('window.SpeechRecognition || window.webkitSpeechRecognition');
+    expect(assistant).toContain("fetch('/api/chat'");
+  });
+
+  it('gates every education eBook before opening the shared library', () => {
+    const education = read('public/education/index.html');
+    for (const id of [
+      '12-ways-ai-can-help-your-business',
+      'ai-starter-pack-for-kids-teens-and-adults',
+      'ai-for-entrepreneurs',
+      'no-more-excuses-12-ai-side-hustles',
+    ]) expect(education).toContain(id);
+    expect(education).toContain("fetch('/api/education-interest'");
+    expect(education).toContain('window.location.assign(payload.guideUrl)');
+    expect(education).not.toContain('Open the PDF');
   });
 
   it('orders the headline products as the owner specified', () => {

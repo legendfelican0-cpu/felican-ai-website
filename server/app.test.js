@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { createAppServer, contactIsConfigured, normalizeContact, normalizeMessages, sanitizeAssistantReply, sanitizeText } from './app.js';
+import { createAppServer, contactIsConfigured, deliverEducationLead, normalizeContact, normalizeMessages, sanitizeAssistantReply, sanitizeText } from './app.js';
 
 const servers = [];
 
@@ -12,6 +12,7 @@ async function start(complete = async () => 'A real answer from Felican AI.', op
     rootDir: process.cwd(),
     complete,
     ...(options.sendContact ? { sendContact: options.sendContact } : {}),
+    ...(options.deliverLead ? { deliverLead: options.deliverLead } : {}),
     env: { ANTHROPIC_API_KEY: 'test-key', ...options.env },
     logger: options.logger || { error() {}, info() {}, warn() {} },
   });
@@ -108,6 +109,85 @@ describe('Felican AI contact endpoint', () => {
     }
     expect(codes.filter(c => c === 200)).toHaveLength(5);
     expect(codes.filter(c => c === 429)).toHaveLength(2);
+  });
+});
+
+describe('Felican AI education eBook access', () => {
+  it('accepts every eBook id and always returns the shared library', async () => {
+    const delivered = [];
+    const base = await start(undefined, { deliverLead: async lead => delivered.push(lead) });
+    const ids = [
+      '12-ways-ai-can-help-your-business',
+      'ai-starter-pack-for-kids-teens-and-adults',
+      'ai-for-entrepreneurs',
+      'no-more-excuses-12-ai-side-hustles',
+    ];
+    for (const [index, guideId] of ids.entries()) {
+      const response = await fetch(`${base}/api/education-interest`, {
+        method: 'POST',
+        headers: { ...browserHeaders, 'X-Forwarded-For': `203.0.113.${20 + index}` },
+        body: JSON.stringify({ guideId, email: 'reader@example.com', phone: '', consent: true, website: '' }),
+      });
+      expect(response.status).toBe(200);
+      await expect(response.json()).resolves.toEqual({ ok: true, guideUrl: 'https://felican.ai/ebooks/' });
+      const legacy = await fetch(`${base}/ebooks/${guideId}`, { redirect: 'manual' });
+      expect(legacy.status).toBe(302);
+      expect(legacy.headers.get('location')).toBe('https://felican.ai/ebooks/');
+    }
+    expect(delivered).toHaveLength(4);
+  });
+
+  it('sends the same library link by email and the Jarvis text relay', async () => {
+    const requests = [];
+    const fakeFetch = async (url, options) => {
+      requests.push({ url: String(url), ...options, json: JSON.parse(options.body) });
+      return { ok: true, status: 200 };
+    };
+    await deliverEducationLead({
+      guideId: 'ai-for-entrepreneurs',
+      guideTitle: 'AI for Entrepreneurs',
+      email: 'reader@example.com',
+      phone: '(346) 555-0199',
+      phoneE164: '+13465550199',
+      submittedAt: '2026-08-17T12:00:00.000Z',
+      sourceIp: '203.0.113.10',
+    }, {
+      RESEND_API_KEY: 'resend-test',
+      EDUCATION_LEADS_FROM: 'Felican AI Education <ai@felican.ai>',
+      EDUCATION_LEADS_TO: 'ai@felican.ai',
+      IMESSAGE_RELAY_URL: 'https://imessage.felican.ai/send',
+      IMESSAGE_RELAY_TOKEN: 'relay-test',
+    }, fakeFetch);
+    expect(requests).toHaveLength(3);
+    expect(requests[1].json.to).toEqual(['reader@example.com']);
+    expect(requests[1].json.text).toContain('https://felican.ai/ebooks/');
+    expect(requests[2].url).toBe('https://imessage.felican.ai/send');
+    expect(requests[2].headers.Authorization).toBe('Bearer relay-test');
+    expect(requests[2].json.text).toContain('https://felican.ai/ebooks/');
+  });
+
+  it('rejects invalid or non-consensual eBook requests and ignores the honeypot', async () => {
+    let deliveries = 0;
+    const base = await start(undefined, { deliverLead: async () => { deliveries += 1; } });
+    for (const [index, body] of [
+      { guideId: 'not-a-guide', email: 'reader@example.com', consent: true },
+      { guideId: 'ai-for-entrepreneurs', email: '', phone: '', consent: true },
+      { guideId: 'ai-for-entrepreneurs', email: 'not-an-email', consent: true },
+      { guideId: 'ai-for-entrepreneurs', phone: '123', consent: true },
+      { guideId: 'ai-for-entrepreneurs', email: 'reader@example.com', consent: false },
+    ].entries()) {
+      const response = await fetch(`${base}/api/education-interest`, {
+        method: 'POST',
+        headers: { ...browserHeaders, 'X-Forwarded-For': `203.0.113.${60 + index}` },
+        body: JSON.stringify(body),
+      });
+      expect(response.status).toBe(400);
+    }
+    const honeypot = await fetch(`${base}/api/education-interest`, {
+      method: 'POST', headers: browserHeaders, body: JSON.stringify({ website: 'spam.example' }),
+    });
+    expect(honeypot.status).toBe(200);
+    expect(deliveries).toBe(0);
   });
 });
 
