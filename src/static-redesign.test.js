@@ -159,14 +159,16 @@ describe('Claude Design static website export', () => {
 
   it('waits for the visitor to speak and pronounces Felican correctly', () => {
     const provisioner = read('scripts/provision-felican-vapi.py');
-    expect(provisioner).toContain('"firstMessage": None');
-    expect(provisioner).toContain('"firstMessageMode": None');
+    expect(provisioner).toContain('"firstMessage": f"{public_url.rstrip(\'/\')}/voice-ready.wav"');
+    expect(provisioner).toContain('"firstMessageMode": "assistant-speaks-first"');
+    expect(provisioner).toContain('"firstMessageInterruptionsEnabled": False');
     expect(provisioner).toContain('"backgroundDenoisingEnabled": None');
     expect(provisioner).toContain('"backgroundSpeechDenoisingPlan": None');
     expect(provisioner).toContain('"fallbackPlan": {"autoFallback": {"enabled": True}}');
     expect(provisioner).toContain('"speech-update"');
     expect(provisioner).toContain('"key": "Felican"');
     expect(provisioner).toContain('"value": "Fell-ih-can"');
+    expect(read('server/app.js')).toContain("['.wav', 'audio/wav']");
   });
 
   it('gates every education eBook before opening the selected title', () => {

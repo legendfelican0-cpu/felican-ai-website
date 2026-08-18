@@ -263,6 +263,7 @@ class Component extends DCLogic {
         }
         if (message.transcriptType !== 'final') return;
         const role = message.role === 'user' ? 'user' : 'assistant';
+        if (role === 'assistant' && /voice-ready\.wav/i.test(text)) return;
         this.setState(state => {
           const last = state.messages[state.messages.length - 1];
           if (last && last.role === role && last.text === text) return { userSpeaking: false, liveTranscript: '' };

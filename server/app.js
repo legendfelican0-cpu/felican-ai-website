@@ -27,6 +27,7 @@ const MIME = new Map([
   ['.json', 'application/json; charset=utf-8'],
   ['.png', 'image/png'],
   ['.svg', 'image/svg+xml'],
+  ['.wav', 'audio/wav'],
   ['.webp', 'image/webp'],
 ]);
 

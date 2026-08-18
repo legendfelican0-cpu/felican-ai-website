@@ -82,13 +82,11 @@ def api(method: str, route: str, key: str, body: dict | None = None) -> dict | l
 def assistant_payload(public_url: str, webhook_secret: str) -> dict:
     return {
         "name": ASSISTANT_NAME,
-        # The visitor speaks first. Explicit null removes the old greeting when
-        # this payload PATCHes an existing assistant.
-        "firstMessage": None,
-        # With no firstMessage, Vapi waits for the visitor without needing a
-        # special first-message mode. Keeping these null matches COPS audio.
-        "firstMessageMode": None,
-        "firstMessageInterruptionsEnabled": None,
+        # COPS initializes the browser audio path with a first turn. A short
+        # silent clip does the same without greeting or prompting the visitor.
+        "firstMessage": f"{public_url.rstrip('/')}/voice-ready.wav",
+        "firstMessageMode": "assistant-speaks-first",
+        "firstMessageInterruptionsEnabled": False,
         # Match the proven COPS browser voice path exactly: omit browser
         # worklet denoisers instead of sending a disabled plan.
         "backgroundSpeechDenoisingPlan": None,
