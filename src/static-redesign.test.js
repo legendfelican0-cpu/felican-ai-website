@@ -160,6 +160,7 @@ describe('Claude Design static website export', () => {
     expect(assistant).toContain('if (!this._voiceConfig && this._voiceReadyPromise) await this._voiceReadyPromise');
     expect(assistant).toContain('class FelicanVapi extends Vapi');
     expect(assistant).toContain('audioSource: track, startAudioOff: false');
+    expect(assistant).toContain('{ avoidEval: true, alwaysIncludeMicInPermissionPrompt: true }');
     expect(assistant).toContain("vapi.on('local-volume-level'");
     expect(assistant).toContain('/audio-observer|audio\\.processor|audio processor|krisp|local-audio-level/');
     expect(assistant).toContain('fa-voice-signal');

@@ -302,7 +302,12 @@ class Component extends DCLogic {
           this.dailyCallObject = { ...this.dailyCallObject, audioSource: track, startAudioOff: false };
         }
       }
-      const vapi = new FelicanVapi(this._voiceConfig.publicKey);
+      const vapi = new FelicanVapi(
+        this._voiceConfig.publicKey,
+        undefined,
+        { avoidEval: true, alwaysIncludeMicInPermissionPrompt: true },
+        { audioSource: true, startAudioOff: false }
+      );
       vapi.on('call-start', () => {
         vapi.setMuted?.(false);
         this.setState({ voiceActive: true, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '', voiceError: '' });
