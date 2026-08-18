@@ -1,5 +1,5 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
-import { randomUUID, timingSafeEqual } from 'node:crypto';
+import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { createServer } from 'node:http';
 
@@ -8,6 +8,9 @@ const MAX_BODY_BYTES = 16 * 1024;
 const MAX_MESSAGE_LENGTH = 800;
 const MAX_MESSAGES = 10;
 const RATE_MAP_CAP = 10_000;
+const COPS_VOICE_BUNDLE_URL = 'https://cops-website.felican.dev/voice-client.bundle.js';
+const COPS_VOICE_BUNDLE_SHA384 = 'sha384-om2+KCCsCWb4oslvQoDmevbN/xaXx9cMxSf4Prw1kdgEFYKx2kOwJqWqDmhG8fKc';
+const MAX_VOICE_BUNDLE_BYTES = 1024 * 1024;
 const ANALYTICS_EVENTS = new Set(['page_view', 'contact_click', 'product_click', 'assistant_open']);
 const EDUCATION_GUIDES = new Map([
   ['12-ways-ai-can-help-your-business', { title: '12 Ways AI Can Help Your Business', url: 'https://felican.ai/ebooks/12-ways-ai-can-help-your-business' }],
@@ -73,6 +76,10 @@ export function sanitizeAssistantReply(value) {
     .replace(/[ \t]+\n/g, '\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
+}
+
+export function voiceBundleIntegrity(value) {
+  return `sha384-${createHash('sha384').update(value).digest('base64')}`;
 }
 
 export function normalizeMessages(input) {
@@ -430,7 +437,7 @@ function staticPath(rootDir, pathname) {
   return decoded === '/' ? join(rootDir, 'index.html') : null;
 }
 
-export function createAppServer({ rootDir, complete = completeWithConfiguredProvider, sendContact = sendContactEmail, deliverLead, logger = console, env = process.env } = {}) {
+export function createAppServer({ rootDir, complete = completeWithConfiguredProvider, sendContact = sendContactEmail, deliverLead, voiceBundleFetch = fetch, voiceBundleIntegrityExpected = COPS_VOICE_BUNDLE_SHA384, logger = console, env = process.env } = {}) {
   const siteRoot = resolve(rootDir || join(process.cwd(), 'dist/client'));
   const contactHourly = createWindowLimiter(5, 3_600_000);
   const contactDaily = createWindowLimiter(20, 86_400_000);
@@ -445,6 +452,29 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
   const globalDailyLimit = Math.max(100, Number.parseInt(env.AI_DAILY_LIMIT || '2500', 10) || 2500);
   let globalDailyUsed = 0;
   let globalDailyResetAt = Date.now() + 86_400_000;
+  let voiceBundleCache = null;
+
+  const getVoiceBundle = async () => {
+    if (voiceBundleCache) return voiceBundleCache;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15_000);
+    try {
+      const response = await voiceBundleFetch(COPS_VOICE_BUNDLE_URL, {
+        signal: controller.signal,
+        headers: { Accept: 'text/javascript', 'User-Agent': 'felican-site-voice-sync/1.0' },
+      });
+      if (!response.ok) throw new Error(`COPS voice client returned ${response.status}`);
+      const bytes = Buffer.from(await response.arrayBuffer());
+      if (!bytes.length || bytes.length > MAX_VOICE_BUNDLE_BYTES) throw new Error('COPS voice client size is invalid');
+      const integrity = voiceBundleIntegrity(bytes);
+      if (integrity !== voiceBundleIntegrityExpected) throw new Error('COPS voice client integrity check failed');
+      voiceBundleCache = bytes;
+      structuredLog(logger, 'info', 'voice.client_cached', { bytes: bytes.length, integrity });
+      return voiceBundleCache;
+    } finally {
+      clearTimeout(timeout);
+    }
+  };
 
   const consumeDailyBudget = () => {
     if (Date.now() >= globalDailyResetAt) {
@@ -472,6 +502,23 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
       const assistantId = sanitizeText(env.FELICAN_VAPI_ASSISTANT_ID, 160);
       if (!publicKey || !assistantId) return json(res, 200, { enabled: false });
       return json(res, 200, { enabled: true, publicKey, assistantId });
+    }
+
+    if (url.pathname === '/voice-client.bundle.js') {
+      if (!['GET', 'HEAD'].includes(req.method || 'GET')) return json(res, 405, { error: 'Method not allowed' }, { Allow: 'GET, HEAD' });
+      try {
+        const bundle = await getVoiceBundle();
+        res.writeHead(200, {
+          ...securityHeaders('text/javascript; charset=utf-8'),
+          'Cache-Control': 'public, max-age=14400, must-revalidate',
+          'Content-Length': bundle.length,
+          ETag: `"${voiceBundleIntegrityExpected}"`,
+        });
+        return req.method === 'HEAD' ? res.end() : res.end(bundle);
+      } catch (error) {
+        structuredLog(logger, 'error', 'voice.client_failed', { reason: error?.message || 'unknown error' });
+        return json(res, 502, { error: 'Voice client is temporarily unavailable.' });
+      }
     }
 
     if (url.pathname === '/v1/chat/completions') {

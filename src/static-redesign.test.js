@@ -147,7 +147,8 @@ describe('Claude Design static website export', () => {
     const assistant = read('public/ChatAssistant.dc.html');
     expect(assistant).toContain('Talk to Felican AI');
     expect(assistant).toContain('Voice + text');
-    expect(assistant).toContain("import('https://esm.sh/@vapi-ai/web@2')");
+    expect(assistant).toContain("script.src = '/voice-client.bundle.js'");
+    expect(assistant).toContain('window.CopsVapi');
     expect(assistant).toContain("vapi.on('speech-end'");
     expect(assistant).toContain("firstMessageMode: 'assistant-speaks-first'");
     expect(assistant).toContain('Stop voice');
@@ -158,7 +159,6 @@ describe('Claude Design static website export', () => {
     expect(assistant).toContain('The bars move when we hear you.');
     expect(assistant).toContain('Microphone access is blocked.');
     expect(assistant).toContain('if (!this._voiceConfig && this._voiceReadyPromise) await this._voiceReadyPromise');
-    expect(assistant).toContain('class FelicanVapi extends Vapi');
     expect(assistant).toContain('audioSource: track, startAudioOff: false');
     expect(assistant).toContain('{ avoidEval: true, alwaysIncludeMicInPermissionPrompt: true }');
     expect(assistant).toContain("vapi.on('local-volume-level'");
@@ -166,6 +166,10 @@ describe('Claude Design static website export', () => {
     expect(assistant).toContain('fa-voice-signal');
     expect(assistant).not.toContain('SpeechRecognition');
     expect(assistant).toContain("fetch('/api/chat'");
+    const server = read('server/app.js');
+    expect(server).toContain('https://cops-website.felican.dev/voice-client.bundle.js');
+    expect(server).toContain('COPS_VOICE_BUNDLE_SHA384');
+    expect(server).toContain("url.pathname === '/voice-client.bundle.js'");
   });
 
   it('waits for the visitor to speak and pronounces Felican correctly', () => {

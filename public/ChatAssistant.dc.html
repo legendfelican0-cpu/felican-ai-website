@@ -288,26 +288,56 @@ class Component extends DCLogic {
     this._voiceReadyPromise = ready;
     return ready;
   }
+  async loadVoiceClient() {
+    if (window.__FELICAN_VAPI_CLASS__) return window.__FELICAN_VAPI_CLASS__;
+    if (window.CopsVapi) return window.CopsVapi;
+    if (this._voiceClientPromise) return this._voiceClientPromise;
+    this._voiceClientPromise = new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[data-felican-vapi-sdk]');
+      const finish = () => window.CopsVapi ? resolve(window.CopsVapi) : reject(new Error('The voice service did not become available.'));
+      if (existing) {
+        existing.addEventListener('load', finish, { once: true });
+        existing.addEventListener('error', () => reject(new Error('The voice service could not load.')), { once: true });
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = '/voice-client.bundle.js';
+      script.async = true;
+      script.defer = true;
+      script.crossOrigin = 'anonymous';
+      script.integrity = 'sha384-om2+KCCsCWb4oslvQoDmevbN/xaXx9cMxSf4Prw1kdgEFYKx2kOwJqWqDmhG8fKc';
+      script.dataset.felicanVapiSdk = 'true';
+      script.addEventListener('load', finish, { once: true });
+      script.addEventListener('error', () => reject(new Error('The voice service could not load.')), { once: true });
+      document.head.append(script);
+    }).catch(error => {
+      this._voiceClientPromise = null;
+      throw error;
+    });
+    return this._voiceClientPromise;
+  }
   async ensureVapi() {
     if (this._vapi) return this._vapi;
     if (this._vapiPromise) return this._vapiPromise;
     this._vapiPromise = (async () => {
-      const Vapi = window.__FELICAN_VAPI_CLASS__ || (await import('https://esm.sh/@vapi-ai/web@2')).default;
-      // Match the deployed COPS website voice client: reuse the microphone
-      // track we already verified instead of asking the SDK to open a second
-      // competing stream.
-      class FelicanVapi extends Vapi {
-        setAudioSource(track) {
-          if (!track || track.kind !== 'audio' || track.readyState === 'ended') throw new Error('A live microphone track is required.');
-          this.dailyCallObject = { ...this.dailyCallObject, audioSource: track, startAudioOff: false };
-        }
-      }
-      const vapi = new FelicanVapi(
+      // Use the same patched browser client as the deployed COPS website. It
+      // accepts the verified microphone track directly and avoids the Krisp
+      // worklet path that can fail on mobile browsers.
+      const Vapi = await this.loadVoiceClient();
+      const vapi = new Vapi(
         this._voiceConfig.publicKey,
         undefined,
         { avoidEval: true, alwaysIncludeMicInPermissionPrompt: true },
         { audioSource: true, startAudioOff: false }
       );
+      // Test doubles and future compatible clients keep the same COPS track
+      // handoff contract even if they do not ship the helper themselves.
+      if (typeof vapi.setAudioSource !== 'function') {
+        vapi.setAudioSource = track => {
+          if (!track || track.kind !== 'audio' || track.readyState === 'ended') throw new Error('A live microphone track is required.');
+          vapi.dailyCallObject = { ...vapi.dailyCallObject, audioSource: track, startAudioOff: false };
+        };
+      }
       vapi.on('call-start', () => {
         vapi.setMuted?.(false);
         this.setState({ voiceActive: true, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '', voiceError: '' });

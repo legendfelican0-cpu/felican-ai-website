@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { createAppServer, contactIsConfigured, deliverEducationLead, normalizeContact, normalizeMessages, sanitizeAssistantReply, sanitizeText } from './app.js';
+import { createAppServer, contactIsConfigured, deliverEducationLead, normalizeContact, normalizeMessages, sanitizeAssistantReply, sanitizeText, voiceBundleIntegrity } from './app.js';
 
 const servers = [];
 
@@ -13,6 +13,8 @@ async function start(complete = async () => 'A real answer from Felican AI.', op
     complete,
     ...(options.sendContact ? { sendContact: options.sendContact } : {}),
     ...(options.deliverLead ? { deliverLead: options.deliverLead } : {}),
+    ...(options.voiceBundleFetch ? { voiceBundleFetch: options.voiceBundleFetch } : {}),
+    ...(options.voiceBundleIntegrityExpected ? { voiceBundleIntegrityExpected: options.voiceBundleIntegrityExpected } : {}),
     env: { ANTHROPIC_API_KEY: 'test-key', ...options.env },
     logger: options.logger || { error() {}, info() {}, warn() {} },
   });
@@ -311,6 +313,25 @@ describe('Felican AI server', () => {
     const unavailable = await fetch(`${unavailableBase}/api/ready`);
     expect(unavailable.status).toBe(503);
     await expect(unavailable.json()).resolves.toEqual({ ok: false, dependencies: { ai: 'unavailable' } });
+  });
+
+  it('serves and caches the integrity-checked COPS voice client on our own origin', async () => {
+    const source = 'window.CopsVapi = class CopsVapi {};';
+    let upstreamCalls = 0;
+    const base = await start(undefined, {
+      voiceBundleIntegrityExpected: voiceBundleIntegrity(Buffer.from(source)),
+      voiceBundleFetch: async () => {
+        upstreamCalls += 1;
+        return new Response(source, { status: 200, headers: { 'Content-Type': 'text/javascript' } });
+      },
+    });
+    const first = await fetch(`${base}/voice-client.bundle.js`);
+    const second = await fetch(`${base}/voice-client.bundle.js`);
+    expect(first.status).toBe(200);
+    expect(first.headers.get('content-type')).toContain('text/javascript');
+    expect(await first.text()).toBe(source);
+    expect(await second.text()).toBe(source);
+    expect(upstreamCalls).toBe(1);
   });
 
   it('serves restrictive security headers without the retired CDN runtime', async () => {
