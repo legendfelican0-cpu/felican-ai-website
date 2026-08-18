@@ -159,7 +159,7 @@ describe('Claude Design static website export', () => {
 
   it('waits for the visitor to speak and pronounces Felican correctly', () => {
     const provisioner = read('scripts/provision-felican-vapi.py');
-    expect(provisioner).toContain('"firstMessage": f"{public_url.rstrip(\'/\')}/voice-ready.wav"');
+    expect(provisioner).toContain('"firstMessage": " "');
     expect(provisioner).toContain('"firstMessageMode": "assistant-speaks-first"');
     expect(provisioner).toContain('"firstMessageInterruptionsEnabled": False');
     expect(provisioner).toContain('"backgroundDenoisingEnabled": None');
