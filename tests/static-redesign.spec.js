@@ -248,7 +248,7 @@ test.describe('Claude Design website export', () => {
     await expect(page.getByRole('button', { name: 'Stop voice' })).toBeVisible();
     expect(await page.evaluate(() => window.__vapiTest)).toMatchObject({
       constructors: 1, starts: 2, stops: 1, assistantId: 'assistant-test',
-      overrides: { firstMessage: ' ', firstMessageMode: 'assistant-speaks-first', firstMessageInterruptionsEnabled: false },
+      overrides: { firstMessageMode: 'assistant-waits-for-user', firstMessageInterruptionsEnabled: false },
     });
     await page.getByRole('button', { name: 'Stop voice' }).click();
     await expect(page.getByRole('button', { name: 'Start voice' })).toBeVisible();

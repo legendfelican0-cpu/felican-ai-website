@@ -424,8 +424,7 @@ class Component extends DCLogic {
       // Start the live room immediately after microphone permission resolves;
       // no unrelated work sits between the visitor's tap and the voice call.
       await vapi.start(this._voiceConfig.assistantId, {
-        firstMessage: ' ',
-        firstMessageMode: 'assistant-speaks-first',
+        firstMessageMode: 'assistant-waits-for-user',
         firstMessageInterruptionsEnabled: false
       });
     } catch (error) {

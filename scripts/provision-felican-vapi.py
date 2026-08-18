@@ -82,10 +82,9 @@ def api(method: str, route: str, key: str, body: dict | None = None) -> dict | l
 def assistant_payload(public_url: str, webhook_secret: str) -> dict:
     return {
         "name": ASSISTANT_NAME,
-        # COPS initializes the browser audio path with a first turn. A blank
-        # generated turn does the same without an audible greeting or message.
-        "firstMessage": " ",
-        "firstMessageMode": "assistant-speaks-first",
+        # Begin silently and wait for actual visitor speech before responding.
+        "firstMessage": None,
+        "firstMessageMode": "assistant-waits-for-user",
         "firstMessageInterruptionsEnabled": False,
         # Match the proven COPS browser voice path exactly: omit browser
         # worklet denoisers instead of sending a disabled plan.

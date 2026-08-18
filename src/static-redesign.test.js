@@ -150,7 +150,8 @@ describe('Claude Design static website export', () => {
     expect(assistant).toContain("script.src = '/voice-client.bundle.js'");
     expect(assistant).toContain('window.CopsVapi');
     expect(assistant).toContain("vapi.on('speech-end'");
-    expect(assistant).toContain("firstMessageMode: 'assistant-speaks-first'");
+    expect(assistant).toContain("firstMessageMode: 'assistant-waits-for-user'");
+    expect(assistant).not.toContain("firstMessage: ' '");
     expect(assistant).toContain('Stop voice');
     expect(assistant).toContain('Listening — start talking.');
     expect(assistant).toContain('We can hear you — keep talking.');
@@ -174,8 +175,8 @@ describe('Claude Design static website export', () => {
 
   it('waits for the visitor to speak and pronounces Felican correctly', () => {
     const provisioner = read('scripts/provision-felican-vapi.py');
-    expect(provisioner).toContain('"firstMessage": " "');
-    expect(provisioner).toContain('"firstMessageMode": "assistant-speaks-first"');
+    expect(provisioner).toContain('"firstMessage": None');
+    expect(provisioner).toContain('"firstMessageMode": "assistant-waits-for-user"');
     expect(provisioner).toContain('"firstMessageInterruptionsEnabled": False');
     expect(provisioner).toContain('"backgroundDenoisingEnabled": None');
     expect(provisioner).toContain('"backgroundSpeechDenoisingPlan": None');
