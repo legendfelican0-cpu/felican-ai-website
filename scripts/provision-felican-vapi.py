@@ -87,6 +87,13 @@ def assistant_payload(public_url: str, webhook_secret: str) -> dict:
         "firstMessage": None,
         "firstMessageMode": "assistant-waits-for-user",
         "firstMessageInterruptionsEnabled": True,
+        # Use Vapi's current denoising schema and explicitly turn off both
+        # browser worklet processors. The legacy flag is retained below to
+        # clear assistants provisioned before this schema replaced it.
+        "backgroundSpeechDenoisingPlan": {
+            "smartDenoisingPlan": {"enabled": False},
+            "fourierDenoisingPlan": {"enabled": False},
+        },
         # Match the proven COPS browser voice path. Vapi's optional Krisp
         # worklet can fail to initialize and leave a call stuck connecting.
         "backgroundDenoisingEnabled": False,

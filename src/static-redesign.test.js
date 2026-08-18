@@ -160,6 +160,8 @@ describe('Claude Design static website export', () => {
     expect(provisioner).toContain('"firstMessage": None');
     expect(provisioner).toContain('"firstMessageMode": "assistant-waits-for-user"');
     expect(provisioner).toContain('"backgroundDenoisingEnabled": False');
+    expect(provisioner).toContain('"smartDenoisingPlan": {"enabled": False}');
+    expect(provisioner).toContain('"fourierDenoisingPlan": {"enabled": False}');
     expect(provisioner).toContain('"key": "Felican"');
     expect(provisioner).toContain('"value": "Fell-ih-can"');
   });
