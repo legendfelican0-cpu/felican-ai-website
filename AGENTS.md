@@ -1,0 +1,12 @@
+# Felican AI website notes
+
+## Deployment
+
+- `scripts/deploy-dev.sh` publishes only to `https://felican.dev` and includes health checks plus rollback protection.
+- Do not publish to production unless the user explicitly requests a production release.
+- Run the unit tests, production build, and relevant Playwright coverage before every push.
+
+## Recent changes
+
+- 2026-08-18: Added the one-play homepage handshake background in WebM and MP4, with the existing handshake image as the poster/fallback. It stays silent, does not loop, and holds the final handshake frame.
+- 2026-08-18: Added continuous Vapi browser voice, aligned credential logos, product preview covers, and the interactive Start Here eBook entry.

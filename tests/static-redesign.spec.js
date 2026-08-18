@@ -57,6 +57,38 @@ test.describe('Claude Design website export', () => {
     });
   }
 
+  test('homepage handshake video plays once and holds its final frame', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'load' });
+
+    const video = page.locator('#home-hero-video');
+    await expect(video).toHaveCount(1);
+    await expect(video).toHaveAttribute('autoplay', '');
+    expect(await video.evaluate(media => media.muted)).toBe(true);
+    await expect(video).toHaveAttribute('playsinline', '');
+    await expect(video).not.toHaveAttribute('loop', /.*/);
+    await expect(video).toHaveAttribute('poster', '/home-hero.jpg');
+    await expect(video.locator('source')).toHaveCount(2);
+    await expect(video.locator('source').first()).toHaveAttribute('src', '/home-hero-handshake.webm');
+    await expect(video.locator('source').last()).toHaveAttribute('src', '/home-hero-handshake.mp4');
+
+    await expect.poll(() => video.evaluate(media => media.readyState)).toBeGreaterThanOrEqual(2);
+    const result = await video.evaluate(async media => {
+      media.currentTime = Math.max(0, media.duration - 0.12);
+      await media.play();
+      await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error('hero video did not end')), 3000);
+        media.addEventListener('ended', () => { clearTimeout(timeout); resolve(); }, { once: true });
+      });
+      return {
+        ended: media.ended,
+        paused: media.paused,
+        loop: media.loop,
+        atFinalFrame: Math.abs(media.duration - media.currentTime) < 0.08,
+      };
+    });
+    expect(result).toEqual({ ended: true, paused: true, loop: false, atFinalFrame: true });
+  });
+
   test('navigation, products, books, and assistant are functional', async ({ page }, testInfo) => {
     await page.goto('/', { waitUntil: 'load' });
     const isMobile = testInfo.project.name.startsWith('mobile');
