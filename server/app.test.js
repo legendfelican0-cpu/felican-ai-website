@@ -200,6 +200,7 @@ describe('Felican AI server', () => {
     expect(sanitizeText('<b>Hello</b>\u0000 world')).toBe('Hello world');
     expect(normalizeMessages(Array.from({ length: 12 }, (_, index) => ({ role: 'user', content: `<b>${index}</b>` })))).toHaveLength(10);
     expect(sanitizeAssistantReply('**Relay** — [Open it](https://relay.felican.dev/relay)')).toBe('Relay — Open it (https://relay.felican.dev/relay)');
+    expect(sanitizeAssistantReply('Felikan, Fell-ih-can, and Falcon AI met Balas.')).toBe('Felican, Felican, and Felican AI met Ballas.');
   });
 
   it('returns a real assistant reply from the configured completion function', async () => {

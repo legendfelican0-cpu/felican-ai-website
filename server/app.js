@@ -56,7 +56,7 @@ Books by Lee Felican Jr.:
 - The BIG AI Book: a fully illustrated, plain-language explanation of AI for grown-ups, including agents, skills, and tools.
 Book resources: https://felican.ai/Lee-Felican-jr/books/resources/
 
-Contact: email ai@felican.ai, or call (561) 235-0799 Monday to Friday, 9am-6pm Eastern. Visitors can also send a message straight to the team from this chat using the envelope button beside the message box, or from the contact page at /contact/. Offer that handoff whenever someone wants a person, a quote, or something you cannot answer. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
+Contact: email ai@felican.ai, or call (561) 235-0799 Monday to Friday, 9am-6pm Eastern. Visitors can also send a message straight to the team from this chat using the envelope button beside the message box, or from the contact page at /contact/. Offer that handoff whenever someone wants a person, a quote, or something you cannot answer. Always spell the company name exactly “Felican AI” in visible text—never Felikan, Fell-ih-can, or Falcon AI. Always spell the name “Ballas” with two l's and a final s. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
 
 export function sanitizeText(value, maxLength = MAX_MESSAGE_LENGTH) {
   return String(value ?? '')
@@ -68,6 +68,9 @@ export function sanitizeText(value, maxLength = MAX_MESSAGE_LENGTH) {
 
 export function sanitizeAssistantReply(value) {
   return sanitizeText(value, 2400)
+    .replace(/\b(?:Felikan|Fell[- ]?ih[- ]?can)\b/gi, 'Felican')
+    .replace(/\bFalcon AI\b/gi, 'Felican AI')
+    .replace(/\bBalas\b/gi, 'Ballas')
     .replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g, '$1 ($2)')
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/__([^_]+)__/g, '$1')

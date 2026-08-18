@@ -20,6 +20,9 @@ class ProvisionFelicanVapiTests(unittest.TestCase):
         self.assertEqual(payload["firstMessageMode"], "assistant-waits-for-user")
         self.assertFalse(payload["endCallFunctionEnabled"])
         self.assertNotIn("COPS", json_text(payload))
+        model_prompt = payload["model"]["messages"][0]["content"]
+        self.assertIn("always spell the company name exactly Felican AI", model_prompt)
+        self.assertIn("Always spell Ballas", model_prompt)
 
     def test_env_update_preserves_unrelated_values_and_replaces_voice_values(self):
         with tempfile.TemporaryDirectory() as folder:
