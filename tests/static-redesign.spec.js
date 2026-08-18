@@ -184,7 +184,8 @@ test.describe('Claude Design website export', () => {
         value: {
           getUserMedia: async () => {
             window.__micTest.requests += 1;
-            return { getTracks: () => [{ stop: () => { window.__micTest.stopped += 1; } }] };
+            const track = { kind: 'audio', readyState: 'live', stop: () => { window.__micTest.stopped += 1; } };
+            return { getTracks: () => [track], getAudioTracks: () => [track] };
           },
         },
       });
@@ -271,7 +272,8 @@ test.describe('Claude Design website export', () => {
         value: {
           getUserMedia: async () => {
             window.__fastVoiceTest.micRequests += 1;
-            return { getTracks: () => [{ stop: () => {} }] };
+            const track = { kind: 'audio', readyState: 'live', stop: () => {} };
+            return { getTracks: () => [track], getAudioTracks: () => [track] };
           },
         },
       });
@@ -295,9 +297,10 @@ test.describe('Claude Design website export', () => {
     await page.goto('/products/', { waitUntil: 'domcontentloaded' });
     await page.locator('[data-assistant-launcher]').click();
     await page.getByRole('button', { name: 'Start voice' }).click();
-    await expect.poll(() => page.evaluate(() => window.__fastVoiceTest.micRequests)).toBe(1);
+    await expect.poll(() => page.evaluate(() => window.__fastVoiceTest.micRequests)).toBeGreaterThanOrEqual(1);
     await expect(page.getByRole('button', { name: 'Stop voice' })).toBeVisible({ timeout: 5000 });
     await expect.poll(() => page.evaluate(() => window.__fastVoiceTest.starts)).toBe(1);
+    await expect.poll(() => page.evaluate(() => window.__fastVoiceTest.micRequests)).toBe(1);
     await page.getByRole('button', { name: 'Stop voice' }).click();
   });
 

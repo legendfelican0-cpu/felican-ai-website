@@ -293,8 +293,20 @@ class Component extends DCLogic {
     if (this._vapiPromise) return this._vapiPromise;
     this._vapiPromise = (async () => {
       const Vapi = window.__FELICAN_VAPI_CLASS__ || (await import('https://esm.sh/@vapi-ai/web@2')).default;
-      const vapi = new Vapi(this._voiceConfig.publicKey);
-      vapi.on('call-start', () => this.setState({ voiceActive: true, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '', voiceError: '' }));
+      // Match the deployed COPS website voice client: reuse the microphone
+      // track we already verified instead of asking the SDK to open a second
+      // competing stream.
+      class FelicanVapi extends Vapi {
+        setAudioSource(track) {
+          if (!track || track.kind !== 'audio' || track.readyState === 'ended') throw new Error('A live microphone track is required.');
+          this.dailyCallObject = { ...this.dailyCallObject, audioSource: track, startAudioOff: false };
+        }
+      }
+      const vapi = new FelicanVapi(this._voiceConfig.publicKey);
+      vapi.on('call-start', () => {
+        vapi.setMuted?.(false);
+        this.setState({ voiceActive: true, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '', voiceError: '' });
+      });
       vapi.on('call-end', () => {
         this.stopMicMonitor();
         this.setState({ voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, micDetected: false, liveTranscript: '' });
@@ -303,7 +315,25 @@ class Component extends DCLogic {
       // A reply ending is not the end of voice mode. The call stays live and
       // immediately returns to listening until the visitor presses Stop voice.
       vapi.on('speech-end', () => this.setState({ voiceActive: true, speaking: false }));
+      vapi.on('local-volume-level', value => {
+        const detected = Number(value) > .008;
+        if (detected !== this._micWasDetected) {
+          this._micWasDetected = detected;
+          this.setState({ micDetected: detected });
+        }
+      });
+      vapi.on('local-audio-level-observer-error', () => {
+        // The COPS client treats a failed visual audio observer as non-fatal;
+        // the microphone track can still reach the live call.
+        if (this.state.voiceActive || this.state.voiceConnecting) this.setState({ voiceError: '' });
+      });
       vapi.on('error', error => {
+        const detail = [error && error.type, error && error.stage, error && error.message, error && error.error && error.error.type, error && error.error && error.error.message]
+          .filter(Boolean).join(' ').toLowerCase();
+        if (/audio-observer|audio\.processor|audio processor|krisp|local-audio-level/.test(detail)) {
+          if (this.state.voiceActive || this.state.voiceConnecting) this.setState({ voiceError: '' });
+          return;
+        }
         this.stopMicMonitor();
         this.setState({
           voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, micDetected: false, liveTranscript: '',
@@ -354,6 +384,8 @@ class Component extends DCLogic {
       if (!this._voiceConfig && this._voiceReadyPromise) await this._voiceReadyPromise;
       if (!this._voiceConfig) throw new Error('Voice could not load. Please try again.');
       const vapi = this._vapi || await this.ensureVapi();
+      const track = this._micStream && this._micStream.getAudioTracks ? this._micStream.getAudioTracks()[0] : null;
+      vapi.setAudioSource(track);
       // Start the live room immediately after microphone permission resolves;
       // no unrelated work sits between the visitor's tap and the voice call.
       await vapi.start(this._voiceConfig.assistantId, {
