@@ -110,7 +110,7 @@ fi
 # If provisioning fails, DEV remains untouched because the old container has
 # not been stopped yet.
 python3 "${release_dir}/scripts/provision-felican-vapi.py" \
-  --private-env /etc/felican/cops-voice-staging.env \
+  --private-env /etc/felican/jarvis.env \
   --site-env "${ai_env_file}" \
   --public-url https://felican.dev
 
