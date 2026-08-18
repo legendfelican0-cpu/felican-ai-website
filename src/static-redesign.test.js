@@ -236,6 +236,15 @@ describe('Claude Design static website export', () => {
     }
   });
 
+  it('gives every specialist and bench product an app-style preview cover', () => {
+    const products = read('public/products/index.html');
+    expect(products).toContain('class="app-cover"');
+    expect(products).toContain('aria-label="{{ a.name }} app preview"');
+    expect(products).toContain('aria-label="{{ r.name }} app preview"');
+    expect((products.match(/coverTitle:/g) || []).length).toBe(11);
+    expect((products.match(/coverScore:/g) || []).length).toBe(11);
+  });
+
   it('never mentions the internal ResyDoc name', () => {
     const everything = [
       'index.html', 'public/products/index.html', 'public/contact/index.html',

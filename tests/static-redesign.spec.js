@@ -68,6 +68,8 @@ test.describe('Claude Design website export', () => {
     await expect(productCards.first()).toHaveAttribute('id', 'private-ai');
     await expect(page.locator('.agent-card')).toHaveCount(6);
     await expect(page.locator('.rest-card')).toHaveCount(5);
+    await expect(page.locator('.agent-card .app-cover')).toHaveCount(6);
+    await expect(page.locator('.rest-card .app-cover')).toHaveCount(5);
 
     // Products never link out to the live apps; every CTA pre-fills the contact form.
     const outbound = page.locator('main a[href^="http"]:not([href*="felican.ai/contact"])');
