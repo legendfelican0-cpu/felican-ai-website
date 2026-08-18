@@ -30,7 +30,10 @@
 .fa-privacy { margin:0;padding:8px 16px 0;background:#0C1419;color:#7C9391;font-size:11px;line-height:1.4;text-align:center }
 .fa-privacy a { color:#59D4B4;font-weight:600 }
 .fa-voice { display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0;padding:15px 18px;background:linear-gradient(105deg,rgba(47,184,148,.2),rgba(47,184,148,.06));border-top:1px solid rgba(143,224,200,.22);border-bottom:1px solid rgba(143,224,200,.22);flex-shrink:0;box-shadow:inset 4px 0 0 #2FB894 }
-.fa-voice-copy { min-width:0 }.fa-voice-copy strong { display:block;color:#FFFFFF;font:800 14px Sora,sans-serif }.fa-voice-copy span { display:block;margin-top:4px;color:#AFCAC6;font-size:12px;line-height:1.35 }
+.fa-voice-signal { width:42px;height:42px;flex:0 0 42px;display:flex;align-items:center;justify-content:center;gap:3px;border:1px solid rgba(143,224,200,.28);border-radius:50%;background:#0A1216;box-shadow:inset 0 0 0 5px rgba(47,184,148,.05) }.fa-voice-signal i { display:block;width:3px;height:9px;border-radius:999px;background:#6E8986;transform-origin:center;transition:background .18s ease }.fa-voice-signal i:nth-child(2),.fa-voice-signal i:nth-child(4) { height:15px }.fa-voice-signal i:nth-child(3) { height:21px }
+.fa-voice-signal.listening { border-color:#2FB894;box-shadow:0 0 0 5px rgba(47,184,148,.10),inset 0 0 0 5px rgba(47,184,148,.08) }.fa-voice-signal.listening i { background:#59D4B4;animation:fa-level 1.35s ease-in-out infinite }.fa-voice-signal.hearing { border-color:#59D4B4;box-shadow:0 0 0 7px rgba(47,184,148,.18),0 0 24px rgba(47,184,148,.28) }.fa-voice-signal.hearing i { background:#74F0CE;animation:fa-level .52s ease-in-out infinite }.fa-voice-signal.speaking { border-color:#F2CD7A;box-shadow:0 0 0 6px rgba(242,205,122,.15),0 0 22px rgba(242,205,122,.22) }.fa-voice-signal.speaking i { background:#F2CD7A;animation:fa-level .68s ease-in-out infinite }.fa-voice-signal i:nth-child(2) { animation-delay:-.16s }.fa-voice-signal i:nth-child(3) { animation-delay:-.31s }.fa-voice-signal i:nth-child(4) { animation-delay:-.22s }.fa-voice-signal i:nth-child(5) { animation-delay:-.09s }
+@keyframes fa-level { 0%,100% { transform:scaleY(.42) } 50% { transform:scaleY(1) } }
+.fa-voice-copy { min-width:0;flex:1 }.fa-voice-copy strong { display:block;color:#FFFFFF;font:800 14px Sora,sans-serif }.fa-voice-copy span { display:block;margin-top:4px;color:#AFCAC6;font-size:12px;line-height:1.35 }
 .fa-voice-btn { flex:0 0 auto;border:1px solid #59D4B4;background:#2FB894;color:#080E13;border-radius:999px;padding:11px 16px;font:800 12px Sora,sans-serif;cursor:pointer;box-shadow:0 8px 22px rgba(47,184,148,.24);transition:.18s ease }
 .fa-voice-btn:hover { background:#59D4B4;transform:translateY(-1px) }.fa-voice-btn.listening { background:#59D4B4;color:#080E13;box-shadow:0 0 0 5px rgba(47,184,148,.14) }.fa-voice-btn.speaking { background:#F2CD7A;border-color:#F2CD7A;color:#080E13;box-shadow:0 0 0 5px rgba(242,205,122,.14) }
 .fa-input { flex:1;min-width:0;border:1px solid #1C2A28;background:#05090C;color:#EEF4F4;font-family:Inter,sans-serif;font-size:16px;padding:13px 17px;border-radius:999px }
@@ -99,7 +102,8 @@
 
       <sc-if value="{{ composerOpen }}" hint-placeholder-val="{{ true }}">
         <div class="fa-voice">
-          <div class="fa-voice-copy"><strong>Talk naturally with Felican AI</strong><span>{{ voiceStatus }}</span></div>
+          <div class="fa-voice-signal {{ voiceClass }}" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="fa-voice-copy"><strong>Talk naturally with Felican AI</strong><span aria-live="polite">{{ voiceStatus }}</span></div>
           <button class="fa-voice-btn {{ voiceClass }}" type="button" onClick="{{ toggleVoice }}" aria-pressed="{{ listeningStr }}" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">{{ voiceLabel }}</button>
         </div>
       </sc-if>
@@ -197,7 +201,7 @@ class Component extends DCLogic {
   state = {
     open: new URLSearchParams(window.location.search).has('assistant'), busy: false, draft: '', website: '',
     handoff: false, hName: '', hEmail: '', hMsg: '', hBusy: false,
-    voiceSupported: false, voiceActive: false, voiceConnecting: false, speaking: false, voiceError: '',
+    voiceSupported: false, voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '', voiceError: '',
     messages: [{ role: 'assistant', text: "Hi — I'm the Felican AI agent. Ask me about our products, services, training, or Lee's books." }]
   };
   scrollRef = React.createRef();
@@ -234,25 +238,35 @@ class Component extends DCLogic {
     this._vapiPromise = (async () => {
       const Vapi = window.__FELICAN_VAPI_CLASS__ || (await import('https://esm.sh/@vapi-ai/web@2')).default;
       const vapi = new Vapi(this._voiceConfig.publicKey);
-      vapi.on('call-start', () => this.setState({ voiceActive: true, voiceConnecting: false, speaking: false, voiceError: '' }));
-      vapi.on('call-end', () => this.setState({ voiceActive: false, voiceConnecting: false, speaking: false }));
-      vapi.on('speech-start', () => this.setState({ voiceActive: true, speaking: true, voiceError: '' }));
+      vapi.on('call-start', () => this.setState({ voiceActive: true, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '', voiceError: '' }));
+      vapi.on('call-end', () => this.setState({ voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '' }));
+      vapi.on('speech-start', () => this.setState({ voiceActive: true, speaking: true, userSpeaking: false, voiceError: '' }));
       // A reply ending is not the end of voice mode. The call stays live and
       // immediately returns to listening until the visitor presses Stop voice.
       vapi.on('speech-end', () => this.setState({ voiceActive: true, speaking: false }));
       vapi.on('error', error => this.setState({
-        voiceActive: false, voiceConnecting: false, speaking: false,
+        voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '',
         voiceError: error && error.message ? error.message : 'Voice had trouble connecting. You can still type below.'
       }));
       vapi.on('message', message => {
-        if (message.type !== 'transcript' || message.transcriptType !== 'final') return;
+        if (message.type === 'speech-update' && message.role === 'user') {
+          const started = message.status === 'started';
+          this.setState(state => ({ userSpeaking: started, liveTranscript: started ? state.liveTranscript : '' }));
+          return;
+        }
+        if (message.type !== 'transcript') return;
         const text = String(message.transcript || '').trim();
         if (!text) return;
+        if (message.role === 'user' && message.transcriptType !== 'final') {
+          this.setState({ userSpeaking: true, liveTranscript: text });
+          return;
+        }
+        if (message.transcriptType !== 'final') return;
         const role = message.role === 'user' ? 'user' : 'assistant';
         this.setState(state => {
           const last = state.messages[state.messages.length - 1];
-          if (last && last.role === role && last.text === text) return {};
-          return { messages: [...state.messages, { role, text }] };
+          if (last && last.role === role && last.text === text) return { userSpeaking: false, liveTranscript: '' };
+          return { messages: [...state.messages, { role, text }], userSpeaking: false, liveTranscript: '' };
         });
       });
       this._vapi = vapi;
@@ -275,12 +289,12 @@ class Component extends DCLogic {
       // the browser's microphone permission gesture on mobile.
       await this._vapi.start(this._voiceConfig.assistantId);
     } catch (error) {
-      this.setState({ voiceConnecting: false, voiceActive: false, speaking: false, voiceError: error && error.message ? error.message : 'Voice could not start. Please try again.' });
+      this.setState({ voiceConnecting: false, voiceActive: false, speaking: false, userSpeaking: false, liveTranscript: '', voiceError: error && error.message ? error.message : 'Voice could not start. Please try again.' });
     }
   }
   stopVoice() {
     try { if (this._vapi) this._vapi.stop(); } catch (error) { /* already stopped */ }
-    if (this.state) this.setState({ voiceActive: false, voiceConnecting: false, speaking: false });
+    if (this.state) this.setState({ voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, liveTranscript: '' });
   }
   toggleVoice() {
     if (this.state.voiceActive || this.state.voiceConnecting) this.stopVoice();
@@ -372,9 +386,9 @@ class Component extends DCLogic {
       website: this.state.website,
       showChips: this.state.messages.length <= 1 && !this.state.handoff,
       composerOpen: !this.state.handoff,
-      voiceStatus: this.state.voiceError || (this.state.voiceConnecting ? 'Connecting your microphone…' : this.state.speaking ? 'Speaking — talk anytime to interrupt.' : this.state.voiceActive ? 'Listening — keep talking naturally.' : this.state.voiceSupported ? 'Tap Start voice, allow microphone access, then talk until you press Stop.' : 'Voice is loading. Text chat is ready now.'),
+      voiceStatus: this.state.voiceError || (this.state.voiceConnecting ? 'Connecting your microphone…' : this.state.speaking ? 'Felican AI is speaking — talk anytime to interrupt.' : this.state.userSpeaking ? (this.state.liveTranscript ? 'Hearing you: “' + this.state.liveTranscript.slice(0, 72) + '”' : 'We can hear you — keep talking.') : this.state.voiceActive ? 'Listening — start talking.' : this.state.voiceSupported ? 'Tap Start voice, allow microphone access, then talk until you press Stop.' : 'Voice is loading. Text chat is ready now.'),
       voiceLabel: this.state.voiceActive || this.state.voiceConnecting ? 'Stop voice' : 'Start voice',
-      voiceClass: this.state.speaking ? 'speaking' : this.state.voiceActive || this.state.voiceConnecting ? 'listening' : '',
+      voiceClass: this.state.speaking ? 'speaking' : this.state.userSpeaking ? 'hearing' : this.state.voiceActive || this.state.voiceConnecting ? 'listening' : '',
       listeningStr: this.state.voiceActive || this.state.voiceConnecting ? 'true' : 'false',
       toggleVoice: () => this.toggleVoice(),
       scrollRef: this.scrollRef,

@@ -203,8 +203,13 @@ test.describe('Claude Design website export', () => {
     await page.locator('[data-assistant-launcher]').click();
     await page.getByRole('button', { name: 'Start voice' }).click();
     await expect(page.getByRole('button', { name: 'Stop voice' })).toBeVisible();
+    await page.evaluate(() => window.__vapiTest.instance.handlers.message({ type: 'speech-update', role: 'user', status: 'started' }));
+    await expect(page.getByText('We can hear you — keep talking.')).toBeVisible();
+    await expect(page.locator('.fa-voice-signal.hearing')).toBeVisible();
+    await page.evaluate(() => window.__vapiTest.instance.handlers.message({ type: 'transcript', role: 'user', transcriptType: 'partial', transcript: 'what services' }));
+    await expect(page.getByText('Hearing you: “what services”')).toBeVisible();
     await page.evaluate(() => window.__vapiTest.instance.handlers['speech-start']());
-    await expect(page.getByText('Speaking — talk anytime to interrupt.')).toBeVisible();
+    await expect(page.getByText('Felican AI is speaking — talk anytime to interrupt.')).toBeVisible();
     // Stop must remain usable while audio is playing so a reply can be cut off.
     await page.getByRole('button', { name: 'Stop voice' }).click();
     expect(await page.evaluate(() => window.__vapiTest.stops)).toBe(1);
@@ -215,7 +220,7 @@ test.describe('Claude Design website export', () => {
       window.__vapiTest.instance.handlers['speech-end']();
     });
     // speech-end must return to listening, not end the ongoing conversation.
-    await expect(page.getByText('Listening — keep talking naturally.')).toBeVisible();
+    await expect(page.getByText('Listening — start talking.')).toBeVisible();
     expect(await page.evaluate(() => window.__vapiTest)).toMatchObject({ constructors: 1, starts: 2, stops: 1, assistantId: 'assistant-test' });
     await page.getByRole('button', { name: 'Stop voice' }).click();
     await expect(page.getByRole('button', { name: 'Start voice' })).toBeVisible();

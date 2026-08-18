@@ -150,7 +150,9 @@ describe('Claude Design static website export', () => {
     expect(assistant).toContain("import('https://esm.sh/@vapi-ai/web@2')");
     expect(assistant).toContain("vapi.on('speech-end'");
     expect(assistant).toContain('Stop voice');
-    expect(assistant).toContain('Listening — keep talking naturally.');
+    expect(assistant).toContain('Listening — start talking.');
+    expect(assistant).toContain('We can hear you — keep talking.');
+    expect(assistant).toContain('fa-voice-signal');
     expect(assistant).not.toContain('SpeechRecognition');
     expect(assistant).toContain("fetch('/api/chat'");
   });
@@ -158,10 +160,11 @@ describe('Claude Design static website export', () => {
   it('waits for the visitor to speak and pronounces Felican correctly', () => {
     const provisioner = read('scripts/provision-felican-vapi.py');
     expect(provisioner).toContain('"firstMessage": None');
-    expect(provisioner).toContain('"firstMessageMode": "assistant-waits-for-user"');
-    expect(provisioner).toContain('"backgroundDenoisingEnabled": False');
-    expect(provisioner).toContain('"smartDenoisingPlan": {"enabled": False}');
-    expect(provisioner).toContain('"fourierDenoisingPlan": {"enabled": False}');
+    expect(provisioner).toContain('"firstMessageMode": None');
+    expect(provisioner).toContain('"backgroundDenoisingEnabled": None');
+    expect(provisioner).toContain('"backgroundSpeechDenoisingPlan": None');
+    expect(provisioner).toContain('"fallbackPlan": {"autoFallback": {"enabled": True}}');
+    expect(provisioner).toContain('"speech-update"');
     expect(provisioner).toContain('"key": "Felican"');
     expect(provisioner).toContain('"value": "Fell-ih-can"');
   });

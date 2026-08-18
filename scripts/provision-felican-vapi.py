@@ -85,18 +85,14 @@ def assistant_payload(public_url: str, webhook_secret: str) -> dict:
         # The visitor speaks first. Explicit null removes the old greeting when
         # this payload PATCHes an existing assistant.
         "firstMessage": None,
-        "firstMessageMode": "assistant-waits-for-user",
-        "firstMessageInterruptionsEnabled": True,
-        # Use Vapi's current denoising schema and explicitly turn off both
-        # browser worklet processors. The legacy flag is retained below to
-        # clear assistants provisioned before this schema replaced it.
-        "backgroundSpeechDenoisingPlan": {
-            "smartDenoisingPlan": {"enabled": False},
-            "fourierDenoisingPlan": {"enabled": False},
-        },
-        # Match the proven COPS browser voice path. Vapi's optional Krisp
-        # worklet can fail to initialize and leave a call stuck connecting.
-        "backgroundDenoisingEnabled": False,
+        # With no firstMessage, Vapi waits for the visitor without needing a
+        # special first-message mode. Keeping these null matches COPS audio.
+        "firstMessageMode": None,
+        "firstMessageInterruptionsEnabled": None,
+        # Match the proven COPS browser voice path exactly: omit browser
+        # worklet denoisers instead of sending a disabled plan.
+        "backgroundSpeechDenoisingPlan": None,
+        "backgroundDenoisingEnabled": None,
         "model": {
             "provider": "custom-llm",
             "url": f"{public_url.rstrip('/')}/v1",
@@ -131,11 +127,22 @@ def assistant_payload(public_url: str, webhook_secret: str) -> dict:
                 },
             },
         },
-        "transcriber": {"provider": "deepgram", "model": "nova-3", "language": "en"},
+        "transcriber": {
+            "provider": "deepgram",
+            "model": "nova-3",
+            "language": "en",
+            "fallbackPlan": {"autoFallback": {"enabled": True}},
+        },
+        "clientMessages": [
+            "conversation-update", "function-call", "hang", "model-output",
+            "speech-update", "status-update", "transfer-update", "transcript",
+            "tool-calls", "user-interrupted", "voice-input",
+            "workflow.node.started", "assistant.started", "assistant.speechStarted",
+        ],
         "startSpeakingPlan": {"waitSeconds": 0.4},
         "endCallFunctionEnabled": False,
-        "silenceTimeoutSeconds": 600,
-        "maxDurationSeconds": 3600,
+        "silenceTimeoutSeconds": 30,
+        "maxDurationSeconds": 1800,
         "recordingEnabled": False,
         "metadata": {"product": "felican-website", "role": "browser-voice"},
     }
