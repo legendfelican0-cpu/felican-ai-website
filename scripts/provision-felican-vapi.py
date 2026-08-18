@@ -87,7 +87,9 @@ def assistant_payload(public_url: str, webhook_secret: str) -> dict:
         "firstMessage": None,
         "firstMessageMode": "assistant-waits-for-user",
         "firstMessageInterruptionsEnabled": True,
-        "backgroundDenoisingEnabled": True,
+        # Match the proven COPS browser voice path. Vapi's optional Krisp
+        # worklet can fail to initialize and leave a call stuck connecting.
+        "backgroundDenoisingEnabled": False,
         "model": {
             "provider": "custom-llm",
             "url": f"{public_url.rstrip('/')}/v1",
