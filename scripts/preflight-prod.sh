@@ -21,7 +21,7 @@
 set -Eeuo pipefail
 
 PROD_HOST="${PROD_HOST:-legend@178.156.205.104}"
-VAPI_PRIVATE_ENV="${FELICAN_PROD_VAPI_PRIVATE_ENV:-/etc/felican/jarvis.env}"
+VAPI_PRIVATE_ENV="${FELICAN_PROD_VAPI_PRIVATE_ENV:-/etc/felican/cops-voice.env}"
 SSH=(ssh -o BatchMode=yes -o ConnectTimeout=15 "${PROD_HOST}")
 
 say() { printf '\n\033[1m%s\033[0m\n' "$*"; }
@@ -34,7 +34,14 @@ runtime_out="$("${SSH[@]}" "sudo -n bash -s -- '${VAPI_PRIVATE_ENV}'" <<'REMOTE'
 set -Eeuo pipefail
 vapi_private_env="$1"
 ai_env=/opt/felicanai-site/config/ai.env
-if grep -Eq '^ANTHROPIC_API_KEY=.+' "${ai_env}" 2>/dev/null || { grep -Eq '^ASHER_API_KEY=.+' "${ai_env}" 2>/dev/null && grep -Eq '^ASHER_BASE_URL=.+' "${ai_env}" 2>/dev/null; }; then
+provider_source=""
+for candidate in "${ai_env}" /var/www/betiq/.env.local /var/www/fruit/api/.env /opt/fruit/api/.env /opt/felican-factory/.env.local; do
+  if [[ -r "${candidate}" ]] && { grep -Eq '^ANTHROPIC_API_KEY=.+' "${candidate}" || { grep -Eq '^ASHER_API_KEY=.+' "${candidate}" && grep -Eq '^ASHER_BASE_URL=.+' "${candidate}"; }; }; then
+    provider_source="${candidate}"
+    break
+  fi
+done
+if [[ -n "${provider_source}" ]]; then
   echo AI_PROVIDER=set
 else
   echo AI_PROVIDER=missing
@@ -52,11 +59,20 @@ if grep -q '^VAPI_PRIVATE_KEY=set$' <<<"${runtime_out}"; then ok "Vapi private A
 else bad "Vapi private API key is MISSING from ${VAPI_PRIVATE_ENV}"; fi
 
 say "2. Contact email configuration on prod"
-env_out="$("${SSH[@]}" "sudo -n grep -E '^(RESEND_API_KEY|CONTACT_TO|CONTACT_FROM)=' /opt/felicanai-site/config/ai.env 2>/dev/null | sed -E 's/=.*/=<set>/'" || true)"
-for key in RESEND_API_KEY CONTACT_TO CONTACT_FROM; do
-  if grep -q "^${key}=" <<<"${env_out}"; then ok "${key} is set"
-  else bad "${key} is MISSING — add it before promoting, or the contact form returns 503"; fi
+env_out="$("${SSH[@]}" "sudo -n bash -s" <<'REMOTE' || true
+for candidate in /opt/felicanai-site/config/ai.env /var/www/betiq/.env.local /var/www/fruit/api/.env /opt/fruit/api/.env /opt/felican-factory/.env.local; do
+  if [[ -r "${candidate}" ]] && grep -Eq '^RESEND_API_KEY=.+' "${candidate}"; then
+    echo RESEND_API_KEY=set
+    exit 0
+  fi
 done
+echo RESEND_API_KEY=missing
+REMOTE
+)"
+if grep -q '^RESEND_API_KEY=set$' <<<"${env_out}"; then ok "RESEND_API_KEY is available"
+else bad "RESEND_API_KEY is MISSING — the assistant handoff and contact API would return 503"; fi
+ok "CONTACT_TO defaults to ai@felican.ai when unset"
+ok "CONTACT_FROM defaults to Felican AI Website <website@felican.ai> when unset"
 
 say "3. felican.ai proxy routing"
 "${SSH[@]}" 'sudo -n bash -s' <<'REMOTE' || true

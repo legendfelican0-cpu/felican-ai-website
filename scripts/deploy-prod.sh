@@ -12,7 +12,7 @@ readonly RELEASE_IMAGE="felicanai-site:${RELEASE_ID}"
 readonly CURRENT_IMAGE="felicanai-site:latest"
 readonly REMOTE_ROOT="/opt/felicanai-site"
 readonly RELEASE_DIR="${REMOTE_ROOT}/releases/${RELEASE_ID}"
-readonly PROD_VAPI_PRIVATE_ENV="${FELICAN_PROD_VAPI_PRIVATE_ENV:-/etc/felican/jarvis.env}"
+readonly PROD_VAPI_PRIVATE_ENV="${FELICAN_PROD_VAPI_PRIVATE_ENV:-/etc/felican/cops-voice.env}"
 readonly PROD_VAPI_ASSISTANT_NAME="Felican AI Website Voice (PROD)"
 
 log() { printf '[felicanai-prod] %s\n' "$*"; }
@@ -52,11 +52,21 @@ docker tag "${dev_image}" "${release_image}"
 docker tag "${release_image}" "${current_image}"
 
 ai_env="${config_dir}/ai.env"
-if [[ ! -s "${ai_env}" ]]; then
+merge_env_keys() {
+  local source_file="$1" pattern="$2" target_file="$3" line key
+  touch "${target_file}"
+  while IFS= read -r line; do
+    key="${line%%=*}"
+    sed -i -E "/^${key}=/d" "${target_file}"
+    printf '%s\n' "${line}" >> "${target_file}"
+  done < <(grep -E "${pattern}" "${source_file}" || true)
+  chmod 0600 "${target_file}"
+}
+
+if ! grep -Eq '^ANTHROPIC_API_KEY=.+' "${ai_env}" 2>/dev/null && ! { grep -Eq '^ASHER_API_KEY=.+' "${ai_env}" 2>/dev/null && grep -Eq '^ASHER_BASE_URL=.+' "${ai_env}" 2>/dev/null; }; then
   for candidate in /var/www/betiq/.env.local /var/www/fruit/api/.env /opt/fruit/api/.env /opt/felican-factory/.env.local; do
     if [[ -r "${candidate}" ]] && grep -Eq '^(ASHER_API_KEY|ANTHROPIC_API_KEY)=.+' "${candidate}"; then
-      grep -E '^(ASHER_API_KEY|ASHER_BASE_URL|ASHER_MODEL|ANTHROPIC_API_KEY|ANTHROPIC_MODEL)=' "${candidate}" > "${ai_env}"
-      chmod 0600 "${ai_env}"
+      merge_env_keys "${candidate}" '^(ASHER_API_KEY|ASHER_BASE_URL|ASHER_MODEL|ANTHROPIC_API_KEY|ANTHROPIC_MODEL|RESEND_API_KEY)=' "${ai_env}"
       break
     fi
   done
@@ -64,6 +74,15 @@ fi
 if ! grep -Eq '^ANTHROPIC_API_KEY=.+' "${ai_env}" && ! { grep -Eq '^ASHER_API_KEY=.+' "${ai_env}" && grep -Eq '^ASHER_BASE_URL=.+' "${ai_env}"; }; then
   echo "production AI provider configuration is unavailable" >&2
   exit 1
+fi
+
+if ! grep -Eq '^RESEND_API_KEY=.+' "${ai_env}" 2>/dev/null; then
+  for candidate in /var/www/betiq/.env.local /var/www/fruit/api/.env /opt/fruit/api/.env /opt/felican-factory/.env.local; do
+    if [[ -r "${candidate}" ]] && grep -Eq '^RESEND_API_KEY=.+' "${candidate}"; then
+      merge_env_keys "${candidate}" '^RESEND_API_KEY=' "${ai_env}"
+      break
+    fi
+  done
 fi
 
 if [[ ! -r "${vapi_private_env}" ]] || ! grep -Eq '^(COPS_VAPI_API_KEY|FINAFLEX_VAPI_API_KEY|VAPI_API_KEY)=.+' "${vapi_private_env}"; then

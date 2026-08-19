@@ -43,6 +43,15 @@ describe('assistant deployment safeguards', () => {
     const preflight = read('scripts/preflight-prod.sh');
     expect(preflight).toContain('AI_PROVIDER=set');
     expect(preflight).toContain('VAPI_PRIVATE_KEY=set');
+    expect(preflight).toContain('/etc/felican/cops-voice.env');
     expect(preflight).not.toContain('cat "${vapi_private_env}"');
+  });
+
+  it('merges approved production credentials without discarding existing voice settings', () => {
+    const prod = read('scripts/deploy-prod.sh');
+    expect(prod).toContain('merge_env_keys()');
+    expect(prod).toContain('RESEND_API_KEY');
+    expect(prod).toContain('/etc/felican/cops-voice.env');
+    expect(prod).not.toContain('> "${ai_env}"');
   });
 });
