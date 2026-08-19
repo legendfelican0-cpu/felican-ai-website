@@ -32,7 +32,7 @@ with con:
     changed=con.execute("update proxy_host set forward_host=?, modified_on=datetime('now') where is_deleted=0 and domain_names like '%felican.ai%'", (target,)).rowcount
 if changed != 1: raise SystemExit(f'unexpected proxy rows changed: {changed}')
 PY
-  sed -i -E 's/(set \$server[[:space:]]+)"[^"]+";/\1"'"${previous_route}"'";/' "${proxy_conf}"
+  sed -i -E '0,/(set \$server[[:space:]]+)"[^"]+";/s//\1"'"${previous_route}"'";/' "${proxy_conf}"
   docker exec nginx-proxy-manager nginx -t
   docker exec nginx-proxy-manager nginx -s reload
 fi

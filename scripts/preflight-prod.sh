@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 # Read-only pre-flight for the production promotion. Changes nothing.
 #
-# Answers the two questions that decide whether `deploy to-prod` is safe:
+# Answers the questions that decide whether `deploy to-prod` is safe:
 #
-#   1. Are the Resend contact variables present in the prod ai.env? Without
+#   1. Are the AI-provider and Vapi credentials available on production?
+#   2. Are the Resend contact variables present in the prod ai.env? Without
 #      them the contact form returns 503 and tells visitors to email instead.
 #
-#   2. Does the felican.ai proxy host use nginx-proxy-manager "custom
+#   3. Does the felican.ai proxy host use nginx-proxy-manager "custom
 #      locations"? deploy-prod.sh repoints the site with:
 #
 #          sed -i -E 's/(set \$server[[:space:]]+)"[^"]+";/\1"felicanai-site";/'
@@ -20,6 +21,7 @@
 set -Eeuo pipefail
 
 PROD_HOST="${PROD_HOST:-legend@178.156.205.104}"
+VAPI_PRIVATE_ENV="${FELICAN_PROD_VAPI_PRIVATE_ENV:-/etc/felican/jarvis.env}"
 SSH=(ssh -o BatchMode=yes -o ConnectTimeout=15 "${PROD_HOST}")
 
 say() { printf '\n\033[1m%s\033[0m\n' "$*"; }
@@ -27,14 +29,36 @@ ok()   { printf '  \033[32mOK\033[0m    %s\n' "$*"; }
 warn() { printf '  \033[33mCHECK\033[0m %s\n' "$*"; }
 bad()  { printf '  \033[31mSTOP\033[0m  %s\n' "$*"; }
 
-say "1. Contact email configuration on prod"
+say "1. AI and voice configuration on prod"
+runtime_out="$("${SSH[@]}" "sudo -n bash -s -- '${VAPI_PRIVATE_ENV}'" <<'REMOTE' || true
+set -Eeuo pipefail
+vapi_private_env="$1"
+ai_env=/opt/felicanai-site/config/ai.env
+if grep -Eq '^ANTHROPIC_API_KEY=.+' "${ai_env}" 2>/dev/null || { grep -Eq '^ASHER_API_KEY=.+' "${ai_env}" 2>/dev/null && grep -Eq '^ASHER_BASE_URL=.+' "${ai_env}" 2>/dev/null; }; then
+  echo AI_PROVIDER=set
+else
+  echo AI_PROVIDER=missing
+fi
+if [[ -r "${vapi_private_env}" ]] && grep -Eq '^(COPS_VAPI_API_KEY|FINAFLEX_VAPI_API_KEY|VAPI_API_KEY)=.+' "${vapi_private_env}"; then
+  echo VAPI_PRIVATE_KEY=set
+else
+  echo VAPI_PRIVATE_KEY=missing
+fi
+REMOTE
+)"
+if grep -q '^AI_PROVIDER=set$' <<<"${runtime_out}"; then ok "AI provider is configured"
+else bad "AI provider is MISSING — text and voice answers cannot run"; fi
+if grep -q '^VAPI_PRIVATE_KEY=set$' <<<"${runtime_out}"; then ok "Vapi private API key is available to the production provisioner"
+else bad "Vapi private API key is MISSING from ${VAPI_PRIVATE_ENV}"; fi
+
+say "2. Contact email configuration on prod"
 env_out="$("${SSH[@]}" "sudo -n grep -E '^(RESEND_API_KEY|CONTACT_TO|CONTACT_FROM)=' /opt/felicanai-site/config/ai.env 2>/dev/null | sed -E 's/=.*/=<set>/'" || true)"
 for key in RESEND_API_KEY CONTACT_TO CONTACT_FROM; do
   if grep -q "^${key}=" <<<"${env_out}"; then ok "${key} is set"
   else bad "${key} is MISSING — add it before promoting, or the contact form returns 503"; fi
 done
 
-say "2. felican.ai proxy routing"
+say "3. felican.ai proxy routing"
 "${SSH[@]}" 'sudo -n bash -s' <<'REMOTE' || true
 set -Eeuo pipefail
 db=/opt/nginx-proxy-manager/data/database.sqlite
@@ -70,17 +94,13 @@ else:
 PY
 if [[ "${n}" -gt 1 ]]; then
   echo
-  echo "  CHECK  more than one 'set \$server' line: the deploy sed would rewrite them all."
-  echo "         Back up the conf first:"
-  echo "           sudo cp -p ${conf} ${conf}.before-promotion"
-  echo "         If path apps break afterwards, restore with:"
-  echo "           sudo cp -p ${conf}.before-promotion ${conf} && sudo docker exec nginx-proxy-manager nginx -s reload"
+  echo "  OK     custom path targets detected; deploy changes only the first/main target."
 else
   echo "  OK     single forward target: the deploy sed affects only the site route."
 fi
 REMOTE
 
-say "3. Path apps that must still work after promotion"
+say "4. Path apps that must still work after promotion"
 for p in /relay /quorum /ora /factory /Lehem-Felican-Jr /Lee-Felican-jr/books/resources/; do
   code="$(curl -sS -o /dev/null -L --max-time 12 -w '%{http_code}' "https://felican.ai${p}" 2>/dev/null || echo ERR)"
   printf '  %-34s %s\n' "${p}" "${code}"
@@ -89,7 +109,7 @@ echo
 echo "  Re-run this section after promoting. Any path that changes from 200 to 404"
 echo "  means the sed caught a custom location; restore the conf backup above."
 
-say "4. tawk.to live chat"
+say "5. tawk.to live chat"
 # Nothing to configure on the server: the property id is committed in
 # public/tawk-config.js and the CSP already allows tawk.to. The only thing that
 # can break it is the domain allowlist in the tawk dashboard.

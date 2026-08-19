@@ -112,7 +112,8 @@ fi
 python3 "${release_dir}/scripts/provision-felican-vapi.py" \
   --private-env /etc/felican/jarvis.env \
   --site-env "${ai_env_file}" \
-  --public-url https://felican.dev
+  --public-url https://felican.dev \
+  --assistant-name "Felican AI Website Voice (DEV)"
 
 if docker inspect "${app_name}" >/dev/null 2>&1; then
   docker stop "${app_name}"

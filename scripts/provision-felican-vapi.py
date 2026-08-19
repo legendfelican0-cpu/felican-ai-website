@@ -19,7 +19,7 @@ import urllib.error
 import urllib.request
 
 API = "https://api.vapi.ai"
-ASSISTANT_NAME = "Felican AI Website Voice"
+DEFAULT_ASSISTANT_NAME = "Felican AI Website Voice"
 DEFAULT_PUBLIC_KEY = "beddc27b-a24b-4864-873a-ae22c1234e14"
 LOG = logging.getLogger("felican-vapi")
 
@@ -79,9 +79,13 @@ def api(method: str, route: str, key: str, body: dict | None = None) -> dict | l
         raise RuntimeError(f"{method} {route} returned HTTP {error.code}: {detail}") from error
 
 
-def assistant_payload(public_url: str, webhook_secret: str) -> dict:
+def assistant_payload(
+    public_url: str,
+    webhook_secret: str,
+    assistant_name: str = DEFAULT_ASSISTANT_NAME,
+) -> dict:
     return {
-        "name": ASSISTANT_NAME,
+        "name": assistant_name,
         # Begin silently and wait for actual visitor speech before responding.
         "firstMessage": None,
         "firstMessageMode": "assistant-waits-for-user",
@@ -154,6 +158,7 @@ def main() -> int:
     parser.add_argument("--site-env", default="/opt/felicanai-site/config/ai.env")
     parser.add_argument("--public-url", default="https://felican.dev")
     parser.add_argument("--public-key", default=DEFAULT_PUBLIC_KEY)
+    parser.add_argument("--assistant-name", default=DEFAULT_ASSISTANT_NAME)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)-7s %(message)s")
@@ -161,6 +166,12 @@ def main() -> int:
     private_env = parse_env(Path(args.private_env))
     site_path = Path(args.site_env)
     site_env = parse_env(site_path)
+    assistant_name = args.assistant_name.strip()
+    public_url = args.public_url.strip().rstrip("/")
+    if not assistant_name:
+        raise SystemExit("Vapi assistant name must not be empty")
+    if not public_url.startswith("https://"):
+        raise SystemExit("Vapi public URL must use HTTPS")
     private_key = (
         os.environ.get("COPS_VAPI_API_KEY")
         or private_env.get("COPS_VAPI_API_KEY")
@@ -174,28 +185,28 @@ def main() -> int:
     assistants = api("GET", "/assistant", private_key)
     if not isinstance(assistants, list):
         raise RuntimeError("Vapi returned an unexpected assistant list")
-    existing = next((item for item in assistants if item.get("name") == ASSISTANT_NAME), None)
-    payload = assistant_payload(args.public_url, webhook_secret)
+    existing = next((item for item in assistants if item.get("name") == assistant_name), None)
+    payload = assistant_payload(public_url, webhook_secret, assistant_name)
     if args.dry_run:
-        LOG.info("would %s %s", "update" if existing else "create", ASSISTANT_NAME)
+        LOG.info("would %s %s", "update" if existing else "create", assistant_name)
         return 0
     if existing:
         assistant_id = existing["id"]
         api("PATCH", f"/assistant/{assistant_id}", private_key, payload)
-        LOG.info("updated Felican website voice assistant")
+        LOG.info("updated %s", assistant_name)
     else:
         created = api("POST", "/assistant", private_key, payload)
         if not isinstance(created, dict) or not created.get("id"):
             raise RuntimeError("Vapi did not return an assistant id")
         assistant_id = created["id"]
-        LOG.info("created Felican website voice assistant")
+        LOG.info("created %s", assistant_name)
 
     update_env(site_path, {
         "FELICAN_VAPI_PUBLIC_KEY": args.public_key,
         "FELICAN_VAPI_ASSISTANT_ID": assistant_id,
         "FELICAN_VAPI_WEBHOOK_SECRET": webhook_secret,
     })
-    LOG.info("stored public voice identifiers and server-only secret in the Felican DEV environment")
+    LOG.info("stored public voice identifiers and server-only secret in the site environment")
     print(json.dumps({"assistantId": assistant_id, "configured": True}))
     return 0
 

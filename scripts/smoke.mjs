@@ -59,6 +59,33 @@ for (const path of ['/api/health', '/api/ready']) {
   }
 }
 
+try {
+  const { response, body, durationMs } = await request('/api/voice-config');
+  const payload = JSON.parse(body);
+  const ok = response.ok
+    && payload.enabled === true
+    && typeof payload.publicKey === 'string'
+    && payload.publicKey.length > 0
+    && typeof payload.assistantId === 'string'
+    && payload.assistantId.length > 0;
+  log(ok ? 'info' : 'error', 'smoke.voice_config', { status: response.status, durationMs, ok });
+  if (!ok) failed = true;
+} catch (error) {
+  failed = true;
+  log('error', 'smoke.voice_config', { ok: false, reason: error.message });
+}
+
+try {
+  const { response, durationMs } = await request('/voice-client.bundle.js', { method: 'HEAD' });
+  const contentType = response.headers.get('content-type') || '';
+  const ok = response.ok && /javascript/i.test(contentType);
+  log(ok ? 'info' : 'error', 'smoke.voice_client', { status: response.status, durationMs, ok });
+  if (!ok) failed = true;
+} catch (error) {
+  failed = true;
+  log('error', 'smoke.voice_client', { ok: false, reason: error.message });
+}
+
 if (includeChat) {
   try {
     const { response, body, durationMs } = await request('/api/chat', {

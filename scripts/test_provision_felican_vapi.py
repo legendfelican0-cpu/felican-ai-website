@@ -24,6 +24,23 @@ class ProvisionFelicanVapiTests(unittest.TestCase):
         self.assertIn("always spell the company name exactly Felican AI", model_prompt)
         self.assertIn("Always spell Ballas", model_prompt)
 
+    def test_payload_supports_separate_dev_and_prod_assistant_names(self):
+        dev = MODULE.assistant_payload(
+            "https://felican.dev",
+            "dev-secret",
+            "Felican AI Website Voice (DEV)",
+        )
+        prod = MODULE.assistant_payload(
+            "https://felican.ai",
+            "prod-secret",
+            "Felican AI Website Voice (PROD)",
+        )
+        self.assertEqual(dev["name"], "Felican AI Website Voice (DEV)")
+        self.assertEqual(dev["model"]["url"], "https://felican.dev/v1")
+        self.assertEqual(prod["name"], "Felican AI Website Voice (PROD)")
+        self.assertEqual(prod["model"]["url"], "https://felican.ai/v1")
+        self.assertNotEqual(dev["model"]["headers"]["x-vapi-secret"], prod["model"]["headers"]["x-vapi-secret"])
+
     def test_env_update_preserves_unrelated_values_and_replaces_voice_values(self):
         with tempfile.TemporaryDirectory() as folder:
             env_path = Path(folder) / "ai.env"

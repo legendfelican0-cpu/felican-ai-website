@@ -11,6 +11,9 @@ readonly RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)"
 readonly RELEASE_IMAGE="felicanai-site:${RELEASE_ID}"
 readonly CURRENT_IMAGE="felicanai-site:latest"
 readonly REMOTE_ROOT="/opt/felicanai-site"
+readonly RELEASE_DIR="${REMOTE_ROOT}/releases/${RELEASE_ID}"
+readonly PROD_VAPI_PRIVATE_ENV="${FELICAN_PROD_VAPI_PRIVATE_ENV:-/etc/felican/jarvis.env}"
+readonly PROD_VAPI_ASSISTANT_NAME="Felican AI Website Voice (PROD)"
 
 log() { printf '[felicanai-prod] %s\n' "$*"; }
 fail() { printf '[felicanai-prod] ERROR: %s\n' "$*" >&2; exit 1; }
@@ -25,14 +28,22 @@ dev_commit="$(ssh -o BatchMode=yes -o ConnectTimeout=15 "${DEV_HOST}" "sudo -n d
 dev_image="$(ssh -o BatchMode=yes -o ConnectTimeout=15 "${DEV_HOST}" "sudo -n docker inspect -f '{{.Config.Image}}' '${DEV_CONTAINER}'")"
 [[ -n "${dev_image}" ]] || fail "could not resolve the verified DEV image"
 
+log "staging the production Vapi provisioner"
+ssh -o BatchMode=yes -o ConnectTimeout=15 "${PROD_HOST}" \
+  "sudo -n install -d -m 0755 '${RELEASE_DIR}/scripts'"
+rsync -az --rsync-path="sudo -n rsync" \
+  -e "ssh -o BatchMode=yes -o ConnectTimeout=15" \
+  "${PROJECT_ROOT}/scripts/provision-felican-vapi.py" \
+  "${PROD_HOST}:${RELEASE_DIR}/scripts/"
+
 log "promoting verified DEV image for commit ${SOURCE_COMMIT}"
 ssh -o BatchMode=yes -o ConnectTimeout=15 "${DEV_HOST}" "sudo -n docker save '${dev_image}'" \
   | ssh -o BatchMode=yes -o ConnectTimeout=15 "${PROD_HOST}" "sudo -n docker load >/dev/null"
 
 ssh -o BatchMode=yes -o ConnectTimeout=15 "${PROD_HOST}" \
-  "sudo -n bash -s -- '${dev_image}' '${RELEASE_IMAGE}' '${CURRENT_IMAGE}' '${SITE_CONTAINER}' '${REMOTE_ROOT}' '${SOURCE_COMMIT}' '${RELEASE_ID}'" <<'REMOTE'
+  "sudo -n bash -s -- '${dev_image}' '${RELEASE_IMAGE}' '${CURRENT_IMAGE}' '${SITE_CONTAINER}' '${REMOTE_ROOT}' '${SOURCE_COMMIT}' '${RELEASE_ID}' '${RELEASE_DIR}' '${PROD_VAPI_PRIVATE_ENV}' '${PROD_VAPI_ASSISTANT_NAME}'" <<'REMOTE'
 set -Eeuo pipefail
-dev_image="$1"; release_image="$2"; current_image="$3"; site_container="$4"; remote_root="$5"; source_commit="$6"; release_id="$7"
+dev_image="$1"; release_image="$2"; current_image="$3"; site_container="$4"; remote_root="$5"; source_commit="$6"; release_id="$7"; release_dir="$8"; vapi_private_env="$9"; vapi_assistant_name="${10}"
 state_dir="${remote_root}/state"
 config_dir="${remote_root}/config"
 install -d -m 0700 "${state_dir}" "${config_dir}"
@@ -54,6 +65,23 @@ if ! grep -Eq '^ANTHROPIC_API_KEY=.+' "${ai_env}" && ! { grep -Eq '^ASHER_API_KE
   echo "production AI provider configuration is unavailable" >&2
   exit 1
 fi
+
+if [[ ! -r "${vapi_private_env}" ]] || ! grep -Eq '^(COPS_VAPI_API_KEY|FINAFLEX_VAPI_API_KEY|VAPI_API_KEY)=.+' "${vapi_private_env}"; then
+  echo "production Vapi private API configuration is unavailable" >&2
+  exit 1
+fi
+
+# Provision a production-only assistant before the existing site is stopped.
+# DEV uses a different assistant name, so neither environment can redirect the
+# other's voice traffic during a later deployment.
+python3 "${release_dir}/scripts/provision-felican-vapi.py" \
+  --private-env "${vapi_private_env}" \
+  --site-env "${ai_env}" \
+  --public-url https://felican.ai \
+  --assistant-name "${vapi_assistant_name}"
+for key in FELICAN_VAPI_PUBLIC_KEY FELICAN_VAPI_ASSISTANT_ID FELICAN_VAPI_WEBHOOK_SECRET; do
+  grep -Eq "^${key}=.+" "${ai_env}" || { echo "production voice configuration is missing ${key}" >&2; exit 1; }
+done
 
 backup_container=""
 if docker inspect "${site_container}" >/dev/null 2>&1; then
@@ -118,7 +146,9 @@ with con:
     changed=con.execute("update proxy_host set forward_host=?, modified_on=datetime('now') where is_deleted=0 and domain_names like '%felican.ai%'", (target,)).rowcount
 if changed != 1: raise SystemExit(f'unexpected proxy rows changed: {changed}')
 PY
-  sed -i -E 's/(set \$server[[:space:]]+)"[^"]+";/\1"'"${site_container}"'";/' "${proxy_conf}"
+  # Nginx Proxy Manager may emit additional `set $server` lines for custom
+  # path applications. Change only the first/main host target.
+  sed -i -E '0,/(set \$server[[:space:]]+)"[^"]+";/s//\1"'"${site_container}"'";/' "${proxy_conf}"
   docker exec nginx-proxy-manager nginx -t
   docker exec nginx-proxy-manager nginx -s reload
 fi
