@@ -4,7 +4,7 @@ set -Eeuo pipefail
 readonly PROD_HOST="legend@178.156.205.104"
 readonly DEV_HOST="legend@ssh.felican.dev"
 readonly DEV_CONTAINER="felicanai"
-readonly SITE_CONTAINER="felicanai-site"
+readonly SITE_CONTAINER="felicanai"
 readonly PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly SOURCE_COMMIT="$(git -C "${PROJECT_ROOT}" rev-parse HEAD)"
 readonly RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)"

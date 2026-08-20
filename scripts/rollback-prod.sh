@@ -2,7 +2,7 @@
 set -Eeuo pipefail
 
 readonly PROD_HOST="legend@178.156.205.104"
-readonly SITE_CONTAINER="felicanai-site"
+readonly SITE_CONTAINER="felicanai"
 readonly REMOTE_ROOT="/opt/felicanai-site"
 
 [[ "${FELICAN_CANONICAL_DEPLOY:-}" == "1" ]] || { printf '[felicanai-prod] ERROR: run through the canonical deploy CLI\n' >&2; exit 1; }
