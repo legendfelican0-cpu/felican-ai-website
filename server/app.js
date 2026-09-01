@@ -542,7 +542,10 @@ export function createAppServer({
       const saved = await paidOrders.upsertPaid(order);
       if (!order.email || saved.welcomeSentAt) return saved;
 
-      const setupUrl = `${siteOrigin(req, env)}/thank-you/?session_id=${encodeURIComponent(order.id)}`;
+      // Send buyers to the generator app, which verifies the order and emails
+      // their personal setup link. Overridable so dev/prod can diverge.
+      const generatorBase = (env.GENERATOR_APP_URL || 'https://app.felican.dev').replace(/\/$/, '');
+      const setupUrl = `${generatorBase}/claim?order=${encodeURIComponent(order.id)}`;
       const result = await sendWelcome({ ...order, setupUrl }, env);
       const completed = await paidOrders.markWelcomeSent(order.id, { resendId: result?.id || null });
       structuredLog(logger, 'info', 'welcome.sent', { requestId, sessionId: order.id, trigger });

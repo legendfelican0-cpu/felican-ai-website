@@ -82,8 +82,9 @@ h1 em{font-style:normal;color:var(--brand)}
 </div></main>
 
 <script>
-/* Swap this for your dad's generator URL when it's live. One place, one line. */
-var GENERATOR_URL = 'https://felican.ai/contact/?setup=starter-pack';
+/* The self-serve generator app. It verifies the order server-side and emails
+   the buyer their personal setup link (the order id alone is never a login). */
+var GENERATOR_URL = 'https://app.felican.dev/claim';
 
 var NAMES = {
   'private-ai':'Private AI',

@@ -240,7 +240,7 @@ describe('Starter Pack Stripe webhook', () => {
     expect((await request()).status).toBe(200);
     expect((await request()).status).toBe(200);
     expect(sent).toHaveLength(1);
-    expect(sent[0]).toMatchObject({ id: 'cs_test_1234567890', email: 'buyer@example.com', setupUrl: 'https://felican.ai/thank-you/?session_id=cs_test_1234567890' });
+    expect(sent[0]).toMatchObject({ id: 'cs_test_1234567890', email: 'buyer@example.com', setupUrl: 'https://app.felican.dev/claim?order=cs_test_1234567890' });
     await expect(store.get('cs_test_1234567890')).resolves.toMatchObject({ amountCents: 250_000, resendId: 'email_123' });
   });
 
