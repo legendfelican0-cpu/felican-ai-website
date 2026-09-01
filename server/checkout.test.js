@@ -161,6 +161,14 @@ describe('buildWelcomeEmail', () => {
     expect(mail.html).toContain('2,500');
   });
 
+  it('promises setup in minutes instead of days', () => {
+    const mail = buildWelcomeEmail({ items: ['pack'], total: 2500, setupUrl });
+    expect(mail.text).toContain('ready and running in a few minutes');
+    expect(mail.html).toContain('ready and running in a few minutes');
+    expect(mail.text).not.toContain('48 hours');
+    expect(mail.html).not.toContain('48 hours');
+  });
+
   it('escapes a hostile setup url instead of injecting markup', () => {
     const mail = buildWelcomeEmail({ items: ['pack'], total: 2500, setupUrl: 'https://x/"><script>alert(1)</script>' });
     expect(mail.html).not.toContain('<script>alert(1)</script>');

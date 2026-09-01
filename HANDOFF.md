@@ -68,8 +68,8 @@ web search. Lower usage and storage than the larger offering.
 **Copy rules — LOCKED.**
 - Never mention the enterprise offering, the $25,000 product, or any comparison
   to it, anywhere on these pages.
-- Never name a weekday ("by Thursday"). Refer to elapsed time instead —
-  "in 2 days", "live in 48 hours".
+- Never name a weekday ("by Thursday"). The setup promise is "ready and
+  running in a few minutes".
 - Cart and pricing appear ONLY on `/starter-pack/`. The other 22 products on
   `/products/` stay as they are, unpriced, with "Ask about it" CTAs.
 
@@ -180,8 +180,8 @@ with the owner before building anything here.
 
 ## 5. Open questions for the owner
 
-- The "Included with every product" section ends with a line offering more models
-  and image/video generation on request. Keep, or remove entirely?
+- More models, more automations, image generation, and video generation are
+  paid add-ons. Say so clearly before linking customers to the contact form.
 - Does Voice AI ever send SMS? If yes, A2P 10DLC registration is
   required and takes weeks — start it immediately.
 - What is the customer-facing generator URL? The only URL in Lee's generator

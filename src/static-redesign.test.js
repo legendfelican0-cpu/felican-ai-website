@@ -239,6 +239,16 @@ describe('Claude Design static website export', () => {
     expect(products).toContain('/product-felican-auto.png');
   });
 
+  it('states the fast setup promise and prices expanded capabilities separately', () => {
+    const starterPack = read('public/starter-pack/index.html');
+    const thankYou = read('public/thank-you/index.html');
+    expect(starterPack).toContain('ready and running in a few minutes');
+    expect(thankYou).toContain('ready and running in a few minutes');
+    expect(starterPack).toContain('available as paid add-ons');
+    expect(starterPack).not.toContain('48 hours');
+    expect(thankYou).not.toContain('48 hours');
+  });
+
   it('excludes the entries the owner asked to keep off the site', () => {
     const products = read('public/products/index.html');
     const contact = read('public/contact/index.html');

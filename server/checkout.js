@@ -216,7 +216,7 @@ export function buildWelcomeEmail({ items, total, setupUrl }) {
     '  1. Open the link above and enter your business details.',
     '  2. Paste your website and add anything else it should know — price lists,',
     '     policies, service menus, hours.',
-    '  3. Review it. We take it live within 48 hours.',
+    '  3. Review it. It is ready and running in a few minutes.',
     '',
     `You bought: ${bought.join(', ')}`,
     `Paid today: $${Number(total).toLocaleString('en-US')} (one-time)`,
@@ -247,7 +247,7 @@ export function buildWelcomeEmail({ items, total, setupUrl }) {
     <p style="margin:0 0 12px;font:700 12px/1 'Helvetica Neue',Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#8FE0C8">What happens next</p>
     <p style="margin:0 0 10px;font:400 15px/1.6 'Helvetica Neue',Arial,sans-serif;color:#C2D2D4"><strong style="color:#2FB894">1.</strong> &nbsp;Open the link and enter your business details.</p>
     <p style="margin:0 0 10px;font:400 15px/1.6 'Helvetica Neue',Arial,sans-serif;color:#C2D2D4"><strong style="color:#2FB894">2.</strong> &nbsp;Paste your website and add anything it should know &mdash; prices, policies, hours.</p>
-    <p style="margin:0;font:400 15px/1.6 'Helvetica Neue',Arial,sans-serif;color:#C2D2D4"><strong style="color:#2FB894">3.</strong> &nbsp;Review it. We take it live within 48 hours.</p>
+    <p style="margin:0;font:400 15px/1.6 'Helvetica Neue',Arial,sans-serif;color:#C2D2D4"><strong style="color:#2FB894">3.</strong> &nbsp;Review it. It is ready and running in a few minutes.</p>
   </td></tr>
   <tr><td style="padding:28px 32px 0">
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-top:1px solid #1C2A28;border-collapse:collapse">
