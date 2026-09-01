@@ -151,7 +151,7 @@ describe('buildWelcomeEmail', () => {
 
   it('names the single product bought', () => {
     const mail = buildWelcomeEmail({ items: ['receptionist'], total: 1000, setupUrl });
-    expect(mail.subject).toContain('AI Receptionist');
+    expect(mail.subject).toContain('Voice AI');
   });
 
   it('states the amount paid and that hosting is separate', () => {

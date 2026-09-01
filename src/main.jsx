@@ -159,7 +159,7 @@ function Broadsheet({ onCall, onChat }) {
 }
 
 function PhoneWidget({ onCall }) {
-  return <div className="live-phone-widget contact-card"><header><span>When you call Felican AI</span><span>{PHONE_DISPLAY}</span></header><h2>Our AI receptionist answers first.</h2><ul><li><Check/>Answers questions about the company</li><li><Check/>Explains products, services, and training</li><li><Check/>Transfers callers to Legend or Lee</li><li><Check/>Sends messages and email follow-ups</li></ul><button className="text-button" onClick={onCall}><Phone/> See the call flow <ArrowRight/></button></div>;
+  return <div className="live-phone-widget contact-card"><header><span>When you call Felican AI</span><span>{PHONE_DISPLAY}</span></header><h2>Our Voice AI answers first.</h2><ul><li><Check/>Answers questions about the company</li><li><Check/>Explains products, services, and training</li><li><Check/>Transfers callers to Legend or Lee</li><li><Check/>Sends messages and email follow-ups</li></ul><button className="text-button" onClick={onCall}><Phone/> See the call flow <ArrowRight/></button></div>;
 }
 
 function Workbench({ onCall, onChat }) {
@@ -182,7 +182,7 @@ const conversationMoments = [
 
 function Conversation({ onCall, onChat }) {
   return <div className="concept conversation" id="top"><div className="scroll-progress"/><Nav onCall={onCall} onChat={onChat}/><main>
-    <section className="c-hero"><p className="eyebrow">Felican AI company line</p><h1>Call Felican AI.</h1><p className="lede">Our AI receptionist can answer questions about the company or connect you with Legend or Lee.</p><button className="call-company" onClick={onCall}><span><Phone/></span><div><b>{PHONE_DISPLAY}</b><small>Ask a question, leave a message, or request a transfer</small></div><ArrowRight/></button></section>
+    <section className="c-hero"><p className="eyebrow">Felican AI company line</p><h1>Call Felican AI.</h1><p className="lede">Our Voice AI can answer questions about the company or connect you with Legend or Lee.</p><button className="call-company" onClick={onCall}><span><Phone/></span><div><b>{PHONE_DISPLAY}</b><small>Ask a question, leave a message, or request a transfer</small></div><ArrowRight/></button></section>
     <section className="story-intro"><p>Every useful system starts with a real conversation: what is happening now, what keeps getting stuck, and what should feel easier on the other side.</p></section>
     <section className="conversation-moments">{conversationMoments.map((m,i)=><article key={m.overline} className={i%2?'reverse':''}><p className="eyebrow">{String(i+1).padStart(2,'0')} · {m.overline}</p><div className="exchange"><p className="ask">{m.ask}</p><p className="reply"><Sparkles/>{m.reply}</p></div><div className="moment-copy"><h2>{m.title}</h2><p>{m.body}</p><button className="arrow-link">See how it works <ArrowRight/></button></div></article>)}</section>
     <section className="private-diagram"><div><p className="eyebrow">04 · BEHIND YOUR BOUNDARIES</p><h2>Private AI, designed around control.</h2><p>For sensitive teams and regulated workflows, Felican can design AI environments with clear access, approved knowledge, auditability, and controlled integrations.</p><button className="arrow-link">Explore private AI <ArrowRight/></button></div><div className="boundary"><span>Your environment</span><div><LockKeyhole/><b>Company knowledge</b><small>Approved documents · systems · permissions</small></div><div><BrainCircuit/><b>Felican AI layer</b><small>Models · agents · tools · governance</small></div></div></section>

@@ -50,14 +50,14 @@ Three AI products for small and local businesses, sold on one tab of felican.ai.
 |---|---|
 | Private AI | $1,000 one-time |
 | Felican AI Assistant | $1,000 one-time |
-| AI Receptionist | $1,000 one-time |
+| Voice AI | $1,000 one-time |
 | **AI Business Starter Pack** (all three) | **$2,500 one-time** |
 
 After setup, hosting is **$50/month**, billed separately, NOT taken at checkout.
 Usage above the monthly allowance is the customer's own cost.
 
 **Naming rule — LOCKED.** Products are named exactly `Private AI`,
-`Felican AI Assistant`, `AI Receptionist`. Do NOT append "Starter" to any product
+`Felican AI Assistant`, `Voice AI`. Do NOT append "Starter" to any product
 name. The word "Starter" appears only in the tab/bundle name
 "AI Business Starter Pack".
 
@@ -182,7 +182,7 @@ with the owner before building anything here.
 
 - The "Included with every product" section ends with a line offering more models
   and image/video generation on request. Keep, or remove entirely?
-- Does the AI Receptionist ever send SMS? If yes, A2P 10DLC registration is
+- Does Voice AI ever send SMS? If yes, A2P 10DLC registration is
   required and takes weeks — start it immediately.
 - What is the customer-facing generator URL? The only URL in Lee's generator
   project is `private-generator.felican.dev`, documented as shared-password gated,

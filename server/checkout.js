@@ -20,7 +20,7 @@ export const CATALOG = Object.freeze({
                     blurb: 'Your own private AI for your team, at your own address.' },
   'assistant':    { name: 'Felican AI Assistant', amount: 100_000,
                     blurb: 'The multilingual assistant for your website.' },
-  'receptionist': { name: 'AI Receptionist',      amount: 100_000,
+  'receptionist': { name: 'Voice AI',             amount: 100_000,
                     blurb: 'Voice AI that answers the phone and books appointments.' },
   'pack':         { name: 'AI Business Starter Pack',       amount: 250_000,
                     blurb: 'All three products, one shared knowledge base.' },

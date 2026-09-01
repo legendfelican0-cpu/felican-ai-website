@@ -206,7 +206,7 @@ describe('Claude Design static website export', () => {
     const products = read('public/products/index.html');
     const order = [
       'Private AI', 'Felican AI Assistant', 'Felican IDP', 'CrossCheck AI',
-      'World of Agents', 'AI Receptionist', 'Relay',
+      'World of Agents', 'Voice AI', 'Relay',
     ];
     const positions = order.map(name => products.indexOf(`name: '${name}'`));
     positions.forEach((pos, i) => expect(pos, `${order[i]} missing`).toBeGreaterThan(-1));
@@ -235,7 +235,7 @@ describe('Claude Design static website export', () => {
     expect(products).not.toContain('Factory');
     expect(products).not.toContain("name: 'Felican Auto'");
     // Renamed, but it keeps the same screenshot.
-    expect(products).toContain("name: 'AI Receptionist'");
+    expect(products).toContain("name: 'Voice AI'");
     expect(products).toContain('/product-felican-auto.png');
   });
 
