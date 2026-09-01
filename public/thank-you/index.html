@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>You're in — Felican AI</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/starter-pack/shared.css">
+<style>
+.page{min-height:78vh;display:grid;place-items:center;padding:clamp(50px,7vw,100px) 0}
+.mid{width:min(760px,92vw);text-align:center}
+.tick{width:86px;height:86px;margin:0 auto 30px;border-radius:50%;background:rgba(47,184,148,.14);border:2px solid var(--brand);display:grid;place-items:center;animation:pop .5s cubic-bezier(.2,1.3,.4,1) both}
+.tick svg{width:40px;height:40px;stroke:var(--brand);stroke-width:3.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tick path{stroke-dasharray:36;stroke-dashoffset:36;animation:draw .45s .3s ease forwards}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:none;opacity:1}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.r{animation:rise .6s both}
+h1{margin:0;font-family:Sora,sans-serif;font-size:clamp(34px,4.6vw,58px);font-weight:800;letter-spacing:-.035em;line-height:1.04;text-wrap:balance}
+h1 em{font-style:normal;color:var(--brand)}
+.lede{margin:20px auto 0;max-width:56ch;font-size:clamp(16.5px,1.4vw,19px);line-height:1.65;color:var(--ink-2);text-wrap:pretty}
+.order{margin:34px auto 0;max-width:520px;background:var(--panel);border:1px solid var(--line);padding:24px 26px;text-align:left}
+.order h2{margin:0 0 16px;font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-soft)}
+.order .row{display:flex;justify-content:space-between;gap:16px;padding:11px 0;border-bottom:1px solid var(--line);font-size:15.5px}
+.order .row:last-child{border-bottom:0}
+.order .row b{font-family:Sora,sans-serif;font-weight:700}
+.next{margin:40px auto 0;padding:30px 28px;background:linear-gradient(180deg,#12262C,#101E24);border:1px solid var(--brand);text-align:left}
+.next h2{margin:14px 0 0;font-family:Sora,sans-serif;font-size:clamp(23px,2.4vw,30px);font-weight:800;letter-spacing:-.025em;line-height:1.12}
+.next p{margin:14px 0 0;font-size:16.5px;line-height:1.65;color:var(--ink-2)}
+.next .btn{margin-top:24px;width:100%;font-size:17px;padding:19px 24px}
+.steps{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:13px}
+.steps li{display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:start;font-size:15.5px;line-height:1.55;color:var(--ink-2)}
+.steps li i{font-style:normal;width:24px;height:24px;flex:0 0 24px;display:grid;place-items:center;background:rgba(47,184,148,.16);border:1px solid var(--brand);color:var(--brand-soft);font-family:Sora,sans-serif;font-size:12px;font-weight:700}
+.mailed{margin:30px auto 0;font-size:15px;color:var(--mute);line-height:1.6}
+.mailed b{color:var(--ink-2)}
+.help{margin:36px auto 0;padding-top:26px;border-top:1px solid var(--line);font-size:14.5px;color:var(--mute-2);line-height:1.65}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-in">
+  <a class="nav-logo" href="/"><img src="/logo-mark.png" alt=""> Felican AI</a>
+</div></nav>
+
+<main class="page"><div class="mid">
+  <div class="tick"><svg viewBox="0 0 24 24"><path d="M4.5 12.5l5 5 10-11"/></svg></div>
+
+  <div class="r" style="animation-delay:.15s">
+    <h1>You're in. Let's go <em>build it</em>.</h1>
+    <p class="lede">Payment received. Your AI doesn't exist yet — you're about to make it, and it takes a few minutes. Everything you need is on the other side of that button.</p>
+  </div>
+
+  <div class="order r" id="orderBox" style="animation-delay:.3s" hidden>
+    <h2>Your order</h2>
+    <div id="orderLines"></div>
+  </div>
+
+  <div class="next r" style="animation-delay:.45s">
+    <span class="flag">Next step &mdash; takes about 5 minutes</span>
+    <h2>Set up your AI</h2>
+    <p>Paste your website link, drop in anything you want it to know, and it builds itself. You'll be live within 48 hours.</p>
+    <ol class="steps">
+      <li><i>1</i> Open the setup page and enter your business details</li>
+      <li><i>2</i> Add your website, price lists, policies &mdash; whatever it should know</li>
+      <li><i>3</i> Review it, and we take it live</li>
+    </ol>
+    <a class="btn btn-p" id="go" href="#">Set up my AI now <span aria-hidden="true">&#8594;</span></a>
+  </div>
+
+  <p class="mailed r" style="animation-delay:.6s" id="mailed">
+    We've also emailed this link to you<span id="toEmail"></span>, so you can come back to it any time.
+  </p>
+
+  <p class="help r" style="animation-delay:.7s">
+    Stuck, or something doesn't look right? Email <a href="mailto:ai@felican.ai">ai@felican.ai</a>
+    or call <a href="tel:+15612350799">+1 561-235-0799</a> and a human will pick up.
+  </p>
+</div></main>
+
+<script>
+/* Swap this for your dad's generator URL when it's live. One place, one line. */
+var GENERATOR_URL = 'https://felican.ai/contact/?setup=starter-pack';
+
+var NAMES = {
+  'private-ai':'Private AI',
+  'assistant':'Felican AI Assistant',
+  'receptionist':'AI Receptionist',
+  'pack':'AI Business Starter Pack'
+};
+
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+var sessionId = new URLSearchParams(location.search).get('session_id');
+var link = GENERATOR_URL + (GENERATOR_URL.indexOf('?') > -1 ? '&' : '?') +
+           'order=' + encodeURIComponent(sessionId || '');
+document.getElementById('go').href = link;
+
+/* Cart is done — clear it so a refresh doesn't look like they still owe money. */
+try { localStorage.removeItem('felican_cart_v1'); } catch(e){}
+
+/* Confirm the order server-side. This is also what triggers the welcome email. */
+if (sessionId) {
+  fetch('/api/order?session_id=' + encodeURIComponent(sessionId))
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(o){
+      if (!o || !o.items) return;
+      var box = document.getElementById('orderBox');
+      document.getElementById('orderLines').innerHTML =
+        o.items.map(function(id){
+          return '<div class="row"><span>' + esc(NAMES[id] || id) + '</span></div>';
+        }).join('') +
+        '<div class="row"><b>Paid</b><b>$' + Number(o.total || 0).toLocaleString('en-US') + '</b></div>';
+      box.hidden = false;
+      if (o.email) document.getElementById('toEmail').textContent = ' at ' + o.email;
+    })
+    .catch(function(){});
+}
+</script>
+</body>
+</html>

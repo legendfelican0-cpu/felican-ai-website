@@ -85,8 +85,10 @@ trap rollback ERR
 docker build --pull -f "${release_dir}/deploy/Dockerfile.dev" -t "${image}" "${release_dir}"
 
 config_dir="${remote_root}/config"
+orders_dir="${remote_root}/orders"
 ai_env_file="${config_dir}/ai.env"
 install -d -m 0700 "${config_dir}"
+install -d -m 0700 -o 1000 -g 1000 "${orders_dir}"
 if [[ ! -s "${ai_env_file}" ]]; then
   for candidate in /var/www/betiq/.env.local /var/www/fruit/api/.env /opt/fruit/api/.env /opt/felican-factory/.env.local; do
     if [[ -r "${candidate}" ]] && grep -Eq '^(ASHER_API_KEY|ANTHROPIC_API_KEY)=.+' "${candidate}"; then
@@ -137,6 +139,8 @@ docker run -d \
   --label felican.release="${image}" \
   --label felican.commit="${source_commit}" \
   --env-file "${ai_env_file}" \
+  --env ORDER_STORE_PATH=/data/starter-pack-orders.json \
+  --mount type=bind,src="${orders_dir}",dst=/data \
   -p 127.0.0.1:3002:8080 \
   "${image}"
 new_started=1

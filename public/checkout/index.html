@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<title>Checkout — Felican AI</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/starter-pack/shared.css">
+<style>
+.page{padding:clamp(40px,5vw,72px) 0 90px}
+h1{margin:16px 0 0;font-family:Sora,sans-serif;font-size:clamp(30px,3.6vw,46px);font-weight:800;letter-spacing:-.03em;line-height:1.08}
+.lay{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(24px,3vw,44px);margin-top:38px;align-items:start}
+@media(max-width:900px){.lay{grid-template-columns:1fr}}
+.box{background:var(--panel);border:1px solid var(--line);padding:28px 26px}
+.box h2{margin:0 0 20px;font-family:Sora,sans-serif;font-size:19px;font-weight:800;letter-spacing:-.02em}
+.line{display:flex;gap:16px;align-items:flex-start;padding:18px 0;border-bottom:1px solid var(--line)}
+.line:last-of-type{border-bottom:0}
+.line .info{flex:1;min-width:0}
+.line .info b{display:block;font-family:Sora,sans-serif;font-size:16.5px;font-weight:700;letter-spacing:-.01em}
+.line .info small{display:block;margin-top:5px;color:var(--mute);font-size:14px;line-height:1.5}
+.line .amt{font-family:Sora,sans-serif;font-size:18px;font-weight:700;white-space:nowrap}
+.line .rm{display:block;margin-top:8px;background:none;border:0;color:var(--mute-2);font-size:13px;cursor:pointer;text-decoration:underline;padding:0;font-family:inherit}
+.line .rm:hover{color:var(--brand)}
+.tot{display:flex;justify-content:space-between;align-items:baseline;margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
+.tot span{font-family:Sora,sans-serif;font-size:17px;font-weight:700}
+.tot b{font-family:Sora,sans-serif;font-size:36px;font-weight:800;letter-spacing:-.03em}
+label{display:block;font-family:Sora,sans-serif;font-size:14px;font-weight:700;margin-bottom:9px}
+input[type=email]{width:100%;padding:15px 16px;background:#0B171C;border:1px solid var(--line);color:var(--ink);font-family:Inter,sans-serif;font-size:16px}
+input[type=email]:focus{outline:0;border-color:var(--brand)}
+.help{margin:10px 0 0;font-size:14px;color:var(--mute);line-height:1.55}
+.err{margin:16px 0 0;padding:14px 16px;background:rgba(255,90,90,.1);border:1px solid #FF5A5A;color:#FFC9C9;font-size:14.5px;line-height:1.55;display:none}
+.err.show{display:block}
+.after{margin:22px 0 0;padding-top:22px;border-top:1px solid var(--line);display:grid;gap:12px}
+.after div{display:grid;grid-template-columns:auto 1fr;gap:11px;font-size:14.8px;line-height:1.55;color:var(--mute)}
+.after i{font-style:normal;color:var(--brand);font-weight:700}
+.empty{text-align:center;padding:70px 20px}
+.empty p{color:var(--mute);font-size:17px;margin:12px 0 26px}
+.secure{margin:18px 0 0;font-size:13.5px;color:var(--mute-2);text-align:center;line-height:1.6}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="wrap nav-in">
+  <a class="nav-logo" href="/"><img src="/logo-mark.png" alt=""> Felican AI</a>
+  <div class="nav-links"><a href="/starter-pack/">&#8592; Back to the Starter Pack</a></div>
+</div></nav>
+
+<main class="page"><div class="wrap">
+  <div id="filled" hidden>
+    <span class="kicker">Checkout</span>
+    <h1>Almost yours.</h1>
+    <div class="lay">
+      <div class="box">
+        <h2>Your order</h2>
+        <div id="lines"></div>
+        <div class="tot"><span>Total due today</span><b id="total">$0</b></div>
+        <div class="after">
+          <div><i>&#9679;</i> One-time payment. No contract, no auto-renewal today.</div>
+          <div><i>&#9679;</i> $50/mo hosting starts separately once your AI is live.</div>
+          <div><i>&#9679;</i> You'll get a link to set it up the moment you pay.</div>
+        </div>
+      </div>
+      <div class="box">
+        <h2>Where should we send it?</h2>
+        <label for="email">Your email</label>
+        <input type="email" id="email" placeholder="you@yourbusiness.com" autocomplete="email" required>
+        <p class="help">Your receipt, your setup link, and your welcome email all go here. Use the address you actually check.</p>
+        <div class="err" id="err"></div>
+        <button class="btn btn-p" id="pay" style="width:100%;margin-top:22px">Pay securely <span aria-hidden="true">&#8594;</span></button>
+        <p class="secure">Payments are handled by Stripe. Felican AI never sees or stores your card details.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="empty" class="empty" hidden>
+    <span class="kicker">Checkout</span>
+    <h1>Your cart is empty.</h1>
+    <p>Pick a product and it'll show up here.</p>
+    <a class="btn btn-p" href="/starter-pack/">See the Starter Pack <span aria-hidden="true">&#8594;</span></a>
+  </div>
+</div></main>
+
+<script>
+var CATALOG = {
+  'private-ai':   { name:'Private AI',            price:1000, note:'Your own private AI for your team, at your own address.' },
+  'assistant':    { name:'Felican AI Assistant',  price:1000, note:'The multilingual assistant for your website.' },
+  'receptionist': { name:'AI Receptionist',       price:1000, note:'Voice AI that answers the phone and books appointments.' },
+  'pack':         { name:'AI Business Starter Pack',        price:2500, note:'All three products, one shared knowledge base. Saves $500.' }
+};
+var KEY = 'felican_cart_v1';
+
+function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function money(n){ return '$' + n.toLocaleString('en-US'); }
+function read(){
+  try { var v = JSON.parse(localStorage.getItem(KEY) || '[]');
+        return Array.isArray(v) ? v.filter(function(id){ return CATALOG[id]; }) : []; }
+  catch(e){ return []; }
+}
+function write(c){ try { localStorage.setItem(KEY, JSON.stringify(c)); } catch(e){} }
+
+function paint(){
+  var cart = read();
+  document.getElementById('filled').hidden = cart.length === 0;
+  document.getElementById('empty').hidden  = cart.length !== 0;
+  if (!cart.length) return;
+
+  document.getElementById('lines').innerHTML = cart.map(function(id){
+    var p = CATALOG[id];
+    return '<div class="line"><div class="info"><b>' + esc(p.name) + '</b><small>' + esc(p.note) +
+           '</small><button class="rm" data-rm="' + id + '">Remove</button></div>' +
+           '<div class="amt">' + money(p.price) + '</div></div>';
+  }).join('');
+  document.getElementById('total').textContent =
+    money(cart.reduce(function(s, id){ return s + CATALOG[id].price; }, 0));
+}
+
+document.addEventListener('click', function(e){
+  var b = e.target.closest('[data-rm]');
+  if (!b) return;
+  var cart = read(), i = cart.indexOf(b.getAttribute('data-rm'));
+  if (i > -1) cart.splice(i, 1);
+  write(cart); paint();
+});
+
+document.getElementById('pay').addEventListener('click', function(){
+  var btn = this, err = document.getElementById('err');
+  var email = document.getElementById('email').value.trim();
+  err.classList.remove('show');
+
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)) {
+    err.textContent = 'Please enter a valid email address so we can send your setup link.';
+    err.classList.add('show');
+    document.getElementById('email').focus();
+    return;
+  }
+  var items = read();
+  if (!items.length) { paint(); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Taking you to Stripe…';
+
+  fetch('/api/checkout', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items: items, email: email })
+  })
+  .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, body: j }; }); })
+  .then(function(res){
+    if (res.ok && res.body && res.body.url) { window.location.href = res.body.url; return; }
+    throw new Error((res.body && res.body.error) || 'We could not start the payment.');
+  })
+  .catch(function(e){
+    err.textContent = e.message + ' Please try again, or email ai@felican.ai and we will sort it out.';
+    err.classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = 'Pay securely <span aria-hidden="true">&#8594;</span>';
+  });
+});
+
+paint();
+</script>
+</body>
+</html>

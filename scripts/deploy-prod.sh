@@ -46,7 +46,9 @@ set -Eeuo pipefail
 dev_image="$1"; release_image="$2"; current_image="$3"; site_container="$4"; remote_root="$5"; source_commit="$6"; release_id="$7"; release_dir="$8"; vapi_private_env="$9"; vapi_assistant_name="${10}"
 state_dir="${remote_root}/state"
 config_dir="${remote_root}/config"
+orders_dir="${remote_root}/orders"
 install -d -m 0700 "${state_dir}" "${config_dir}"
+install -d -m 0700 -o 1000 -g 1000 "${orders_dir}"
 
 docker tag "${dev_image}" "${release_image}"
 docker tag "${release_image}" "${current_image}"
@@ -127,6 +129,8 @@ docker run -d \
   --label felican.release="${release_image}" \
   --label felican.commit="${source_commit}" \
   --env-file "${ai_env}" \
+  --env ORDER_STORE_PATH=/data/starter-pack-orders.json \
+  --mount type=bind,src="${orders_dir}",dst=/data \
   "${current_image}"
 
 for attempt in 1 2 3 4 5 6; do

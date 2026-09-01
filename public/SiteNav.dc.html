@@ -72,7 +72,7 @@
 </header>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:90},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Home&quot;,&quot;Products&quot;,&quot;Services&quot;,&quot;Education&quot;,&quot;Books&quot;,&quot;About Us&quot;,&quot;Contact&quot;,&quot;Book a Call&quot;],&quot;default&quot;:&quot;Home&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:90},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Home&quot;,&quot;Products&quot;,&quot;Starter Pack&quot;,&quot;Services&quot;,&quot;Education&quot;,&quot;Books&quot;,&quot;About Us&quot;,&quot;Contact&quot;,&quot;Book a Call&quot;],&quot;default&quot;:&quot;Home&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
 class Component extends DCLogic {
   state = { open: false, w: typeof window !== 'undefined' ? window.innerWidth : 1400 };
   componentDidMount() {
@@ -83,7 +83,7 @@ class Component extends DCLogic {
   renderVals() {
     const active = (this.props.active || 'Home');
     const defs = [
-      ['Home', '/'], ['Products', '/products/'], ['Services', '/services/'],
+      ['Home', '/'], ['Products', '/products/'], ['Starter Pack', '/starter-pack/'], ['Services', '/services/'],
       ['Education', '/education/'], ['Books', '/books/'], ['About Us', '/about/'], ['Contact', '/contact/']
     ];
     const mobile = this.state.w < 1024;

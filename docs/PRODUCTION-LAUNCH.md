@@ -60,26 +60,33 @@ No old container or proxy backup is deleted during promotion or rollback.
 bash scripts/preflight-prod.sh
 ```
 
-Read-only. It checks the two things that are not covered by the test suite.
+Read-only. It checks the three things that are not covered by the test suite.
 
-### 1. Contact email variables must exist on prod
+### 1. Contact and payment variables must exist on prod
 
 `deploy-prod.sh` builds `ai.env` by harvesting only `ASHER_*` and `ANTHROPIC_*`
-keys. It does **not** carry the Resend variables across, and it does not warn
-when they are absent. Add them to `/opt/felicanai-site/config/ai.env` before
-promoting:
+keys. It does **not** carry the Resend or Stripe variables across. Add them to
+`/opt/felicanai-site/config/ai.env` before promoting:
 
 ```
 RESEND_API_KEY=<key from the Resend dashboard>
 CONTACT_TO=ai@felican.ai
 CONTACT_FROM=Felican AI Website <website@felican.ai>
+STRIPE_SECRET_KEY=<restricted test/live key>
+STRIPE_WEBHOOK_SECRET=<whsec_... from the Stripe endpoint>
+SITE_ORIGIN=https://felican.ai
 ```
 
 Do not wrap `CONTACT_FROM` in quotes: the file is read by `docker --env-file`,
 which takes the line literally, so quotes would end up inside the value.
 
-Without these the site still works; `/api/contact` returns 503 and tells
-visitors to email directly rather than silently dropping enquiries.
+Without Resend, `/api/contact` returns 503 and tells visitors to email directly.
+Without Stripe, checkout or webhook fulfillment returns 503 while the rest of
+the site remains available.
+
+The deploy scripts mount `/opt/felicanai-site/orders/` at `/data` and set
+`ORDER_STORE_PATH=/data/starter-pack-orders.json`. Keep that host directory in
+server backups: it contains the durable payment record and welcome-email marker.
 
 ### 2. The felican.ai proxy host may use custom locations
 

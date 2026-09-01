@@ -1,0 +1,37 @@
+:root{
+  --bg:#080E13; --panel:#101E24; --panel-2:#142A31; --line:#1C2A28;
+  --ink:#EEF4F4; --ink-2:#C2D2D4; --mute:#8FA3A8; --mute-2:#7B9298;
+  --brand:#2FB894; --brand-hi:#59D4B4; --brand-soft:#8FE0C8;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;overflow-x:clip}
+a{color:var(--brand)}a:hover{color:var(--brand-hi)}
+::selection{background:var(--brand);color:var(--bg)}
+.wrap{width:min(1180px,92vw);margin:0 auto}
+.sora{font-family:Sora,sans-serif}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:60;background:rgba(8,14,19,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav-in{display:flex;align-items:center;gap:26px;padding:16px 0}
+.nav-logo{display:flex;align-items:center;gap:10px;font-family:Sora,sans-serif;font-weight:800;font-size:18px;letter-spacing:-.02em;color:var(--ink);text-decoration:none}
+.nav-logo img{width:26px;height:26px}
+.nav-links{display:flex;gap:20px;margin-left:auto;flex-wrap:wrap}
+.nav-links a{font-family:Sora,sans-serif;font-size:14px;font-weight:600;color:var(--ink-2);text-decoration:none}
+.nav-links a:hover,.nav-links a.on{color:var(--brand)}
+@media(max-width:860px){.nav-links{display:none}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:16px 22px;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none;border:0;cursor:pointer;transition:background .2s,transform .2s,gap .2s}
+.btn-p{background:var(--brand);color:var(--bg)}
+.btn-p:hover{background:var(--brand-hi);color:var(--bg);transform:translateY(-2px)}
+.btn-g{background:transparent;border:1px solid var(--line);color:var(--brand)}
+.btn-g:hover{background:rgba(47,184,148,.14)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn:focus-visible{outline:3px solid var(--brand-hi);outline-offset:3px}
+
+.kicker{display:inline-block;font-family:Sora,sans-serif;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-soft)}
+.flag{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;background:rgba(47,184,148,.16);border:1px solid var(--brand);color:var(--brand-soft);font-family:Sora,sans-serif;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+
+.foot{border-top:1px solid var(--line);margin-top:90px;padding:34px 0 48px;color:var(--mute-2);font-size:14px}
+.foot a{color:var(--mute);text-decoration:none}.foot a:hover{color:var(--brand)}

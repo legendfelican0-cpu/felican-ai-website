@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import { afterEach, describe, expect, it } from 'vitest';
 import { createAppServer, contactIsConfigured, deliverEducationLead, normalizeContact, normalizeMessages, sanitizeAssistantReply, sanitizeText, voiceBundleIntegrity } from './app.js';
 
@@ -8,15 +9,13 @@ afterEach(async () => {
 });
 
 async function start(complete = async () => 'A real answer from Felican AI.', options = {}) {
+  const { env: extraEnv = {}, logger, ...serverOptions } = options;
   const server = createAppServer({
     rootDir: process.cwd(),
     complete,
-    ...(options.sendContact ? { sendContact: options.sendContact } : {}),
-    ...(options.deliverLead ? { deliverLead: options.deliverLead } : {}),
-    ...(options.voiceBundleFetch ? { voiceBundleFetch: options.voiceBundleFetch } : {}),
-    ...(options.voiceBundleIntegrityExpected ? { voiceBundleIntegrityExpected: options.voiceBundleIntegrityExpected } : {}),
-    env: { ANTHROPIC_API_KEY: 'test-key', ...options.env },
-    logger: options.logger || { error() {}, info() {}, warn() {} },
+    ...serverOptions,
+    env: { ANTHROPIC_API_KEY: 'test-key', ...extraEnv },
+    logger: logger || { error() {}, info() {}, warn() {} },
   });
   servers.push(server);
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -24,6 +23,28 @@ async function start(complete = async () => 'A real answer from Felican AI.', op
 }
 
 const browserHeaders = { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 Chrome/126 Safari/537.36' };
+
+function memoryOrderStore() {
+  const orders = new Map();
+  return {
+    async get(id) { return orders.get(id) || null; },
+    async upsertPaid(order) {
+      const saved = { ...order, ...(orders.get(order.id) || {}) };
+      orders.set(order.id, saved);
+      return saved;
+    },
+    async markWelcomeSent(id, { resendId }) {
+      const saved = { ...orders.get(id), welcomeSentAt: new Date().toISOString(), resendId };
+      orders.set(id, saved);
+      return saved;
+    },
+  };
+}
+
+function stripeSignature(raw, secret, timestamp = Math.floor(Date.now() / 1000)) {
+  const digest = createHmac('sha256', secret).update(`${timestamp}.${raw}`).digest('hex');
+  return `t=${timestamp},v1=${digest}`;
+}
 
 describe('Felican AI contact endpoint', () => {
   const RESEND = { RESEND_API_KEY: 'test-resend-key' };
@@ -192,6 +213,47 @@ describe('Felican AI education eBook access', () => {
     });
     expect(honeypot.status).toBe(200);
     expect(deliveries).toBe(0);
+  });
+});
+
+describe('Starter Pack Stripe webhook', () => {
+  const secret = 'whsec_route_test';
+  const event = {
+    id: 'evt_completed_123', type: 'checkout.session.completed', data: { object: {
+      id: 'cs_test_1234567890', payment_status: 'paid', amount_total: 250_000, currency: 'usd', created: 1_700_000_000,
+      customer_details: { email: 'buyer@example.com' }, metadata: { items: 'pack' },
+    } },
+  };
+
+  it('verifies, stores, and welcomes a paid order only once', async () => {
+    const sent = [];
+    const store = memoryOrderStore();
+    const base = await start(undefined, {
+      env: { STRIPE_WEBHOOK_SECRET: secret, SITE_ORIGIN: 'https://felican.ai' },
+      orderStore: store,
+      sendWelcome: async order => { sent.push(order); return { id: 'email_123' }; },
+    });
+    const raw = JSON.stringify(event);
+    const request = () => fetch(`${base}/api/stripe-webhook`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'Stripe-Signature': stripeSignature(raw, secret) }, body: raw,
+    });
+    expect((await request()).status).toBe(200);
+    expect((await request()).status).toBe(200);
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toMatchObject({ id: 'cs_test_1234567890', email: 'buyer@example.com', setupUrl: 'https://felican.ai/thank-you/?session_id=cs_test_1234567890' });
+    await expect(store.get('cs_test_1234567890')).resolves.toMatchObject({ amountCents: 250_000, resendId: 'email_123' });
+  });
+
+  it('rejects bad signatures and fails closed when no signing secret exists', async () => {
+    const store = memoryOrderStore();
+    const configured = await start(undefined, { env: { STRIPE_WEBHOOK_SECRET: secret }, orderStore: store, sendWelcome: async () => {} });
+    const raw = JSON.stringify(event);
+    expect((await fetch(`${configured}/api/stripe-webhook`, {
+      method: 'POST', headers: { 'Stripe-Signature': 't=1,v1=bad' }, body: raw,
+    })).status).toBe(400);
+
+    const unconfigured = await start(undefined, { env: {}, orderStore: store, sendWelcome: async () => {} });
+    expect((await fetch(`${unconfigured}/api/stripe-webhook`, { method: 'POST', body: raw })).status).toBe(503);
   });
 });
 

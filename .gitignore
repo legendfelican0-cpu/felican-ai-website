@@ -9,6 +9,7 @@ playwright-report/
 test-results/
 qa/*.png
 *.log
+data/
 .wrangler/
 __pycache__/
 *.pyc

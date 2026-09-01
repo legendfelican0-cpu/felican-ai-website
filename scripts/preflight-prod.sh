@@ -7,7 +7,9 @@
 #   2. Are the Resend contact variables present in the prod ai.env? Without
 #      them the contact form returns 503 and tells visitors to email instead.
 #
-#   3. Does the felican.ai proxy host use nginx-proxy-manager "custom
+#   3. Are the Stripe API key, webhook secret, and canonical site origin set?
+#
+#   4. Does the felican.ai proxy host use nginx-proxy-manager "custom
 #      locations"? deploy-prod.sh repoints the site with:
 #
 #          sed -i -E 's/(set \$server[[:space:]]+)"[^"]+";/\1"felicanai-site";/'
@@ -74,7 +76,14 @@ else bad "RESEND_API_KEY is MISSING — the assistant handoff and contact API wo
 ok "CONTACT_TO defaults to ai@felican.ai when unset"
 ok "CONTACT_FROM defaults to Felican AI Website <website@felican.ai> when unset"
 
-say "3. felican.ai proxy routing"
+say "3. Starter Pack payment configuration"
+payment_env_out="$("${SSH[@]}" "sudo -n grep -E '^(STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|SITE_ORIGIN)=' /opt/felicanai-site/config/ai.env 2>/dev/null | sed -E 's/=.*/=<set>/'" || true)"
+for key in STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET SITE_ORIGIN; do
+  if grep -q "^${key}=" <<<"${payment_env_out}"; then ok "${key} is set"
+  else bad "${key} is MISSING — Starter Pack payment fulfillment is not production-ready"; fi
+done
+
+say "4. felican.ai proxy routing"
 "${SSH[@]}" 'sudo -n bash -s' <<'REMOTE' || true
 set -Eeuo pipefail
 db=/opt/nginx-proxy-manager/data/database.sqlite
@@ -116,7 +125,7 @@ else
 fi
 REMOTE
 
-say "4. Path apps that must still work after promotion"
+say "5. Path apps that must still work after promotion"
 for p in /relay /quorum /ora /factory /Lehem-Felican-Jr /Lee-Felican-jr/books/resources/; do
   code="$(curl -sS -o /dev/null -L --max-time 12 -w '%{http_code}' "https://felican.ai${p}" 2>/dev/null || echo ERR)"
   printf '  %-34s %s\n' "${p}" "${code}"
@@ -125,7 +134,7 @@ echo
 echo "  Re-run this section after promoting. Any path that changes from 200 to 404"
 echo "  means the sed caught a custom location; restore the conf backup above."
 
-say "5. tawk.to live chat"
+say "6. tawk.to live chat"
 # Nothing to configure on the server: the property id is committed in
 # public/tawk-config.js and the CSP already allows tawk.to. The only thing that
 # can break it is the domain allowlist in the tawk dashboard.

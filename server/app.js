@@ -3,8 +3,21 @@ import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { createServer } from 'node:http';
 
+import {
+  checkoutIsConfigured,
+  createCheckoutSession,
+  fetchOrder,
+  normalizeOrder,
+  orderFromCheckoutSession,
+  sendWelcomeEmail as sendWelcomeEmailDefault,
+  stripeWebhookIsConfigured,
+  verifyStripeWebhook,
+} from './checkout.js';
+import { createFileOrderStore } from './orders.js';
+
 const BOT_UA = /bot|crawler|spider|scraper|curl|wget|python-requests|httpie|postman|insomnia|java\/|go-http|php\/|ruby|perl|libwww|mechanize|scrapy|phantomjs|headless|selenium|puppeteer|playwright/i;
 const MAX_BODY_BYTES = 16 * 1024;
+const MAX_WEBHOOK_BODY_BYTES = 256 * 1024;
 const MAX_MESSAGE_LENGTH = 800;
 const MAX_MESSAGES = 10;
 const RATE_MAP_CAP = 10_000;
@@ -194,7 +207,16 @@ function requestIp(req) {
   ) || 'unknown';
 }
 
-async function readJson(req, maxBytes = MAX_BODY_BYTES) {
+function siteOrigin(req, env = process.env) {
+  const configured = env.SITE_ORIGIN?.trim();
+  if (configured) return configured.replace(/\/+$/, '');
+  const host = String(req.headers['x-forwarded-host'] || req.headers.host || 'felican.ai').split(',')[0].trim();
+  const proto = String(req.headers['x-forwarded-proto'] || 'https').split(',')[0].trim();
+  const local = /^(localhost|127\.0\.0\.1)(:|$)/.test(host);
+  return `${local ? 'http' : proto}://${host}`;
+}
+
+async function readBody(req, maxBytes = MAX_BODY_BYTES) {
   const chunks = [];
   let size = 0;
   for await (const chunk of req) {
@@ -206,9 +228,14 @@ async function readJson(req, maxBytes = MAX_BODY_BYTES) {
     }
     chunks.push(chunk);
   }
+  return Buffer.concat(chunks);
+}
+
+async function readJson(req, maxBytes = MAX_BODY_BYTES) {
   try {
-    return JSON.parse(Buffer.concat(chunks).toString('utf8') || '{}');
-  } catch {
+    return JSON.parse((await readBody(req, maxBytes)).toString('utf8') || '{}');
+  } catch (cause) {
+    if (cause?.statusCode) throw cause;
     const error = new Error('invalid_json');
     error.statusCode = 400;
     throw error;
@@ -440,8 +467,23 @@ function staticPath(rootDir, pathname) {
   return decoded === '/' ? join(rootDir, 'index.html') : null;
 }
 
-export function createAppServer({ rootDir, complete = completeWithConfiguredProvider, sendContact = sendContactEmail, deliverLead, voiceBundleFetch = fetch, voiceBundleIntegrityExpected = COPS_VOICE_BUNDLE_SHA384, logger = console, env = process.env } = {}) {
+export function createAppServer({
+  rootDir,
+  complete = completeWithConfiguredProvider,
+  sendContact = sendContactEmail,
+  deliverLead,
+  voiceBundleFetch = fetch,
+  voiceBundleIntegrityExpected = COPS_VOICE_BUNDLE_SHA384,
+  sendWelcome = sendWelcomeEmailDefault,
+  lookupOrder = fetchOrder,
+  orderStore,
+  logger = console,
+  env = process.env,
+} = {}) {
   const siteRoot = resolve(rootDir || join(process.cwd(), 'dist/client'));
+  const paidOrders = orderStore || createFileOrderStore(
+    env.ORDER_STORE_PATH?.trim() || join(process.cwd(), 'data', 'starter-pack-orders.json'),
+  );
   const contactHourly = createWindowLimiter(5, 3_600_000);
   const contactDaily = createWindowLimiter(20, 86_400_000);
   const perMinute = createWindowLimiter(10, 60_000);
@@ -452,6 +494,9 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
   const educationDay = createWindowLimiter(30, 86_400_000);
   const educationGlobalMinute = createWindowLimiter(200, 60_000);
   const voiceMinute = createWindowLimiter(60, 60_000);
+  const checkoutHourly = createWindowLimiter(10, 3_600_000);
+  const orderMinute = createWindowLimiter(20, 60_000);
+  const welcomeInFlight = new Map();
   const globalDailyLimit = Math.max(100, Number.parseInt(env.AI_DAILY_LIMIT || '2500', 10) || 2500);
   let globalDailyUsed = 0;
   let globalDailyResetAt = Date.now() + 86_400_000;
@@ -489,6 +534,22 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
       structuredLog(logger, 'warn', 'chat.daily_budget_warning', { used: globalDailyUsed, limit: globalDailyLimit });
     }
     return globalDailyUsed <= globalDailyLimit;
+  };
+
+  const fulfillPaidOrder = (order, req, requestId, trigger) => {
+    if (welcomeInFlight.has(order.id)) return welcomeInFlight.get(order.id);
+    const work = (async () => {
+      const saved = await paidOrders.upsertPaid(order);
+      if (!order.email || saved.welcomeSentAt) return saved;
+
+      const setupUrl = `${siteOrigin(req, env)}/thank-you/?session_id=${encodeURIComponent(order.id)}`;
+      const result = await sendWelcome({ ...order, setupUrl }, env);
+      const completed = await paidOrders.markWelcomeSent(order.id, { resendId: result?.id || null });
+      structuredLog(logger, 'info', 'welcome.sent', { requestId, sessionId: order.id, trigger });
+      return completed;
+    })().finally(() => welcomeInFlight.delete(order.id));
+    welcomeInFlight.set(order.id, work);
+    return work;
   };
 
   const server = createServer(async (req, res) => {
@@ -696,6 +757,93 @@ export function createAppServer({ rootDir, complete = completeWithConfiguredProv
             ? 'Invalid request.'
             : 'We could not send that just now. Please email ai@felican.ai directly.',
         });
+      }
+    }
+
+    if (url.pathname === '/api/stripe-webhook') {
+      if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' }, { Allow: 'POST' });
+      const requestId = randomUUID();
+      try {
+        if (!stripeWebhookIsConfigured(env)) {
+          structuredLog(logger, 'error', 'stripe_webhook.unconfigured', { requestId });
+          return json(res, 503, { error: 'Webhook is not configured.' });
+        }
+        const rawBody = await readBody(req, MAX_WEBHOOK_BODY_BYTES);
+        const event = verifyStripeWebhook(rawBody, req.headers['stripe-signature'], env);
+        if (event.type !== 'checkout.session.completed') return json(res, 200, { received: true });
+
+        const order = orderFromCheckoutSession(event.data?.object);
+        if (!order) {
+          structuredLog(logger, 'warn', 'stripe_webhook.ignored', {
+            requestId, eventId: sanitizeText(event.id, 120), reason: 'not_a_paid_starter_pack_order',
+          });
+          return json(res, 200, { received: true });
+        }
+        await fulfillPaidOrder(order, req, requestId, 'webhook');
+        structuredLog(logger, 'info', 'stripe_webhook.completed', {
+          requestId, eventId: sanitizeText(event.id, 120), sessionId: order.id,
+        });
+        return json(res, 200, { received: true });
+      } catch (error) {
+        const status = error?.statusCode || 502;
+        structuredLog(logger, 'error', 'stripe_webhook.failed', {
+          requestId, status, reason: error?.message || 'unknown error',
+        });
+        return json(res, status, { error: status < 500 ? 'Invalid webhook.' : 'Webhook processing failed.' });
+      }
+    }
+
+    if (url.pathname === '/api/checkout') {
+      if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' }, { Allow: 'POST' });
+      const requestId = randomUUID();
+      const ip = requestIp(req);
+      try {
+        if (!checkoutIsConfigured(env)) {
+          structuredLog(logger, 'error', 'checkout.unconfigured', { requestId });
+          return json(res, 503, { error: 'Checkout is temporarily unavailable. Please email ai@felican.ai and we will take payment another way.' });
+        }
+        if (!checkoutHourly(ip)) {
+          structuredLog(logger, 'warn', 'checkout.rate_limited', { requestId, ip });
+          return json(res, 429, { error: 'Too many attempts. Please try again shortly.' }, { 'Retry-After': '600' });
+        }
+        const body = await readJson(req);
+        const order = normalizeOrder(body);
+        if (order.error) return json(res, 400, { error: order.error });
+
+        const session = await createCheckoutSession({ ...order, origin: siteOrigin(req, env) }, env);
+        structuredLog(logger, 'info', 'checkout.session_created', {
+          requestId, sessionId: session.id, items: order.items.join(','), totalCents: order.totalCents,
+        });
+        return json(res, 200, { url: session.url });
+      } catch (error) {
+        const status = error?.statusCode || 502;
+        structuredLog(logger, 'error', 'checkout.failed', { requestId, status, reason: error?.message || 'unknown error' });
+        return json(res, status, {
+          error: status < 500 ? 'We could not start that payment.' : 'Payments are briefly unavailable. Please try again in a moment.',
+        });
+      }
+    }
+
+    if (url.pathname === '/api/order') {
+      if (req.method !== 'GET') return json(res, 405, { error: 'Method not allowed' }, { Allow: 'GET' });
+      const requestId = randomUUID();
+      const ip = requestIp(req);
+      try {
+        if (!orderMinute(ip)) return json(res, 429, { error: 'Too many requests.' }, { 'Retry-After': '60' });
+        const order = await lookupOrder(url.searchParams.get('session_id'), env);
+
+        // Webhooks are primary; this remains a fallback for pre-webhook purchases.
+        // Mail/storage failures never break the confirmation page the buyer is on.
+        fulfillPaidOrder(order, req, requestId, 'thank-you').catch(error => {
+          structuredLog(logger, 'error', 'welcome.failed', {
+            requestId, sessionId: order.id, trigger: 'thank-you', reason: error?.message || 'unknown error',
+          });
+        });
+        return json(res, 200, { items: order.items, total: order.total, email: order.email });
+      } catch (error) {
+        const status = error?.statusCode || 502;
+        structuredLog(logger, 'warn', 'order.lookup_failed', { requestId, status, reason: error?.message || 'unknown error' });
+        return json(res, status, { error: status < 500 ? 'We could not find that order.' : 'Please try again in a moment.' });
       }
     }
 
