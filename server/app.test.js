@@ -1,6 +1,7 @@
 import { createHmac } from 'node:crypto';
 import { afterEach, describe, expect, it } from 'vitest';
 import { createAppServer, contactIsConfigured, deliverEducationLead, normalizeContact, normalizeMessages, sanitizeAssistantReply, sanitizeText, voiceBundleIntegrity } from './app.js';
+import { GENERATOR_HANDOFF_COOKIE, verifyGeneratorHandoffCookie } from './handoff.js';
 
 const servers = [];
 
@@ -254,6 +255,46 @@ describe('Starter Pack Stripe webhook', () => {
 
     const unconfigured = await start(undefined, { env: {}, orderStore: store, sendWelcome: async () => {} });
     expect((await fetch(`${unconfigured}/api/stripe-webhook`, { method: 'POST', body: raw })).status).toBe(503);
+  });
+});
+
+describe('Starter Pack generator handoff', () => {
+  it('sets a browser-bound cookie when Checkout starts', async () => {
+    const secret = 'test-generator-handoff-secret-32-bytes-minimum';
+    const sessionId = 'cs_test_generator_handoff_123456';
+    const base = await start(undefined, {
+      env: {
+        STRIPE_SECRET_KEY: 'sk_test_configured',
+        SITE_ORIGIN: 'https://felican.dev',
+        GENERATOR_HANDOFF_SECRET: secret,
+        GENERATOR_HANDOFF_COOKIE_DOMAIN: 'felican.dev',
+      },
+      startCheckout: async () => ({ sessionId, id: sessionId, url: 'https://checkout.stripe.com/c/pay/test' }),
+    });
+    const response = await fetch(`${base}/api/checkout`, {
+      method: 'POST', headers: browserHeaders,
+      body: JSON.stringify({ items: ['pack'], email: 'buyer@example.com' }),
+    });
+    expect(response.status).toBe(200);
+    const setCookie = response.headers.get('set-cookie');
+    expect(setCookie).toContain(`${GENERATOR_HANDOFF_COOKIE}=`);
+    expect(setCookie).toContain('Domain=felican.dev');
+    const value = setCookie.split(';', 1)[0].slice(`${GENERATOR_HANDOFF_COOKIE}=`.length);
+    expect(verifyGeneratorHandoffCookie(value, sessionId, secret)).toBe(true);
+  });
+
+  it('keeps checkout working without instant handoff configuration', async () => {
+    const sessionId = 'cs_test_generator_fallback_123456';
+    const base = await start(undefined, {
+      env: { STRIPE_SECRET_KEY: 'sk_test_configured', SITE_ORIGIN: 'https://felican.dev' },
+      startCheckout: async () => ({ id: sessionId, url: 'https://checkout.stripe.com/c/pay/test' }),
+    });
+    const response = await fetch(`${base}/api/checkout`, {
+      method: 'POST', headers: browserHeaders,
+      body: JSON.stringify({ items: ['pack'], email: 'buyer@example.com' }),
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('set-cookie')).toBeNull();
   });
 });
 

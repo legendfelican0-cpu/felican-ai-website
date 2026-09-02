@@ -14,6 +14,7 @@ import {
   verifyStripeWebhook,
 } from './checkout.js';
 import { createFileOrderStore } from './orders.js';
+import { buildGeneratorHandoffCookie } from './handoff.js';
 
 const BOT_UA = /bot|crawler|spider|scraper|curl|wget|python-requests|httpie|postman|insomnia|java\/|go-http|php\/|ruby|perl|libwww|mechanize|scrapy|phantomjs|headless|selenium|puppeteer|playwright/i;
 const MAX_BODY_BYTES = 16 * 1024;
@@ -475,6 +476,7 @@ export function createAppServer({
   voiceBundleFetch = fetch,
   voiceBundleIntegrityExpected = COPS_VOICE_BUNDLE_SHA384,
   sendWelcome = sendWelcomeEmailDefault,
+  startCheckout = createCheckoutSession,
   lookupOrder = fetchOrder,
   orderStore,
   logger = console,
@@ -813,11 +815,18 @@ export function createAppServer({
         const order = normalizeOrder(body);
         if (order.error) return json(res, 400, { error: order.error });
 
-        const session = await createCheckoutSession({ ...order, origin: siteOrigin(req, env) }, env);
+        const origin = siteOrigin(req, env);
+        const session = await startCheckout({ ...order, origin }, env);
         structuredLog(logger, 'info', 'checkout.session_created', {
           requestId, sessionId: session.id, items: order.items.join(','), totalCents: order.totalCents,
         });
-        return json(res, 200, { url: session.url });
+        const handoffCookie = buildGeneratorHandoffCookie({
+          sessionId: session.id,
+          secret: env.GENERATOR_HANDOFF_SECRET,
+          domain: env.GENERATOR_HANDOFF_COOKIE_DOMAIN || new URL(origin).hostname,
+          secure: origin.startsWith('https://'),
+        });
+        return json(res, 200, { url: session.url }, handoffCookie ? { 'Set-Cookie': handoffCookie } : {});
       } catch (error) {
         const status = error?.statusCode || 502;
         structuredLog(logger, 'error', 'checkout.failed', { requestId, status, reason: error?.message || 'unknown error' });

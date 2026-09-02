@@ -82,8 +82,8 @@ h1 em{font-style:normal;color:var(--brand)}
 </div></main>
 
 <script>
-/* The self-serve generator app. It verifies the order server-side and emails
-   the buyer their personal setup link (the order id alone is never a login). */
+/* The self-serve generator verifies the order and the paying browser's
+   short-lived handoff cookie. Email remains a backup way back in. */
 var GENERATOR_URL = 'https://app.felican.dev/claim';
 
 var NAMES = {
