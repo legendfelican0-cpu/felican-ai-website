@@ -161,10 +161,12 @@ currency, payment time, and welcome status. Deploy scripts mount
 `/opt/felicanai-site/orders/` into the read-only container. Verify the file is
 written during the end-to-end test and include that host directory in backups.
 
-**4. Wire the real generator URL.**
-One constant, `GENERATOR_URL`, at the top of the script block in
-`public/thank-you/index.html`. The welcome email derives its link from the same
-flow. Currently a placeholder pointing at `/contact/`.
+**4. Generator URL — wired for DEV validation.**
+`GENERATOR_URL` in `public/thank-you/index.html` points to
+`https://app.felican.dev/claim`. The Stripe session id is appended as `order`.
+The generator verifies that order server-side and emails the buyer a personal,
+one-time setup link; the order id alone is never a login. Welcome emails link
+directly to the same claim endpoint through `GENERATOR_APP_URL`.
 
 **5. The 45-second demo video.**
 Not yet shot. The empty video placeholder was removed at the owner's request so
@@ -184,9 +186,6 @@ with the owner before building anything here.
   paid add-ons. Say so clearly before linking customers to the contact form.
 - Does Voice AI ever send SMS? If yes, A2P 10DLC registration is
   required and takes weeks — start it immediately.
-- What is the customer-facing generator URL? The only URL in Lee's generator
-  project is `private-generator.felican.dev`, documented as shared-password gated,
-  so the checkout still points at the safe contact placeholder.
 
 ---
 

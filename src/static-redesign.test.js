@@ -249,6 +249,13 @@ describe('Claude Design static website export', () => {
     expect(thankYou).not.toContain('48 hours');
   });
 
+  it('hands a paid order from the thank-you page to the generator', () => {
+    const thankYou = read('public/thank-you/index.html');
+    expect(thankYou).toContain("var GENERATOR_URL = 'https://app.felican.dev/claim'");
+    expect(thankYou).toContain("'order=' + encodeURIComponent(sessionId || '')");
+    expect(thankYou).not.toContain('contact/?setup=starter-pack');
+  });
+
   it('excludes the entries the owner asked to keep off the site', () => {
     const products = read('public/products/index.html');
     const contact = read('public/contact/index.html');
