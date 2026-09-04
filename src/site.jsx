@@ -28,7 +28,7 @@ const products = [
   { name: 'Felican Auto', path: '/products/felican-auto', category: 'Automotive', status: 'Available', description: 'Connected AI tools and workflows built for automotive businesses.', color: '#173f6b', features: ['Customer intake', 'Connected workflows', 'Follow-up and reporting'] },
   { name: 'World of Agents', path: '/products/world-of-agents', category: 'AI agents', status: 'Available', description: 'A place to discover and work with specialized AI agents built for focused tasks.', color: '#168b70', features: ['Specialized agents', 'Task-based discovery', 'Business workflows'] },
   { name: 'Relay', path: '/products/relay', category: 'Field service', status: 'Available', description: 'AI field-service software for HVAC, plumbing, and electrical companies.', color: '#2563eb', features: ['Maintenance scheduling', 'AP invoice automation', 'Collections, quotes, and crews'] },
-  { name: 'Felican AI Assistant', path: '/products/felican-ai-assistant', category: 'Embeddable agent', status: 'Featured', description: 'A company-trained AI agent businesses can embed inside a website or app to answer questions, connect workflows, and hand off to people.', color: '#7357ff', features: ['Website and app embedding', 'Approved company knowledge', 'Workflow actions and human handoff'] },
+  { name: 'Chat AI Assistant', path: '/products/felican-ai-assistant', category: 'Embeddable agent', status: 'Featured', description: 'A company-trained AI agent businesses can embed inside a website or app to answer questions, connect workflows, and hand off to people.', color: '#7357ff', features: ['Website and app embedding', 'Approved company knowledge', 'Workflow actions and human handoff'] },
 ];
 
 const services = [
@@ -76,7 +76,7 @@ const BOOKS_URL = 'https://felican.ai/Lee-Felican-jr/books/resources/';
 const faqs = [
   ['How can I contact Felican AI?', `Call us at ${PHONE} or email privateaiglobal@gmail.com. The Felican AI agent on this site is also available for quick product and service questions.`],
   ['Can Felican connect to our current software?', 'Yes. We design integrations around the systems your team already uses, including CRM, email, calendars, phone systems, documents, and databases.'],
-  ['Is the assistant also a product?', 'Yes. Felican AI Assistant is an embeddable agent for websites and apps. We tailor it to a company’s knowledge, services, workflows, lead process, and escalation rules.'],
+  ['Is the assistant also a product?', 'Yes. Chat AI Assistant is an embeddable agent for websites and apps. We tailor it to a company’s knowledge, services, workflows, lead process, and escalation rules.'],
   ['Do you offer private AI and training?', 'Yes. We provide controlled AI deployments as well as practical training for teams that need to adopt AI responsibly and usefully.'],
 ];
 
@@ -149,7 +149,7 @@ function ProductPage({ product, onNavigate }) {
 function WebsiteAssistantProduct({ onChat }) {
   return <section className="assistant-product">
     <div className="assistant-demo">
-      <header><span className="online"/> Felican AI Assistant <small>Product demo</small></header>
+      <header><span className="online"/> Chat AI Assistant <small>Product demo</small></header>
       <div className="demo-chat"><p className="visitor">Can you help us automate customer follow-up?</p><p className="assistant"><Sparkles/>Yes. We can connect lead intake, your CRM, email, and human handoff into one managed workflow.</p></div>
       <button onClick={onChat}>Try the agent <ArrowRight/></button>
     </div>
@@ -259,12 +259,12 @@ function ChatPanel({ close }) {
   const respond = text => {
     const q = text.toLowerCase();
     if(q.includes('phone')||q.includes('call')||q.includes('contact')) return `Call Felican AI at ${PHONE}, or use the contact section to send an email.`;
-    if(q.includes('product')) return 'Felican products include Felican Auto, World of Agents, Relay, the Felican AI Assistant, Private AI, document processing, and verification tools.';
+    if(q.includes('product')) return 'Felican products include Felican Auto, World of Agents, Relay, the Chat AI Assistant, Private AI, document processing, and verification tools.';
     if(q.includes('train')) return 'Training includes AI fundamentals, prompting for daily work, workflow workshops, and hands-on agent building.';
     return 'Felican AI builds assistants, automations, integrations, private AI systems, and business software. Tell me what you want to improve and I’ll point you in the right direction.';
   };
   const send = text => { const clean=text.trim(); if(!clean)return; setMessages(m=>[...m,{role:'user',text:clean},{role:'bot',text:respond(clean)}]);setInput(''); };
-  return <aside className="fs-chat" role="dialog" aria-label="Felican AI assistant"><header><div><span className="online"/><b>Felican AI Assistant</b><small>Embeddable agent demo</small></div><button onClick={close}><X/></button></header><div className="fs-chat-messages">{messages.map((m,i)=><p className={m.role} key={i}>{m.text}</p>)}</div><div className="quick-asks">{['What products do you have?','Tell me about training','How do I contact Felican AI?'].map(q=><button key={q} onClick={()=>send(q)}>{q}</button>)}</div><form onSubmit={e=>{e.preventDefault();send(input)}}><input aria-label="Message Felican AI" value={input} onChange={e=>setInput(e.target.value)} placeholder="Ask a question"/><button><Send/></button></form></aside>;
+  return <aside className="fs-chat" role="dialog" aria-label="Felican AI assistant"><header><div><span className="online"/><b>Chat AI Assistant</b><small>Embeddable agent demo</small></div><button onClick={close}><X/></button></header><div className="fs-chat-messages">{messages.map((m,i)=><p className={m.role} key={i}>{m.text}</p>)}</div><div className="quick-asks">{['What products do you have?','Tell me about training','How do I contact Felican AI?'].map(q=><button key={q} onClick={()=>send(q)}>{q}</button>)}</div><form onSubmit={e=>{e.preventDefault();send(input)}}><input aria-label="Message Felican AI" value={input} onChange={e=>setInput(e.target.value)} placeholder="Ask a question"/><button><Send/></button></form></aside>;
 }
 
 export function FelicanSite() {

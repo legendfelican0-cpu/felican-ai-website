@@ -33,8 +33,15 @@ test.describe('Starter Pack purchase handoff', () => {
     await expect(page.locator('footer')).toBeVisible();
   });
 
-  test('shows every hosting tier on each product and the complete pack', async ({ page }) => {
+  test('keeps product cards compact and reveals full product and hosting details on demand', async ({ page }) => {
     await page.goto('/starter-pack/');
+
+    await expect(page.locator('.card')).toHaveCount(3);
+    await expect(page.locator('.card .product-price')).toHaveText(['$999one-time', '$999one-time', '$999one-time']);
+    await expect(page.getByRole('heading', { name: 'Chat AI Assistant' })).toBeVisible();
+    await expect(page.locator('.card .product-details[open]')).toHaveCount(0);
+    await page.locator('.card .product-details summary').first().click();
+    await expect(page.locator('.card .product-details').first()).toHaveAttribute('open', '');
 
     const hostingSections = page.locator('.card .hosting, .bundle-buy .hosting');
     await expect(hostingSections).toHaveCount(4);
@@ -68,7 +75,7 @@ test.describe('Starter Pack purchase handoff', () => {
     await page.goto('/starter-pack/');
 
     const planButtons = page.locator('[data-plan="growth"]');
-    await planButtons.first().click();
+    await page.locator('.bundle-buy [data-plan="growth"]').click();
     await expect(planButtons).toHaveCount(4);
     for (const button of await planButtons.all()) {
       await expect(button).toHaveAttribute('aria-pressed', 'true');
@@ -88,7 +95,7 @@ test.describe('Starter Pack purchase handoff', () => {
     await expect.poll(() => page.evaluate(() => localStorage.getItem('felican_hosting_plan_v1'))).toBe('scale');
   });
 
-  test('checkout sends only product ids and email to the server', async ({ page }) => {
+  test('checkout sends identifiers, email, and consent without client-owned prices', async ({ page }) => {
     await page.addInitScript(() => {
       localStorage.setItem('felican_cart_v1', JSON.stringify(['pack']));
     });
@@ -105,11 +112,13 @@ test.describe('Starter Pack purchase handoff', () => {
 
     await page.goto('/checkout/');
     await page.getByLabel('Your email').fill('ai@felican.ai');
+    await page.getByLabel(/I agree to the Terms of Use/).check();
     await page.getByRole('button', { name: /Pay securely/ }).click();
 
     await expect.poll(() => checkoutRequest).toEqual({
       items: ['pack', 'hosting-base'],
       email: 'ai@felican.ai',
+      termsAccepted: true,
     });
     expect(checkoutRequest).not.toHaveProperty('price');
     expect(checkoutRequest).not.toHaveProperty('total');

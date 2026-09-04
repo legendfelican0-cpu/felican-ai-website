@@ -276,7 +276,7 @@ describe('Starter Pack generator handoff', () => {
     });
     const response = await fetch(`${base}/api/checkout`, {
       method: 'POST', headers: browserHeaders,
-      body: JSON.stringify({ items: ['pack', 'hosting-base'], email: 'buyer@example.com' }),
+      body: JSON.stringify({ items: ['pack', 'hosting-base'], email: 'buyer@example.com', termsAccepted: true }),
     });
     expect(response.status).toBe(200);
     const setCookie = response.headers.get('set-cookie');
@@ -294,7 +294,7 @@ describe('Starter Pack generator handoff', () => {
     });
     const response = await fetch(`${base}/api/checkout`, {
       method: 'POST', headers: browserHeaders,
-      body: JSON.stringify({ items: ['pack', 'hosting-base'], email: 'buyer@example.com' }),
+      body: JSON.stringify({ items: ['pack', 'hosting-base'], email: 'buyer@example.com', termsAccepted: true }),
     });
     expect(response.status).toBe(200);
     expect(response.headers.get('set-cookie')).toBeNull();

@@ -15,72 +15,77 @@ import {
 
 afterEach(() => vi.unstubAllGlobals());
 const withHosting = (items, plan = 'base') => [...items, `hosting-${plan}`];
+const acceptedOrder = body => normalizeOrder({ ...body, termsAccepted: true });
 
 describe('normalizeOrder', () => {
   it('accepts a single valid product', () => {
-    const r = normalizeOrder({ items: withHosting(['private-ai']), email: 'a@b.com' });
+    const r = acceptedOrder({ items: withHosting(['private-ai']), email: 'a@b.com' });
     expect(r.error).toBeUndefined();
     expect(r.items).toEqual(['private-ai']);
     expect(r.hostingPlan).toBe('base');
-    expect(r.productTotalCents).toBe(100_000);
-    expect(r.totalCents).toBe(105_000);
+    expect(r.productTotalCents).toBe(99_900);
+    expect(r.totalCents).toBe(104_900);
   });
 
-  it('totals three singles at $3,000', () => {
-    const r = normalizeOrder({ items: withHosting(['private-ai', 'assistant', 'receptionist'], 'growth'), email: 'a@b.com' });
-    expect(r.totalCents).toBe(310_000);
+  it('totals three singles at $2,997', () => {
+    const r = acceptedOrder({ items: withHosting(['private-ai', 'assistant', 'receptionist'], 'growth'), email: 'a@b.com' });
+    expect(r.totalCents).toBe(309_700);
   });
 
   it('prices the pack at $2,500', () => {
-    expect(normalizeOrder({ items: withHosting(['pack'], 'scale'), email: 'a@b.com' }).totalCents).toBe(270_000);
+    expect(acceptedOrder({ items: withHosting(['pack'], 'scale'), email: 'a@b.com' }).totalCents).toBe(270_000);
   });
 
   it('collapses a pack bought alongside singles down to the pack alone', () => {
-    const r = normalizeOrder({ items: withHosting(['pack', 'private-ai', 'assistant']), email: 'a@b.com' });
+    const r = acceptedOrder({ items: withHosting(['pack', 'private-ai', 'assistant']), email: 'a@b.com' });
     expect(r.items).toEqual(['pack']);
     expect(r.totalCents).toBe(255_000);
   });
 
   it('ignores duplicates rather than charging twice', () => {
-    const r = normalizeOrder({ items: withHosting(['assistant', 'assistant']), email: 'a@b.com' });
+    const r = acceptedOrder({ items: withHosting(['assistant', 'assistant']), email: 'a@b.com' });
     expect(r.items).toEqual(['assistant']);
-    expect(r.totalCents).toBe(105_000);
+    expect(r.totalCents).toBe(104_900);
   });
 
   it('rejects an unknown product id', () => {
-    expect(normalizeOrder({ items: ['free-everything'], email: 'a@b.com' }).error).toBeTruthy();
+    expect(acceptedOrder({ items: ['free-everything'], email: 'a@b.com' }).error).toBeTruthy();
   });
 
   it('rejects an empty cart', () => {
-    expect(normalizeOrder({ items: [], email: 'a@b.com' }).error).toBeTruthy();
-    expect(normalizeOrder({ email: 'a@b.com' }).error).toBeTruthy();
+    expect(acceptedOrder({ items: [], email: 'a@b.com' }).error).toBeTruthy();
+    expect(acceptedOrder({ email: 'a@b.com' }).error).toBeTruthy();
   });
 
   it('requires exactly one known hosting plan', () => {
-    expect(normalizeOrder({ items: ['pack'], email: 'a@b.com' }).error).toMatch(/hosting/i);
-    expect(normalizeOrder({ items: ['pack', 'hosting-base', 'hosting-growth'], email: 'a@b.com' }).error).toMatch(/one monthly/i);
-    expect(normalizeOrder({ items: ['pack', 'hosting-free'], email: 'a@b.com' }).error).toBeTruthy();
+    expect(acceptedOrder({ items: ['pack'], email: 'a@b.com' }).error).toMatch(/hosting/i);
+    expect(acceptedOrder({ items: ['pack', 'hosting-base', 'hosting-growth'], email: 'a@b.com' }).error).toMatch(/one monthly/i);
+    expect(acceptedOrder({ items: ['pack', 'hosting-free'], email: 'a@b.com' }).error).toBeTruthy();
   });
 
   it('rejects a bad email', () => {
     for (const email of ['', 'nope', 'a@b', 'a b@c.com']) {
-      expect(normalizeOrder({ items: withHosting(['pack']), email }).error).toBeTruthy();
+      expect(acceptedOrder({ items: withHosting(['pack']), email }).error).toBeTruthy();
     }
   });
 
   it('rejects an absurd number of items', () => {
-    expect(normalizeOrder({ items: Array(9).fill('pack'), email: 'a@b.com' }).error).toBeTruthy();
+    expect(acceptedOrder({ items: Array(9).fill('pack'), email: 'a@b.com' }).error).toBeTruthy();
   });
 
   // The whole point of server-side pricing: a tampered cart cannot set its own price.
   it('never takes a price from the client', () => {
-    const r = normalizeOrder({ items: withHosting(['pack']), email: 'a@b.com', price: 1, totalCents: 1, amount: 1 });
+    const r = acceptedOrder({ items: withHosting(['pack']), email: 'a@b.com', price: 1, totalCents: 1, amount: 1 });
     expect(r.totalCents).toBe(CATALOG.pack.amount + HOSTING_PLANS['hosting-base'].amount);
   });
 
   it('is not fooled by non-string item values', () => {
-    expect(normalizeOrder({ items: [{ id: 'pack' }, 'hosting-base'], email: 'a@b.com' }).error).toBeTruthy();
-    expect(normalizeOrder({ items: 'pack', email: 'a@b.com' }).error).toBeTruthy();
+    expect(acceptedOrder({ items: [{ id: 'pack' }, 'hosting-base'], email: 'a@b.com' }).error).toBeTruthy();
+    expect(acceptedOrder({ items: 'pack', email: 'a@b.com' }).error).toBeTruthy();
+  });
+
+  it('requires explicit agreement to the current purchase terms', () => {
+    expect(normalizeOrder({ items: withHosting(['pack']), email: 'a@b.com' }).error).toMatch(/agree/i);
   });
 });
 
@@ -114,6 +119,10 @@ describe('createCheckoutSession', () => {
     expect(form.get('line_items[0][price_data][unit_amount]')).toBe('250000');
     expect(form.get('line_items[1][price]')).toBe('price_hosting_growth');
     expect(form.get('metadata[hosting_plan]')).toBe('growth');
+    expect(form.get('metadata[terms_accepted]')).toBe('true');
+    expect(form.get('metadata[terms_version]')).toBe('2026-09-04');
+    expect(form.get('metadata[privacy_version]')).toBe('2026-09-04');
+    expect(form.get('metadata[terms_accepted_at]')).toMatch(/^\d{4}-\d{2}-\d{2}T/);
     expect(form.get('subscription_data[metadata][hosting_plan]')).toBe('growth');
     expect([...form.keys()].some(key => key.includes('payment_intent_data'))).toBe(false);
     expect(form.get('integration_identifier')).toMatch(/^felican_starter_pack_[a-z]{8}$/);

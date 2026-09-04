@@ -15,7 +15,7 @@ const PHONE_DISPLAY = '+1 (346) 515-0361';
 const PHONE_LINK = 'tel:+13465150361';
 
 const products = [
-  { name: 'Felican AI Assistant', mark: 'FA', category: 'AI workspace', tone: 'coral', description: 'The always-on guide to Felican products, services, training, and support—on the web and by phone.', status: 'Flagship' },
+  { name: 'Chat AI Assistant', mark: 'FA', category: 'AI workspace', tone: 'coral', description: 'The always-on guide to Felican products, services, training, and support—on the web and by phone.', status: 'Flagship' },
   { name: 'Relay', mark: 'RL', category: 'Business ops', tone: 'sage', description: 'AI field-service software for HVAC, plumbing, and electrical teams—from scheduling to collections.', status: 'Live' },
   { name: 'CasaSuite', mark: 'CS', category: 'Business ops', tone: 'gold', description: 'A practical AI operating system for real-estate professionals, investors, and property teams.', status: 'Live' },
   { name: 'LeadConcierge AI', mark: 'LC', category: 'Business ops', tone: 'blue', description: 'Capture, score, and respond to real-estate leads with intelligent intake and instant follow-up.', status: 'Live' },

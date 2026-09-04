@@ -37,7 +37,7 @@ describe('file order store', () => {
     const path = await storePath();
     const store = createFileOrderStore(path);
     const order = {
-      id: 'cs_test_1234567890', email: 'buyer@example.com', items: ['assistant'], amountCents: 100_000,
+      id: 'cs_test_1234567890', email: 'buyer@example.com', items: ['assistant'], amountCents: 99_900,
       currency: 'usd', paidAt: '2026-09-01T01:02:03.000Z',
     };
     await store.upsertPaid(order);
@@ -45,6 +45,18 @@ describe('file order store', () => {
     await store.upsertPaid(order);
     await expect(store.get(order.id)).resolves.toMatchObject({
       welcomeSentAt: '2026-09-01T01:03:00.000Z', resendId: 'email_123',
+    });
+  });
+
+  it('persists the legal versions accepted with a paid order', async () => {
+    const path = await storePath();
+    const store = createFileOrderStore(path);
+    await store.upsertPaid({
+      id: 'cs_test_terms_123456', email: 'buyer@example.com', items: ['pack'], amountCents: 255_000,
+      termsVersion: '2026-09-04', privacyVersion: '2026-09-04', termsAcceptedAt: '2026-09-04T12:00:00.000Z',
+    });
+    await expect(store.get('cs_test_terms_123456')).resolves.toMatchObject({
+      termsVersion: '2026-09-04', privacyVersion: '2026-09-04', termsAcceptedAt: '2026-09-04T12:00:00.000Z',
     });
   });
 });

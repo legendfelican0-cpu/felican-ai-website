@@ -31,7 +31,7 @@ Planning notes live at `~/dev/starter-pack/PLAN.md`.
 
 ## Hard rules
 
-- **Do not rename the products.** They are `Private AI`, `Felican AI Assistant`,
+- **Do not rename the products.** They are `Private AI`, `Chat AI Assistant`,
   and `AI Receptionist`. Never append "Starter" to a product name. "Starter"
   belongs only to the tab and the bundle, "AI Business Starter Pack".
 - **Never mention the enterprise offering or the $25,000 product** on any of
@@ -40,8 +40,9 @@ Planning notes live at `~/dev/starter-pack/PLAN.md`.
   "live in 48 hours".
 - **Cart and prices appear only on `/starter-pack/`.** The other products on
   `/products/` stay unpriced with "Ask about it" CTAs.
-- **Prices live only in `server/checkout.js`.** The browser sends product ids and
-  nothing else. Never accept a price, total, or amount from the client.
+- **Prices live only in `server/checkout.js`.** The browser may send product ids,
+  the buyer email, plan id, and terms acceptance, but never a price, total, or
+  amount. The server calculates every charge.
 - **`npm test` must stay green.** Add tests with new code.
 - **Do not modify `~/dev/private-ai-generator/`.** It is Lee's separate project,
   here for reference only.

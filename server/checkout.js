@@ -16,11 +16,11 @@ const STRIPE_SIGNATURE_TOLERANCE_SECONDS = 300;
 
 /** The only products that can be bought. Amounts are in cents. */
 export const CATALOG = Object.freeze({
-  'private-ai':   { name: 'Private AI',           amount: 100_000,
+  'private-ai':   { name: 'Private AI',           amount: 99_900,
                     blurb: 'Your own private AI for your team, at your own address.' },
-  'assistant':    { name: 'Felican AI Assistant', amount: 100_000,
+  'assistant':    { name: 'Chat AI Assistant',    amount: 99_900,
                     blurb: 'The multilingual assistant for your website.' },
-  'receptionist': { name: 'Voice AI',             amount: 100_000,
+  'receptionist': { name: 'Voice AI',             amount: 99_900,
                     blurb: 'Voice AI that answers the phone and books appointments.' },
   'pack':         { name: 'AI Business Starter Pack',       amount: 250_000,
                     blurb: 'All three products, one shared knowledge base.' },
@@ -51,6 +51,8 @@ const HOSTING_BY_PLAN = Object.freeze(Object.fromEntries(
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 const MAX_ITEMS = 5;
 const COMBINED_CHECKOUT_PURPOSE = 'starter_pack_with_hosting';
+export const TERMS_VERSION = '2026-09-04';
+export const PRIVACY_VERSION = '2026-09-04';
 
 export function checkoutIsConfigured(env = process.env) {
   return Boolean(env.STRIPE_SECRET_KEY?.trim());
@@ -98,6 +100,9 @@ export function verifyStripeWebhook(rawBody, signatureHeader, env = process.env,
 export function normalizeOrder(body) {
   const email = String(body?.email ?? '').trim().slice(0, 200);
   if (!EMAIL_RE.test(email)) return { error: 'Please enter a valid email address.' };
+  if (body?.termsAccepted !== true) {
+    return { error: 'Please agree to the Terms of Use and acknowledge the Privacy Policy.' };
+  }
 
   const raw = Array.isArray(body?.items) ? body.items : [];
   if (!raw.length) return { error: 'Your cart is empty.' };
@@ -125,7 +130,15 @@ export function normalizeOrder(body) {
   const finalItems = items.includes('pack') ? ['pack'] : items;
   const productTotalCents = finalItems.reduce((sum, id) => sum + CATALOG[id].amount, 0);
   const totalCents = productTotalCents + hostingPlan.amount;
-  return { items: finalItems, hostingPlan: hostingPlan.id, email, productTotalCents, totalCents };
+  return {
+    items: finalItems,
+    hostingPlan: hostingPlan.id,
+    email,
+    productTotalCents,
+    totalCents,
+    termsVersion: TERMS_VERSION,
+    privacyVersion: PRIVACY_VERSION,
+  };
 }
 
 async function stripeRequest(path, { method = 'GET', form, key, idempotencyKey = '' }) {
@@ -211,7 +224,11 @@ async function ensureHostingPrice(plan, key) {
 }
 
 /** Create a Stripe Checkout session and return its hosted payment URL. */
-export async function createCheckoutSession({ items, hostingPlan, email, origin }, env = process.env) {
+export async function createCheckoutSession({
+  items, hostingPlan, email, origin,
+  termsVersion = TERMS_VERSION,
+  privacyVersion = PRIVACY_VERSION,
+}, env = process.env) {
   const key = env.STRIPE_SECRET_KEY?.trim();
   if (!key) throw Object.assign(new Error('Checkout is not configured'), { statusCode: 503 });
   const plan = HOSTING_BY_PLAN[hostingPlan];
@@ -229,6 +246,10 @@ export async function createCheckoutSession({ items, hostingPlan, email, origin 
   form.set('metadata[items]', items.join(','));
   form.set('metadata[purpose]', COMBINED_CHECKOUT_PURPOSE);
   form.set('metadata[hosting_plan]', plan.id);
+  form.set('metadata[terms_accepted]', 'true');
+  form.set('metadata[terms_version]', termsVersion);
+  form.set('metadata[privacy_version]', privacyVersion);
+  form.set('metadata[terms_accepted_at]', new Date().toISOString());
   form.set('subscription_data[metadata][managed_by]', 'ai-generator');
   form.set('subscription_data[metadata][hosting_plan]', plan.id);
   form.set('subscription_data[metadata][starter_pack_items]', items.join(','));
@@ -291,6 +312,9 @@ export function orderFromCheckoutSession(session) {
     amountCents,
     currency: 'usd',
     paidAt: session.created ? new Date(session.created * 1000).toISOString() : new Date().toISOString(),
+    termsVersion: String(metadata.terms_version || ''),
+    privacyVersion: String(metadata.privacy_version || ''),
+    termsAcceptedAt: String(metadata.terms_accepted_at || ''),
   };
 }
 

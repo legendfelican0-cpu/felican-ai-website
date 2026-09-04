@@ -37,8 +37,8 @@ STATIC_ROOT=./public PORT=4174 STRIPE_SECRET_KEY=sk_test_... node server/index.j
 ```
 
 **Git state:** all of this is uncommitted work in the working tree on `main`.
-Nothing has been committed, pushed, or deployed. felican.ai and felican.dev are
-both untouched. Commit only when the owner says so.
+Commit, push, and deploy only when the owner asks. DEV is the validation target;
+production requires a separate, explicit release request.
 
 ---
 
@@ -48,9 +48,9 @@ Three AI products for small and local businesses, sold on one tab of felican.ai.
 
 | Product | Price |
 |---|---|
-| Private AI | $1,000 one-time |
-| Felican AI Assistant | $1,000 one-time |
-| Voice AI | $1,000 one-time |
+| Private AI | $999 one-time |
+| Chat AI Assistant | $999 one-time |
+| Voice AI | $999 one-time |
 | **AI Business Starter Pack** (all three) | **$2,500 one-time** |
 
 Customers choose Essentials ($50/month), Growth ($100/month), or Scale
@@ -59,11 +59,11 @@ the first month of the selected hosting plan in one subscription Checkout; only
 hosting renews monthly. There are no automatic usage overages.
 
 **Naming rule — LOCKED.** Products are named exactly `Private AI`,
-`Felican AI Assistant`, `Voice AI`. Do NOT append "Starter" to any product
+`Chat AI Assistant`, `Voice AI`. Do NOT append "Starter" to any product
 name. The word "Starter" appears only in the tab/bundle name
 "AI Business Starter Pack".
 
-**What the $1,000 tier includes:** 1 custom model max, 1 free OpenRouter model,
+**What the $999 tier includes:** 1 custom model max, 1 free OpenRouter model,
 1 automation, live web search. No image or video generation. No tools other than
 web search. Lower usage and storage than the larger offering.
 
@@ -118,17 +118,17 @@ This work stops at handing the buyer a link to it.
 
 ### Things you must not break
 
-- **Prices live only in `server/checkout.js`.** The browser sends product ids and
-  nothing else. `normalizeOrder()` rejects unknown ids, empty carts, bad emails,
-  duplicates, and oversized carts, and collapses a cart containing the pack down
-  to the pack alone. There are tests for all of it. Never accept a price, total,
-  or amount from the client.
+- **Prices live only in `server/checkout.js`.** The browser sends product ids,
+  the buyer email, the plan id, and terms acceptance, but never a price, total,
+  or amount. `normalizeOrder()` rejects unknown ids, empty carts, bad emails,
+  missing legal consent, duplicates, and oversized carts, and collapses a cart
+  containing the pack down to the pack alone. The server calculates every charge.
 - **Graceful degradation.** With no `STRIPE_SECRET_KEY`, `/api/checkout` returns
   503 with a friendly message and the rest of the site is unaffected. This
   mirrors how `/api/contact` behaves without a Resend key. Keep that behaviour.
 - **The welcome email is idempotent per session id** in the durable order store,
   with a matching Resend idempotency key as protection across concurrent triggers.
-- `npm test` must stay green. It is 112 tests including the existing suite.
+- `npm test` must stay green. It is 148 tests including the existing suite.
 
 ### The site's own conventions
 
@@ -170,10 +170,9 @@ The generator verifies that order server-side and emails the buyer a personal,
 one-time setup link; the order id alone is never a login. Welcome emails link
 directly to the same claim endpoint through `GENERATOR_APP_URL`.
 
-**5. The 45-second demo video.**
-Not yet shot. The empty video placeholder was removed at the owner's request so
-the products appear immediately after the hero. Add a video section back only
-when the finished asset exists.
+**5. The 45-second demo video — built and published on DEV.**
+The finished demo runs silently behind the hero and opens with sound in a full
+player. The Starter Pack card on `/products/` also uses the video preview.
 
 **6. Hosting subscription — included in the initial Checkout.**
 The Starter Pack checkout combines the one-time product charge with the first
@@ -200,8 +199,10 @@ production gates.
   paid add-ons. Say so clearly before linking customers to the contact form.
 - Does Voice AI ever send SMS? If yes, A2P 10DLC registration is
   required and takes weeks — start it immediately.
-- Before production, the owner/counsel must decide the legal entity/address,
-  governing law, refund rules, data-retention period, and liability cap.
+- Terms, Privacy, explicit checkout consent, refund rules, 30-day post-hosting
+  retention, and the liability cap now have a September 4, 2026 baseline.
+- Before production, owner/counsel should confirm the legal entity/address,
+  governing law and venue, and whether any restricted industries need exclusions.
 - Confirm tax registrations and product tax codes before enabling Stripe Tax.
 
 ---

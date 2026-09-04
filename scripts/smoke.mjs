@@ -91,7 +91,7 @@ if (includeChat) {
     const { response, body, durationMs } = await request('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 FelicanLaunchSmoke/1.0' },
-      body: JSON.stringify({ messages: [{ role: 'user', content: 'In one sentence, what is the Felican AI Assistant?' }] }),
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'In one sentence, what is the Chat AI Assistant?' }] }),
     });
     const payload = JSON.parse(body);
     const ok = response.ok && typeof payload.reply === 'string' && /website or app|website\/app|embed/i.test(payload.reply);

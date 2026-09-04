@@ -128,7 +128,7 @@ describe('Claude Design static website export', () => {
     const products = read('public/products/index.html');
     expect(products).toContain("name: 'Private AI'");
     expect(products).toContain('featured: true');
-    expect(products.indexOf("name: 'Private AI'")).toBeLessThan(products.indexOf("name: 'Felican AI Assistant'"));
+    expect(products.indexOf("name: 'Private AI'")).toBeLessThan(products.indexOf("name: 'Chat AI Assistant'"));
     // The contact form must offer the same name so ?product= pre-selects it.
     expect(read('public/contact/index.html')).toContain("'Private AI'");
   });
@@ -205,7 +205,7 @@ describe('Claude Design static website export', () => {
   it('orders the headline products as the owner specified', () => {
     const products = read('public/products/index.html');
     const order = [
-      'AI Business Starter Pack', 'Private AI', 'Felican AI Assistant', 'Felican IDP', 'CrossCheck AI',
+      'AI Business Starter Pack', 'Private AI', 'Chat AI Assistant', 'Felican IDP', 'CrossCheck AI',
       'World of Agents', 'Voice AI', 'Relay',
     ];
     const positions = order.map(name => products.indexOf(`name: '${name}'`));
@@ -389,7 +389,7 @@ describe('Claude Design static website export', () => {
     expect(assistant).not.toContain('window.claude.complete');
   });
 
-  it('positions Felican AI Assistant as an embeddable agent', () => {
+  it('positions Chat AI Assistant as an embeddable agent', () => {
     const productCopy = `${read('index.html')}\n${read('public/products/index.html')}\n${read('server/app.js')}`;
 
     expect(productCopy).toContain('EMBEDDABLE AGENT');

@@ -26,7 +26,7 @@ disagreement before release rather than silently changing the customer offer.
 
 ## 2. Locked customer-facing rules
 
-- Product names are exactly `Private AI`, `Felican AI Assistant`, and `Voice AI`.
+- Product names are exactly `Private AI`, `Chat AI Assistant`, and `Voice AI`.
 - The bundle is exactly `AI Business Starter Pack`.
 - Do not append “Starter” to an individual product name.
 - Do not mention ChatGPT in product copy, onboarding, generated product names,
@@ -48,9 +48,9 @@ All amounts are USD.
 
 | Storefront ID | Customer name | One-time price | Generator entitlement |
 |---|---|---:|---|
-| `private-ai` | Private AI | $1,000 | `owui` |
-| `assistant` | Felican AI Assistant | $1,000 | `chat_widget` |
-| `receptionist` | Voice AI | $1,000 | `voice` |
+| `private-ai` | Private AI | $999 | `owui` |
+| `assistant` | Chat AI Assistant | $999 | `chat_widget` |
+| `receptionist` | Voice AI | $999 | `voice` |
 | `pack` | AI Business Starter Pack | $2,500 | `owui`, `chat_widget`, `voice` |
 
 Rules:
@@ -72,9 +72,9 @@ Machine-readable catalog values:
 currency: usd
 checkout_purpose: starter_pack_with_hosting
 items:
-  private-ai: 100000
-  assistant: 100000
-  receptionist: 100000
+  private-ai: 99900
+  assistant: 99900
+  receptionist: 99900
   pack: 250000
 product_types:
   private-ai: [owui]
@@ -173,7 +173,7 @@ escalation, or an internal conversation summary. Only one may be active without
 a paid add-on. Each option still needs its exact destination and permission
 model defined before it is shown to customers.
 
-### 5.2 Felican AI Assistant
+### 5.2 Chat AI Assistant
 
 The customer receives:
 
@@ -549,9 +549,11 @@ Recommended minimum:
 - A verified owner may request earlier export and deletion, subject to legal and
   payment-record requirements.
 
-Legal entity name/address, governing law and venue, refund/cooling-off rules,
-the cancellation retention period, liability cap, and restricted industries
-remain owner/counsel decisions. Do not invent them in generator code.
+The September 4, 2026 storefront Terms establish the current refund rules,
+30-day post-hosting retention window, customer-data ownership language, and
+liability cap. Legal entity name/address, governing law and venue, and any
+restricted-industry exclusions still require owner/counsel confirmation. Do not
+invent them in generator code.
 
 ## 16. Known gaps between the current DEV generator and this contract
 
@@ -582,8 +584,9 @@ accepting production payments:
     the canonical infrastructure deploy system.
 13. The generator source needs a reproducible, versioned release artifact before
     production promotion.
-14. Terms, Privacy, checkout consent, retention, refund, and ownership/export
-    language are not final.
+14. Production legal identity, governing law/venue, and restricted-industry
+    exclusions still need owner/counsel confirmation. The storefront now records
+    explicit consent to versioned Terms and Privacy policies in Stripe metadata.
 
 ## 17. Definition of done for a production launch
 
