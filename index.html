@@ -157,7 +157,7 @@
       <h1 id="hero-h" style="margin:0;font-weight:700;font-size:clamp(42px,6.2vw,72px);line-height:1.02;letter-spacing:-0.02em;text-wrap:balance">AI solutions for <span style="color:#2FB894">private businesses</span></h1>
       <p style="margin:clamp(24px,3vw,32px) auto 0;font-size:clamp(18px,1.5vw,21px);line-height:1.65;color:#EEF4F4;max-width:640px;text-wrap:pretty">Practical systems. Private by design. Built around how your business works — from strategy and implementation through governance, management, and maintenance.</p>
       <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:clamp(30px,3.6vw,38px)">
-        <a href="{{ bookingUrl }}" target="_blank" rel="noopener noreferrer" style="flex:0 1 auto;min-width:200px;text-align:center;padding:15px 30px;background:#2FB894;color:#080E13;font-size:17px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-3px)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">Book a call</a>
+        <a href="/booking/" style="flex:0 1 auto;min-width:200px;text-align:center;padding:15px 30px;background:#2FB894;color:#080E13;font-size:17px;font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateY(-3px)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">Book a call</a>
         <a href="#contact" style="flex:0 1 auto;min-width:200px;text-align:center;padding:15px 30px;background:transparent;color:#EEF4F4;border:1px solid rgba(238,244,244,0.3);text-decoration:none;transition:background .2s ease,border-color .2s ease" style-hover="background:rgba(47,184,148,0.14);border-color:#2FB894" style-focus="outline:3px solid #2FB894;outline-offset:4px">Contact form</a>
       </div>
     </div>
@@ -261,7 +261,7 @@
       </div>
       <div style="background:#080E13;border:1px solid #1C2A28;padding:clamp(24px,3vw,32px)">
         <sc-if value="{{ hasBooking }}" hint-placeholder-val="{{ false }}">
-          <a href="{{ bookingUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;padding:15px 20px;background:#2FB894;color:#080E13;font-size:16px;font-weight:700;text-decoration:none" style-hover="background:#59D4B4" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Open booking page <span aria-hidden="true">&#8594;</span></a>
+          <a href="/booking/" style="display:flex;align-items:center;justify-content:space-between;padding:15px 20px;background:#2FB894;color:#080E13;font-size:16px;font-weight:700;text-decoration:none" style-hover="background:#59D4B4" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Open our booking page <span aria-hidden="true">&#8594;</span></a>
           <iframe title="Book a call with Felican AI" src="{{ bookingEmbedUrl }}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" style="width:100%;min-height:400px;margin-top:18px;border:1px solid #1C2A28;background:#0C1419"></iframe>
         </sc-if>
         <sc-if value="{{ showFallback }}" hint-placeholder-val="{{ true }}">

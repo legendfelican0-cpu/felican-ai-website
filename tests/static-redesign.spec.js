@@ -316,7 +316,15 @@ test.describe('Claude Design website export', () => {
   test('booking page has a stable route and a live booking embed', async ({ page }) => {
     await page.goto('/booking/', { waitUntil: 'load' });
     await expect(page.getByRole('heading', { name: /where AI can create leverage/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: /open booking page/i })).toHaveAttribute('href', /^https:\/\/cal\.com\//);
+    await expect(page.locator('iframe[title="Book a call with Felican AI"]')).toHaveAttribute('src', /^https:\/\/cal\.com\//);
+    await expect(page.getByRole('link', { name: /open booking page/i })).toHaveCount(0);
+    await expect(page.locator('main a[href*="cal.com"], main a[href*="calendly.com"]')).toHaveCount(0);
+
+    const bookingCtas = await page.locator('a').evaluateAll(links => links
+      .filter(link => link.textContent.trim().startsWith('Book a call'))
+      .map(link => ({ href: link.getAttribute('href'), target: link.getAttribute('target') })));
+    expect(bookingCtas.length).toBeGreaterThan(0);
+    expect(bookingCtas.every(link => link.href === '/booking/' && link.target === null)).toBe(true);
   });
 
   test('legal, search, social, and analytics foundations are present', async ({ page }) => {

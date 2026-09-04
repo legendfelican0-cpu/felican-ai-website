@@ -66,12 +66,16 @@ try {
   if (!(await page.getByRole('heading', { name: /where AI can create leverage/i }).isVisible())) {
     throw new Error('Booking headline is not visible');
   }
-  const bookingLink = page.getByRole('link', { name: /open booking page/i });
-  if (!(await bookingLink.getAttribute('href') || '').includes('cal.com/felican-ai-inc-n68piw')) {
-    throw new Error('Live Cal.com booking link did not render correctly');
-  }
-  if ((await page.locator('iframe[title="Book a call with Felican AI"]').count()) !== 1) {
+  const bookingFrame = page.locator('iframe[title="Book a call with Felican AI"]');
+  if ((await bookingFrame.count()) !== 1) {
     throw new Error('Live Cal.com iframe did not render');
+  }
+  const bookingFrameSrc = await bookingFrame.getAttribute('src');
+  if (!bookingFrameSrc || !bookingFrameSrc.includes('cal.com/felican-ai-inc-n68piw')) {
+    throw new Error('Live Cal.com booking iframe did not render correctly');
+  }
+  if (await page.getByRole('link', { name: /open booking page/i }).count()) {
+    throw new Error('Booking page links visitors directly to the external provider');
   }
   if (await page.locator('main form').count()) throw new Error('Booking page unexpectedly contains a local form');
   if (consoleErrors.length) throw new Error(`Browser console errors: ${consoleErrors.join(' | ')}`);
@@ -105,10 +109,6 @@ try {
   }));
   await configured.route('https://calendly.com/**', route => route.abort());
   await configured.goto(`${origin}/booking/`, { waitUntil: 'domcontentloaded' });
-  const calendlyLink = configured.getByRole('link', { name: /open booking page/i });
-  if ((await calendlyLink.getAttribute('href')) !== 'https://calendly.com/felican-ai/test-event') {
-    throw new Error('Configured Calendly link did not render correctly');
-  }
   const calendlyIframeSrc = await configured.locator('iframe[title="Book a call with Felican AI"]').getAttribute('src');
   if (!calendlyIframeSrc || !calendlyIframeSrc.includes('hide_gdpr_banner=1')) {
     throw new Error('Configured Calendly iframe did not render with the expected embed params');

@@ -6,6 +6,10 @@
 - Do not publish to production unless the user explicitly requests a production release.
 - Run the unit tests, production build, and relevant Playwright coverage before every push.
 
+## Booking links
+
+- Every booking-related CTA must link to the first-party `/booking/` page so visitors stay on Felican AI. The configured Calendly or Cal.com URL is used only as the embedded scheduler inside `/booking/`; never link a site CTA directly to the external provider.
+
 ## Recent changes
 
 - 2026-08-19: Production promotion now provisions a dedicated PROD Vapi assistant and validates the AI provider, voice identifiers, verified browser client, and chat before success. DEV and PROD use separate Vapi assistants so later staging deploys cannot redirect production voice traffic. Proxy promotion and rollback change only the main host target, preserving custom path applications.

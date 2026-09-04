@@ -374,7 +374,9 @@ describe('Claude Design static website export', () => {
     expect(booking).not.toContain('<form');
     expect(config).toMatch(/bookingUrl:\s*'https:\/\/(calendly\.com|cal\.com)\//);
     expect(nav).toContain('Book a call');
-    expect(nav).toMatch(/href="\{\{ bookingUrl \}\}" target="_blank"/);
+    expect(nav).toContain("bookingUrl: '/booking/'");
+    expect(nav).not.toMatch(/href="\{\{ bookingUrl \}\}" target="_blank"/);
+    expect(read('public/SiteFooter.dc.html')).toContain("bookingUrl: '/booking/'");
     expect(read('public/sitemap.xml')).toContain('https://felican.ai/booking/');
   });
 
