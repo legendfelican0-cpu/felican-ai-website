@@ -51,8 +51,8 @@ const HOSTING_BY_PLAN = Object.freeze(Object.fromEntries(
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 const MAX_ITEMS = 5;
 const COMBINED_CHECKOUT_PURPOSE = 'starter_pack_with_hosting';
-export const TERMS_VERSION = '2026-09-04';
-export const PRIVACY_VERSION = '2026-09-04';
+export const TERMS_VERSION = '2026-09-04-r2';
+export const PRIVACY_VERSION = '2026-09-04-r2';
 
 export function checkoutIsConfigured(env = process.env) {
   return Boolean(env.STRIPE_SECRET_KEY?.trim());

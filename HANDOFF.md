@@ -201,8 +201,10 @@ production gates.
   required and takes weeks — start it immediately.
 - Terms, Privacy, explicit checkout consent, refund rules, 30-day post-hosting
   retention, and the liability cap now have a September 4, 2026 baseline.
-- Before production, owner/counsel should confirm the legal entity/address,
-  governing law and venue, and whether any restricted industries need exclusions.
+- The customer-facing legal entity is Felican AI Inc.; notices use its Montana
+  mailing address, and the Terms select Florida law and Palm Beach County venue.
+  Before production, owner/counsel should confirm whether any restricted
+  industries need exclusions.
 - Confirm tax registrations and product tax codes before enabling Stripe Tax.
 
 ---

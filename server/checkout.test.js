@@ -120,8 +120,8 @@ describe('createCheckoutSession', () => {
     expect(form.get('line_items[1][price]')).toBe('price_hosting_growth');
     expect(form.get('metadata[hosting_plan]')).toBe('growth');
     expect(form.get('metadata[terms_accepted]')).toBe('true');
-    expect(form.get('metadata[terms_version]')).toBe('2026-09-04');
-    expect(form.get('metadata[privacy_version]')).toBe('2026-09-04');
+    expect(form.get('metadata[terms_version]')).toBe('2026-09-04-r2');
+    expect(form.get('metadata[privacy_version]')).toBe('2026-09-04-r2');
     expect(form.get('metadata[terms_accepted_at]')).toMatch(/^\d{4}-\d{2}-\d{2}T/);
     expect(form.get('subscription_data[metadata][hosting_plan]')).toBe('growth');
     expect([...form.keys()].some(key => key.includes('payment_intent_data'))).toBe(false);

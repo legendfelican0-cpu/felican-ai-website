@@ -550,10 +550,10 @@ Recommended minimum:
   payment-record requirements.
 
 The September 4, 2026 storefront Terms establish the current refund rules,
-30-day post-hosting retention window, customer-data ownership language, and
-liability cap. Legal entity name/address, governing law and venue, and any
-restricted-industry exclusions still require owner/counsel confirmation. Do not
-invent them in generator code.
+30-day post-hosting retention window, customer-data ownership language,
+liability cap, Felican AI Inc. legal identity and mailing address, Florida
+governing law, and Palm Beach County venue. Any restricted-industry exclusions
+still require owner/counsel confirmation. Do not invent them in generator code.
 
 ## 16. Known gaps between the current DEV generator and this contract
 
@@ -584,9 +584,9 @@ accepting production payments:
     the canonical infrastructure deploy system.
 13. The generator source needs a reproducible, versioned release artifact before
     production promotion.
-14. Production legal identity, governing law/venue, and restricted-industry
-    exclusions still need owner/counsel confirmation. The storefront now records
-    explicit consent to versioned Terms and Privacy policies in Stripe metadata.
+14. Restricted-industry exclusions still need owner/counsel confirmation. The
+    storefront records explicit consent to versioned Terms and Privacy policies
+    in Stripe metadata.
 
 ## 17. Definition of done for a production launch
 

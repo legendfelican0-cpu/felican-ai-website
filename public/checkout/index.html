@@ -22,12 +22,12 @@ h1{margin:16px 0 0;font-family:Sora,sans-serif;font-size:clamp(30px,3.6vw,46px);
 .line .info{flex:1;min-width:0}
 .line .info b{display:block;font-family:Sora,sans-serif;font-size:16.5px;font-weight:700;letter-spacing:-.01em}
 .line .info small{display:block;margin-top:5px;color:var(--mute);font-size:14px;line-height:1.5}
-.line .amt{font-family:Sora,sans-serif;font-size:18px;font-weight:700;white-space:nowrap}
+.line .amt{font-family:Sora,sans-serif;font-size:18px;font-weight:700;white-space:nowrap;color:var(--price)}
 .line .rm{display:block;margin-top:8px;background:none;border:0;color:var(--mute-2);font-size:13px;cursor:pointer;text-decoration:underline;padding:0;font-family:inherit}
 .line .rm:hover{color:var(--brand)}
 .tot{display:flex;justify-content:space-between;align-items:baseline;margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
 .tot span{font-family:Sora,sans-serif;font-size:17px;font-weight:700}
-.tot b{font-family:Sora,sans-serif;font-size:36px;font-weight:800;letter-spacing:-.03em}
+.tot b{font-family:Sora,sans-serif;font-size:36px;font-weight:800;letter-spacing:-.03em;color:var(--price-hi);text-shadow:0 0 28px var(--price-glow)}
 .hosting-pick{margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
 .hosting-pick-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
 .hosting-pick h3{margin:0;font-family:Sora,sans-serif;font-size:16px;font-weight:800}
@@ -39,7 +39,7 @@ h1{margin:16px 0 0;font-family:Sora,sans-serif;font-size:clamp(30px,3.6vw,46px);
 .hosting-option:focus-visible{outline:2px solid var(--brand-soft);outline-offset:2px}
 .hosting-option.selected{border-color:var(--brand);background:rgba(47,184,148,.14);box-shadow:inset 0 -3px 0 var(--brand)}
 .hosting-option b{display:block;font-family:Sora,sans-serif;font-size:13px}
-.hosting-option span{display:block;margin-top:5px;color:var(--brand-soft);font-family:Sora,sans-serif;font-size:14px;font-weight:800}
+.hosting-option span{display:block;margin-top:5px;color:var(--price);font-family:Sora,sans-serif;font-size:14px;font-weight:800}
 @media(max-width:520px){.hosting-options{grid-template-columns:1fr}.hosting-option{display:flex;align-items:center;justify-content:space-between;text-align:left}.hosting-option span{margin:0}}
 label{display:block;font-family:Sora,sans-serif;font-size:14px;font-weight:700;margin-bottom:9px}
 input[type=email]{width:100%;padding:15px 16px;background:#0B171C;border:1px solid var(--line);color:var(--ink);font-family:Inter,sans-serif;font-size:16px}

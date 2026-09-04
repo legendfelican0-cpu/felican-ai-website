@@ -53,10 +53,10 @@ describe('file order store', () => {
     const store = createFileOrderStore(path);
     await store.upsertPaid({
       id: 'cs_test_terms_123456', email: 'buyer@example.com', items: ['pack'], amountCents: 255_000,
-      termsVersion: '2026-09-04', privacyVersion: '2026-09-04', termsAcceptedAt: '2026-09-04T12:00:00.000Z',
+      termsVersion: '2026-09-04-r2', privacyVersion: '2026-09-04-r2', termsAcceptedAt: '2026-09-04T12:00:00.000Z',
     });
     await expect(store.get('cs_test_terms_123456')).resolves.toMatchObject({
-      termsVersion: '2026-09-04', privacyVersion: '2026-09-04', termsAcceptedAt: '2026-09-04T12:00:00.000Z',
+      termsVersion: '2026-09-04-r2', privacyVersion: '2026-09-04-r2', termsAcceptedAt: '2026-09-04T12:00:00.000Z',
     });
   });
 });
