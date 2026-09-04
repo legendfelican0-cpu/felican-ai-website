@@ -53,8 +53,10 @@ Three AI products for small and local businesses, sold on one tab of felican.ai.
 | Voice AI | $1,000 one-time |
 | **AI Business Starter Pack** (all three) | **$2,500 one-time** |
 
-After setup, hosting is **$50/month**, billed separately, NOT taken at checkout.
-Usage above the monthly allowance is the customer's own cost.
+Customers choose Essentials ($50/month), Growth ($100/month), or Scale
+($200/month) with their product. Stripe charges the one-time product price plus
+the first month of the selected hosting plan in one subscription Checkout; only
+hosting renews monthly. There are no automatic usage overages.
 
 **Naming rule — LOCKED.** Products are named exactly `Private AI`,
 `Felican AI Assistant`, `Voice AI`. Do NOT append "Starter" to any product
@@ -173,10 +175,22 @@ Not yet shot. The empty video placeholder was removed at the owner's request so
 the products appear immediately after the hero. Add a video section back only
 when the finished asset exists.
 
-**6. Hosting subscription.**
-The $50/month is advertised but nothing bills it. The decision was that it gets
-set up inside the generator after the customer logs in, not at checkout. Confirm
-with the owner before building anything here.
+**6. Hosting subscription — included in the initial Checkout.**
+The Starter Pack checkout combines the one-time product charge with the first
+month of Essentials ($50), Growth ($100), or Scale ($200). Only hosting renews.
+The separate `~/dev/ai-generator/` project recognizes that subscription before
+generation and provides a managed Stripe billing portal, payment-failure
+suspension/recovery, and fixed plan switching with no metered overage charges.
+Stripe remains in test mode; production is untouched.
+
+**7. Usage, storage, alerts, and operations — built for DEV validation.**
+Essentials includes 25 GB uploaded-file storage, 2,000 website-assistant replies,
+100 Voice AI minutes, and $10 of Private AI model processing per monthly usage
+period. Growth and Scale raise all four allowances. The generator enforces the
+limits, shows them in the customer dashboard, warns at 80/95/100%, sends urgent
+alerts to `ai@felican.ai`, and includes DEV backup/monitoring services. See
+`~/dev/ai-generator/docs/STARTER_PACK_OPERATIONS.md` for the policy and remaining
+production gates.
 
 ---
 
@@ -186,6 +200,9 @@ with the owner before building anything here.
   paid add-ons. Say so clearly before linking customers to the contact form.
 - Does Voice AI ever send SMS? If yes, A2P 10DLC registration is
   required and takes weeks — start it immediately.
+- Before production, the owner/counsel must decide the legal entity/address,
+  governing law, refund rules, data-retention period, and liability cap.
+- Confirm tax registrations and product tax codes before enabling Stripe Tax.
 
 ---
 

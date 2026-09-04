@@ -26,8 +26,31 @@ export const CATALOG = Object.freeze({
                     blurb: 'All three products, one shared knowledge base.' },
 });
 
+/** Fixed recurring plans. The browser sends only the selected hosting item id. */
+export const HOSTING_PLANS = Object.freeze({
+  'hosting-base': {
+    id: 'base', name: 'Essentials', amount: 5_000, productName: 'Felican AI hosting',
+    lookupKey: 'felican_hosting_base_monthly',
+    allowance: '25 GB storage, 2,000 website-assistant replies, 100 Voice AI minutes, and $10 of Private AI processing',
+  },
+  'hosting-growth': {
+    id: 'growth', name: 'Growth', amount: 10_000, productName: 'Felican AI Growth hosting',
+    lookupKey: 'felican_hosting_growth_monthly',
+    allowance: '75 GB storage, 6,000 website-assistant replies, 300 Voice AI minutes, and $25 of Private AI processing',
+  },
+  'hosting-scale': {
+    id: 'scale', name: 'Scale', amount: 20_000, productName: 'Felican AI Scale hosting',
+    lookupKey: 'felican_hosting_scale_monthly',
+    allowance: '200 GB storage, 20,000 website-assistant replies, 800 Voice AI minutes, and $60 of Private AI processing',
+  },
+});
+const HOSTING_BY_PLAN = Object.freeze(Object.fromEntries(
+  Object.values(HOSTING_PLANS).map(plan => [plan.id, plan]),
+));
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
-const MAX_ITEMS = 4;
+const MAX_ITEMS = 5;
+const COMBINED_CHECKOUT_PURPOSE = 'starter_pack_with_hosting';
 
 export function checkoutIsConfigured(env = process.env) {
   return Boolean(env.STRIPE_SECRET_KEY?.trim());
@@ -70,7 +93,7 @@ export function verifyStripeWebhook(rawBody, signatureHeader, env = process.env,
 
 /**
  * Validate a cart posted by the browser.
- * Returns { error } or { items, email, totalCents }.
+ * Returns { error } or the normalized product ids, hosting plan, and totals.
  */
 export function normalizeOrder(body) {
   const email = String(body?.email ?? '').trim().slice(0, 200);
@@ -81,33 +104,46 @@ export function normalizeOrder(body) {
   if (raw.length > MAX_ITEMS) return { error: 'That is more items than we can process.' };
 
   const items = [];
+  let hostingPlan = null;
   for (const value of raw) {
     const id = String(value ?? '').trim();
+    if (HOSTING_PLANS[id]) {
+      if (hostingPlan && hostingPlan.id !== HOSTING_PLANS[id].id) {
+        return { error: 'Choose one monthly hosting plan.' };
+      }
+      hostingPlan = HOSTING_PLANS[id];
+      continue;
+    }
     if (!CATALOG[id]) return { error: 'One of those products is no longer available.' };
     if (items.includes(id)) continue; // one of each; the cart is not a quantity picker
     items.push(id);
   }
   if (!items.length) return { error: 'Your cart is empty.' };
+  if (!hostingPlan) return { error: 'Choose a monthly hosting plan.' };
 
   // The pack already contains everything, so it never rides along with singles.
   const finalItems = items.includes('pack') ? ['pack'] : items;
-  const totalCents = finalItems.reduce((sum, id) => sum + CATALOG[id].amount, 0);
-  return { items: finalItems, email, totalCents };
+  const productTotalCents = finalItems.reduce((sum, id) => sum + CATALOG[id].amount, 0);
+  const totalCents = productTotalCents + hostingPlan.amount;
+  return { items: finalItems, hostingPlan: hostingPlan.id, email, productTotalCents, totalCents };
 }
 
-async function stripeRequest(path, { method = 'GET', form, key }) {
+async function stripeRequest(path, { method = 'GET', form, key, idempotencyKey = '' }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const response = await fetch(`${STRIPE_API}${path}`, {
+    const url = new URL(`${STRIPE_API}${path}`);
+    if (method === 'GET' && form) url.search = form.toString();
+    const response = await fetch(url, {
       method,
       headers: {
         Authorization: `Bearer ${key}`,
         'Stripe-Version': STRIPE_API_VERSION,
+        ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),
         ...(form ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}),
       },
       signal: controller.signal,
-      ...(form ? { body: form.toString() } : {}),
+      ...(form && method !== 'GET' ? { body: form.toString() } : {}),
     });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -122,13 +158,68 @@ async function stripeRequest(path, { method = 'GET', form, key }) {
   }
 }
 
+function validateHostingPrice(price, plan) {
+  const recurring = price?.recurring || {};
+  return price?.active !== false && price?.currency === 'usd' &&
+    Number(price?.unit_amount) === plan.amount && recurring.interval === 'month' &&
+    Number(recurring.interval_count || 1) === 1;
+}
+
+/** Reuse the generator's Stripe Price, provisioning it once if it is absent. */
+async function ensureHostingPrice(plan, key) {
+  const priceQuery = new URLSearchParams({ active: 'true', limit: '1' });
+  priceQuery.set('lookup_keys[0]', plan.lookupKey);
+  const prices = await stripeRequest('/prices', { form: priceQuery, key });
+  const existingPrice = prices?.data?.[0];
+  if (existingPrice) {
+    if (!validateHostingPrice(existingPrice, plan)) {
+      throw Object.assign(new Error(`The ${plan.name} hosting price is misconfigured`), { statusCode: 503 });
+    }
+    return existingPrice.id;
+  }
+
+  const productQuery = new URLSearchParams({ active: 'true', limit: '100' });
+  const products = await stripeRequest('/products', { form: productQuery, key });
+  let product = products?.data?.find(item => item?.name === plan.productName);
+  if (!product) {
+    const form = new URLSearchParams({
+      name: plan.productName,
+      description: `${plan.name} hosting and monthly AI allowances`,
+      'metadata[managed_by]': 'ai-generator',
+      'metadata[hosting_plan]': plan.id,
+    });
+    product = await stripeRequest('/products', {
+      method: 'POST', form, key, idempotencyKey: `starter-pack-hosting-product-${plan.id}`,
+    });
+  }
+
+  const priceForm = new URLSearchParams({
+    currency: 'usd',
+    unit_amount: String(plan.amount),
+    'recurring[interval]': 'month',
+    product: product.id,
+    nickname: `Felican AI ${plan.name} — $${plan.amount / 100}/month`,
+    lookup_key: plan.lookupKey,
+  });
+  const price = await stripeRequest('/prices', {
+    method: 'POST', form: priceForm, key, idempotencyKey: `starter-pack-hosting-price-${plan.id}`,
+  });
+  if (!validateHostingPrice(price, plan)) {
+    throw Object.assign(new Error(`Stripe returned an invalid ${plan.name} hosting price`), { statusCode: 502 });
+  }
+  return price.id;
+}
+
 /** Create a Stripe Checkout session and return its hosted payment URL. */
-export async function createCheckoutSession({ items, email, origin }, env = process.env) {
+export async function createCheckoutSession({ items, hostingPlan, email, origin }, env = process.env) {
   const key = env.STRIPE_SECRET_KEY?.trim();
   if (!key) throw Object.assign(new Error('Checkout is not configured'), { statusCode: 503 });
+  const plan = HOSTING_BY_PLAN[hostingPlan];
+  if (!plan) throw Object.assign(new Error('Choose a valid monthly hosting plan'), { statusCode: 400 });
+  const hostingPriceId = await ensureHostingPrice(plan, key);
 
   const form = new URLSearchParams();
-  form.set('mode', 'payment');
+  form.set('mode', 'subscription');
   const alphabet = 'abcdefghijklmnopqrstuvwxyz';
   const suffix = Array.from(randomBytes(8), value => alphabet[value % alphabet.length]).join('');
   form.set('integration_identifier', `felican_starter_pack_${suffix}`);
@@ -136,7 +227,11 @@ export async function createCheckoutSession({ items, email, origin }, env = proc
   form.set('success_url', `${origin}/thank-you/?session_id={CHECKOUT_SESSION_ID}`);
   form.set('cancel_url', `${origin}/checkout/`);
   form.set('metadata[items]', items.join(','));
-  form.set('payment_intent_data[metadata][items]', items.join(','));
+  form.set('metadata[purpose]', COMBINED_CHECKOUT_PURPOSE);
+  form.set('metadata[hosting_plan]', plan.id);
+  form.set('subscription_data[metadata][managed_by]', 'ai-generator');
+  form.set('subscription_data[metadata][hosting_plan]', plan.id);
+  form.set('subscription_data[metadata][starter_pack_items]', items.join(','));
 
   items.forEach((id, i) => {
     const product = CATALOG[id];
@@ -146,6 +241,8 @@ export async function createCheckoutSession({ items, email, origin }, env = proc
     form.set(`line_items[${i}][price_data][product_data][name]`, product.name);
     form.set(`line_items[${i}][price_data][product_data][description]`, product.blurb);
   });
+  form.set(`line_items[${items.length}][price]`, hostingPriceId);
+  form.set(`line_items[${items.length}][quantity]`, '1');
 
   const session = await stripeRequest('/checkout/sessions', { method: 'POST', form, key });
   if (!session?.url) throw Object.assign(new Error('Stripe did not return a payment link'), { statusCode: 502 });
@@ -175,13 +272,21 @@ export function orderFromCheckoutSession(session) {
   const items = String(session.metadata?.items || '').split(',').map(value => value.trim()).filter(Boolean);
   if (!items.length || items.some(id => !CATALOG[id]) || new Set(items).size !== items.length) return null;
   if (items.includes('pack') && items.length !== 1) return null;
+  const metadata = session.metadata || {};
+  const plan = HOSTING_BY_PLAN[String(metadata.hosting_plan || '')];
+  const combined = metadata.purpose === COMBINED_CHECKOUT_PURPOSE;
+  if (combined && (!plan || session.mode !== 'subscription')) return null;
+  if (!combined && metadata.hosting_plan) return null;
   const amountCents = Math.round(Number(session.amount_total) || 0);
-  const expectedCents = items.reduce((sum, id) => sum + CATALOG[id].amount, 0);
+  const productTotalCents = items.reduce((sum, id) => sum + CATALOG[id].amount, 0);
+  const expectedCents = productTotalCents + (combined ? plan.amount : 0);
   if (amountCents !== expectedCents || String(session.currency || '').toLowerCase() !== 'usd') return null;
   return {
     id: String(session.id),
     email: String(session.customer_details?.email || session.customer_email || ''),
     items,
+    hostingPlan: combined ? plan.id : '',
+    productTotalCents,
     total: Math.round(amountCents / 100),
     amountCents,
     currency: 'usd',
@@ -196,9 +301,11 @@ function escapeHtml(value) {
 }
 
 /** The welcome email — the last step of the buying journey. */
-export function buildWelcomeEmail({ items, total, setupUrl }) {
+export function buildWelcomeEmail({ items, total, hostingPlan = '', setupUrl }) {
   const bought = items.map(id => CATALOG[id]?.name).filter(Boolean);
   const isPack = items.includes('pack');
+  const hosting = HOSTING_BY_PLAN[hostingPlan];
+  const productTotal = Number(total) - (hosting ? hosting.amount / 100 : 0);
   const subject = isPack
     ? 'Welcome to Felican AI — set up your Starter Pack'
     : `Welcome to Felican AI — set up your ${bought[0] || 'AI'}`;
@@ -219,10 +326,17 @@ export function buildWelcomeEmail({ items, total, setupUrl }) {
     '  3. Review it. It is ready and running in a few minutes.',
     '',
     `You bought: ${bought.join(', ')}`,
-    `Paid today: $${Number(total).toLocaleString('en-US')} (one-time)`,
+    hosting
+      ? `Paid today: $${Number(total).toLocaleString('en-US')} ($${productTotal.toLocaleString('en-US')} product purchase + first month of ${hosting.name} hosting)`
+      : `Paid today: $${Number(total).toLocaleString('en-US')} (one-time)`,
     '',
-    'Hosting is $50/month and starts separately once you are live — nothing else is',
-    'charged today.',
+    ...(hosting ? [
+      `${hosting.name} hosting is active at $${hosting.amount / 100}/month and renews monthly until canceled.`,
+      `It includes ${hosting.allowance} per monthly usage period. There are no automatic`,
+      'overage charges; only the feature that reaches its limit pauses.',
+    ] : [
+      'Hosting is activated separately inside your workspace.',
+    ]),
     '',
     'Questions, or want a hand with the setup? Reply to this email, write to',
     'ai@felican.ai, or call +1 561-235-0799 and a person will pick up.',
@@ -252,8 +366,8 @@ export function buildWelcomeEmail({ items, total, setupUrl }) {
   <tr><td style="padding:28px 32px 0">
     <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-top:1px solid #1C2A28;border-collapse:collapse">
       ${bought.map(n => `<tr><td style="padding:12px 0 0;font:400 15px/1.5 'Helvetica Neue',Arial,sans-serif;color:#EEF4F4">${escapeHtml(n)}</td></tr>`).join('')}
-      <tr><td style="padding:14px 0 0;font:700 15px/1.5 'Helvetica Neue',Arial,sans-serif;color:#EEF4F4">Paid today &mdash; $${Number(total).toLocaleString('en-US')} one-time</td></tr>
-      <tr><td style="padding:6px 0 0;font:400 13.5px/1.6 'Helvetica Neue',Arial,sans-serif;color:#7B9298">Hosting is $50/month and starts separately once you're live. Nothing else was charged today.</td></tr>
+      <tr><td style="padding:14px 0 0;font:700 15px/1.5 'Helvetica Neue',Arial,sans-serif;color:#EEF4F4">Paid today &mdash; $${Number(total).toLocaleString('en-US')}${hosting ? ` ($${productTotal.toLocaleString('en-US')} product purchase + first month of ${escapeHtml(hosting.name)} hosting)` : ' one-time'}</td></tr>
+      <tr><td style="padding:6px 0 0;font:400 13.5px/1.6 'Helvetica Neue',Arial,sans-serif;color:#7B9298">${hosting ? `${escapeHtml(hosting.name)} hosting is active at $${hosting.amount / 100}/month and renews monthly until canceled. It includes ${escapeHtml(hosting.allowance)} per monthly usage period. No automatic overage charges; only the feature that reaches its limit pauses.` : 'Hosting is activated separately inside your workspace.'}</td></tr>
     </table>
   </td></tr>
   <tr><td style="padding:26px 32px 34px">
@@ -270,11 +384,11 @@ export function buildWelcomeEmail({ items, total, setupUrl }) {
 }
 
 /** Send the welcome email through Resend (same provider the contact form uses). */
-export async function sendWelcomeEmail({ email, items, total, setupUrl, id }, env = process.env) {
+export async function sendWelcomeEmail({ email, items, total, hostingPlan = '', setupUrl, id }, env = process.env) {
   const key = env.RESEND_API_KEY?.trim();
   if (!key) throw new Error('Welcome email is not configured');
   const from = (env.CONTACT_FROM || 'Felican AI <website@felican.ai>').trim();
-  const { subject, text, html } = buildWelcomeEmail({ items, total, setupUrl });
+  const { subject, text, html } = buildWelcomeEmail({ items, total, hostingPlan, setupUrl });
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);

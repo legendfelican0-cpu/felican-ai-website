@@ -122,10 +122,11 @@ test.describe('Claude Design website export', () => {
     }
     await expect(page).toHaveURL(/\/products\/?$/);
 
-    // Seven headline products, led by the flagship, then the agent bench.
+    // The Starter Pack leads the eight headline products, then the agent bench.
     const productCards = page.locator('.product-card');
-    await expect(productCards).toHaveCount(7);
-    await expect(productCards.first()).toHaveAttribute('id', 'private-ai');
+    await expect(productCards).toHaveCount(8);
+    await expect(productCards.first()).toHaveAttribute('id', 'starter-pack');
+    await expect(productCards.first().locator('.starter-preview video')).toBeVisible();
     await expect(page.locator('.agent-card')).toHaveCount(6);
     await expect(page.locator('.rest-card')).toHaveCount(5);
     await expect(page.locator('.agent-card .app-cover-image img')).toHaveCount(6);
@@ -175,7 +176,7 @@ test.describe('Claude Design website export', () => {
     );
   });
 
-  test('Private AI carousel works and voice stays live until Stop voice', async ({ page }) => {
+  test('Starter Pack preview replaces the old carousel and voice stays live until Stop voice', async ({ page }) => {
     await page.addInitScript(() => {
       window.__vapiTest = { constructors: 0, starts: 0, stops: 0, assistantId: '', overrides: null };
       window.__micTest = { requests: 0, stopped: 0 };
@@ -214,9 +215,8 @@ test.describe('Claude Design website export', () => {
 
     await page.goto('/products/', { waitUntil: 'load' });
     await expect.poll(() => page.evaluate(() => window.__vapiTest.constructors)).toBe(1);
-    await expect(page.locator('.pc-slide:visible img')).toHaveAttribute('src', '/private-ai-knowledge.png');
-    await page.getByRole('button', { name: 'Next Private AI feature' }).click();
-    await expect(page.locator('.pc-slide:visible img')).toHaveAttribute('src', '/private-ai-client-brief.png');
+    await expect(page.locator('#starter-pack .starter-preview video')).toBeVisible();
+    await expect(page.locator('.private-carousel')).toHaveCount(0);
 
     await page.locator('[data-assistant-launcher]').click();
     await page.getByRole('button', { name: 'Start voice' }).click();

@@ -28,6 +28,19 @@ h1{margin:16px 0 0;font-family:Sora,sans-serif;font-size:clamp(30px,3.6vw,46px);
 .tot{display:flex;justify-content:space-between;align-items:baseline;margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
 .tot span{font-family:Sora,sans-serif;font-size:17px;font-weight:700}
 .tot b{font-family:Sora,sans-serif;font-size:36px;font-weight:800;letter-spacing:-.03em}
+.hosting-pick{margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
+.hosting-pick-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.hosting-pick h3{margin:0;font-family:Sora,sans-serif;font-size:16px;font-weight:800}
+.hosting-pick-head span{color:var(--brand-soft);font-size:12px;font-weight:700}
+.hosting-pick p{margin:7px 0 13px;color:var(--mute);font-size:13.5px;line-height:1.5}
+.hosting-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.hosting-option{appearance:none;padding:12px 8px;background:#0A161B;border:1px solid var(--line);color:var(--ink);font-family:Inter,sans-serif;cursor:pointer;text-align:center;transition:border-color .2s,background .2s}
+.hosting-option:hover{border-color:var(--brand)}
+.hosting-option:focus-visible{outline:2px solid var(--brand-soft);outline-offset:2px}
+.hosting-option.selected{border-color:var(--brand);background:rgba(47,184,148,.14);box-shadow:inset 0 -3px 0 var(--brand)}
+.hosting-option b{display:block;font-family:Sora,sans-serif;font-size:13px}
+.hosting-option span{display:block;margin-top:5px;color:var(--brand-soft);font-family:Sora,sans-serif;font-size:14px;font-weight:800}
+@media(max-width:520px){.hosting-options{grid-template-columns:1fr}.hosting-option{display:flex;align-items:center;justify-content:space-between;text-align:left}.hosting-option span{margin:0}}
 label{display:block;font-family:Sora,sans-serif;font-size:14px;font-weight:700;margin-bottom:9px}
 input[type=email]{width:100%;padding:15px 16px;background:#0B171C;border:1px solid var(--line);color:var(--ink);font-family:Inter,sans-serif;font-size:16px}
 input[type=email]:focus{outline:0;border-color:var(--brand)}
@@ -57,10 +70,15 @@ input[type=email]:focus{outline:0;border-color:var(--brand)}
       <div class="box">
         <h2>Your order</h2>
         <div id="lines"></div>
+        <div class="hosting-pick">
+          <div class="hosting-pick-head"><h3>Choose monthly hosting</h3><span>First month due today</span></div>
+          <p>Click a plan below. Stripe charges the first month with your product purchase, then hosting renews monthly until canceled.</p>
+          <div class="hosting-options" id="hostingOptions"></div>
+        </div>
         <div class="tot"><span>Total due today</span><b id="total">$0</b></div>
         <div class="after">
-          <div><i>&#9679;</i> One-time payment. No contract, no auto-renewal today.</div>
-          <div><i>&#9679;</i> $50/mo hosting starts separately once your AI is live.</div>
+          <div><i>&#9679;</i> Your product price is one-time. Only the selected hosting plan renews.</div>
+          <div><i>&#9679;</i> <span id="hostingSummary"></span></div>
           <div><i>&#9679;</i> You'll get a link to set it up the moment you pay.</div>
         </div>
       </div>
@@ -92,6 +110,13 @@ var CATALOG = {
   'pack':         { name:'AI Business Starter Pack',        price:2500, note:'All three products, one shared knowledge base. Saves $500.' }
 };
 var KEY = 'felican_cart_v1';
+var PLAN_KEY = 'felican_hosting_plan_v1';
+var HOSTING_PLANS = [
+  { id:'base', name:'Essentials', price:50 },
+  { id:'growth', name:'Growth', price:100 },
+  { id:'scale', name:'Scale', price:200 }
+];
+var BY_PLAN = {}; HOSTING_PLANS.forEach(function(plan){ BY_PLAN[plan.id] = plan; });
 
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function money(n){ return '$' + n.toLocaleString('en-US'); }
@@ -101,9 +126,27 @@ function read(){
   catch(e){ return []; }
 }
 function write(c){ try { localStorage.setItem(KEY, JSON.stringify(c)); } catch(e){} }
+function readPlan(){
+  try { var id = localStorage.getItem(PLAN_KEY); return BY_PLAN[id] ? id : 'base'; }
+  catch(e){ return 'base'; }
+}
+function writePlan(id){ if (!BY_PLAN[id]) return; try { localStorage.setItem(PLAN_KEY, id); } catch(e){} }
+
+function paintHosting(){
+  var selected = readPlan();
+  document.getElementById('hostingOptions').innerHTML = HOSTING_PLANS.map(function(plan){
+    var active = plan.id === selected;
+    return '<button type="button" class="hosting-option' + (active ? ' selected' : '') + '" data-plan="' + plan.id +
+      '" aria-pressed="' + (active ? 'true' : 'false') + '"><b>' + plan.name + '</b><span>' + money(plan.price) + '/mo</span></button>';
+  }).join('');
+  var plan = BY_PLAN[selected];
+  document.getElementById('hostingSummary').textContent = plan.name + ' hosting at ' + money(plan.price) +
+    '/month is selected. The first month is included in today\u2019s total.';
+}
 
 function paint(){
   var cart = read();
+  paintHosting();
   document.getElementById('filled').hidden = cart.length === 0;
   document.getElementById('empty').hidden  = cart.length !== 0;
   if (!cart.length) return;
@@ -113,12 +156,19 @@ function paint(){
     return '<div class="line"><div class="info"><b>' + esc(p.name) + '</b><small>' + esc(p.note) +
            '</small><button class="rm" data-rm="' + id + '">Remove</button></div>' +
            '<div class="amt">' + money(p.price) + '</div></div>';
-  }).join('');
+  }).join('') + (function(){
+    var plan = BY_PLAN[readPlan()];
+    return '<div class="line"><div class="info"><b>' + esc(plan.name) + ' monthly hosting</b>' +
+      '<small>First month today, then ' + money(plan.price) + '/month until canceled.</small></div>' +
+      '<div class="amt">' + money(plan.price) + '</div></div>';
+  })();
   document.getElementById('total').textContent =
-    money(cart.reduce(function(s, id){ return s + CATALOG[id].price; }, 0));
+    money(cart.reduce(function(s, id){ return s + CATALOG[id].price; }, 0) + BY_PLAN[readPlan()].price);
 }
 
 document.addEventListener('click', function(e){
+  var planButton = e.target.closest('[data-plan]');
+  if (planButton) { writePlan(planButton.getAttribute('data-plan')); paint(); return; }
   var b = e.target.closest('[data-rm]');
   if (!b) return;
   var cart = read(), i = cart.indexOf(b.getAttribute('data-rm'));
@@ -146,7 +196,7 @@ document.getElementById('pay').addEventListener('click', function(){
   fetch('/api/checkout', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ items: items, email: email })
+    body: JSON.stringify({ items: items.concat(['hosting-' + readPlan()]), email: email })
   })
   .then(function(r){ return r.json().then(function(j){ return { ok: r.ok, body: j }; }); })
   .then(function(res){

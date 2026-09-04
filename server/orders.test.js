@@ -21,13 +21,15 @@ describe('file order store', () => {
     const path = await storePath();
     const first = createFileOrderStore(path);
     await first.upsertPaid({
-      id: 'cs_test_1234567890', email: 'buyer@example.com', items: ['pack'], amountCents: 250_000,
+      id: 'cs_test_1234567890', email: 'buyer@example.com', items: ['pack'], hostingPlan: 'growth',
+      productTotalCents: 250_000, amountCents: 260_000,
       currency: 'usd', paidAt: '2026-09-01T01:02:03.000Z',
     });
 
     const restarted = createFileOrderStore(path);
     await expect(restarted.get('cs_test_1234567890')).resolves.toMatchObject({
-      email: 'buyer@example.com', items: ['pack'], amountCents: 250_000, paidAt: '2026-09-01T01:02:03.000Z',
+      email: 'buyer@example.com', items: ['pack'], hostingPlan: 'growth', productTotalCents: 250_000,
+      amountCents: 260_000, paidAt: '2026-09-01T01:02:03.000Z',
     });
   });
 

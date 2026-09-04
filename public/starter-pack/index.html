@@ -14,23 +14,39 @@
 <meta property="og:url" content="https://felican.ai/starter-pack/">
 <meta property="og:image" content="https://felican.ai/og.png"><meta property="og:image:width" content="1102"><meta property="og:image:height" content="579">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:image" content="https://felican.ai/og.png">
+<script src="/support.js?v=20260802"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/starter-pack/shared.css">
 <style>
-body{background:radial-gradient(circle at 82% 9%,rgba(64,76,255,.09),transparent 28%),radial-gradient(circle at 14% 26%,rgba(47,184,148,.07),transparent 25%),var(--bg)}
-.hero{position:relative;padding:clamp(48px,6vw,78px) 0 clamp(34px,4vw,48px);overflow:hidden}
-.hero::before{content:'';position:absolute;inset:-20% -10% auto 45%;height:520px;background:radial-gradient(circle,rgba(47,184,148,.18),transparent 67%);pointer-events:none}
-.hero h1{margin:18px 0 0;max-width:1060px;font-family:Sora,sans-serif;font-size:clamp(38px,5.3vw,68px);font-weight:800;line-height:1.02;letter-spacing:-.04em;text-wrap:balance}
-.hero h1 em{font-style:normal;color:var(--brand)}
-.hero p.lede{margin:22px 0 0;max-width:72ch;font-size:clamp(17px,1.5vw,20px);line-height:1.65;color:var(--ink-2);text-wrap:pretty}
-.hero-cta{margin-top:30px;display:flex;flex-wrap:wrap;gap:14px}
+body{background:var(--bg)}
+html,body{height:auto!important;min-height:100%}#dc-root,#dc-root>.sc-host{height:auto!important;min-height:100%}
+.wrap{width:100%;max-width:1280px;padding-left:24px;padding-right:24px}
+.hero{position:relative;min-height:min(720px,calc(100vh - 74px));display:flex;align-items:flex-end;isolation:isolate;overflow:hidden;background:#080E13}
+.hero-video{position:absolute;z-index:-3;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;filter:saturate(.92) contrast(1.04)}
+.hero::before{content:'';position:absolute;z-index:-2;inset:0;background:linear-gradient(90deg,rgba(5,9,12,.97) 0%,rgba(5,9,12,.84) 42%,rgba(5,9,12,.38) 72%,rgba(5,9,12,.56) 100%)}
+.hero::after{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(0deg,#080E13 0%,rgba(8,14,19,.16) 38%,rgba(8,14,19,.32) 100%)}
+.hero-in{width:100%;padding:clamp(62px,8vw,106px) 0 clamp(50px,7vw,88px)}
+.hero h1{margin:18px 0 0;max-width:850px;font-family:Sora,sans-serif;font-size:clamp(42px,6.2vw,78px);font-weight:800;line-height:.98;letter-spacing:-.045em;text-wrap:balance;text-shadow:0 3px 28px rgba(0,0,0,.55)}
+.hero h1 em{font-style:normal;color:var(--brand-soft)}
+.hero p.lede{margin:20px 0 0;max-width:660px;font-size:clamp(17px,1.45vw,20px);line-height:1.58;color:#D7E4E3;text-wrap:pretty;text-shadow:0 2px 18px rgba(0,0,0,.7)}
+.hero-cta{margin-top:28px;display:flex;flex-wrap:wrap;gap:12px}
+.hero-proof{margin:25px 0 0;display:flex;flex-wrap:wrap;gap:8px 24px;color:#C2D2D4;font-size:13px;font-weight:600}
+.hero-proof span::before{content:'\2713';color:var(--brand);font-weight:800;margin-right:8px}
+@media(max-width:700px){.hero{min-height:650px}.hero-video{object-position:61% center}.hero::before{background:linear-gradient(90deg,rgba(5,9,12,.94),rgba(5,9,12,.58))}.hero h1{font-size:clamp(39px,12vw,58px)}}
 .trust{margin-top:28px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;background:var(--line);border:1px solid var(--line)}
 .trust>span{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;background:rgba(16,30,36,.96);padding:17px 18px;font-size:14px;line-height:1.45;color:var(--mute)}
 .trust b{color:var(--brand-soft);font-family:Sora,sans-serif;font-size:12px;letter-spacing:.1em}
 .trust strong{display:block;color:var(--ink);font-family:Sora,sans-serif;font-size:14px;margin-bottom:3px}
 @media(max-width:760px){.trust{grid-template-columns:1fr}}
+
+.demo-modal{position:fixed;z-index:1000;inset:0;display:none;place-items:center;padding:clamp(14px,4vw,48px);background:rgba(2,6,8,.92);backdrop-filter:blur(12px)}
+.demo-modal.is-open{display:grid}
+.demo-dialog{position:relative;width:min(1180px,100%);background:#05090C;border:1px solid rgba(89,212,180,.5);box-shadow:0 30px 100px rgba(0,0,0,.72)}
+.demo-dialog video{display:block;width:100%;max-height:calc(100vh - 80px);background:#000;object-fit:contain}
+.demo-close{position:absolute;z-index:2;top:12px;right:12px;width:44px;height:44px;border:1px solid rgba(255,255,255,.52);background:rgba(5,9,12,.9);color:#fff;font:700 25px/1 Inter,sans-serif;cursor:pointer}
+.demo-close:hover,.demo-close:focus-visible{background:var(--brand);border-color:var(--brand);color:var(--bg);outline:none}
 
 .sec{padding:clamp(44px,5vw,72px) 0 0}
 .sec.products-sec{padding-top:clamp(24px,3vw,40px)}
@@ -79,14 +95,32 @@ body{background:radial-gradient(circle at 82% 9%,rgba(64,76,255,.09),transparent
 .price{margin-top:auto;padding-top:20px;border-top:1px solid var(--line)}
 .price .amt{font-family:Sora,sans-serif;font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1}
 .price .amt small{font-size:15px;font-weight:600;color:var(--mute);letter-spacing:0}
-.price .then{margin:7px 0 0;font-size:14.5px;color:var(--mute)}
+.hosting{margin-top:18px;padding-top:17px;border-top:1px solid var(--line);text-align:left}
+.hosting-title{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.hosting-title b{font-family:Sora,sans-serif;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.hosting-title span{font-size:11.5px;color:var(--brand-soft);font-weight:700}
+.hosting-intro{margin:7px 0 13px!important;font-size:13px!important;line-height:1.5!important;color:var(--mute)!important}
+.plan-listing{display:grid;gap:8px}
+.hosting-plan{appearance:none;position:relative;width:100%;background:#0A161B;border:1px solid #243B3A;padding:13px 13px 12px;text-align:left;color:inherit;font:inherit;cursor:pointer;transition:border-color .2s,background .2s,transform .2s,box-shadow .2s}
+.hosting-plan:hover{border-color:var(--brand);background:#10242A;transform:translateY(-1px)}
+.hosting-plan:focus-visible{outline:2px solid var(--brand-soft);outline-offset:2px}
+.hosting-plan.selected{border-color:var(--brand);background:linear-gradient(100deg,rgba(47,184,148,.18),rgba(61,124,255,.07));box-shadow:0 8px 26px rgba(0,0,0,.22)}
+.hosting-plan.selected::before{content:'';position:absolute;inset:-1px auto -1px -1px;width:3px;background:var(--brand)}
+.plan-top{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.plan-name{font-family:Sora,sans-serif;font-size:14px;font-weight:800;color:var(--ink)}
+.plan-name small{display:inline-block;margin-left:6px;padding:3px 5px;border:1px solid rgba(89,212,180,.48);color:var(--brand-soft);font-size:8px;line-height:1;letter-spacing:.08em;text-transform:uppercase;vertical-align:2px}
+.plan-price{white-space:nowrap;font-family:Sora,sans-serif;font-size:17px;font-weight:800;color:var(--brand-soft)}
+.plan-price small{font-size:10px;color:var(--mute);font-weight:600}
+.plan-fit{margin:5px 0 9px!important;font-size:12px!important;line-height:1.45!important;color:var(--mute)!important}
+.plan-specs{display:flex;flex-wrap:wrap;gap:5px}
+.plan-specs span{padding:4px 6px;border:1px solid var(--line);background:rgba(16,30,36,.8);font-size:10.5px;line-height:1.25;color:var(--ink-2)}
+.plan-status{display:inline-block;margin-top:10px;color:var(--brand-soft);font-family:Sora,sans-serif;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.hosting-plan.selected .plan-status{padding:5px 7px;background:var(--brand);color:var(--bg)}
+.hosting-note{margin:10px 0 0!important;font-size:11.5px!important;line-height:1.45!important;color:var(--mute-2)!important}
 .card .btn{width:100%;margin-top:16px}
 .added{background:var(--brand-hi)!important;color:var(--bg)!important}
 
 .bundle{--bundle-pad:clamp(28px,3.4vw,44px);margin-top:26px;position:relative;background:linear-gradient(180deg,#12262C 0%,#101E24 100%);border:1px solid var(--brand);padding:var(--bundle-pad)}
-.bundle-art{display:block;margin:calc(0px - var(--bundle-pad)) calc(0px - var(--bundle-pad)) clamp(28px,3vw,38px);aspect-ratio:16/7;overflow:hidden;background:var(--line);border-bottom:1px solid var(--brand)}
-.bundle-art img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;filter:saturate(.96) brightness(.9)}
-@media(max-width:700px){.bundle-art{aspect-ratio:16/10}}
 .bundle-grid{display:grid;grid-template-columns:1.25fr .9fr;gap:clamp(26px,3vw,52px);align-items:center}
 @media(max-width:900px){.bundle-grid{grid-template-columns:1fr}}
 .bundle h3{margin:16px 0 0;font-family:Sora,sans-serif;font-size:clamp(28px,3.2vw,40px);font-weight:800;letter-spacing:-.03em;line-height:1.08}
@@ -96,7 +130,7 @@ body{background:radial-gradient(circle at 82% 9%,rgba(64,76,255,.09),transparent
 .bundle-buy .strike{font-family:Sora,sans-serif;font-size:17px;color:var(--mute-2);text-decoration:line-through}
 .bundle-buy .amt{font-family:Sora,sans-serif;font-size:52px;font-weight:800;letter-spacing:-.035em;line-height:1;margin:6px 0 0}
 .bundle-buy .save{display:inline-block;margin-top:12px;padding:6px 12px;background:rgba(47,184,148,.16);border:1px solid var(--brand);color:var(--brand-soft);font-family:Sora,sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em}
-.bundle-buy .then{margin:14px 0 0;font-size:14.5px;color:var(--mute)}
+.bundle-buy .hosting{margin-top:20px}
 
 .split{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 @media(max-width:900px){.split{grid-template-columns:1fr}}
@@ -126,56 +160,61 @@ body{background:radial-gradient(circle at 82% 9%,rgba(64,76,255,.09),transparent
 .faq p{margin:14px 0 0;font-size:16px;line-height:1.65;color:var(--mute);max-width:72ch}
 
 /* cart */
-.cartbar{position:fixed;left:0;right:0;bottom:0;z-index:80;background:rgba(11,23,28,.97);backdrop-filter:blur(12px);border-top:1px solid var(--brand);transform:translateY(110%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.cartbar{position:fixed;left:0;right:0;bottom:76px;z-index:970;background:rgba(11,23,28,.97);backdrop-filter:blur(12px);border-top:1px solid var(--brand);transform:translateY(calc(110% + 76px));transition:transform .3s cubic-bezier(.2,.8,.2,1)}
 .cartbar.show{transform:none}
 .cartbar-in{display:flex;align-items:center;gap:18px;padding:16px 0;flex-wrap:wrap}
 .cartbar .items{flex:1;min-width:220px}
 .cartbar .items b{font-family:Sora,sans-serif;font-size:16px;font-weight:700;display:block}
 .cartbar .items small{color:var(--mute);font-size:14px}
 .cartbar .tot{font-family:Sora,sans-serif;font-size:26px;font-weight:800;letter-spacing:-.02em}
+.cartbar .tot small{display:block;margin-bottom:2px;color:var(--mute);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
 .hint{margin:0 0 0;padding:12px 16px;background:rgba(47,184,148,.1);border:1px solid var(--brand);color:var(--brand-soft);font-size:14.5px;display:none}
 .hint.show{display:block}
 .hint button{background:none;border:0;color:var(--brand);font-weight:700;text-decoration:underline;cursor:pointer;font-size:14.5px;font-family:inherit}
+@media(max-width:640px){.cartbar{bottom:78px;transform:translateY(calc(110% + 78px))}}
 </style>
 </head>
 <body>
+<x-dc>
 
-<nav class="nav"><div class="wrap nav-in">
-  <a class="nav-logo" href="/"><img src="/logo-mark.png" alt=""> Felican AI</a>
-  <div class="nav-links">
-    <a href="/">Home</a><a href="/products/">Products</a>
-    <a href="/starter-pack/" class="on">Starter Pack</a>
-    <a href="/services/">Services</a><a href="/about/">About</a><a href="/contact/">Contact</a>
-  </div>
-</div></nav>
+<dc-import name="SiteNav" active="Starter Pack" hint-size="100%,74px"></dc-import>
 
-<header class="hero"><div class="wrap">
-  <span class="flag">For anyone building or running a business</span>
-  <h1>Put AI to work where your business loses <em>time and customers.</em></h1>
-  <p class="lede">Whether you run it yourself, manage a team, or are growing a company, these tools give your business more capacity without adding more busywork. Get a private AI that knows the business, turn website visitors into real leads, and answer the phone before the next company does.</p>
-  <div class="hero-cta">
-    <a class="btn btn-p" href="#products">Choose your AI <span aria-hidden="true">&#8594;</span></a>
-    <a class="btn btn-g" href="#pack">Get the complete pack &mdash; $2,500</a>
+<main>
+
+<header class="hero">
+  <video class="hero-video" id="heroDemoBg" autoplay muted loop playsinline preload="metadata" poster="/starter-pack/images/starter-pack-demo-poster.jpg" aria-hidden="true" tabindex="-1">
+    <source src="/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4" type="video/mp4">
+  </video>
+  <div class="hero-in"><div class="wrap">
+    <span class="flag">AI Business Starter Pack</span>
+    <h1>Put AI to work where your business loses <em>time and customers.</em></h1>
+    <p class="lede">Private AI for you and your staff, an assistant for every website visitor, and Voice AI for every caller. Add your business once and all three are ready and running in a few minutes.</p>
+    <div class="hero-cta">
+      <button class="btn btn-p" id="openDemo" type="button">&#9654;&nbsp; Watch it generate AI in minutes</button>
+      <a class="btn btn-g" href="#products">Choose your AI <span aria-hidden="true">&#8594;</span></a>
+    </div>
+    <p class="hero-proof"><span>Made for any business</span><span>One shared knowledge base</span><span>Ready in minutes</span></p>
+  </div></div>
+</header>
+
+<div class="demo-modal" id="demoModal" aria-hidden="true">
+  <div class="demo-dialog" role="dialog" aria-modal="true" aria-label="AI Business Starter Pack demonstration">
+    <button class="demo-close" id="closeDemo" type="button" aria-label="Close video">&times;</button>
+    <video id="fullDemo" controls playsinline preload="metadata" poster="/starter-pack/images/starter-pack-demo-poster.jpg">
+      <source src="/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4" type="video/mp4">
+      Your browser does not support embedded video. <a href="/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4">Download the demo video.</a>
+    </video>
   </div>
-</div></header>
+</div>
 
 <section class="sec products-sec" id="products"><div class="wrap">
-  <div class="sec-head">
-    <span class="kicker">Built for businesses of every kind</span>
-    <h2>More capacity for the people building, running, and growing the business.</h2>
-    <p>From independent professionals and local businesses to growing companies and established teams, each product learns your website, documents, services, prices, and policies, then handles work that would otherwise slow you down. Start with today&rsquo;s biggest problem or connect all three.</p>
+  <div class="sec-head" style="margin-bottom:24px">
+    <span class="kicker">Choose one or get all three</span>
+    <h2 style="font-size:clamp(26px,3vw,38px)">AI that works inside your business, on your website, and on your phone.</h2>
   </div>
   <div class="cards" id="cards"></div>
-  <div class="trust">
-    <span><b>01</b><span><strong>Get hours back</strong>Help you and your staff find answers and finish daily work faster.</span></span>
-    <span><b>02</b><span><strong>Turn visits into leads</strong>Give every website visitor a useful answer and a next step.</span></span>
-    <span><b>03</b><span><strong>Stop missing calls</strong>Answer, help, and book customers even when your team is busy.</span></span>
-  </div>
 
   <div class="bundle" id="pack">
-    <div class="bundle-art" aria-hidden="true">
-      <img src="/starter-pack/images/business-starter-pack-cover-v2.png" alt="">
-    </div>
     <div class="bundle-grid">
       <div>
         <span class="flag">Best value &mdash; save $500</span>
@@ -192,45 +231,19 @@ body{background:radial-gradient(circle at 82% 9%,rgba(64,76,255,.09),transparent
         <div class="strike">$3,000</div>
         <div class="amt">$2,500</div>
         <span class="save">SAVE $500</span>
-        <p class="then">One-time. Then $50/mo hosting once you're live.</p>
+        <div id="bundleHosting"></div>
         <button class="btn btn-p" data-add="pack" style="width:100%;margin-top:20px">Add the pack to cart</button>
       </div>
     </div>
   </div>
+  <p class="more">Need more models, automations, or image and video generation? Those are available as paid add-ons. <a href="/contact/">Tell us what you need.</a></p>
 </div></section>
 
-<section class="sec"><div class="wrap">
-  <div class="sec-head">
-    <span class="kicker">Included with every product</span>
-    <h2>One clear price. No contract. No surprises.</h2>
-    <p>Whichever product you choose, this is what lands in your hands.</p>
-  </div>
-  <div class="incl">
-    <div><i>&#10003;</i><b>1 custom model</b><span>Trained on your business, not a generic bot</span></div>
-    <div><i>&#10003;</i><b>A free model included</b><span>An OpenRouter model at no extra cost</span></div>
-    <div><i>&#10003;</i><b>1 automation</b><span>Put one repetitive job on autopilot</span></div>
-    <div><i>&#10003;</i><b>Live web search</b><span>So it is never stuck in the past</span></div>
-    <div><i>&#10003;</i><b>Your branding</b><span>Your logo, your colours, your name on it</span></div>
-    <div><i>&#10003;</i><b>Hosted and maintained</b><span>We keep it running. You just use it</span></div>
-    <div><i>&#10003;</i><b>Ready in a few minutes</b><span>Start using it right after setup</span></div>
-    <div><i>&#10003;</i><b>You own it</b><span>Your data, your model, yours to keep</span></div>
-  </div>
-  <p class="more">More models, more automations, image generation, and video generation are available as paid add-ons. <a href="/contact/">Tell us what you need</a> and we will price it for you.</p>
-</div></section>
-
-<section class="sec"><div class="wrap">
-  <div class="sec-head"><span class="kicker">How it works</span><h2>Three steps. A few minutes.</h2></div>
-  <div class="steps">
-    <div class="step"><b>STEP 01</b><h4>Pick and pay</h4><p>Choose one product or the whole pack. One-time payment, no contract, no sales call to sit through.</p></div>
-    <div class="step"><b>STEP 02</b><h4>Point it at your business</h4><p>Paste your website link and drop in whatever you have &mdash; price lists, policies, service menus. It reads all of it.</p></div>
-    <div class="step"><b>STEP 03</b><h4>You're live</h4><p>Your AI is ready and running in a few minutes. Add more information any time and every product updates together.</p></div>
-  </div>
-</div></section>
-
-<section class="sec"><div class="wrap">
+<section class="sec" style="padding-bottom:clamp(62px,8vw,104px)"><div class="wrap">
   <div class="sec-head"><span class="kicker">Questions</span><h2>The things people ask first.</h2></div>
   <div class="faq">
-    <details><summary>What does the $50/mo actually cover?</summary><p>Hosting, maintenance, and a monthly allowance of usage and storage. It starts once you're live, and it's billed separately inside your workspace &mdash; not today. If your business grows past the allowance, you can move up a plan instead of getting a surprise bill.</p></details>
+    <details><summary>What does monthly hosting cover?</summary><p>Every plan includes hosting, maintenance, usage tracking, and advance limit warnings. Essentials is $50/month, Growth is $100/month, and Scale is $200/month. Each step adds more storage, website-assistant replies, Voice AI minutes, and Private AI processing. Your selected plan appears in Stripe checkout: its first month is charged today with your product purchase, then hosting renews monthly until canceled.</p></details>
+    <details><summary>What happens if I reach a monthly limit?</summary><p>Only the feature that reached its limit pauses. Your other products and stored data stay available. You can wait for the next monthly reset or choose a larger fixed plan in your Stripe billing portal. There are no surprise per-message, per-minute, or storage overage charges from Felican AI.</p></details>
     <details><summary>Do I really own it?</summary><p>Yes. The AI is trained on your business, branded as your business, and the knowledge base is yours. Your information isn't used to train a public model.</p></details>
     <details><summary>Do I need to be technical?</summary><p>No. You paste your website link, drop in any documents you want it to know, and it builds itself. The website assistant is a single line of code your web person can paste in a minute &mdash; and if you don't have a web person, we'll walk you through it.</p></details>
     <details><summary>What if I only want one of them?</summary><p>Buy one for $1,000. You can add the others later &mdash; they'll plug into the same knowledge base you already built.</p></details>
@@ -238,13 +251,10 @@ body{background:radial-gradient(circle at 82% 9%,rgba(64,76,255,.09),transparent
   </div>
 </div></section>
 
-<footer class="foot"><div class="wrap">
-  <div style="display:flex;flex-wrap:wrap;gap:18px 30px;align-items:center">
-    <span>&copy; <span id="yr"></span> Felican AI</span>
-    <a href="/products/">All products</a><a href="/services/">Services</a>
-    <a href="/contact/">Contact</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a>
-  </div>
-</div></footer>
+</main>
+
+<dc-import name="SiteFooter" hint-size="100%,460px"></dc-import>
+<dc-import name="ChatAssistant" hint-size="100%,0px"></dc-import>
 
 <div class="cartbar" id="cartbar"><div class="wrap">
   <div class="hint" id="hint"></div>
@@ -255,8 +265,59 @@ body{background:radial-gradient(circle at 82% 9%,rgba(64,76,255,.09),transparent
   </div>
 </div></div>
 
+</x-dc>
+
 <script>
-document.getElementById('yr').textContent = new Date().getFullYear();
+(function initStarterPack(){
+if (!document.querySelector('#dc-root #cards')) { window.setTimeout(initStarterPack, 25); return; }
+if (document.body.getAttribute('data-starter-pack-ready') === 'true') return;
+document.body.setAttribute('data-starter-pack-ready', 'true');
+
+var heroDemoBg = document.getElementById('heroDemoBg');
+var demoModal = document.getElementById('demoModal');
+var fullDemo = document.getElementById('fullDemo');
+var openDemo = document.getElementById('openDemo');
+var closeDemo = document.getElementById('closeDemo');
+var lastDemoFocus = null;
+function showDemo(){
+  lastDemoFocus = document.activeElement;
+  demoModal.classList.add('is-open');
+  demoModal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  if (heroDemoBg) heroDemoBg.pause();
+  fullDemo.currentTime = 0;
+  fullDemo.muted = false;
+  var playback = fullDemo.play();
+  if (playback && typeof playback.catch === 'function') playback.catch(function(){});
+  closeDemo.focus();
+}
+function hideDemo(){
+  fullDemo.pause();
+  demoModal.classList.remove('is-open');
+  demoModal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  if (heroDemoBg && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var playback = heroDemoBg.play();
+    if (playback && typeof playback.catch === 'function') playback.catch(function(){});
+  }
+  if (lastDemoFocus) lastDemoFocus.focus();
+}
+if (openDemo && demoModal && fullDemo && closeDemo) {
+  fullDemo.controls = true;
+  openDemo.addEventListener('click', showDemo);
+  closeDemo.addEventListener('click', hideDemo);
+  demoModal.addEventListener('click', function(e){ if (e.target === demoModal) hideDemo(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && demoModal.classList.contains('is-open')) hideDemo(); });
+}
+if (heroDemoBg) {
+  heroDemoBg.muted = true;
+  heroDemoBg.loop = true;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) heroDemoBg.pause();
+  else {
+    var heroPlayback = heroDemoBg.play();
+    if (heroPlayback && typeof heroPlayback.catch === 'function') heroPlayback.catch(function(){});
+  }
+}
 
 var CATALOG = [
   { id:'private-ai', name:'Private AI', price:1000, tag:'FOR YOU AND YOUR STAFF', who:'Your private business workspace',
@@ -297,11 +358,55 @@ var CATALOG = [
     ]}
 ];
 var PACK = { id:'pack', name:'AI Business Starter Pack', price:2500 };
+var HOSTING_PLANS = [
+  { id:'base', name:'Essentials', price:50, badge:'Start here', fit:'For independent owners and small teams putting AI to work.',
+    specs:['25 GB storage','2,000 website replies','100 Voice AI min','$10 Private AI processing'] },
+  { id:'growth', name:'Growth', price:100, fit:'For busy businesses handling more visitors, calls, and company knowledge.',
+    specs:['75 GB storage','6,000 website replies','300 Voice AI min','$25 Private AI processing'] },
+  { id:'scale', name:'Scale', price:200, fit:'For growing operations with heavier traffic, call volume, and files.',
+    specs:['200 GB storage','20,000 website replies','800 Voice AI min','$60 Private AI processing'] }
+];
 var BY_ID = {}; CATALOG.forEach(function(p){ BY_ID[p.id] = p; }); BY_ID.pack = PACK;
 var KEY = 'felican_cart_v1';
+var PLAN_KEY = 'felican_hosting_plan_v1';
+var BY_PLAN = {}; HOSTING_PLANS.forEach(function(plan){ BY_PLAN[plan.id] = plan; });
 
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function money(n){ return '$' + n.toLocaleString('en-US'); }
+
+function renderHostingPlans(isBundle){
+  return '<div class="hosting">' +
+    '<div class="hosting-title"><b>Monthly hosting</b><span>Click a plan to choose</span></div>' +
+    '<p class="hosting-intro">Every plan includes hosting, maintenance, usage tracking, and limit warnings.</p>' +
+    '<div class="plan-listing">' + HOSTING_PLANS.map(function(plan){
+      return '<button type="button" class="hosting-plan" data-plan="' + esc(plan.id) + '" aria-pressed="false">' +
+        '<div class="plan-top"><span class="plan-name">' + esc(plan.name) + (plan.badge ? '<small>' + esc(plan.badge) + '</small>' : '') + '</span>' +
+          '<span class="plan-price">' + money(plan.price) + '<small>/mo</small></span></div>' +
+        '<p class="plan-fit">' + esc(plan.fit) + '</p>' +
+        '<div class="plan-specs">' + plan.specs.map(function(spec){
+          return '<span>' + esc(spec) + '</span>'; }).join('') + '</div>' +
+        '<span class="plan-status">Choose ' + esc(plan.name) + '</span>' +
+      '</button>'; }).join('') + '</div>' +
+    '<p class="hosting-note">Your selection applies across this page. Its first month is included in checkout, then it renews monthly until canceled. No automatic overage charges.' +
+      (isBundle ? ' All four allowances support your complete pack.' : ' Allowances apply only to the products you own.') + '</p>' +
+  '</div>';
+}
+
+function readPlan(){
+  try { var id = localStorage.getItem(PLAN_KEY); return BY_PLAN[id] ? id : 'base'; }
+  catch(e){ return 'base'; }
+}
+function writePlan(id){ if (!BY_PLAN[id]) return; try { localStorage.setItem(PLAN_KEY, id); } catch(e){} }
+function paintPlans(){
+  var selected = readPlan();
+  document.querySelectorAll('[data-plan]').forEach(function(button){
+    var active = button.getAttribute('data-plan') === selected;
+    button.classList.toggle('selected', active);
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    var status = button.querySelector('.plan-status');
+    if (status) status.textContent = active ? '\u2713 Selected' : 'Choose ' + BY_PLAN[button.getAttribute('data-plan')].name;
+  });
+}
 
 function read(){
   try { var v = JSON.parse(localStorage.getItem(KEY) || '[]');
@@ -329,13 +434,14 @@ function renderCards(){
           return '<li' + (f[2] ? ' class="featured"' : '') + '><span class="dot">&#10003;</span><span class="txt"><b>' + esc(f[0]) +
                  '</b>' + (f[2] ? '<span class="feat-copy">' + esc(f[1]) + '</span>' : ' &mdash; ' + esc(f[1])) + '</span></li>'; }).join('') + '</ul>' +
         '<div class="price"><div class="amt">' + money(p.price) + ' <small>one-time</small></div>' +
-        '<p class="then">Then $50/mo hosting once you\u2019re live</p>' +
-        '<div class="badges"><span class="hot">Ready in a few minutes</span><span>No contract</span><span>You own it</span></div>' +
+        renderHostingPlans(false) +
         '</div>' +
         '<button class="btn btn-p" data-add="' + p.id + '">Add to cart</button>' +
       '</div></article>';
   }).join('');
 }
+
+document.getElementById('bundleHosting').innerHTML = renderHostingPlans(true);
 
 function paint(){
   var cart = read();
@@ -348,12 +454,14 @@ function paint(){
     b.textContent = inCart ? '✓ In cart — remove' : (b.getAttribute('data-add') === 'pack' ? 'Add the pack to cart' : 'Add to cart');
   });
 
-  var total = cart.reduce(function(s, id){ return s + BY_ID[id].price; }, 0);
-  document.getElementById('cartTotal').textContent = money(total);
+  var total = cart.reduce(function(s, id){ return s + BY_ID[id].price; }, 0) +
+    (cart.length ? BY_PLAN[readPlan()].price : 0);
+  document.getElementById('cartTotal').innerHTML = '<small>Due today</small>' + money(total);
   document.getElementById('cartItems').textContent =
     cart.length ? (cart.length + ' item' + (cart.length > 1 ? 's' : '') + ' in your cart') : 'Your cart';
   document.getElementById('cartSub').textContent =
-    cart.map(function(id){ return BY_ID[id].name; }).join('  ·  ');
+    cart.map(function(id){ return BY_ID[id].name; }).join('  ·  ') +
+    (cart.length ? '  ·  ' + BY_PLAN[readPlan()].name + ' hosting selected' : '');
   bar.classList.toggle('show', cart.length > 0);
 
   var singles = cart.filter(function(id){ return id !== 'pack'; });
@@ -362,9 +470,17 @@ function paint(){
     hint.classList.add('show');
     document.getElementById('swap').onclick = function(){ write(['pack']); paint(); };
   } else { hint.classList.remove('show'); }
+
+  var assistantShell = document.querySelector('.fa-shell');
+  if (assistantShell) {
+    var credentialHeight = window.innerWidth <= 640 ? 78 : 76;
+    assistantShell.style.bottom = cart.length ? (credentialHeight + bar.offsetHeight + 18) + 'px' : '';
+  }
 }
 
 document.addEventListener('click', function(e){
+  var planButton = e.target.closest('[data-plan]');
+  if (planButton) { writePlan(planButton.getAttribute('data-plan')); paintPlans(); paint(); return; }
   var btn = e.target.closest('[data-add]');
   if (!btn) return;
   var id = btn.getAttribute('data-add');
@@ -376,7 +492,9 @@ document.addEventListener('click', function(e){
   write(cart); paint();
 });
 
-renderCards(); paint();
+renderCards(); paintPlans(); paint();
+window.addEventListener('resize', paint);
+})();
 </script>
 </body>
 </html>

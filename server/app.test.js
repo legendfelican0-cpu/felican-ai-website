@@ -221,8 +221,9 @@ describe('Starter Pack Stripe webhook', () => {
   const secret = 'whsec_route_test';
   const event = {
     id: 'evt_completed_123', type: 'checkout.session.completed', data: { object: {
-      id: 'cs_test_1234567890', payment_status: 'paid', amount_total: 250_000, currency: 'usd', created: 1_700_000_000,
-      customer_details: { email: 'buyer@example.com' }, metadata: { items: 'pack' },
+      id: 'cs_test_1234567890', mode: 'subscription', payment_status: 'paid', amount_total: 255_000, currency: 'usd', created: 1_700_000_000,
+      customer_details: { email: 'buyer@example.com' },
+      metadata: { items: 'pack', purpose: 'starter_pack_with_hosting', hosting_plan: 'base' },
     } },
   };
 
@@ -242,7 +243,9 @@ describe('Starter Pack Stripe webhook', () => {
     expect((await request()).status).toBe(200);
     expect(sent).toHaveLength(1);
     expect(sent[0]).toMatchObject({ id: 'cs_test_1234567890', email: 'buyer@example.com', setupUrl: 'https://app.felican.dev/claim?order=cs_test_1234567890' });
-    await expect(store.get('cs_test_1234567890')).resolves.toMatchObject({ amountCents: 250_000, resendId: 'email_123' });
+    await expect(store.get('cs_test_1234567890')).resolves.toMatchObject({
+      amountCents: 255_000, hostingPlan: 'base', resendId: 'email_123',
+    });
   });
 
   it('rejects bad signatures and fails closed when no signing secret exists', async () => {
@@ -273,7 +276,7 @@ describe('Starter Pack generator handoff', () => {
     });
     const response = await fetch(`${base}/api/checkout`, {
       method: 'POST', headers: browserHeaders,
-      body: JSON.stringify({ items: ['pack'], email: 'buyer@example.com' }),
+      body: JSON.stringify({ items: ['pack', 'hosting-base'], email: 'buyer@example.com' }),
     });
     expect(response.status).toBe(200);
     const setCookie = response.headers.get('set-cookie');
@@ -291,7 +294,7 @@ describe('Starter Pack generator handoff', () => {
     });
     const response = await fetch(`${base}/api/checkout`, {
       method: 'POST', headers: browserHeaders,
-      body: JSON.stringify({ items: ['pack'], email: 'buyer@example.com' }),
+      body: JSON.stringify({ items: ['pack', 'hosting-base'], email: 'buyer@example.com' }),
     });
     expect(response.status).toBe(200);
     expect(response.headers.get('set-cookie')).toBeNull();
@@ -451,6 +454,19 @@ describe('Felican AI server', () => {
     expect(policy).toContain('frame-src https://calendly.com https://*.calendly.com https://cal.com https://*.cal.com');
     expect(policy).not.toContain('unpkg.com');
     expect(response.headers.get('cross-origin-opener-policy')).toBe('same-origin');
+  });
+
+  it('serves MP4 video with the correct type and byte-range support', async () => {
+    const base = await start();
+    const response = await fetch(`${base}/public/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4`, {
+      headers: { Range: 'bytes=0-9' },
+    });
+    expect(response.status).toBe(206);
+    expect(response.headers.get('content-type')).toBe('video/mp4');
+    expect(response.headers.get('accept-ranges')).toBe('bytes');
+    expect(response.headers.get('content-range')).toMatch(/^bytes 0-9\/\d+$/);
+    expect(response.headers.get('content-length')).toBe('10');
+    expect((await response.arrayBuffer()).byteLength).toBe(10);
   });
 
   it('accepts privacy-safe analytics and rejects unknown routes', async () => {

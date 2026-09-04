@@ -42,6 +42,7 @@ const MIME = new Map([
   ['.jpeg', 'image/jpeg'],
   ['.js', 'text/javascript; charset=utf-8'],
   ['.json', 'application/json; charset=utf-8'],
+  ['.mp4', 'video/mp4'],
   ['.png', 'image/png'],
   ['.svg', 'image/svg+xml'],
   ['.wav', 'audio/wav'],
@@ -818,7 +819,8 @@ export function createAppServer({
         const origin = siteOrigin(req, env);
         const session = await startCheckout({ ...order, origin }, env);
         structuredLog(logger, 'info', 'checkout.session_created', {
-          requestId, sessionId: session.id, items: order.items.join(','), totalCents: order.totalCents,
+          requestId, sessionId: session.id, items: order.items.join(','), hostingPlan: order.hostingPlan,
+          totalCents: order.totalCents,
         });
         const handoffCookie = buildGeneratorHandoffCookie({
           sessionId: session.id,
@@ -851,7 +853,9 @@ export function createAppServer({
             requestId, sessionId: order.id, trigger: 'thank-you', reason: error?.message || 'unknown error',
           });
         });
-        return json(res, 200, { items: order.items, total: order.total, email: order.email });
+        return json(res, 200, {
+          items: order.items, hostingPlan: order.hostingPlan || '', total: order.total, email: order.email,
+        });
       } catch (error) {
         const status = error?.statusCode || 502;
         structuredLog(logger, 'warn', 'order.lookup_failed', { requestId, status, reason: error?.message || 'unknown error' });
@@ -875,9 +879,48 @@ export function createAppServer({
     const cache = contentType.startsWith('text/html') || contentType.startsWith('text/javascript')
       ? 'no-cache'
       : 'public, max-age=86400';
-    res.writeHead(200, { ...securityHeaders(contentType), 'Cache-Control': cache });
+    const fileSize = statSync(filePath).size;
+    const canStreamRanges = contentType.startsWith('video/') || contentType.startsWith('audio/');
+    const baseHeaders = {
+      ...securityHeaders(contentType),
+      'Cache-Control': cache,
+      'Content-Length': fileSize,
+      ...(canStreamRanges ? { 'Accept-Ranges': 'bytes' } : {}),
+    };
+
+    let status = 200;
+    let streamOptions;
+    if (canStreamRanges && req.headers.range) {
+      const match = /^bytes=(\d*)-(\d*)$/.exec(String(req.headers.range).trim());
+      let start;
+      let end;
+      if (match && (match[1] || match[2])) {
+        if (!match[1]) {
+          const suffixLength = Number(match[2]);
+          start = Math.max(0, fileSize - suffixLength);
+          end = fileSize - 1;
+        } else {
+          start = Number(match[1]);
+          end = match[2] ? Math.min(Number(match[2]), fileSize - 1) : fileSize - 1;
+        }
+      }
+      if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || start >= fileSize || end < start) {
+        res.writeHead(416, {
+          ...baseHeaders,
+          'Content-Length': 0,
+          'Content-Range': `bytes */${fileSize}`,
+        });
+        return res.end();
+      }
+      status = 206;
+      streamOptions = { start, end };
+      baseHeaders['Content-Length'] = end - start + 1;
+      baseHeaders['Content-Range'] = `bytes ${start}-${end}/${fileSize}`;
+    }
+
+    res.writeHead(status, baseHeaders);
     if (req.method === 'HEAD') return res.end();
-    const stream = createReadStream(filePath);
+    const stream = createReadStream(filePath, streamOptions);
     stream.on('error', error => {
       logger.error?.('[static] stream failed', { message: error.message });
       if (!res.headersSent) json(res, 500, { error: 'Unable to load the page.' });

@@ -9,6 +9,8 @@ function cleanRecord(order) {
     id: String(order.id),
     email: String(order.email || ''),
     items: Array.isArray(order.items) ? order.items.map(String) : [],
+    hostingPlan: String(order.hostingPlan || ''),
+    productTotalCents: Number(order.productTotalCents) || 0,
     amountCents: Number(order.amountCents) || 0,
     currency: String(order.currency || 'usd').toLowerCase(),
     paidAt: String(order.paidAt || new Date().toISOString()),

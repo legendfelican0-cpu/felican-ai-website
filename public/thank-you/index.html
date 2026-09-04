@@ -92,6 +92,11 @@ var NAMES = {
   'receptionist':'Voice AI',
   'pack':'AI Business Starter Pack'
 };
+var HOSTING = {
+  'base': { name:'Essentials', price:50 },
+  'growth': { name:'Growth', price:100 },
+  'scale': { name:'Scale', price:200 }
+};
 
 function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
@@ -110,10 +115,12 @@ if (sessionId) {
     .then(function(o){
       if (!o || !o.items) return;
       var box = document.getElementById('orderBox');
+      var hosting = HOSTING[o.hostingPlan];
       document.getElementById('orderLines').innerHTML =
         o.items.map(function(id){
           return '<div class="row"><span>' + esc(NAMES[id] || id) + '</span></div>';
-        }).join('') +
+        }).join('') + (hosting ? '<div class="row"><span>' + esc(hosting.name) + ' hosting</span><span>$' +
+          hosting.price + '/month</span></div>' : '') +
         '<div class="row"><b>Paid</b><b>$' + Number(o.total || 0).toLocaleString('en-US') + '</b></div>';
       box.hidden = false;
       if (o.email) document.getElementById('toEmail').textContent = ' at ' + o.email;

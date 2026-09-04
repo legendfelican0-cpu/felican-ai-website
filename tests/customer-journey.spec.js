@@ -80,15 +80,17 @@ test.describe('Customer journey', () => {
 
     await page.goto('/products/', { waitUntil: 'load' });
 
-    // The flagship leads and is flagged as such.
+    // The Starter Pack leads, with the demo in place of the old featured image.
     const flagship = page.locator('.product-card.is-featured');
     await expect(flagship).toHaveCount(1);
-    await expect(flagship.locator('h2')).toHaveText('Private AI');
-    await expect(flagship.locator('.product-flag')).toHaveText('Flagship product');
+    await expect(flagship.locator('h2')).toHaveText('AI Business Starter Pack');
+    await expect(flagship.locator('.product-flag')).toHaveText('Start here');
+    await expect(flagship.locator('.starter-preview video')).toBeVisible();
+    await expect(flagship.getByRole('link', { name: /See the Starter Pack/i })).toHaveAttribute('href', '/starter-pack/');
 
     // Every headline product shows artwork that loaded.
     const shots = page.locator('.product-card .product-shot img');
-    await expect(shots).toHaveCount(6);
+    await expect(shots).toHaveCount(7);
     expect(await shots.evaluateAll(imgs => imgs.every(i => i.complete && i.naturalWidth > 0))).toBe(true);
 
     // Withdrawn names must not appear.

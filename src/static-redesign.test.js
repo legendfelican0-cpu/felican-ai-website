@@ -205,7 +205,7 @@ describe('Claude Design static website export', () => {
   it('orders the headline products as the owner specified', () => {
     const products = read('public/products/index.html');
     const order = [
-      'Private AI', 'Felican AI Assistant', 'Felican IDP', 'CrossCheck AI',
+      'AI Business Starter Pack', 'Private AI', 'Felican AI Assistant', 'Felican IDP', 'CrossCheck AI',
       'World of Agents', 'Voice AI', 'Relay',
     ];
     const positions = order.map(name => products.indexOf(`name: '${name}'`));
