@@ -8,7 +8,7 @@ import { describe, expect, it } from 'vitest';
 // "felican.ai" and committed before checking. This pins the exact-match,
 // check-before-commit contract of scripts/npm-route.py against a real sqlite
 // file shaped like NPM's proxy_host table.
-const SCRIPT = new URL('./npm-route.py', import.meta.url).pathname;
+const SCRIPT = join(process.cwd(), 'scripts', 'npm-route.py'); // jsdom env: import.meta.url is not a file URL
 
 function seedDb() {
   const dir = mkdtempSync(join(tmpdir(), 'npm-route-'));
