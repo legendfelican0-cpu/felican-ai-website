@@ -244,6 +244,10 @@ export async function createCheckoutSession({
   form.set('success_url', `${origin}/thank-you/?session_id={CHECKOUT_SESSION_ID}`);
   form.set('cancel_url', `${origin}/checkout/`);
   form.set('metadata[items]', items.join(','));
+  // Which generator this purchase belongs to. Dev and prod share one Stripe
+  // sandbox and Stripe fans every event out to every endpoint, so the
+  // generator that is NOT named here ignores the session.
+  form.set('metadata[generator]', (env.GENERATOR_APP_URL || 'https://app.felican.dev').replace(/\/$/, ''));
   form.set('metadata[purpose]', COMBINED_CHECKOUT_PURPOSE);
   form.set('metadata[hosting_plan]', plan.id);
   form.set('metadata[terms_accepted]', 'true');

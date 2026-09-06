@@ -128,6 +128,26 @@ describe('createCheckoutSession', () => {
     expect(form.get('integration_identifier')).toMatch(/^felican_starter_pack_[a-z]{8}$/);
     expect([...form.keys()].some(key => key.includes('payment_method_types'))).toBe(false);
   });
+
+  it('stamps the session with the generator it belongs to', async () => {
+    // Dev and prod share one Stripe sandbox; the generator NOT named here
+    // must ignore the session, so the stamp has to be exact and unslashed.
+    const sessionForm = async env => {
+      const fetchMock = vi.fn(async url => {
+        if (String(url).includes('/prices?')) return new Response(JSON.stringify({ data: [{
+          id: 'price_hosting_base', active: true, currency: 'usd', unit_amount: 5_000,
+          recurring: { interval: 'month', interval_count: 1 },
+        }] }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+        return new Response(JSON.stringify({ id: 'cs_test_x', url: 'https://checkout.stripe.com/x' }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      });
+      vi.stubGlobal('fetch', fetchMock);
+      await createCheckoutSession({ items: ['assistant'], hostingPlan: 'base', email: 'b@example.com', origin: 'https://felican.ai' }, { STRIPE_SECRET_KEY: 'sk_test_secret', ...env });
+      const [, options] = fetchMock.mock.calls.find(([url]) => String(url).endsWith('/checkout/sessions'));
+      return new URLSearchParams(options.body);
+    };
+    expect((await sessionForm({ GENERATOR_APP_URL: 'https://app.felican.ai/' })).get('metadata[generator]')).toBe('https://app.felican.ai');
+    expect((await sessionForm({})).get('metadata[generator]')).toBe('https://app.felican.dev');
+  });
 });
 
 describe('Stripe webhooks', () => {

@@ -4,7 +4,9 @@ set -Eeuo pipefail
 readonly PROD_HOST="legend@178.156.205.104"
 readonly DEV_HOST="legend@ssh.felican.dev"
 readonly DEV_CONTAINER="felicanai"
-readonly SITE_CONTAINER="felicanai"
+# The container name is whatever the root route forwards to, read on the box
+# at deploy time (it was "felicanai-site" on prod while this said "felicanai";
+# the script then rebuilt an unrouted container and swapped nothing).
 readonly PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 readonly SOURCE_COMMIT="$(git -C "${PROJECT_ROOT}" rev-parse HEAD)"
 readonly RELEASE_ID="$(date -u +%Y%m%dT%H%M%SZ)"
@@ -33,7 +35,7 @@ ssh -o BatchMode=yes -o ConnectTimeout=15 "${PROD_HOST}" \
   "sudo -n install -d -m 0755 '${RELEASE_DIR}/scripts'"
 rsync -az --rsync-path="sudo -n rsync" \
   -e "ssh -o BatchMode=yes -o ConnectTimeout=15" \
-  "${PROJECT_ROOT}/scripts/provision-felican-vapi.py" \
+  "${PROJECT_ROOT}/scripts/provision-felican-vapi.py" "${PROJECT_ROOT}/scripts/npm-route.py" \
   "${PROD_HOST}:${RELEASE_DIR}/scripts/"
 
 log "promoting verified DEV image for commit ${SOURCE_COMMIT}"
@@ -41,9 +43,11 @@ ssh -o BatchMode=yes -o ConnectTimeout=15 "${DEV_HOST}" "sudo -n docker save '${
   | ssh -o BatchMode=yes -o ConnectTimeout=15 "${PROD_HOST}" "sudo -n docker load >/dev/null"
 
 ssh -o BatchMode=yes -o ConnectTimeout=15 "${PROD_HOST}" \
-  "sudo -n bash -s -- '${dev_image}' '${RELEASE_IMAGE}' '${CURRENT_IMAGE}' '${SITE_CONTAINER}' '${REMOTE_ROOT}' '${SOURCE_COMMIT}' '${RELEASE_ID}' '${RELEASE_DIR}' '${PROD_VAPI_PRIVATE_ENV}' '${PROD_VAPI_ASSISTANT_NAME}'" <<'REMOTE'
+  "sudo -n bash -s -- '${dev_image}' '${RELEASE_IMAGE}' '${CURRENT_IMAGE}' '${REMOTE_ROOT}' '${SOURCE_COMMIT}' '${RELEASE_ID}' '${RELEASE_DIR}' '${PROD_VAPI_PRIVATE_ENV}' '${PROD_VAPI_ASSISTANT_NAME}'" <<'REMOTE'
 set -Eeuo pipefail
-dev_image="$1"; release_image="$2"; current_image="$3"; site_container="$4"; remote_root="$5"; source_commit="$6"; release_id="$7"; release_dir="$8"; vapi_private_env="$9"; vapi_assistant_name="${10}"
+dev_image="$1"; release_image="$2"; current_image="$3"; remote_root="$4"; source_commit="$5"; release_id="$6"; release_dir="$7"; vapi_private_env="$8"; vapi_assistant_name="$9"
+site_container="$(python3 "${release_dir}/scripts/npm-route.py" current)"
+[[ -n "${site_container}" ]] || { echo "could not read the felican.ai route target" >&2; exit 1; }
 state_dir="${remote_root}/state"
 config_dir="${remote_root}/config"
 orders_dir="${remote_root}/orders"
@@ -140,35 +144,17 @@ for attempt in 1 2 3 4 5 6; do
 done
 
 npm_db="/opt/nginx-proxy-manager/data/database.sqlite"
-proxy_id="$(python3 - <<'PY'
-import sqlite3
-con=sqlite3.connect('file:/opt/nginx-proxy-manager/data/database.sqlite?mode=ro', uri=True)
-row=con.execute("select id from proxy_host where is_deleted=0 and domain_names like '%felican.ai%'").fetchone()
-if not row: raise SystemExit('felican.ai proxy host not found')
-print(row[0])
-PY
-)"
+proxy_id="$(python3 "${release_dir}/scripts/npm-route.py" id)"
 proxy_conf="/opt/nginx-proxy-manager/data/nginx/proxy_host/${proxy_id}.conf"
-previous_route="$(python3 - <<'PY'
-import sqlite3
-con=sqlite3.connect('file:/opt/nginx-proxy-manager/data/database.sqlite?mode=ro', uri=True)
-row=con.execute("select forward_host from proxy_host where is_deleted=0 and domain_names like '%felican.ai%'").fetchone()
-print(row[0])
-PY
-)"
+previous_route="$(python3 "${release_dir}/scripts/npm-route.py" current)"
 printf '%s\n' "${previous_route}" > "${state_dir}/previous_route"
 
+# Recreating under the route's own name means nginx resolves it to the new
+# container by itself; the swap below only runs if the names ever differ.
 if [[ "${previous_route}" != "${site_container}" ]]; then
   cp -p "${npm_db}" "${state_dir}/npm-database-${release_id}.sqlite"
   cp -p "${proxy_conf}" "${state_dir}/proxy-${proxy_id}-${release_id}.conf"
-  python3 - "${site_container}" <<'PY'
-import sqlite3, sys
-target=sys.argv[1]
-con=sqlite3.connect('/opt/nginx-proxy-manager/data/database.sqlite')
-with con:
-    changed=con.execute("update proxy_host set forward_host=?, modified_on=datetime('now') where is_deleted=0 and domain_names like '%felican.ai%'", (target,)).rowcount
-if changed != 1: raise SystemExit(f'unexpected proxy rows changed: {changed}')
-PY
+  python3 "${release_dir}/scripts/npm-route.py" set "${site_container}" >/dev/null
   # Nginx Proxy Manager may emit additional `set $server` lines for custom
   # path applications. Change only the first/main host target.
   sed -i -E '0,/(set \$server[[:space:]]+)"[^"]+";/s//\1"'"${site_container}"'";/' "${proxy_conf}"
