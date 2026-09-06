@@ -51,7 +51,7 @@ jobs:
       - name: Deploy to DEV (felican.dev)
         env:
           FELICAN_CANONICAL_DEPLOY: "1"
-        run: ./scripts/deploy-dev.sh
+        run: bash scripts/deploy-dev.sh
       - name: Verify
         run: curl -fsS --retry 6 --retry-delay 5 -o /dev/null -w 'felican.dev %{http_code}\n' https://felican.dev/api/ready
 
@@ -79,7 +79,7 @@ jobs:
         id: deploy
         env:
           FELICAN_CANONICAL_DEPLOY: "1"
-        run: ./scripts/deploy-prod.sh
+        run: bash scripts/deploy-prod.sh
       - name: Verify PROD
         id: verify
         run: |
@@ -89,4 +89,4 @@ jobs:
         if: failure()
         env:
           FELICAN_CANONICAL_DEPLOY: "1"
-        run: ./scripts/rollback-prod.sh && curl -fsS --retry 6 --retry-delay 5 https://felican.ai/api/ready
+        run: bash scripts/rollback-prod.sh && curl -fsS --retry 6 --retry-delay 5 https://felican.ai/api/ready
