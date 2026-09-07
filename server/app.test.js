@@ -227,7 +227,7 @@ describe('Starter Pack Stripe webhook', () => {
     } },
   };
 
-  it('verifies, stores, and welcomes a paid order only once', async () => {
+  it('verifies and stores a paid order without duplicating the generator setup email', async () => {
     const sent = [];
     const store = memoryOrderStore();
     const base = await start(undefined, {
@@ -241,10 +241,9 @@ describe('Starter Pack Stripe webhook', () => {
     });
     expect((await request()).status).toBe(200);
     expect((await request()).status).toBe(200);
-    expect(sent).toHaveLength(1);
-    expect(sent[0]).toMatchObject({ id: 'cs_test_1234567890', email: 'buyer@example.com', setupUrl: 'https://app.felican.dev/claim?order=cs_test_1234567890' });
+    expect(sent).toHaveLength(0);
     await expect(store.get('cs_test_1234567890')).resolves.toMatchObject({
-      amountCents: 255_000, hostingPlan: 'base', resendId: 'email_123',
+      amountCents: 255_000, hostingPlan: 'base',
     });
   });
 

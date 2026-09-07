@@ -499,7 +499,7 @@ export function createAppServer({
   const voiceMinute = createWindowLimiter(60, 60_000);
   const checkoutHourly = createWindowLimiter(10, 3_600_000);
   const orderMinute = createWindowLimiter(20, 60_000);
-  const welcomeInFlight = new Map();
+  const fulfillmentInFlight = new Map();
   const globalDailyLimit = Math.max(100, Number.parseInt(env.AI_DAILY_LIMIT || '2500', 10) || 2500);
   let globalDailyUsed = 0;
   let globalDailyResetAt = Date.now() + 86_400_000;
@@ -540,21 +540,16 @@ export function createAppServer({
   };
 
   const fulfillPaidOrder = (order, req, requestId, trigger) => {
-    if (welcomeInFlight.has(order.id)) return welcomeInFlight.get(order.id);
+    if (fulfillmentInFlight.has(order.id)) return fulfillmentInFlight.get(order.id);
     const work = (async () => {
       const saved = await paidOrders.upsertPaid(order);
-      if (!order.email || saved.welcomeSentAt) return saved;
-
-      // Send buyers to the generator app, which verifies the order and emails
-      // their personal setup link. Overridable so dev/prod can diverge.
-      const generatorBase = (env.GENERATOR_APP_URL || 'https://app.felican.dev').replace(/\/$/, '');
-      const setupUrl = `${generatorBase}/claim?order=${encodeURIComponent(order.id)}`;
-      const result = await sendWelcome({ ...order, setupUrl }, env);
-      const completed = await paidOrders.markWelcomeSent(order.id, { resendId: result?.id || null });
-      structuredLog(logger, 'info', 'welcome.sent', { requestId, sessionId: order.id, trigger });
-      return completed;
-    })().finally(() => welcomeInFlight.delete(order.id));
-    welcomeInFlight.set(order.id, work);
+      // The generator owns buyer onboarding and sends the single setup email.
+      // Keeping email delivery in one service prevents two near-identical
+      // messages when both Stripe webhook endpoints process the same purchase.
+      structuredLog(logger, 'info', 'order.recorded', { requestId, sessionId: order.id, trigger });
+      return saved;
+    })().finally(() => fulfillmentInFlight.delete(order.id));
+    fulfillmentInFlight.set(order.id, work);
     return work;
   };
 

@@ -198,7 +198,7 @@ html,body{height:auto!important;min-height:100%}#dc-root,#dc-root>.sc-host{heigh
 
 <header class="hero">
   <video class="hero-video" id="heroDemoBg" autoplay muted loop playsinline preload="metadata" poster="/starter-pack/images/starter-pack-demo-poster.jpg" aria-hidden="true" tabindex="-1">
-    <source src="/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4" type="video/mp4">
+    <source src="/starter-pack/media/felican-ai-starter-pack-demo-web.mp4" type="video/mp4">
   </video>
   <div class="hero-in"><div class="wrap">
     <span class="flag">AI Business Starter Pack</span>
@@ -216,8 +216,8 @@ html,body{height:auto!important;min-height:100%}#dc-root,#dc-root>.sc-host{heigh
   <div class="demo-dialog" role="dialog" aria-modal="true" aria-label="AI Business Starter Pack demonstration">
     <button class="demo-close" id="closeDemo" type="button" aria-label="Close video">&times;</button>
     <video id="fullDemo" controls playsinline preload="metadata" poster="/starter-pack/images/starter-pack-demo-poster.jpg">
-      <source src="/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4" type="video/mp4">
-      Your browser does not support embedded video. <a href="/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4">Download the demo video.</a>
+      <source src="/starter-pack/media/felican-ai-starter-pack-demo-web.mp4" type="video/mp4">
+      Your browser does not support embedded video. <a href="/starter-pack/media/felican-ai-starter-pack-demo-web.mp4">Download the demo video.</a>
     </video>
   </div>
 </div>
@@ -460,6 +460,19 @@ function renderCards(){
 
 document.getElementById('bundleHosting').innerHTML = renderHostingPlans(true);
 
+function syncAssistantOffset(cart, bar){
+  var assistantShell = document.querySelector('.fa-shell');
+  if (!assistantShell) return;
+  var hasCart = cart.length > 0;
+  var credentialHeight = window.innerWidth <= 640 ? 78 : 76;
+  var bottom = hasCart ? credentialHeight + bar.offsetHeight + 18 : 0;
+  assistantShell.style.bottom = hasCart ? bottom + 'px' : '';
+  var assistantPanel = assistantShell.querySelector('.fa-panel');
+  if (assistantPanel) {
+    assistantPanel.style.height = hasCart ? 'min(650px, calc(100vh - ' + (bottom + 24) + 'px))' : '';
+  }
+}
+
 function paint(){
   var cart = read();
   var bar = document.getElementById('cartbar');
@@ -488,11 +501,7 @@ function paint(){
     document.getElementById('swap').onclick = function(){ write(['pack']); paint(); };
   } else { hint.classList.remove('show'); }
 
-  var assistantShell = document.querySelector('.fa-shell');
-  if (assistantShell) {
-    var credentialHeight = window.innerWidth <= 640 ? 78 : 76;
-    assistantShell.style.bottom = cart.length ? (credentialHeight + bar.offsetHeight + 18) + 'px' : '';
-  }
+  syncAssistantOffset(cart, bar);
 }
 
 document.addEventListener('click', function(e){
@@ -510,6 +519,15 @@ document.addEventListener('click', function(e){
 });
 
 renderCards(); paintPlans(); paint();
+var assistantMount = document.querySelector('dc-import[name="ChatAssistant"]') || document.body;
+new MutationObserver(function(){
+  syncAssistantOffset(read(), document.getElementById('cartbar'));
+}).observe(assistantMount, { childList:true, subtree:true });
+if ('ResizeObserver' in window) {
+  new ResizeObserver(function(){
+    syncAssistantOffset(read(), document.getElementById('cartbar'));
+  }).observe(document.getElementById('cartbar'));
+}
 window.addEventListener('resize', paint);
 })();
 </script>

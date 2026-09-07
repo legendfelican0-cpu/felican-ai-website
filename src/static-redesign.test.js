@@ -256,6 +256,25 @@ describe('Claude Design static website export', () => {
     expect(thankYou).not.toContain('contact/?setup=starter-pack');
   });
 
+  it('keeps checkout and the assistant separate even when the assistant mounts late', () => {
+    const starterPack = read('public/starter-pack/index.html');
+    const checkout = read('public/checkout/index.html');
+    expect(starterPack).toContain('function syncAssistantOffset(cart, bar)');
+    expect(starterPack).toContain('new MutationObserver(function()');
+    expect(starterPack).toContain("assistantPanel.style.height = hasCart");
+    expect(checkout).toContain('Your cart is empty.');
+    expect(checkout).toContain('See the Starter Pack');
+  });
+
+  it('serves the optimized Starter Pack demo instead of the oversized source file', () => {
+    const starterPack = read('public/starter-pack/index.html');
+    expect(starterPack).toContain('/starter-pack/media/felican-ai-starter-pack-demo-web.mp4');
+    expect(starterPack).not.toContain('/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4');
+    const optimized = path.join(projectRoot, 'public/starter-pack/media/felican-ai-starter-pack-demo-web.mp4');
+    expect(fs.existsSync(optimized)).toBe(true);
+    expect(fs.statSync(optimized).size).toBeLessThan(5 * 1024 * 1024);
+  });
+
   it('excludes the entries the owner asked to keep off the site', () => {
     const products = read('public/products/index.html');
     const contact = read('public/contact/index.html');
