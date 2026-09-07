@@ -23,7 +23,7 @@
 body{background:var(--bg)}
 html,body{height:auto!important;min-height:100%}#dc-root,#dc-root>.sc-host{height:auto!important;min-height:100%}
 .wrap{width:100%;max-width:1280px;padding-left:24px;padding-right:24px}
-.hero{position:relative;min-height:min(640px,calc(100vh - 74px));display:flex;align-items:flex-end;isolation:isolate;overflow:hidden;background:#080E13}
+.hero{position:relative;min-height:min(560px,calc(100vh - 74px));display:flex;align-items:flex-end;isolation:isolate;overflow:hidden;background:#080E13}
 .hero-video{position:absolute;z-index:-3;inset:-5%;width:110%;height:110%;object-fit:cover;object-position:center 42%;filter:saturate(.92) contrast(1.04);transform:translateX(5%)}
 .hero::before{content:'';position:absolute;z-index:-2;inset:0;background:linear-gradient(90deg,rgba(5,9,12,.97) 0%,rgba(5,9,12,.84) 42%,rgba(5,9,12,.38) 72%,rgba(5,9,12,.56) 100%)}
 .hero::after{content:'';position:absolute;z-index:-1;inset:0;background:linear-gradient(0deg,#080E13 0%,rgba(8,14,19,.16) 38%,rgba(8,14,19,.32) 100%)}
@@ -34,7 +34,7 @@ html,body{height:auto!important;min-height:100%}#dc-root,#dc-root>.sc-host{heigh
 .hero-cta{margin-top:28px;display:flex;flex-wrap:wrap;gap:12px}
 .hero-proof{margin:25px 0 0;display:flex;flex-wrap:wrap;gap:8px 24px;color:#C2D2D4;font-size:13px;font-weight:600}
 .hero-proof span::before{content:'\2713';color:var(--brand);font-weight:800;margin-right:8px}
-@media(max-width:700px){.hero{min-height:600px}.hero-video{inset:-4%;width:108%;height:108%;object-position:61% center;transform:translateX(2%)}.hero::before{background:linear-gradient(90deg,rgba(5,9,12,.94),rgba(5,9,12,.58))}.hero h1{font-size:clamp(39px,12vw,58px)}}
+@media(max-width:700px){.hero{min-height:560px}.hero-video{inset:-4%;width:108%;height:108%;object-position:61% center;transform:translateX(2%)}.hero::before{background:linear-gradient(90deg,rgba(5,9,12,.94),rgba(5,9,12,.58))}.hero h1{font-size:clamp(39px,12vw,58px)}}
 .trust{margin-top:28px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2px;background:var(--line);border:1px solid var(--line)}
 .trust>span{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;background:rgba(16,30,36,.96);padding:17px 18px;font-size:14px;line-height:1.45;color:var(--mute)}
 .trust b{color:var(--brand-soft);font-family:Sora,sans-serif;font-size:12px;letter-spacing:.1em}
