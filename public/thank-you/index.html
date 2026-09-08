@@ -85,7 +85,10 @@ h1 em{font-style:normal;color:var(--brand)}
 <script>
 /* The self-serve generator verifies the order and the paying browser's
    short-lived handoff cookie. Email remains a backup way back in. */
-var GENERATOR_URL = 'https://app.felican.dev/claim';
+/* felican.ai orders belong to app.felican.ai, felican.dev orders to app.felican.dev:
+   each generator fulfils only the orders addressed to it, so sending a paid
+   production customer to the dev generator shows them "not ours". */
+var GENERATOR_URL = (/(^|\.)felican\.ai$/.test(location.hostname) ? 'https://app.felican.ai' : 'https://app.felican.dev') + '/claim';
 
 var NAMES = {
   'private-ai':'Private AI',

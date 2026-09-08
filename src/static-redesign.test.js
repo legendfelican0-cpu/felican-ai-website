@@ -251,7 +251,11 @@ describe('Claude Design static website export', () => {
 
   it('hands a paid order from the thank-you page to the generator', () => {
     const thankYou = read('public/thank-you/index.html');
-    expect(thankYou).toContain("var GENERATOR_URL = 'https://app.felican.dev/claim'");
+    // The generator is chosen by the site the customer bought on: production
+    // customers must never be handed to the dev generator (it rejects their
+    // order as "not ours").
+    expect(thankYou).toContain("/(^|\\.)felican\\.ai$/.test(location.hostname) ? 'https://app.felican.ai' : 'https://app.felican.dev'");
+    expect(thankYou).not.toContain("var GENERATOR_URL = 'https://app.felican.dev/claim'");
     expect(thankYou).toContain("'order=' + encodeURIComponent(sessionId || '')");
     expect(thankYou).not.toContain('contact/?setup=starter-pack');
   });
