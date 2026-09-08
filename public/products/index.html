@@ -150,7 +150,7 @@
           <sc-if value="{{ p.hasVideo }}" hint-placeholder-val="{{ false }}">
             <div class="starter-preview">
               <video autoplay muted loop playsinline preload="metadata" poster="/starter-pack/images/starter-pack-demo-poster.jpg" aria-label="AI Business Starter Pack demonstration preview">
-                <source src="/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4" type="video/mp4">
+                <source src="/starter-pack/media/felican-ai-starter-pack-demo-web.mp4" type="video/mp4">
               </video>
               <span class="starter-preview-copy"><span>Watch one business generate all three products</span><span class="starter-preview-play" aria-hidden="true">&#9654;</span></span>
             </div>
@@ -299,9 +299,9 @@ class Component extends DCLogic {
   componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._fallback) clearTimeout(this._fallback); }
   renderVals() {
     const p = [
-      { id: 'starter-pack', num: '01', name: 'AI Business Starter Pack', tag: 'SELF-SERVE BUSINESS AI', accent: '#2FB894', featured: true, video: '/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4',
+      { id: 'starter-pack', num: '01', name: 'AI Business Starter Pack', tag: 'SELF-SERVE BUSINESS AI', accent: '#2FB894', featured: true, video: '/starter-pack/media/felican-ai-starter-pack-demo-web.mp4',
         desc: 'Private AI for you and your staff, a website assistant for every visitor, and Voice AI for every caller — generated from one shared source of business knowledge.',
-        points: ['One setup creates all three products', 'Built for businesses of every kind', 'Choose the monthly capacity that fits', 'See the complete buying and generation process in 45 seconds'] },
+        points: ['One setup creates all three products', 'Built for businesses of every kind', 'Choose the monthly capacity that fits', 'See the complete buying and generation process in under 90 seconds'] },
       { id: 'private-ai', num: '02', name: 'Private AI', tag: 'SECURE ENTERPRISE AI', accent: '#2FB894', image: '/product-private-ai.png',
         desc: 'Our flagship product: enterprise-grade private AI with zero data exposure, deployed securely inside your own network. The power of AI without sacrificing privacy.',
         points: ['Deployed inside your private network \u2014 nothing leaves the business', 'Zero data exposure: no customer, client, or employee data sent to a public model', 'Self-hosted models under your own access controls, with audit trails and retention rules you set', 'Built on your documents, policies, and the way your business already works'] },

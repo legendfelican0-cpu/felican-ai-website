@@ -263,11 +263,11 @@ describe('Claude Design static website export', () => {
     expect(starterPack).toContain('function syncAssistantOffset(cart, bar)');
     expect(starterPack).toContain('new MutationObserver(function()');
     expect(starterPack).toContain("side: hasCart ? 'left' : 'right'");
-    expect(starterPack).toContain("assistantPanel.style.height = hasCart");
+    expect(starterPack).toContain("assistantShell.style.setProperty('--fa-panel-height'");
     expect(starterPack).toContain("var topSafe = 12");
-    expect(starterPack).toContain("window.innerHeight - bottom - launcherHeight - panelGap - topSafe");
-    expect(starterPack).toContain("Math.min(650, Math.max(0, availablePanelHeight))");
+    expect(starterPack).toContain("window.visualViewport.addEventListener('resize', paint)");
     expect(assistant).toContain('class="fa-move"');
+    expect(assistant).toContain('height:var(--fa-panel-height');
     expect(assistant).toContain("sideClass: this.state.side === 'left' ? 'fa-left' : 'fa-right'");
     expect(assistant).toContain("window.sessionStorage.setItem('felican_assistant_side_v1', side)");
     expect(checkout).toContain('Your cart is empty.');
@@ -276,8 +276,13 @@ describe('Claude Design static website export', () => {
 
   it('serves the optimized Starter Pack demo instead of the oversized source file', () => {
     const starterPack = read('public/starter-pack/index.html');
+    const products = read('public/products/index.html');
     expect(starterPack).toContain('/starter-pack/media/felican-ai-starter-pack-demo-web.mp4');
     expect(starterPack).not.toContain('/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4');
+    expect(products).toContain('/starter-pack/media/felican-ai-starter-pack-demo-web.mp4');
+    expect(products).not.toContain('/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4');
+    expect(products).toContain('generation process in under 90 seconds');
+    expect(products).not.toContain('generation process in 45 seconds');
     const optimized = path.join(projectRoot, 'public/starter-pack/media/felican-ai-starter-pack-demo-web.mp4');
     expect(fs.existsSync(optimized)).toBe(true);
     expect(fs.statSync(optimized).size).toBeLessThan(5 * 1024 * 1024);

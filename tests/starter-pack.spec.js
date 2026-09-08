@@ -96,8 +96,10 @@ test.describe('Starter Pack purchase handoff', () => {
   });
 
   test('moves the assistant away from the cart checkout action and lets the buyer redock it', async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('felican_cart_v1', JSON.stringify(['pack']));
+    });
     await page.goto('/starter-pack/');
-    await page.locator('[data-add="pack"]').click();
 
     const shell = page.locator('.fa-shell');
     const launcher = page.locator('[data-assistant-launcher]');
@@ -114,6 +116,9 @@ test.describe('Starter Pack purchase handoff', () => {
     expect(overlaps).toBe(false);
 
     await launcher.click();
+    const panelBox = await page.locator('.fa-panel').boundingBox();
+    expect(panelBox).not.toBeNull();
+    expect(panelBox.y).toBeGreaterThanOrEqual(11);
     const moveRight = page.getByRole('button', { name: 'Move assistant to the right' });
     await expect(moveRight).toBeVisible();
     await moveRight.click();

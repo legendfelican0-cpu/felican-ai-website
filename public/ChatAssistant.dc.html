@@ -17,7 +17,7 @@
 .fa-shell.fa-left { left:28px;right:auto;align-items:flex-start }
 .fa-shell.fa-right { left:auto;right:28px;align-items:flex-end }
 .fa-shell > * { pointer-events:auto }
-.fa-panel { position:relative;width:min(430px,calc(100vw - 56px));height:min(650px,calc(100vh - 124px));background:#0C1419;border:1px solid rgba(47,184,148,.3);border-radius:22px;box-shadow:0 28px 80px rgba(5,9,12,.55),0 4px 16px rgba(47,184,148,.12);display:flex;flex-direction:column;overflow:hidden;animation:fa-in .24s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom right }
+.fa-panel { position:relative;width:min(430px,calc(100vw - 56px));height:var(--fa-panel-height,min(650px,calc(100vh - 124px)));background:#0C1419;border:1px solid rgba(47,184,148,.3);border-radius:22px;box-shadow:0 28px 80px rgba(5,9,12,.55),0 4px 16px rgba(47,184,148,.12);display:flex;flex-direction:column;overflow:hidden;animation:fa-in .24s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom right }
 .fa-shell.fa-left .fa-panel { transform-origin:bottom left }
 .fa-panel::before { content:'';position:absolute;z-index:2;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#2FB894,#8FE0C8,#2FB894) }
 .fa-head { background:linear-gradient(135deg,#080E13 0%,#12281F 100%);padding:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0 }
@@ -72,7 +72,7 @@
   .fa-shell { right:10px;bottom:88px;max-width:calc(100vw - 20px) }
   .fa-shell.fa-left { left:10px;right:auto }
   .fa-shell.fa-right { left:auto;right:10px }
-  .fa-panel { width:calc(100vw - 28px);height:min(600px,calc(100vh - 104px));border-radius:19px }
+  .fa-panel { width:calc(100vw - 28px);height:var(--fa-panel-height,min(600px,calc(100vh - 104px)));border-radius:19px }
   .fa-launcher { min-height:58px;padding:5px 13px 5px 6px }
   .fa-launch-portrait { width:46px;height:46px;flex-basis:46px }
   .fa-launch-mark { width:29px;height:29px }
