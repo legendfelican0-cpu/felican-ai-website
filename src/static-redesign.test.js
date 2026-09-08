@@ -262,6 +262,9 @@ describe('Claude Design static website export', () => {
     expect(starterPack).toContain('function syncAssistantOffset(cart, bar)');
     expect(starterPack).toContain('new MutationObserver(function()');
     expect(starterPack).toContain("assistantPanel.style.height = hasCart");
+    expect(starterPack).toContain("var topSafe = 12");
+    expect(starterPack).toContain("window.innerHeight - bottom - launcherHeight - panelGap - topSafe");
+    expect(starterPack).toContain("Math.min(650, Math.max(0, availablePanelHeight))");
     expect(checkout).toContain('Your cart is empty.');
     expect(checkout).toContain('See the Starter Pack');
   });

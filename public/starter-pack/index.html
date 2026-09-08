@@ -469,7 +469,12 @@ function syncAssistantOffset(cart, bar){
   assistantShell.style.bottom = hasCart ? bottom + 'px' : '';
   var assistantPanel = assistantShell.querySelector('.fa-panel');
   if (assistantPanel) {
-    assistantPanel.style.height = hasCart ? 'min(650px, calc(100vh - ' + (bottom + 24) + 'px))' : '';
+    var assistantLauncher = assistantShell.querySelector('.fa-launcher');
+    var launcherHeight = assistantLauncher ? assistantLauncher.offsetHeight : (window.innerWidth <= 640 ? 58 : 70);
+    var panelGap = 14;
+    var topSafe = 12;
+    var availablePanelHeight = window.innerHeight - bottom - launcherHeight - panelGap - topSafe;
+    assistantPanel.style.height = hasCart ? Math.min(650, Math.max(0, availablePanelHeight)) + 'px' : '';
   }
 }
 
