@@ -12,7 +12,7 @@ test.describe('Starter Pack purchase handoff', () => {
     await expect(background).toHaveAttribute('poster', '/starter-pack/images/starter-pack-demo-poster.jpg');
     await expect(background.locator('source')).toHaveAttribute(
       'src',
-      '/starter-pack/media/felican-ai-starter-pack-demo-v2.mp4',
+      '/starter-pack/media/felican-ai-starter-pack-demo-web.mp4',
     );
 
     const order = await page.locator('header.hero, section.products-sec').evaluateAll(
@@ -93,6 +93,32 @@ test.describe('Starter Pack purchase handoff', () => {
     await page.locator('.hosting-option[data-plan="scale"]').click();
     await expect(page.locator('.hosting-option[data-plan="scale"]')).toHaveAttribute('aria-pressed', 'true');
     await expect.poll(() => page.evaluate(() => localStorage.getItem('felican_hosting_plan_v1'))).toBe('scale');
+  });
+
+  test('moves the assistant away from the cart checkout action and lets the buyer redock it', async ({ page }) => {
+    await page.goto('/starter-pack/');
+    await page.locator('[data-add="pack"]').click();
+
+    const shell = page.locator('.fa-shell');
+    const launcher = page.locator('[data-assistant-launcher]');
+    const checkout = page.locator('#cartbar a[href="/checkout/"]');
+    await expect(shell).toHaveClass(/fa-left/);
+
+    const boxes = await Promise.all([launcher.boundingBox(), checkout.boundingBox()]);
+    expect(boxes.every(Boolean)).toBe(true);
+    const [launcherBox, checkoutBox] = boxes;
+    const overlaps = launcherBox.x < checkoutBox.x + checkoutBox.width
+      && launcherBox.x + launcherBox.width > checkoutBox.x
+      && launcherBox.y < checkoutBox.y + checkoutBox.height
+      && launcherBox.y + launcherBox.height > checkoutBox.y;
+    expect(overlaps).toBe(false);
+
+    await launcher.click();
+    const moveRight = page.getByRole('button', { name: 'Move assistant to the right' });
+    await expect(moveRight).toBeVisible();
+    await moveRight.click();
+    await expect(shell).toHaveClass(/fa-right/);
+    await expect(page.getByRole('button', { name: 'Move assistant to the left' })).toBeVisible();
   });
 
   test('checkout sends identifiers, email, and consent without client-owned prices', async ({ page }) => {

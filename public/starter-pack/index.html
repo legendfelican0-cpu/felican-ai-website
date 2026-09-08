@@ -464,6 +464,9 @@ function syncAssistantOffset(cart, bar){
   var assistantShell = document.querySelector('.fa-shell');
   if (!assistantShell) return;
   var hasCart = cart.length > 0;
+  window.dispatchEvent(new CustomEvent('felican:assistant-side-request', {
+    detail: { side: hasCart ? 'left' : 'right' }
+  }));
   var credentialHeight = window.innerWidth <= 640 ? 78 : 76;
   var bottom = hasCart ? credentialHeight + bar.offsetHeight + 18 : 0;
   assistantShell.style.bottom = hasCart ? bottom + 'px' : '';

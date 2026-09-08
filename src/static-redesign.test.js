@@ -259,12 +259,17 @@ describe('Claude Design static website export', () => {
   it('keeps checkout and the assistant separate even when the assistant mounts late', () => {
     const starterPack = read('public/starter-pack/index.html');
     const checkout = read('public/checkout/index.html');
+    const assistant = read('public/ChatAssistant.dc.html');
     expect(starterPack).toContain('function syncAssistantOffset(cart, bar)');
     expect(starterPack).toContain('new MutationObserver(function()');
+    expect(starterPack).toContain("side: hasCart ? 'left' : 'right'");
     expect(starterPack).toContain("assistantPanel.style.height = hasCart");
     expect(starterPack).toContain("var topSafe = 12");
     expect(starterPack).toContain("window.innerHeight - bottom - launcherHeight - panelGap - topSafe");
     expect(starterPack).toContain("Math.min(650, Math.max(0, availablePanelHeight))");
+    expect(assistant).toContain('class="fa-move"');
+    expect(assistant).toContain("sideClass: this.state.side === 'left' ? 'fa-left' : 'fa-right'");
+    expect(assistant).toContain("window.sessionStorage.setItem('felican_assistant_side_v1', side)");
     expect(checkout).toContain('Your cart is empty.');
     expect(checkout).toContain('See the Starter Pack');
   });

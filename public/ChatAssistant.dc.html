@@ -14,11 +14,18 @@
 @keyframes fa-dot { 0%,80%,100% { opacity:.25 } 40% { opacity:1 } }
 @keyframes fa-pulse { 0%,100% { box-shadow:0 0 0 0 rgba(47,184,148,.42) } 50% { box-shadow:0 0 0 7px rgba(47,184,148,0) } }
 .fa-shell { position:fixed;right:28px;bottom:94px;z-index:1000;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;align-items:flex-end;gap:14px;max-width:calc(100vw - 56px);pointer-events:none }
+.fa-shell.fa-left { left:28px;right:auto;align-items:flex-start }
+.fa-shell.fa-right { left:auto;right:28px;align-items:flex-end }
 .fa-shell > * { pointer-events:auto }
 .fa-panel { position:relative;width:min(430px,calc(100vw - 56px));height:min(650px,calc(100vh - 124px));background:#0C1419;border:1px solid rgba(47,184,148,.3);border-radius:22px;box-shadow:0 28px 80px rgba(5,9,12,.55),0 4px 16px rgba(47,184,148,.12);display:flex;flex-direction:column;overflow:hidden;animation:fa-in .24s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom right }
+.fa-shell.fa-left .fa-panel { transform-origin:bottom left }
 .fa-panel::before { content:'';position:absolute;z-index:2;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#2FB894,#8FE0C8,#2FB894) }
 .fa-head { background:linear-gradient(135deg,#080E13 0%,#12281F 100%);padding:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0 }
 .fa-head-mark { width:42px;height:42px;padding:8px;border-radius:13px;background:rgba(47,184,148,.16);border:1px solid rgba(143,224,200,.26);box-shadow:inset 0 1px 0 rgba(255,255,255,.08) }
+.fa-head-actions { display:flex;align-items:center;gap:8px;flex-shrink:0 }
+.fa-move { background:rgba(255,255,255,.06);border:1px solid rgba(238,244,244,.28);color:#EEF4F4;width:36px;height:36px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;flex-shrink:0;transition:background .18s ease,transform .18s ease }
+.fa-move:hover { background:rgba(47,184,148,.22);color:#FFFFFF;transform:translateX(-2px) }
+.fa-shell.fa-left .fa-move:hover { transform:translateX(2px) }
 .fa-close { background:rgba(255,255,255,.06);border:1px solid rgba(238,244,244,.28);color:#EEF4F4;width:36px;height:36px;border-radius:50%;font-size:20px;line-height:1;cursor:pointer;flex-shrink:0;transition:background .18s ease,transform .18s ease }
 .fa-close:hover { background:rgba(47,184,148,.22);color:#FFFFFF;transform:rotate(4deg) }
 .fa-messages { flex:1;overflow-y:auto;padding:20px;background:linear-gradient(180deg,#080E13 0%,#0C1419 100%);display:flex;flex-direction:column;gap:14px }
@@ -63,6 +70,8 @@
 .fa-cred-logos { display:grid;grid-template-columns:repeat(5,72px);align-items:center;justify-content:center;justify-items:center;gap:clamp(9px,1.2vw,16px);min-width:0 }.fa-cred-logo { width:72px;height:44px;display:grid;place-items:center;overflow:hidden }.fa-cred-logo img { display:block;max-width:64px;max-height:32px;width:auto;height:auto;object-fit:contain }.fa-cred-logo.aws img { max-width:58px;max-height:30px }.fa-cred-logo.azure img { max-width:30px;max-height:30px }.fa-cred-logo.openai img { max-width:42px;max-height:42px }
 @media (max-width:640px) {
   .fa-shell { right:10px;bottom:88px;max-width:calc(100vw - 20px) }
+  .fa-shell.fa-left { left:10px;right:auto }
+  .fa-shell.fa-right { left:auto;right:10px }
   .fa-panel { width:calc(100vw - 28px);height:min(600px,calc(100vh - 104px));border-radius:19px }
   .fa-launcher { min-height:58px;padding:5px 13px 5px 6px }
   .fa-launch-portrait { width:46px;height:46px;flex-basis:46px }
@@ -83,7 +92,7 @@
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
 </style>
 </helmet>
-<div class="fa-shell">
+<div class="fa-shell {{ sideClass }}" data-assistant-side="{{ side }}">
 
   <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
     <section class="fa-panel" aria-label="Felican AI assistant">
@@ -97,7 +106,10 @@
             <p style="margin:3px 0 0;font-size:13px;color:#9FC0BE">Live agent demo · usually replies instantly</p>
           </div>
         </div>
-        <button class="fa-close" type="button" onClick="{{ close }}" aria-label="Close assistant" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">&#215;</button>
+        <div class="fa-head-actions">
+          <button class="fa-move" type="button" onClick="{{ moveSide }}" aria-label="{{ moveLabel }}" title="{{ moveLabel }}" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">&#8596;</button>
+          <button class="fa-close" type="button" onClick="{{ close }}" aria-label="Close assistant" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">&#215;</button>
+        </div>
       </div>
 
       <sc-if value="{{ composerOpen }}" hint-placeholder-val="{{ true }}">
@@ -197,9 +209,22 @@ Felican AI is a team of more than ten certified AI professionals with background
 
 Answer in 2-4 short sentences, plainly and helpfully. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, statistics, pricing, awards, or products that are not listed above. If you do not know, say so and point the visitor to the contact page.`;
 
+function initialAssistantPlacement() {
+  let saved = '';
+  try { saved = window.sessionStorage.getItem('felican_assistant_side_v1') || ''; } catch (error) { /* storage can be disabled */ }
+  if (saved === 'left' || saved === 'right') return { side: saved, sidePinned: true };
+  return {
+    side: document.querySelector('#cartbar.show') ? 'left' : 'right',
+    sidePinned: false
+  };
+}
+
+const assistantPlacement = initialAssistantPlacement();
+
 class Component extends DCLogic {
   state = {
     open: new URLSearchParams(window.location.search).has('assistant'), busy: false, draft: '', website: '',
+    side: assistantPlacement.side, sidePinned: assistantPlacement.sidePinned,
     handoff: false, hName: '', hEmail: '', hMsg: '', hBusy: false,
     voiceSupported: false, voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, micDetected: false, liveTranscript: '', voiceError: '',
     messages: [{ role: 'assistant', text: "Hi — I'm the Felican AI agent. Ask me about our products, services, training, or Lee's books." }]
@@ -207,6 +232,12 @@ class Component extends DCLogic {
   scrollRef = React.createRef();
 
   componentDidMount() {
+    this._assistantSideRequest = event => {
+      const side = event && event.detail && event.detail.side;
+      if (this.state.sidePinned || (side !== 'left' && side !== 'right') || side === this.state.side) return;
+      this.setState({ side });
+    };
+    window.addEventListener('felican:assistant-side-request', this._assistantSideRequest);
     const preset = window.__FELICAN_VAPI_CONFIG__;
     if (preset && preset.publicKey && preset.assistantId) {
       this._voiceReadyPromise = this.prepareVoice(preset);
@@ -221,7 +252,15 @@ class Component extends DCLogic {
       .catch(() => this.setState({ voiceSupported: false }));
   }
   componentWillUnmount() {
+    window.removeEventListener('felican:assistant-side-request', this._assistantSideRequest);
     this.stopVoice();
+  }
+  moveSide() {
+    this.setState(state => {
+      const side = state.side === 'left' ? 'right' : 'left';
+      try { window.sessionStorage.setItem('felican_assistant_side_v1', side); } catch (error) { /* storage can be disabled */ }
+      return { side, sidePinned: true };
+    });
   }
   async startMicMonitor() {
     this.stopMicMonitor();
@@ -520,6 +559,10 @@ class Component extends DCLogic {
     return {
       open: this.state.open,
       openStr: this.state.open ? 'true' : 'false',
+      side: this.state.side,
+      sideClass: this.state.side === 'left' ? 'fa-left' : 'fa-right',
+      moveLabel: this.state.side === 'left' ? 'Move assistant to the right' : 'Move assistant to the left',
+      moveSide: () => this.moveSide(),
       btnLabel: this.state.open ? 'Assistant open' : 'Talk to Felican AI',
       launcherLabel: this.state.open ? 'Close the Felican AI assistant' : 'Open the Felican AI assistant',
       busy: this.state.busy,
