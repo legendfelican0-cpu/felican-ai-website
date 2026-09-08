@@ -47,6 +47,7 @@ const MIME = new Map([
   ['.svg', 'image/svg+xml'],
   ['.wav', 'audio/wav'],
   ['.webp', 'image/webp'],
+  ['.xml', 'application/xml; charset=utf-8'],
 ]);
 
 export const FELICAN_SYSTEM_PROMPT = `You are the Felican AI assistant running on the Felican AI website. Be clear, brief, friendly, and honest. Answer in 2-4 short sentences unless the visitor asks for detail.

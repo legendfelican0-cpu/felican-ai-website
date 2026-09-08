@@ -487,4 +487,12 @@ describe('Felican AI server', () => {
     const production = await fetch(`${base}/robots.txt`, { headers: { 'X-Forwarded-Host': 'felican.ai' } });
     expect(await production.text()).toContain('Sitemap: https://felican.ai/sitemap.xml');
   });
+
+  it('serves the sitemap as XML', async () => {
+    const base = await start();
+    const response = await fetch(`${base}/public/sitemap.xml`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toBe('application/xml; charset=utf-8');
+    expect(await response.text()).toContain('<urlset');
+  });
 });
