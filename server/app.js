@@ -869,7 +869,8 @@ export function createAppServer({
     }
 
     if (!['GET', 'HEAD'].includes(req.method || 'GET')) return json(res, 405, { error: 'Method not allowed' });
-    const filePath = staticPath(siteRoot, url.pathname);
+    const staticRequestPath = url.pathname === '/favicon.ico' ? '/favicon.svg' : url.pathname;
+    const filePath = staticPath(siteRoot, staticRequestPath);
     if (!filePath || !existsSync(filePath)) return json(res, 404, { error: 'Not found' });
     const contentType = MIME.get(extname(filePath).toLowerCase()) || 'application/octet-stream';
     const cache = contentType.startsWith('text/html') || contentType.startsWith('text/javascript')

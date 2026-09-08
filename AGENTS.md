@@ -12,6 +12,7 @@
 
 ## Recent changes
 
+- 2026-09-08: `/favicon.ico` serves the existing SVG favicon with the correct MIME type, preventing the conventional browser request from producing a 404.
 - 2026-09-08: Static `.xml` files are served as `application/xml; charset=utf-8`, so search engines receive the sitemap with the correct MIME type.
 - 2026-09-08: `main` pushes run unit tests and deploy to DEV (`felican.dev`) through `.github/workflows/deploy.yml`. Production (`felican.ai`) remains manual-only and requires the exact `deploy-prod` workflow confirmation.
 - 2026-09-08: The Starter Pack assistant is movable and remains clear of checkout on desktop and mobile, including Safari/WebKit's first animation frame.

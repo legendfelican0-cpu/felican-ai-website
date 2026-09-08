@@ -495,4 +495,12 @@ describe('Felican AI server', () => {
     expect(response.headers.get('content-type')).toBe('application/xml; charset=utf-8');
     expect(await response.text()).toContain('<urlset');
   });
+
+  it('serves the existing SVG favicon at the conventional ICO path', async () => {
+    const base = await start(undefined, { rootDir: `${process.cwd()}/public` });
+    const response = await fetch(`${base}/favicon.ico`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toBe('image/svg+xml');
+    expect(await response.text()).toContain('<svg');
+  });
 });
