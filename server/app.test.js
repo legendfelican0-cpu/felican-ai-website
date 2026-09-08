@@ -15,7 +15,11 @@ async function start(complete = async () => 'A real answer from Felican AI.', op
     rootDir: process.cwd(),
     complete,
     ...serverOptions,
-    env: { ANTHROPIC_API_KEY: 'test-key', ...extraEnv },
+    env: {
+      ANTHROPIC_API_KEY: 'test-key',
+      GENERATOR_HANDOFF_SECRET: 'test-generator-handoff-secret-32-bytes-minimum',
+      ...extraEnv,
+    },
     logger: logger || { error() {}, info() {}, warn() {} },
   });
   servers.push(server);
@@ -288,7 +292,11 @@ describe('Starter Pack generator handoff', () => {
   it('keeps checkout working without instant handoff configuration', async () => {
     const sessionId = 'cs_test_generator_fallback_123456';
     const base = await start(undefined, {
-      env: { STRIPE_SECRET_KEY: 'sk_test_configured', SITE_ORIGIN: 'https://felican.dev' },
+      env: {
+        STRIPE_SECRET_KEY: 'sk_test_configured',
+        SITE_ORIGIN: 'https://felican.dev',
+        GENERATOR_HANDOFF_SECRET: '',
+      },
       startCheckout: async () => ({ id: sessionId, url: 'https://checkout.stripe.com/c/pay/test' }),
     });
     const response = await fetch(`${base}/api/checkout`, {
@@ -418,7 +426,18 @@ describe('Felican AI server', () => {
     const unavailableBase = await start(undefined, { env: { ANTHROPIC_API_KEY: '', ASHER_API_KEY: '', ASHER_BASE_URL: '' } });
     const unavailable = await fetch(`${unavailableBase}/api/ready`);
     expect(unavailable.status).toBe(503);
-    await expect(unavailable.json()).resolves.toEqual({ ok: false, dependencies: { ai: 'unavailable' } });
+    await expect(unavailable.json()).resolves.toEqual({
+      ok: false,
+      dependencies: { ai: 'unavailable', checkoutHandoff: 'configured' },
+    });
+
+    const missingHandoffBase = await start(undefined, { env: { GENERATOR_HANDOFF_SECRET: '' } });
+    const missingHandoff = await fetch(`${missingHandoffBase}/api/ready`);
+    expect(missingHandoff.status).toBe(503);
+    await expect(missingHandoff.json()).resolves.toEqual({
+      ok: false,
+      dependencies: { ai: 'configured', checkoutHandoff: 'unavailable' },
+    });
   });
 
   it('serves and caches the integrity-checked COPS voice client on our own origin', async () => {

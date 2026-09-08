@@ -107,6 +107,10 @@ if ! grep -Eq '^ANTHROPIC_API_KEY=.+' "${ai_env_file}" && \
   echo "Felican AI provider configuration is incomplete" >&2
   false
 fi
+if ! grep -Eq '^GENERATOR_HANDOFF_SECRET=.{32,}$' "${ai_env_file}"; then
+  echo "GENERATOR_HANDOFF_SECRET is missing or too short; direct post-payment setup would fail" >&2
+  false
+fi
 
 # Upsert the browser voice assistant before replacing the running container.
 # If provisioning fails, DEV remains untouched because the old container has

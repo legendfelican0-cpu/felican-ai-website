@@ -155,6 +155,11 @@ function providerIsConfigured(env) {
   return Boolean(env.ANTHROPIC_API_KEY?.trim() || (env.ASHER_API_KEY?.trim() && env.ASHER_BASE_URL?.trim()));
 }
 
+function generatorHandoffIsConfigured(env) {
+  return typeof env.GENERATOR_HANDOFF_SECRET === 'string'
+    && env.GENERATOR_HANDOFF_SECRET.trim().length >= 32;
+}
+
 export function contactIsConfigured(env = process.env) {
   return Boolean(env.RESEND_API_KEY?.trim());
 }
@@ -558,8 +563,16 @@ export function createAppServer({
     const url = new URL(req.url || '/', 'http://localhost');
     if (url.pathname === '/api/health') return json(res, 200, { ok: true });
     if (url.pathname === '/api/ready') {
-      const ready = providerIsConfigured(env);
-      return json(res, ready ? 200 : 503, { ok: ready, dependencies: { ai: ready ? 'configured' : 'unavailable' } });
+      const aiReady = providerIsConfigured(env);
+      const handoffReady = generatorHandoffIsConfigured(env);
+      const ready = aiReady && handoffReady;
+      return json(res, ready ? 200 : 503, {
+        ok: ready,
+        dependencies: {
+          ai: aiReady ? 'configured' : 'unavailable',
+          checkoutHandoff: handoffReady ? 'configured' : 'unavailable',
+        },
+      });
     }
 
     if (url.pathname === '/api/voice-config') {

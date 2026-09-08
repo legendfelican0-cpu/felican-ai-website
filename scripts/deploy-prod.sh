@@ -95,6 +95,10 @@ if [[ ! -r "${vapi_private_env}" ]] || ! grep -Eq '^(COPS_VAPI_API_KEY|FINAFLEX_
   echo "production Vapi private API configuration is unavailable" >&2
   exit 1
 fi
+if ! grep -Eq '^GENERATOR_HANDOFF_SECRET=.{32,}$' "${ai_env}"; then
+  echo "production GENERATOR_HANDOFF_SECRET is missing or too short; refusing to break direct post-payment setup" >&2
+  exit 1
+fi
 
 # Provision a production-only assistant before the existing site is stopped.
 # DEV uses a different assistant name, so neither environment can redirect the

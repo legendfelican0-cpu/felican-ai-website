@@ -54,4 +54,14 @@ describe('assistant deployment safeguards', () => {
     expect(prod).toContain('/etc/felican/cops-voice.env');
     expect(prod).not.toContain('> "${ai_env}"');
   });
+
+  it('blocks DEV and PROD promotion when the secure checkout handoff is unavailable', () => {
+    const dev = read('scripts/deploy-dev.sh');
+    const prod = read('scripts/deploy-prod.sh');
+    const preflight = read('scripts/preflight-prod.sh');
+    expect(dev).toContain("^GENERATOR_HANDOFF_SECRET=.{32,}$");
+    expect(prod).toContain("^GENERATOR_HANDOFF_SECRET=.{32,}$");
+    expect(preflight).toContain('GENERATOR_HANDOFF_SECRET');
+    expect(prod.indexOf('GENERATOR_HANDOFF_SECRET')).toBeLessThan(prod.indexOf('docker stop "${site_container}"'));
+  });
 });

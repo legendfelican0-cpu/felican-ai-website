@@ -77,8 +77,8 @@ ok "CONTACT_TO defaults to ai@felican.ai when unset"
 ok "CONTACT_FROM defaults to Felican AI Website <website@felican.ai> when unset"
 
 say "3. Starter Pack payment configuration"
-payment_env_out="$("${SSH[@]}" "sudo -n grep -E '^(STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|SITE_ORIGIN)=' /opt/felicanai-site/config/ai.env 2>/dev/null | sed -E 's/=.*/=<set>/'" || true)"
-for key in STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET SITE_ORIGIN; do
+payment_env_out="$("${SSH[@]}" "sudo -n grep -E '^(STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|SITE_ORIGIN|GENERATOR_HANDOFF_SECRET)=' /opt/felicanai-site/config/ai.env 2>/dev/null | sed -E 's/=.*/=<set>/'" || true)"
+for key in STRIPE_SECRET_KEY STRIPE_WEBHOOK_SECRET SITE_ORIGIN GENERATOR_HANDOFF_SECRET; do
   if grep -q "^${key}=" <<<"${payment_env_out}"; then ok "${key} is set"
   else bad "${key} is MISSING — Starter Pack payment fulfillment is not production-ready"; fi
 done
