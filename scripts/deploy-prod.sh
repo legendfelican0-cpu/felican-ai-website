@@ -108,6 +108,10 @@ for key in FELICAN_VAPI_PUBLIC_KEY FELICAN_VAPI_ASSISTANT_ID FELICAN_VAPI_WEBHOO
   grep -Eq "^${key}=.+" "${ai_env}" || { echo "production voice configuration is missing ${key}" >&2; exit 1; }
 done
 
+# From here on production is being changed. The marker lets rollback-prod.sh
+# tell "a deploy got this far" apart from "a gate refused before touching
+# anything" — rolling back the latter once stopped the live site (2026-09-08).
+printf '%s\n' "${release_id}" > "${state_dir}/in_progress"
 backup_container=""
 if docker inspect "${site_container}" >/dev/null 2>&1; then
   backup_container="${site_container}-backup-${release_id}"
@@ -163,6 +167,7 @@ if [[ "${previous_route}" != "${site_container}" ]]; then
 fi
 
 printf '%s\n' "${release_id}" > "${state_dir}/last_release"
+rm -f "${state_dir}/in_progress"
 REMOTE
 
 node "${PROJECT_ROOT}/scripts/smoke.mjs" https://felican.ai/ --chat
