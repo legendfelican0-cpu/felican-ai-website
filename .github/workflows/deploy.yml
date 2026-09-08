@@ -1,0 +1,92 @@
+# One deploy path for the Felican website from any machine:
+#   push to main  -> tests -> build -> DEV (felican.dev)
+#   Actions -> deploy -> Run workflow, type "deploy-prod" -> PROD (felican.ai)
+# Prod streams the exact DEV-verified image (scripts/deploy-prod.sh refuses if
+# DEV is not running this commit), records a rollback container, and rolls
+# back on failure. No laptop is involved after `git push`.
+name: deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "deploy-prod" to promote main (as verified on felican.dev) to felican.ai'
+        required: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --silent
+      - run: npm test --silent
+
+  dev:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: dev
+    concurrency:
+      group: deploy-dev
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --silent && npm run build --silent
+      - name: SSH identity
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+      - name: Deploy to DEV (felican.dev)
+        env:
+          FELICAN_CANONICAL_DEPLOY: "1"
+        run: bash scripts/deploy-dev.sh
+      - name: Verify
+        run: curl -fsS --retry 6 --retry-delay 5 -o /dev/null -w 'felican.dev %{http_code}\n' https://felican.dev/api/ready
+
+  prod:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: prod
+    concurrency:
+      group: deploy-prod
+      cancel-in-progress: false
+    steps:
+      - name: Confirmation
+        run: |
+          [ "${{ github.event.inputs.confirm }}" = "deploy-prod" ] || { echo 'type "deploy-prod" to confirm'; exit 1; }
+          [ "${{ github.ref }}" = "refs/heads/main" ] || { echo "prod deploys only from main"; exit 1; }
+      - name: GATE - DEV must be green
+        run: curl -fsS https://felican.dev/api/ready
+      - uses: actions/checkout@v4
+      - name: SSH identity
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+      - name: Deploy to PROD (felican.ai) — the DEV-verified image of this commit
+        id: deploy
+        env:
+          FELICAN_CANONICAL_DEPLOY: "1"
+        run: bash scripts/deploy-prod.sh
+      - name: Verify PROD
+        id: verify
+        run: |
+          curl -fsS --retry 6 --retry-delay 5 -o /dev/null https://felican.ai/api/ready
+          curl -fsS -o /dev/null -w 'felican.ai/starter-pack %{http_code}\n' https://felican.ai/starter-pack
+      - name: Roll back (no-op unless the deploy started changing prod)
+        if: failure() && steps.deploy.outcome == 'failure'
+        env:
+          FELICAN_CANONICAL_DEPLOY: "1"
+        run: bash scripts/rollback-prod.sh && curl -fsS --retry 6 --retry-delay 5 https://felican.ai/api/ready

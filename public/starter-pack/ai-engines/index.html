@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI engine pricing — Felican AI Starter Pack</title>
+<meta name="description" content="How each AI engine in the Felican AI Starter Pack is priced, and how far your plan's monthly AI allowance goes.">
+<link rel="icon" href="/favicon.svg">
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; font: 16px/1.55 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:#0b1220; color:#e6edf7; }
+  main { max-width: 860px; margin: 0 auto; padding: 48px 20px 80px; }
+  h1 { font-size: 34px; margin: 0 0 8px; } h2 { margin-top: 36px; font-size: 22px; }
+  .muted { color: #9fb0c8; } .band { font-weight: 700; color: #2bd4a4; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid rgba(255,255,255,.12); vertical-align: top; }
+  th { color: #9fb0c8; font-weight: 600; font-size: 13px; text-transform: uppercase; letter-spacing: .04em; }
+  .card { border: 1px solid rgba(255,255,255,.14); border-radius: 12px; padding: 16px 18px; margin: 14px 0; }
+  a { color: #7cc7ff; } .small { font-size: 13px; }
+  .back { display:inline-block; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="/starter-pack/">&larr; Back to the Starter Pack</a>
+  <h1>AI engine pricing</h1>
+  <p class="muted">Every Starter Pack client picks an AI engine at setup. Your hosting plan includes a monthly <b>AI-usage allowance</b> (Essentials $10 · Growth $25 · Scale $60 of provider usage). Pricier engines use that allowance faster; nothing is ever charged beyond your plan — when the allowance is used up, AI replies pause until the next billing period, and we tell you at 80%, 95% and 100%.</p>
+
+  <h2>The engines</h2>
+  <table>
+    <tr><th>Engine</th><th>Price band</th><th>Quick</th><th>Assistant</th><th>Expert</th><th>Roughly, per $1 of allowance*</th></tr>
+    <tr><td><b>Pick for me</b> <span class="small muted">(default)</span></td><td class="band">$$</td><td>GPT-5.6 Luna</td><td>GPT-5.6 Terra</td><td>Claude Opus 5</td><td>~250 everyday replies</td></tr>
+    <tr><td><b>OpenAI</b></td><td class="band">$$</td><td>GPT-5.6 Luna</td><td>GPT-5.6 Terra</td><td>GPT-5.6 Sol</td><td>~250 everyday replies</td></tr>
+    <tr><td><b>Claude</b></td><td class="band">$$$</td><td>Claude Sonnet 5</td><td>Claude Opus 5</td><td>Claude Fable 5.1</td><td>~90 everyday replies</td></tr>
+    <tr><td><b>DeepSeek</b></td><td class="band">$</td><td>&mdash;</td><td>DeepSeek V4 Flash</td><td>DeepSeek V4 Pro</td><td>~1,000 everyday replies</td></tr>
+  </table>
+  <p class="small muted">* An "everyday reply" here is a typical grounded chat turn of about 2,000 input and 400 output tokens against the engine's <i>Assistant</i> tier. Your real mileage depends on how long your documents and conversations are. Quick answers cost less; Expert answers cost more.</p>
+
+  <h2>Per-token list prices we pay (and pass through at cost)</h2>
+  <div class="card">
+    <p><b>OpenAI on Azure Foundry</b> <span class="small muted">— Standard / Global tier, USD per 1M tokens, from Microsoft's public rate card</span></p>
+    <table>
+      <tr><th>Model</th><th>Input</th><th>Output</th></tr>
+      <tr><td>GPT-5.6 Luna <span class="muted small">(Quick)</span></td><td>$0.20</td><td>$1.20</td></tr>
+      <tr><td>GPT-5.6 Terra <span class="muted small">(Assistant)</span></td><td>$2.00</td><td>$12.00</td></tr>
+      <tr><td>GPT-5.6 Sol <span class="muted small">(Expert)</span></td><td>$5.00</td><td>$30.00</td></tr>
+    </table>
+    <p class="small muted">Source: <a href="https://azure.microsoft.com/pricing/details/cognitive-services/openai-service/" target="_blank" rel="noopener">Azure OpenAI pricing</a>.</p>
+  </div>
+  <div class="card">
+    <p><b>Claude on Azure Foundry</b> <span class="small muted">— billed through the Azure Marketplace at Anthropic's list prices</span></p>
+    <p class="small">Sonnet 5 (Quick) &lt; Opus 5 (Assistant) &lt; Fable 5.1 (Expert). See <a href="https://www.anthropic.com/pricing" target="_blank" rel="noopener">Anthropic's pricing</a> for current per-token rates.</p>
+  </div>
+  <div class="card">
+    <p><b>DeepSeek on Azure Foundry</b> <span class="small muted">— open-weight models, the lowest-cost option</span></p>
+    <p class="small">V4 Flash (Assistant) &lt; V4 Pro (Expert). See <a href="https://azure.microsoft.com/pricing/details/ai-foundry/" target="_blank" rel="noopener">Azure AI Foundry pricing</a> for current per-token rates.</p>
+  </div>
+
+  <h2>Things worth knowing</h2>
+  <ul class="small">
+    <li>You can change engines later from your dashboard; your AI is rebuilt with the new models in a few minutes.</li>
+    <li>Every engine runs on our own Azure deployments &mdash; your conversations and documents never go to a third-party API.</li>
+    <li>Only engines that are fully deployed on our platform are offered in the picker; if you don't see one listed here, it's on its way.</li>
+    <li>Questions about volume pricing or a dedicated deployment? <a href="/contact/">Talk to us</a>.</li>
+  </ul>
+  <p class="small muted">Last updated 2026-09-08.</p>
+</main>
+</body>
+</html>
