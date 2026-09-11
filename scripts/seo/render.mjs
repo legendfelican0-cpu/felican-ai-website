@@ -139,7 +139,11 @@ function nav(activeHref) {
 <header class="site-head">
   <div class="shell head-inner">
     <a class="brand" href="/" aria-label="Felican AI home">
-      <img src="/logo-mark.png" alt="" width="28" height="28" decoding="async">
+      <picture>
+        <source srcset="/logo-mark.avif" type="image/avif">
+        <source srcset="/logo-mark.webp" type="image/webp">
+        <img src="/logo-mark.png" alt="" width="28" height="28" decoding="async">
+      </picture>
       <span>Felican<b> AI</b></span>
     </a>
     <nav aria-label="Main"><ul>${items}</ul></nav>
@@ -167,7 +171,11 @@ function footer() {
     <div class="foot-grid">
       <div class="foot-id">
         <a class="brand" href="/" aria-label="Felican AI home">
-          <img src="/logo-mark.png" alt="" width="26" height="26" loading="lazy" decoding="async">
+          <picture>
+            <source srcset="/logo-mark.avif" type="image/avif">
+            <source srcset="/logo-mark.webp" type="image/webp">
+            <img src="/logo-mark.png" alt="" width="26" height="26" loading="lazy" decoding="async">
+          </picture>
           <span>Felican<b> AI</b></span>
         </a>
         <p>Practical AI systems for private businesses. Built around how your business already works.</p>
@@ -243,6 +251,38 @@ ${footer()}
 }
 
 /* ------------------------------------------------------------- components */
+/**
+ * A <picture> offering AVIF and WebP with the original as the fallback <img>.
+ *
+ * One URL per format, deliberately. Server-side Accept negotiation was tried and
+ * reverted: Cloudflare honours only `Vary: Accept-Encoding` and ignores `Vary: Accept`,
+ * so a negotiated response is cached once and served to every client — a browser
+ * without AVIF support then receives AVIF and shows a broken image. Distinct URLs are
+ * cache-safe on any CDN, and the browser does the choosing.
+ *
+ * `src` must be a .png/.jpg path; scripts/optimize-images.mjs generates the siblings.
+ * width/height are required — they are what lets the browser reserve space, and
+ * unsized images are the usual cause of layout shift.
+ */
+export function picture({ src, alt, width, height, className = '', style = '', lazy = true }) {
+  const base = src.replace(/\.(png|jpe?g)$/i, '');
+  const attrs = [
+    `src="${esc(src)}"`,
+    `alt="${esc(alt)}"`,
+    `width="${width}"`,
+    `height="${height}"`,
+    lazy ? 'loading="lazy"' : '',
+    'decoding="async"',
+    className ? `class="${esc(className)}"` : '',
+    style ? `style="${esc(style)}"` : '',
+  ].filter(Boolean).join(' ');
+  return `<picture>
+  <source srcset="${esc(base)}.avif" type="image/avif">
+  <source srcset="${esc(base)}.webp" type="image/webp">
+  <img ${attrs}>
+</picture>`;
+}
+
 
 export const shell = inner => `<div class="shell">${inner}</div>`;
 

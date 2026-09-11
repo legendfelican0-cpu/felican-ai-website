@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script src="/format-support.js"></script>
 <script src="/support.js?v=20260802"></script>
 <!-- SEO tags live here in the static <head> so crawlers and link-preview
      scrapers (which do not run JavaScript) can read them. The <helmet>
@@ -273,7 +274,14 @@ class Component extends DCLogic {
   componentDidMount() {
     setTimeout(() => document.querySelectorAll('img[data-product-image]').forEach(img => {
       const src = img.getAttribute('data-product-image');
-      if (src && src.indexOf('{{') === -1) img.src = src;
+      if (!src || src.indexOf('{{') !== -1) return;
+      // Wait for the one-off format probe, then request the smallest variant this
+      // browser can decode. The fallback is the original path, so a failed or slow
+      // probe still loads the image.
+      const ready = window.felicanImageFormatReady;
+      const assign = () => { img.src = window.felicanImageUrl ? window.felicanImageUrl(src) : src; };
+      if (ready && typeof ready.then === 'function') ready.then(assign, assign);
+      else assign();
     }), 0);
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.querySelectorAll('.starter-preview video').forEach(video => {

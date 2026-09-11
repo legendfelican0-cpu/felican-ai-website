@@ -513,21 +513,6 @@ const STAGING_ROBOTS = 'User-agent: *\nDisallow: /\n';
 // Returns the canonical path a request should be redirected to, or '' when the
 // requested path is already canonical. Pure path arithmetic plus an existsSync check,
 // so it never redirects to a URL that would then 404.
-// Picks the best available encoding of a raster image for this request. Returns the
-// path to a variant, or '' to serve the original unchanged.
-function negotiateImage(filePath, acceptHeader) {
-  if (!/\.(png|jpe?g)$/i.test(filePath)) return '';
-  const accept = String(acceptHeader || '');
-  const base = filePath.slice(0, -extname(filePath).length);
-  // Best first. AVIF is materially smaller than WebP on these screenshots.
-  for (const [type, ext] of [['image/avif', '.avif'], ['image/webp', '.webp']]) {
-    if (!accept.includes(type)) continue;
-    const candidate = `${base}${ext}`;
-    if (existsSync(candidate)) return candidate;
-  }
-  return '';
-}
-
 function canonicalPathFor(rootDir, pathname) {
   if (pathname === '/') return '';
 
@@ -986,18 +971,15 @@ export function createAppServer({
     }
 
     const staticRequestPath = url.pathname === '/favicon.ico' ? '/favicon.svg' : url.pathname;
-    let filePath = staticPath(siteRoot, staticRequestPath);
+    const filePath = staticPath(siteRoot, staticRequestPath);
     if (!filePath || !existsSync(filePath)) return json(res, 404, { error: 'Not found' });
 
-    // Serve AVIF/WebP in place of a requested PNG/JPEG when the browser accepts it and
-    // scripts/optimize-images.mjs has produced a variant. Doing the negotiation here
-    // rather than with <picture> in the markup means it also covers the images whose
-    // src is set at runtime by the <x-dc> templates on /products/ and /starter-pack/,
-    // which markup alone cannot reach. Cloudflare Polish would have done this at the
-    // edge, but it is a paid feature and is not active on this zone.
-    const negotiated = negotiateImage(filePath, req.headers.accept);
-    if (negotiated) filePath = negotiated;
-
+    // NOTE: do not reintroduce Accept-based image negotiation here. Cloudflare honours
+    // only `Vary: Accept-Encoding` and ignores `Vary: Accept`, so a negotiated response
+    // gets cached once and served to every client — a browser without AVIF support then
+    // receives AVIF and renders a broken image. AVIF/WebP are offered per-URL instead:
+    // <picture> on the generated pages, and public/format-support.js for the
+    // runtime-set images on /products/ and /starter-pack/.
     const contentType = MIME.get(extname(filePath).toLowerCase()) || 'application/octet-stream';
     // Images, video and fonts are effectively immutable and are the bulk of the bytes
     // on /products/ and /starter-pack/, so they get a long TTL. HTML and JS stay
@@ -1017,8 +999,6 @@ export function createAppServer({
       ...securityHeaders(contentType),
       'Cache-Control': cache,
       'Content-Length': fileSize,
-      // The image response depends on Accept, so caches must key on it.
-      ...(contentType.startsWith('image/') ? { Vary: 'Accept' } : {}),
       ...(canStreamRanges ? { 'Accept-Ranges': 'bytes' } : {}),
     };
 

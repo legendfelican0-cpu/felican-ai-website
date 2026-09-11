@@ -17,7 +17,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
-  page, hero, prose, cardGrid, faq, cta, keyFacts, table, relatedLinks, esc, abs,
+  page, hero, prose, cardGrid, faq, cta, keyFacts, table, relatedLinks, picture, esc, abs,
 } from './seo/render.mjs';
 import { ORIGIN, ORG } from '../content/site.js';
 import { PRODUCTS, flagship, agents, apps, pageProducts } from '../content/products.js';
@@ -104,7 +104,12 @@ function buildProduct(product) {
     }),
     product.facts.length ? keyFacts(product.facts) : '',
     product.image
-      ? `<section class="band"><div class="shell"><figure><img src="${product.image}" alt="${esc(product.name)} product screenshot" width="1200" height="750" loading="lazy" decoding="async"><figcaption>${esc(product.name)}</figcaption></figure></div></section>`
+      ? `<section class="band"><div class="shell"><figure>${picture({
+          src: product.image,
+          alt: `${product.name} product screenshot`,
+          width: 1200,
+          height: 750,
+        })}<figcaption>${esc(product.name)}</figcaption></figure></div></section>`
       : '',
     sectionsToProse(product.sections),
     product.faq.length ? faq(product.faq) : '',
@@ -693,7 +698,13 @@ function buildBook(book) {
         ? [{ label: 'Get the book', href: book.buyUrl }, { label: 'All books', href: '/books/' }]
         : [{ label: 'All books', href: '/books/' }, { label: 'Ask about it', href: '/contact/' }],
     }),
-    `<section class="band"><div class="shell"><figure><img src="${book.cover}" alt="${esc(book.name)} cover" width="600" height="900" loading="lazy" decoding="async" style="max-width:320px"></figure></div></section>`,
+    `<section class="band"><div class="shell"><figure>${picture({
+      src: book.cover,
+      alt: `${book.name} cover`,
+      width: 600,
+      height: 900,
+      style: 'max-width:320px',
+    })}</figure></div></section>`,
     prose([
       '<h2>What it is about</h2>',
       ...book.about.map(p => `<p>${esc(p)}</p>`),

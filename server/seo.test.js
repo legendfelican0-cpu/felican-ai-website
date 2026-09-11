@@ -116,44 +116,42 @@ describe('canonical URL redirects', () => {
   });
 });
 
-describe('image content negotiation', () => {
-  it('serves AVIF to a browser that accepts it', async () => {
+describe('image delivery', () => {
+  // Accept-based negotiation was tried and reverted. Cloudflare honours only
+  // `Vary: Accept-Encoding` and ignores `Vary: Accept`, so a negotiated image was
+  // cached once at the edge and served to every client — a browser without AVIF
+  // support received AVIF and rendered a broken image. Caught on felican.dev.
+  //
+  // AVIF/WebP are offered per-URL instead, so each variant is its own cache entry.
+  it('always serves the exact file that was requested', async () => {
     const base = await start();
-    const response = await fetch(`${base}/product-private-ai.png`, {
-      headers: { Accept: 'image/avif,image/webp,image/*,*/*' },
-    });
-    expect(response.status).toBe(200);
-    expect(response.headers.get('content-type')).toBe('image/avif');
-    expect(response.headers.get('vary')).toBe('Accept');
+    for (const accept of ['image/avif,image/webp,image/*,*/*', 'image/webp,*/*', 'image/*']) {
+      const response = await fetch(`${base}/product-private-ai.png`, { headers: { Accept: accept } });
+      expect(response.status).toBe(200);
+      expect(response.headers.get('content-type')).toBe('image/png');
+    }
   });
 
-  it('falls back to WebP when AVIF is not accepted', async () => {
+  it('never varies an image response on Accept', async () => {
     const base = await start();
-    const response = await fetch(`${base}/product-private-ai.png`, {
-      headers: { Accept: 'image/webp,image/*,*/*' },
-    });
-    expect(response.headers.get('content-type')).toBe('image/webp');
+    const response = await fetch(`${base}/product-private-ai.png`, { headers: { Accept: 'image/avif,*/*' } });
+    // Absent is the correct answer; a bare `Accept` in Vary is the bug.
+    expect(response.headers.get('vary') || '').not.toMatch(/\baccept\b(?!-encoding)/i);
   });
 
-  it('serves the original PNG when no modern format is accepted', async () => {
+  it('serves the AVIF and WebP variants at their own URLs', async () => {
     const base = await start();
-    const response = await fetch(`${base}/product-private-ai.png`, { headers: { Accept: 'image/*' } });
-    expect(response.headers.get('content-type')).toBe('image/png');
+    const avif = await fetch(`${base}/product-private-ai.avif`);
+    const webp = await fetch(`${base}/product-private-ai.webp`);
+    expect(avif.headers.get('content-type')).toBe('image/avif');
+    expect(webp.headers.get('content-type')).toBe('image/webp');
   });
 
-  it('negotiated variants are materially smaller than the original', async () => {
+  it('the variants are materially smaller than the original', async () => {
     const base = await start();
-    const png = await fetch(`${base}/product-private-ai.png`, { headers: { Accept: 'image/*' } });
-    const avif = await fetch(`${base}/product-private-ai.png`, { headers: { Accept: 'image/avif,*/*' } });
-    const pngSize = Number(png.headers.get('content-length'));
-    const avifSize = Number(avif.headers.get('content-length'));
-    expect(avifSize).toBeLessThan(pngSize / 2);
-  });
-
-  it('does not negotiate non-raster assets', async () => {
-    const base = await start();
-    const response = await fetch(`${base}/favicon.svg`, { headers: { Accept: 'image/avif,image/webp,*/*' } });
-    expect(response.headers.get('content-type')).toBe('image/svg+xml');
+    const png = Number((await fetch(`${base}/product-private-ai.png`)).headers.get('content-length'));
+    const avif = Number((await fetch(`${base}/product-private-ai.avif`)).headers.get('content-length'));
+    expect(avif).toBeLessThan(png / 2);
   });
 });
 

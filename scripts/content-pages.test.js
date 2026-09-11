@@ -139,6 +139,20 @@ describe('generated content pages', () => {
     expect(bad).toEqual([]);
   });
 
+  it('every raster image is offered as AVIF and WebP through <picture>', () => {
+    // One URL per format. Accept-based negotiation is cache-unsafe behind Cloudflare,
+    // which ignores `Vary: Accept`.
+    const bad = [];
+    for (const p of pages) {
+      for (const match of p.html.matchAll(/<img\b[^>]*\bsrc="(\/[^"]+\.(?:png|jpe?g))"/g)) {
+        const base = match[1].replace(/\.(png|jpe?g)$/i, '');
+        if (!p.html.includes(`srcset="${base}.avif" type="image/avif"`)) bad.push(`${p.urlPath} -> ${match[1]} (no avif source)`);
+        if (!p.html.includes(`srcset="${base}.webp" type="image/webp"`)) bad.push(`${p.urlPath} -> ${match[1]} (no webp source)`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
   it('every referenced image file exists and has a modern variant', () => {
     const missing = [];
     const unoptimised = [];

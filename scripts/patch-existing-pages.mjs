@@ -124,5 +124,42 @@ const already = [];
   }
 }
 
+
+/* 4. Runtime-set images — request AVIF/WebP per URL.
+      The <x-dc> templates assign these src values at runtime, so <picture> cannot
+      reach them. Server-side Accept negotiation was tried and reverted: Cloudflare
+      honours only `Vary: Accept-Encoding`, so it cached one variant and served AVIF to
+      clients that cannot decode it. A feature detect plus a distinct URL per format is
+      cache-safe anywhere. */
+{
+  for (const rel of ['public/products/index.html', 'public/starter-pack/index.html']) {
+    let html = read(rel);
+    let changed = false;
+
+    if (!html.includes('/format-support.js')) {
+      html = html.replace('<script src="/support.js', '<script src="/format-support.js"></script>\n<script src="/support.js');
+      changed = true;
+    }
+
+    const naive = `      const src = img.getAttribute('data-product-image');
+      if (src && src.indexOf('{{') === -1) img.src = src;`;
+    if (html.includes(naive)) {
+      html = html.replace(naive, `      const src = img.getAttribute('data-product-image');
+      if (!src || src.indexOf('{{') !== -1) return;
+      // Wait for the one-off format probe, then request the smallest variant this
+      // browser can decode. The fallback is the original path, so a failed or slow
+      // probe still loads the image.
+      const ready = window.felicanImageFormatReady;
+      const assign = () => { img.src = window.felicanImageUrl ? window.felicanImageUrl(src) : src; };
+      if (ready && typeof ready.then === 'function') ready.then(assign, assign);
+      else assign();`);
+      changed = true;
+    }
+
+    if (changed) { save(rel, html); done.push(`${rel} runtime image formats`); }
+    else already.push(`${rel} runtime image formats`);
+  }
+}
+
 if (done.length) console.log(`Patched: ${done.join('; ')}`);
 if (already.length) console.log(`Already applied: ${already.join('; ')}`);
