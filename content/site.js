@@ -83,7 +83,14 @@ export const SOCIAL = [
   { label: 'GitHub', url: '', handle: '' },
 
   // --- the founder's own profiles ---
-  { label: 'LinkedIn (Lee Felican Jr.)', url: '', handle: '', person: true },
+  // Verified 2026-09-11 from the link on his own CV page at /Lehem-Felican-Jr, so the
+  // two reference each other — which is what makes the entity resolvable.
+  {
+    label: 'LinkedIn',
+    url: 'https://www.linkedin.com/in/lee-felican-jr',
+    handle: 'lee-felican-jr',
+    person: true,
+  },
   // Verified 2026-09-11: a real employer profile page about him, which corroborates
   // the Person entity independently of felican.ai. Not shown in the footer.
   {
