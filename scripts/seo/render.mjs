@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { ORIGIN, ORG, NAV, FOOTER_COLUMNS, socialLive, companySocial } from '../../content/site.js';
+import { ORIGIN, ORG, NAV, FOOTER_COLUMNS, companySocial, personSocial, footerSocial } from '../../content/site.js';
 
 // Cache-busting stamp for the generated pages' stylesheet.
 //
@@ -74,7 +74,7 @@ export function organizationNode() {
 }
 
 export function founderNode() {
-  const sameAs = socialLive().filter(s => s.person).map(s => s.url);
+  const sameAs = personSocial().map(s => s.url);
   return {
     '@type': 'Person',
     '@id': `${ORIGIN}/#founder`,
@@ -211,7 +211,7 @@ function footer() {
       .join('')}</ul></nav>`,
   ).join('');
 
-  const social = socialLive();
+  const social = footerSocial();
   const socialBlock = social.length
     ? `<nav aria-label="Follow"><h2>Follow</h2><ul>${social
         .map(s => `<li><a href="${esc(s.url)}" rel="me">${esc(s.label)}</a></li>`)

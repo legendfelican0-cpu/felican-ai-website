@@ -66,18 +66,39 @@ export const ORG = {
 // else's profile is worse than no sameAs at all.
 // `person: true` marks a profile that belongs to the founder rather than the company;
 // those go into the Person node's sameAs, the rest into the Organization's.
+//
+// `footer: false` keeps an entry out of the footer's Follow column — useful for a
+// third-party profile that corroborates the entity for search engines but is not
+// somewhere we are asking visitors to follow us.
+//
+// ONLY fill in a URL that genuinely exists and genuinely belongs to the named subject.
+// A sameAs pointing at a 404, or at a different person or company with a similar name,
+// is worse than no sameAs at all — it teaches search engines the wrong entity.
 export const SOCIAL = [
   { label: 'LinkedIn', url: '', handle: '' },
-  { label: 'LinkedIn (Lee Felican Jr.)', url: '', handle: '', person: true },
   { label: 'YouTube', url: '', handle: '' },
   { label: 'X', url: '', handle: '' },
   { label: 'Facebook', url: '', handle: '' },
   { label: 'Instagram', url: '', handle: '' },
   { label: 'GitHub', url: '', handle: '' },
+
+  // --- the founder's own profiles ---
+  { label: 'LinkedIn (Lee Felican Jr.)', url: '', handle: '', person: true },
+  // Verified 2026-09-11: a real employer profile page about him, which corroborates
+  // the Person entity independently of felican.ai. Not shown in the footer.
+  {
+    label: 'Resolution Economics profile',
+    url: 'https://resecon.com/team/lehem-felican-jr/',
+    person: true,
+    footer: false,
+  },
 ];
 
 export const socialLive = () => SOCIAL.filter(s => s.url && /^https:\/\//.test(s.url));
 export const companySocial = () => socialLive().filter(s => !s.person);
+export const personSocial = () => socialLive().filter(s => s.person);
+// Only entries we actively want visitors to follow appear in the footer.
+export const footerSocial = () => socialLive().filter(s => !s.person && s.footer !== false);
 
 export const NAV = [
   { label: 'Products', href: '/products/' },

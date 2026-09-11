@@ -247,6 +247,28 @@ describe('entity identity', () => {
       expect(profile.url).toMatch(/^https:\/\//);
     }
   });
+
+  it('keeps the founder and company sameAs sets separate', async () => {
+    const { companySocial, personSocial } = await import('../content/site.js');
+    const company = companySocial().map(s => s.url);
+    const person = personSocial().map(s => s.url);
+    // A profile must belong to exactly one entity; the same URL on both teaches search
+    // engines that the person and the company are the same thing.
+    expect(company.filter(url => person.includes(url))).toEqual([]);
+  });
+
+  it('the founder Person node carries every configured personal profile', async () => {
+    const { personSocial } = await import('../content/site.js');
+    const { founderNode } = await import('./seo/render.mjs');
+    const node = founderNode();
+    const expected = personSocial().map(s => s.url);
+    expect(node.sameAs || []).toEqual(expected);
+    // And never the company's, which belong on the Organization node.
+    const { companySocial } = await import('../content/site.js');
+    for (const url of companySocial().map(s => s.url)) {
+      expect(node.sameAs || []).not.toContain(url);
+    }
+  });
 });
 
 // Project copy rules from AGENTS.md. These are the owner's house rules, not SEO
