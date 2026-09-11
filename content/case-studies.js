@@ -221,7 +221,7 @@ export const CASE_STUDIES = [
     client: 'Green Light Distribution',
     industry: 'Food and beverage supply chain',
     location: 'Multi-state, United States',
-    deployed: ['Agentic workflow', 'Business automation'],
+    deployed: ['Agentic workflow', 'Workflow & Task Automation'],
     title: 'Green Light Distribution — demand forecasting for perishable goods | Felican AI',
     description:
       'How Felican AI built a demand-forecasting and inventory-routing agent for Green Light Distribution to automate replenishment and optimise multi-state routing of perishable goods.',
@@ -249,7 +249,7 @@ export const CASE_STUDIES = [
     client: 'Loenbro',
     industry: 'Industrial construction and energy services',
     location: 'Multi-state, United States',
-    deployed: ['Agentic workflow', 'Business automation'],
+    deployed: ['Agentic workflow', 'Workflow & Task Automation'],
     title: 'Loenbro — field operations automation across multi-state job sites | Felican AI',
     description:
       'How Felican AI built a field-operations agent for Loenbro to optimise crew and equipment allocation across multi-state industrial construction and pipeline sites.',

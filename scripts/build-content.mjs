@@ -890,6 +890,10 @@ function buildSitemap() {
     '/', '/products/', '/services/', '/education/', '/books/', '/about/',
     '/contact/', '/booking/', '/starter-pack/', '/starter-pack/ai-engines/',
     '/privacy/', '/terms/',
+    // Served by the separate profile app on the same domain. It is indexable and
+    // canonical, but nothing was announcing it — a search for the founder's name
+    // should reach felican.ai rather than a third-party profile.
+    '/Lehem-Felican-Jr',
   ];
   const today = new Date().toISOString().slice(0, 10);
   const urls = [...new Set([...existing, ...written])].sort();

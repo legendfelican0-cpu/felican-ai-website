@@ -17,8 +17,9 @@
     "build:content": "node scripts/build-content.mjs",
     "sync:schema": "node scripts/sync-schema.mjs",
     "fix:images": "node scripts/fix-images.mjs",
-    "seo": "npm run build:images && npm run build:content && npm run patch:pages && npm run sync:schema && npm run fix:images",
-    "patch:pages": "node scripts/patch-existing-pages.mjs"
+    "seo": "npm run build:images && npm run build:content && npm run build:assistant && npm run patch:pages && npm run sync:schema && npm run fix:images",
+    "patch:pages": "node scripts/patch-existing-pages.mjs",
+    "build:assistant": "node scripts/build-assistant-knowledge.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",

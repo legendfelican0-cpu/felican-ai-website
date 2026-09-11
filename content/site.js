@@ -19,7 +19,17 @@ export const ORG = {
   image: `${ORIGIN}/og.png`,
   description:
     'Felican AI is a team of more than ten certified AI professionals building practical AI products, private AI systems, custom automations, integrations, and training for businesses in any industry.',
-  founder: { name: 'Lee Felican Jr.', jobTitle: 'Founder and Enterprise Architect' },
+  founder: {
+    name: 'Lee Felican Jr.',
+    // The profile page and its URL use the formal spelling. Declared as alternateName
+    // so a search for either name resolves to the same person.
+    alternateName: 'Lehem Felican Jr',
+    jobTitle: 'Founder of Felican AI and Director of Artificial Intelligence at Resolution Economics',
+    description:
+      'Founder of Felican AI. Thirty years building systems for regulated industries — federal defense, financial services, healthcare, energy, blockchain and legal technology — and author of four books on AI.',
+    // The canonical page about him, served by the profile app on the same domain.
+    profilePath: '/Lehem-Felican-Jr',
+  },
   // Service-area business: the owner chose to publish the served area rather than a
   // street address. Google Business Profile should be configured the same way, as a
   // service-area business, so the profile and this markup agree.
@@ -54,8 +64,11 @@ export const ORG = {
 // ONLY fill in profiles that genuinely exist and genuinely belong to Felican AI.
 // An empty string is skipped entirely — a sameAs pointing at a 404 or at someone
 // else's profile is worse than no sameAs at all.
+// `person: true` marks a profile that belongs to the founder rather than the company;
+// those go into the Person node's sameAs, the rest into the Organization's.
 export const SOCIAL = [
   { label: 'LinkedIn', url: '', handle: '' },
+  { label: 'LinkedIn (Lee Felican Jr.)', url: '', handle: '', person: true },
   { label: 'YouTube', url: '', handle: '' },
   { label: 'X', url: '', handle: '' },
   { label: 'Facebook', url: '', handle: '' },
@@ -64,6 +77,7 @@ export const SOCIAL = [
 ];
 
 export const socialLive = () => SOCIAL.filter(s => s.url && /^https:\/\//.test(s.url));
+export const companySocial = () => socialLive().filter(s => !s.person);
 
 export const NAV = [
   { label: 'Products', href: '/products/' },

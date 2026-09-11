@@ -303,5 +303,40 @@ const already = [];
   else already.push('services renames + booking CTA');
 }
 
+
+/* 7. /about/ — expand the founder block into a real two-paragraph bio and link it to
+      the full profile at /Lehem-Felican-Jr.
+
+      Why it matters for search: someone who searches the founder's name should land on
+      felican.ai, not on a third-party profile. That needs (a) a substantial, crawlable
+      bio on a page Google already trusts, and (b) a clear link to the profile page so
+      the two reinforce each other as one entity. The shared Person node in
+      content/site.js carries the same URL, which is what ties them together.
+
+      He goes by "Lee Felican Jr." — that is the name used in the bio. "Lehem Felican
+      Jr" is the formal name the profile URL and its own title use, and it is carried in
+      the schema as an alternateName so both spellings resolve to the same person. */
+{
+  const rel = 'public/about/index.html';
+  let html = read(rel);
+  // The page already linked the profile elsewhere, so guard on the bio itself.
+  if (html.includes('Read Lee&rsquo;s full profile') || html.includes("Read Lee's full profile")) {
+    already.push('about founder bio');
+  } else {
+    const oldBio = `          <p style="margin:0 0 18px;font-size:clamp(17px,1.4vw,19px);line-height:1.75;color:#C2D2D4;text-wrap:pretty">Thirty years designing and shipping systems for regulated industries — federal defense, financial services, healthcare, energy, blockchain, and legal technology.</p>
+          <p style="margin:0;font-size:clamp(17px,1.4vw,19px);line-height:1.75;color:#C2D2D4;text-wrap:pretty">Author of four books on AI and an active builder of practical AI products.</p>`;
+    if (!html.includes(oldBio)) throw new Error('about: founder bio paragraphs not found');
+
+    const para = 'margin:0 0 18px;font-size:clamp(17px,1.4vw,19px);line-height:1.75;color:#C2D2D4;text-wrap:pretty';
+    const newBio = `          <p style="${para}">Lee Felican Jr. has spent thirty years designing and shipping systems for industries where being wrong is expensive — federal defense, financial services, healthcare, energy, blockchain and legal technology. That background is the reason Felican AI builds the way it does: privately by default, with access control and an audit trail from the first deployment rather than bolted on after a review. He is also Director of Artificial Intelligence at Resolution Economics, where he works on AI applied to legal and economic analysis.</p>
+          <p style="${para}">He founded Felican AI to put that same engineering discipline behind AI for businesses that are not the Fortune 500 — the manufacturer whose specifications cannot leave the building, the practice whose records are protected, the contractor losing work to a phone nobody answers. He writes about it too: four books on AI, including The BIG AI Book and Stop Being Nice to AI, all written in plain language for people who have to make a decision rather than build a model.</p>
+          <p style="margin:0"><a href="/Lehem-Felican-Jr" style="display:inline-flex;align-items:center;gap:10px;padding:14px 22px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:16px;font-weight:700;text-decoration:none" style-hover="background:#59D4B4" style-focus="outline:3px solid #59D4B4;outline-offset:3px">Read Lee's full profile <span aria-hidden="true">&#8594;</span></a></p>`;
+
+    html = html.replace(oldBio, newBio);
+    save(rel, html);
+    done.push('about founder bio + profile link');
+  }
+}
+
 if (done.length) console.log(`Patched: ${done.join('; ')}`);
 if (already.length) console.log(`Already applied: ${already.join('; ')}`);

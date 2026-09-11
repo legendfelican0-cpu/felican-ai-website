@@ -223,6 +223,7 @@ const assistantPlacement = initialAssistantPlacement();
 
 class Component extends DCLogic {
   state = {
+    followups: [],
     open: new URLSearchParams(window.location.search).has('assistant'), busy: false, draft: '', website: '',
     side: assistantPlacement.side, sidePinned: assistantPlacement.sidePinned,
     handoff: false, hName: '', hEmail: '', hMsg: '', hBusy: false,
@@ -535,24 +536,96 @@ class Component extends DCLogic {
   async send(text) {
     const q = (text || '').trim();
     if (!q || this.state.busy) return;
-    this.setState(s => ({ messages: [...s.messages, { role: 'user', text: q }], draft: '', busy: true }));
+    // Push the visitor's message plus an empty assistant bubble that the stream fills
+    // in, so text appears as it is generated rather than the whole answer landing at
+    // once after a long silence.
+    this.setState(s => ({
+      messages: [...s.messages, { role: 'user', text: q }, { role: 'assistant', text: '' }],
+      draft: '', busy: true, followups: []
+    }));
+
+    const appendToLast = text => this.setState(s => {
+      const messages = s.messages.slice();
+      const last = messages.length - 1;
+      if (last >= 0 && messages[last].role === 'assistant') {
+        messages[last] = { ...messages[last], text: messages[last].text + text };
+      }
+      return { messages };
+    });
+
     let reply = '';
     try {
       const history = [...this.state.messages, { role: 'user', text: q }]
+        .filter(m => m.text)
         .map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }));
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: history, website: this.state.website })
+        headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
+        body: JSON.stringify({ messages: history, website: this.state.website, stream: true })
       });
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok || !payload.reply) throw new Error(payload.error || 'Assistant request failed');
-      reply = payload.reply;
+
+      const type = response.headers.get('content-type') || '';
+      if (response.ok && type.includes('text/event-stream') && response.body) {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        let done = false;
+        while (!done) {
+          const chunk = await reader.read();
+          if (chunk.done) break;
+          buffer += decoder.decode(chunk.value, { stream: true });
+          let split;
+          while ((split = buffer.indexOf('\n\n')) !== -1) {
+            const frame = buffer.slice(0, split);
+            buffer = buffer.slice(split + 2);
+            let event = 'message';
+            let data = '';
+            for (const line of frame.split('\n')) {
+              if (line.startsWith('event:')) event = line.slice(6).trim();
+              else if (line.startsWith('data:')) data += line.slice(5).trim();
+            }
+            if (!data) continue;
+            let parsed;
+            try { parsed = JSON.parse(data); } catch (err) { continue; }
+            if (event === 'delta' && parsed.text) { reply += parsed.text; appendToLast(parsed.text); }
+            else if (event === 'done') { reply = parsed.reply || reply; done = true; }
+            else if (event === 'failed') { throw new Error(parsed.error || 'Assistant request failed'); }
+          }
+        }
+      } else {
+        // Server did not stream (older deploy, or a proxy stripped the content type).
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok || !payload.reply) throw new Error(payload.error || 'Assistant request failed');
+        reply = payload.reply;
+      }
     } catch (e) {
       reply = "I couldn't reach the assistant just now. Email ai@felican.ai and we'll help directly.";
     }
-    const finalReply = (reply || '').trim() || 'Sorry — could you rephrase that?';
-    this.setState(s => ({ messages: [...s.messages, { role: 'assistant', text: finalReply }], busy: false }));
+
+    // The model ends each reply with two or three "> " follow-up lines. Split them off
+    // the visible text and offer them as tappable chips instead.
+    const raw = (reply || '').trim() || 'Sorry — could you rephrase that?';
+    const followups = [];
+    const body = [];
+    for (const line of raw.split('\n')) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('>')) {
+        const question = trimmed.replace(/^>+\s*/, '').trim();
+        if (question) followups.push(question);
+      } else {
+        body.push(line);
+      }
+    }
+    const finalReply = body.join('\n').trim() || raw;
+
+    this.setState(s => {
+      const messages = s.messages.slice();
+      const last = messages.length - 1;
+      if (last >= 0 && messages[last].role === 'assistant') {
+        messages[last] = { ...messages[last], text: finalReply };
+      }
+      return { messages, busy: false, followups: followups.slice(0, 3) };
+    });
   }
   renderVals() {
     const chip = label => ({ label, go: () => this.send(label) });
@@ -569,7 +642,8 @@ class Component extends DCLogic {
       sendLabel: this.state.busy ? 'Thinking' : 'Send',
       draft: this.state.draft,
       website: this.state.website,
-      showChips: this.state.messages.length <= 1 && !this.state.handoff,
+      showChips: !this.state.handoff && !this.state.busy
+        && ((this.state.followups || []).length > 0 || this.state.messages.length <= 1),
       composerOpen: !this.state.handoff,
       voiceStatus: this.state.voiceError || (this.state.voiceConnecting ? (this.state.micDetected ? 'We can hear you — connecting the AI…' : 'Connecting your microphone…') : this.state.speaking ? 'Felican AI is speaking — talk anytime to interrupt.' : this.state.userSpeaking ? (this.state.liveTranscript ? 'Hearing you: “' + this.state.liveTranscript.slice(0, 72) + '”' : 'We can hear you — keep talking.') : this.state.micDetected ? 'We can hear you — keep talking.' : this.state.voiceActive ? 'Listening — start talking. The bars move when we hear you.' : this.state.voiceSupported ? 'Tap Start voice, allow microphone access, then talk until you press Stop.' : 'Voice is loading. Text chat is ready now.'),
       voiceLabel: this.state.voiceActive || this.state.voiceConnecting ? 'Stop voice' : 'Start voice',
@@ -580,7 +654,9 @@ class Component extends DCLogic {
       messages: this.state.messages.map(m => m.role === 'user'
         ? { ...m, align: 'flex-end', bg: '#2FB894', fg: '#080E13', border: '#2FB894' }
         : { ...m, align: 'flex-start', bg: '#12181C', fg: '#EEF4F4', border: '#1C2A28' }),
-      chips: [chip('What products do you offer?'), chip('Can you automate my business?'), chip('Tell me about the books')],
+      chips: (this.state.followups || []).length
+        ? this.state.followups.map(chip)
+        : [chip('What products do you offer?'), chip('Can you automate my business?'), chip('Tell me about the books')],
       handoff: this.state.handoff,
       handoffNote: 'We email this to the Felican AI team along with the chat above, and a person replies to you directly.',
       hName: this.state.hName,

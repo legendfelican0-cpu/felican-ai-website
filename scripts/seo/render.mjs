@@ -7,7 +7,7 @@
 // copes; text-only retrieval crawlers (GPTBot, ClaudeBot, PerplexityBot) do not.
 // Everything generated here is plain HTML in the response body.
 
-import { ORIGIN, ORG, NAV, FOOTER_COLUMNS, socialLive } from '../../content/site.js';
+import { ORIGIN, ORG, NAV, FOOTER_COLUMNS, socialLive, companySocial } from '../../content/site.js';
 
 export const esc = (value = '') =>
   String(value)
@@ -25,7 +25,7 @@ const jsonLd = data => JSON.stringify(data).replace(/</g, '\\u003c');
 /* ------------------------------------------------------------------ schema */
 
 export function organizationNode() {
-  const sameAs = socialLive().map(s => s.url);
+  const sameAs = companySocial().map(s => s.url);
   return {
     '@type': 'Organization',
     '@id': `${ORIGIN}/#organization`,
@@ -60,13 +60,21 @@ export function organizationNode() {
 }
 
 export function founderNode() {
+  const sameAs = socialLive().filter(s => s.person).map(s => s.url);
   return {
     '@type': 'Person',
     '@id': `${ORIGIN}/#founder`,
     name: ORG.founder.name,
+    // The profile page and its URL use the formal spelling; he goes by "Lee". Both are
+    // declared so a search for either resolves to this one entity.
+    alternateName: ORG.founder.alternateName,
     jobTitle: ORG.founder.jobTitle,
+    description: ORG.founder.description,
     worksFor: { '@id': `${ORIGIN}/#organization` },
-    url: `${ORIGIN}/about/`,
+    // The canonical page about the person, not the company page that mentions him.
+    url: `${ORIGIN}${ORG.founder.profilePath}`,
+    mainEntityOfPage: `${ORIGIN}${ORG.founder.profilePath}`,
+    ...(sameAs.length ? { sameAs } : {}),
   };
 }
 
@@ -124,6 +132,7 @@ function headTags({ title, description, canonical, ogType = 'website', image, im
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="/support.js?v=20260802"></script>
 <link rel="stylesheet" href="/content.css">
 <script type="application/ld+json">${jsonLd({ '@context': 'https://schema.org', '@graph': graph })}</script>`;
 }
@@ -131,10 +140,19 @@ function headTags({ title, description, canonical, ogType = 'website', image, im
 /* ----------------------------------------------------------- nav / footer */
 
 function nav(activeHref) {
+  // Reproduces public/SiteNav.dc.html. The <x-dc> version resolves its links at
+  // runtime; these pages ship the nav in the HTML so a text-only crawler sees it, so
+  // the same markup is emitted statically and the styling lives in content.css.
+  //
+  // The mobile panel is toggled by a three-line inline script using the `hidden`
+  // attribute rather than a checkbox: support.js injects its own full-page CSS, which
+  // overrode a `display:none` class rule and left both navs on screen at once. The
+  // `[hidden]` rule in content.css is !important precisely so that cannot recur.
   const items = NAV.map(link => {
     const current = activeHref === link.href || (link.href !== '/' && activeHref.startsWith(link.href));
     return `<li><a href="${link.href}"${current ? ' aria-current="page"' : ''}>${esc(link.label)}</a></li>`;
   }).join('');
+
   return `<a class="skip" href="#main">Skip to content</a>
 <header class="site-head">
   <div class="shell head-inner">
@@ -146,24 +164,44 @@ function nav(activeHref) {
       </picture>
       <span>Felican<b> AI</b></span>
     </a>
-    <nav aria-label="Main"><ul>${items}</ul></nav>
+    <nav class="desktop" aria-label="Main"><ul>${items}</ul></nav>
     <a class="head-cta" href="/booking/">Book a call</a>
+    <button class="nav-toggle-box" type="button" aria-expanded="false" aria-controls="felican-mobile-nav" aria-label="Toggle navigation menu">
+      <span aria-hidden="true"><i></i><i></i><i></i></span>Menu
+    </button>
   </div>
-</header>`;
+  <div class="nav-mobile" id="felican-mobile-nav" hidden>
+    <nav aria-label="Mobile"><ul>${items}<li><a class="mob-cta" href="/booking/">Book a call</a></li></ul></nav>
+  </div>
+</header>
+<script>
+  (() => {
+    const button = document.querySelector('.nav-toggle-box');
+    const panel = document.getElementById('felican-mobile-nav');
+    if (!button || !panel) return;
+    button.addEventListener('click', () => {
+      const open = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!open));
+      panel.hidden = open;
+    });
+  })();
+</script>`;
 }
 
 function footer() {
+  // Reproduces public/SiteFooter.dc.html — #05090C ground, 4px teal top border, the
+  // same four columns and bottom bar. Kept static for the same reason as the nav.
   const columns = FOOTER_COLUMNS.map(
-    col => `<div><h2>${esc(col.title)}</h2><ul>${col.links
+    col => `<nav aria-label="${esc(col.title)}"><h2>${esc(col.title)}</h2><ul>${col.links
       .map(l => `<li><a href="${l.href}">${esc(l.label)}</a></li>`)
-      .join('')}</ul></div>`,
+      .join('')}</ul></nav>`,
   ).join('');
 
   const social = socialLive();
   const socialBlock = social.length
-    ? `<div><h2>Follow</h2><ul>${social
+    ? `<nav aria-label="Follow"><h2>Follow</h2><ul>${social
         .map(s => `<li><a href="${esc(s.url)}" rel="me">${esc(s.label)}</a></li>`)
-        .join('')}</ul></div>`
+        .join('')}</ul></nav>`
     : '';
 
   return `<footer class="site-foot">
@@ -174,11 +212,11 @@ function footer() {
           <picture>
             <source srcset="/logo-mark.avif" type="image/avif">
             <source srcset="/logo-mark.webp" type="image/webp">
-            <img src="/logo-mark.png" alt="" width="26" height="26" loading="lazy" decoding="async">
+            <img src="/logo-mark.png" alt="" width="30" height="30" loading="lazy" decoding="async">
           </picture>
           <span>Felican<b> AI</b></span>
         </a>
-        <p>Practical AI systems for private businesses. Built around how your business already works.</p>
+        <p>Useful AI products, custom systems, automations, integrations, and training &mdash; built for how your business actually operates.</p>
         <p class="nap">
           <a href="tel:+15612350799">${esc(ORG.telephoneDisplay)}</a><br>
           <a href="mailto:${ORG.email}">${ORG.email}</a><br>
@@ -187,10 +225,21 @@ function footer() {
       </div>
       ${columns}
       ${socialBlock}
+      <div>
+        <h2>Contact</h2>
+        <div style="display:grid;gap:14px">
+          <a href="mailto:${ORG.email}" style="font-size:17px;color:#C2D2D4;word-break:break-all">${ORG.email}</a>
+          <a class="foot-cta" href="/booking/">Book a call <span aria-hidden="true">&rarr;</span></a>
+        </div>
+      </div>
     </div>
     <div class="foot-base">
       <p>&copy; ${new Date().getFullYear()} Felican AI. All rights reserved.</p>
-      <p><a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a> · <a href="/contact/">Contact</a></p>
+      <div>
+        <a href="/privacy/">Privacy</a>
+        <a href="/terms/">Terms</a>
+        <span>Books by ${esc(ORG.founder.name)}</span>
+      </div>
     </div>
   </div>
 </footer>`;
@@ -238,12 +287,16 @@ export function page({
 ${headTags({ title, description, canonical, ogType, image, imageAlt, robots, graph })}
 </head>
 <body>
+<x-dc>
 ${nav(activeNav || canonical)}
 ${breadcrumbTrail(trail)}
 <main id="main">
 ${body}
 </main>
+${certStrip()}
 ${footer()}
+<dc-import name="ChatAssistant" hint-size="100%,0px"></dc-import>
+</x-dc>
 <script src="/analytics.js" defer></script>
 </body>
 </html>
@@ -287,6 +340,9 @@ export function picture({ src, alt, width, height, className = '', style = '', l
 export const shell = inner => `<div class="shell">${inner}</div>`;
 
 export function hero({ eyebrow, h1, lede, ctas = [] }) {
+  // The site's signature opener: vertical teal grid lines across the full width, plus
+  // a skewed #0C1419 panel on the right. Both are decorative and aria-hidden. Values
+  // copied from the hero on public/about/index.html so the pages read as one site.
   const buttons = ctas
     .map(
       (cta, index) =>
@@ -294,11 +350,43 @@ export function hero({ eyebrow, h1, lede, ctas = [] }) {
     )
     .join('');
   return `<section class="hero">
+  <div class="stripes" aria-hidden="true"></div>
+  <div class="skew" aria-hidden="true"></div>
   <div class="shell">
     ${eyebrow ? `<p class="eyebrow">${esc(eyebrow)}</p>` : ''}
     <h1>${esc(h1)}</h1>
     ${lede ? `<p class="lede">${lede}</p>` : ''}
     ${buttons ? `<div class="cta-row">${buttons}</div>` : ''}
+  </div>
+</section>`;
+}
+
+/**
+ * The "CERTIFIED ACROSS THE PLATFORMS WE BUILD ON" strip from the about page, so every
+ * generated page closes with the same credential proof the rest of the site carries.
+ */
+export function certStrip() {
+  const badges = [
+    { src: '/badges/aws.png', alt: 'AWS' },
+    { src: '/badges/gcp.svg', alt: 'Google Cloud' },
+    { src: '/badges/azure.svg', alt: 'Microsoft Azure' },
+    { src: '/badges/anthropic.svg', alt: 'Anthropic', cls: 'is-mono' },
+    { src: '/badges/openai.svg', alt: 'OpenAI', cls: 'is-mono' },
+  ];
+  const slots = badges
+    .map(b => {
+      const img = `<img${b.cls ? ` class="${b.cls}"` : ''} src="${b.src}" alt="${esc(b.alt)}" width="100" height="34" loading="lazy" decoding="async">`;
+      // SVGs are already tiny and have no raster variants; only the PNG gets a <picture>.
+      const inner = /\.png$/i.test(b.src)
+        ? `<picture><source srcset="${b.src.replace(/\.png$/i, '.avif')}" type="image/avif"><source srcset="${b.src.replace(/\.png$/i, '.webp')}" type="image/webp">${img}</picture>`
+        : img;
+      return `<span class="cert-slot">${inner}</span>`;
+    })
+    .join('');
+  return `<section class="cert-band">
+  <div class="shell">
+    <h2 class="eyebrow" style="font-size:14px">Certified across the platforms we build on</h2>
+    <div class="cert-strip">${slots}</div>
   </div>
 </section>`;
 }

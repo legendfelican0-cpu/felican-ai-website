@@ -224,3 +224,102 @@ describe('search monitoring', () => {
     expect(logs.find(entry => entry.event === 'site.analytics')).toBeUndefined();
   });
 });
+
+describe('assistant knowledge', () => {
+  // The assistant's knowledge used to be hardcoded in the system prompt: five products
+  // when the site had nineteen, and the old name for Voice AI. It is generated from
+  // content/*.js now, and these assert it stays in sync.
+  it('knows every product on the site, not a hardcoded handful', async () => {
+    const { FELICAN_SYSTEM_PROMPT } = await import('./app.js');
+    const { PRODUCTS } = await import('../content/products.js');
+    const missing = PRODUCTS.filter(p => !p.hubOnly).filter(p => !FELICAN_SYSTEM_PROMPT.includes(p.name));
+    expect(missing.map(p => p.name)).toEqual([]);
+  });
+
+  it('knows every service, industry and guide', async () => {
+    const { FELICAN_SYSTEM_PROMPT } = await import('./app.js');
+    const { SERVICES } = await import('../content/services.js');
+    const { INDUSTRIES } = await import('../content/industries.js');
+    const { GUIDES } = await import('../content/guides.js');
+    for (const s of SERVICES) expect(FELICAN_SYSTEM_PROMPT).toContain(s.name);
+    for (const i of INDUSTRIES) expect(FELICAN_SYSTEM_PROMPT).toContain(i.longName);
+    for (const g of GUIDES) expect(FELICAN_SYSTEM_PROMPT).toContain(g.h1);
+  });
+
+  it('carries no renamed or retired names', async () => {
+    const { FELICAN_SYSTEM_PROMPT, FELICAN_VOICE_SYSTEM_PROMPT } = await import('./app.js');
+    for (const prompt of [FELICAN_SYSTEM_PROMPT, FELICAN_VOICE_SYSTEM_PROMPT]) {
+      expect(prompt).not.toContain('Felican Auto');
+      expect(prompt).not.toContain('Business automation');
+      expect(prompt).not.toContain('AI agents and bots');
+    }
+  });
+
+  it('quotes the price from server/checkout.js', async () => {
+    const { FELICAN_SYSTEM_PROMPT } = await import('./app.js');
+    const { CATALOG } = await import('./checkout.js');
+    expect(FELICAN_SYSTEM_PROMPT).toContain(`$${(CATALOG['private-ai'].amount / 100).toLocaleString('en-US')}`);
+    expect(FELICAN_SYSTEM_PROMPT).toContain(`$${(CATALOG.pack.amount / 100).toLocaleString('en-US')}`);
+  });
+
+  it('tells the chat assistant to be brief and to offer follow-ups', async () => {
+    const { FELICAN_SYSTEM_PROMPT } = await import('./app.js');
+    expect(FELICAN_SYSTEM_PROMPT).toMatch(/two to four short sentences/i);
+    expect(FELICAN_SYSTEM_PROMPT).toMatch(/follow-up questions/i);
+    expect(FELICAN_SYSTEM_PROMPT).toContain('> ');
+  });
+
+  it('keeps the "> " follow-up convention out of the voice prompt', async () => {
+    // Spoken aloud, "> " is read as "greater than".
+    const { FELICAN_VOICE_SYSTEM_PROMPT } = await import('./app.js');
+    expect(FELICAN_VOICE_SYSTEM_PROMPT).toMatch(/one or two sentences/i);
+    expect(FELICAN_VOICE_SYSTEM_PROMPT).not.toMatch(/^> /m);
+    expect(FELICAN_VOICE_SYSTEM_PROMPT).toMatch(/never read out a url/i);
+  });
+});
+
+describe('chat streaming', () => {
+  it('streams the reply as server-sent events when asked', async () => {
+    const base = await start({
+      streamReply: async (messages, onDelta) => {
+        onDelta('Private AI ');
+        onDelta('runs inside your network.');
+        return { reply: 'Private AI runs inside your network.\n> What does it cost?', usage: {} };
+      },
+    });
+    const response = await fetch(`${base}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream', 'User-Agent': 'Mozilla/5.0 Chrome/126' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'what is private ai' }], stream: true }),
+    });
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/event-stream');
+    const body = await response.text();
+    expect(body).toContain('event: delta');
+    expect(body).toContain('event: done');
+    expect(body).toContain('Private AI ');
+  });
+
+  it('still answers normally when streaming is not requested', async () => {
+    const base = await start({ complete: async () => 'A buffered answer.' });
+    const response = await fetch(`${base}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 Chrome/126' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'hello' }] }),
+    });
+    expect(response.status).toBe(200);
+    expect((await response.json()).reply).toBe('A buffered answer.');
+  });
+
+  it('reports a provider failure on the stream instead of hanging', async () => {
+    const base = await start({
+      streamReply: async () => { throw new Error('provider down'); },
+    });
+    const response = await fetch(`${base}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream', 'User-Agent': 'Mozilla/5.0 Chrome/126' },
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'hello' }], stream: true }),
+    });
+    expect(await response.text()).toContain('event: failed');
+  });
+});

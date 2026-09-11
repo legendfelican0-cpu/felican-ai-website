@@ -1,5 +1,6 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
+import { ASSISTANT_KNOWLEDGE } from './assistant-knowledge.js';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { createServer } from 'node:http';
 
@@ -55,29 +56,72 @@ const MIME = new Map([
   ['.avif', 'image/avif'],
 ]);
 
-export const FELICAN_SYSTEM_PROMPT = `You are the Felican AI assistant running on the Felican AI website. Be clear, brief, friendly, and honest. Answer in 2-4 short sentences unless the visitor asks for detail.
+export const FELICAN_SYSTEM_PROMPT = `You are the Felican AI assistant on the Felican AI website.
 
-Felican AI builds useful AI products, custom systems, business automations, integrations, assistants, solutions, and training for businesses in any industry. It is a team of more than ten certified AI professionals with backgrounds across every major industry, led by Lee Felican Jr., a software engineer and enterprise architect with 30+ years of experience.
+HOW TO ANSWER
+Be brief. Two to four short sentences for most questions. A visitor reading a chat
+bubble will not read a wall of text, and a long answer buries the one thing they asked
+for. Only go longer when they explicitly ask for detail.
+Lead with the answer, then the link. Never pad with preamble.
+When a question maps to a page, name the page and give its path so they can read more.
+If a question is broad — "what do you offer?", "what products do you have?" — give the
+shape of the answer and the best two or three examples rather than listing everything,
+then offer to narrow it down. Do not claim there are only a handful when there are many.
+Never invent customers, pricing, awards, features or statistics. If you do not know,
+say so and point to /contact/.
 
-Products and official links:
-- Private AI (the flagship product): enterprise-grade private AI with zero data exposure, deployed securely inside the customer's own network. Self-hosted models under their access controls, no data sent to a public model, and data residency, audit trails, and retention rules they set. Recommend this first for any business worried about sensitive data.
-- Felican Auto: an AI voice and web assistant for dealerships that answers calls and chats, uses live inventory, books test drives, and captures leads. https://auto.felican.ai/
-- Relay: AI field-service software for HVAC, plumbing, and electrical companies. It combines maintenance scheduling, AP invoice OCR and review, AR collections, quotes, crew management, reports, and an AI operations assistant. https://relay.felican.dev/relay
-- Chat AI Assistant: a company-trained AI agent businesses can embed inside a website or app. It answers questions, recommends services, captures inquiries, connects workflows, and hands off to people. The assistant on this site is a live example of the product.
-- World of Agents: a trusted AI presence and AI Twin product that helps people stay available across conversations, circles, messages, and calls while controlling access. https://woa.felican.ai/
+FOLLOW-UP QUESTIONS
+End every reply with two or three short follow-up questions the visitor is likely to
+want next, each on its own line, prefixed exactly with "> ". They must be phrased as
+the visitor would ask them, in the first person, and be answerable from what you know.
+Example:
+> What does Private AI cost?
+> Can it run inside our own network?
+Nothing may come after the follow-up lines.
 
-Services: AI agents and bots, business automation, custom integrations, private AI systems, AI implementation and consulting, business solutions, AI training and workshops.
+STYLE
+Plain text only: no Markdown, no headings, no code blocks, no emoji, no asterisks.
+Always spell the company exactly "Felican AI" — never Felikan, Fell-ih-can or Falcon AI.
+Always spell "Ballas" with two l's and a final s.
+Offer a handoff to a person whenever someone wants a quote, a human, or something you
+cannot answer: the envelope button beside the message box, /contact/, or /booking/.
 
-Education: the /education/ page includes Felican AI eBooks, books by Lee Felican Jr., upcoming courses, Tiny Techs for early learners, nonprofit partnerships, school partnerships, and corporate training. After a visitor enters an email address or phone number, open the specific eBook they selected.
+WHAT YOU KNOW
+Everything below is generated from the live site content, so it is current. Prices are
+in US dollars.
 
-Books by Lee Felican Jr.:
-- The Big Balla's Guide to Making Money with AI: 100 real ways to make money with AI, organized by startup cost and industry, plus beginner AI trading and a legal-business-under-$50 playbook.
-- Don't Be Replaced: a working person's plan for staying valuable in the AI era by separating routine work from the human judgment that matters.
-- Stop Being Nice to AI: a practical guide to better results from AI using the GRRRRR prompting method.
-- The BIG AI Book: a fully illustrated, plain-language explanation of AI for grown-ups, including agents, skills, and tools.
-Book resources: https://felican.ai/Lee-Felican-jr/books/resources/
+${ASSISTANT_KNOWLEDGE}`;
 
-Contact: email ai@felican.ai, or call (561) 235-0799 Monday to Friday, 9am-6pm Eastern. Visitors can also send a message straight to the team from this chat using the envelope button beside the message box, or from the contact page at /contact/. Offer that handoff whenever someone wants a person, a quote, or something you cannot answer. Always spell the company name exactly “Felican AI” in visible text—never Felikan, Fell-ih-can, or Falcon AI. Always spell the name “Ballas” with two l's and a final s. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
+
+
+// The voice agent shares the generated knowledge but not the chat formatting. The
+// chat prompt asks for "> " follow-up lines, which a speech engine reads aloud as
+// "greater than"; and URLs are unusable spoken. This variant is written to be heard.
+export const FELICAN_VOICE_SYSTEM_PROMPT = `You are the Felican AI voice assistant, speaking with a caller on the Felican AI website.
+
+HOW TO SPEAK
+This is a phone-style conversation. Keep every answer to one or two sentences unless
+the caller asks for more. Long answers do not work when spoken — the caller cannot skim.
+Answer the question first. Do not list more than three things at once; offer to go
+through the rest if they want.
+Never read out a URL, a file path or an email address unless the caller asks for it
+directly. Say "I can email that over" or "it is on our products page" instead.
+Never say characters like a greater-than sign, an asterisk or a bullet. Speak in plain
+sentences only.
+Ask one short follow-up question at the end of your turn to keep the conversation
+moving, phrased naturally, not as a list.
+Never invent customers, pricing, awards, features or statistics. If you do not know,
+say so and offer to have someone call or email them back.
+
+NAMES
+Always say and spell the company as "Felican AI". Always spell "Ballas" with two l's
+and a final s. Pronunciation is handled by the voice engine; never spell anything
+phonetically in your text.
+
+WHAT YOU KNOW
+Generated from the live site, so it is current. Prices are in US dollars.
+
+${ASSISTANT_KNOWLEDGE}`;
 
 export function sanitizeText(value, maxLength = MAX_MESSAGE_LENGTH) {
   return String(value ?? '')
@@ -419,7 +463,83 @@ export async function sendContactEmail(contact, env = process.env) {
   }
 }
 
-export async function completeWithConfiguredProvider(messages, env = process.env) {
+// Streams the reply token by token. The buffered completeWithConfiguredProvider stays
+// for the non-streaming path and for tests; this shares its provider selection.
+//
+// `onDelta` is called with each text fragment as it arrives. Resolves with the full
+// reply and usage once the stream ends, so logging and sanitising work exactly as
+// before.
+export async function streamWithConfiguredProvider(messages, onDelta, env = process.env) {
+  if (env.NODE_ENV === 'test' && env.AI_MOCK_REPLY) {
+    const reply = sanitizeText(env.AI_MOCK_REPLY, 2400);
+    onDelta(reply);
+    return { reply, usage: { inputTokens: 0, outputTokens: 0 } };
+  }
+  const asherKey = env.ASHER_API_KEY?.trim();
+  const anthropicKey = env.ANTHROPIC_API_KEY?.trim();
+  const endpoint = asherKey ? env.ASHER_BASE_URL?.trim() : 'https://api.anthropic.com/v1/messages';
+  const key = asherKey || anthropicKey;
+  if (!key || !endpoint) throw new Error('AI provider is not configured');
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60_000);
+  try {
+    const headers = asherKey
+      ? { Authorization: `Bearer ${key}`, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' }
+      : { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' };
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: asherKey ? (env.ASHER_MODEL || 'claude-sonnet-4-6') : (env.ANTHROPIC_MODEL || 'claude-sonnet-4-5'),
+        system: FELICAN_SYSTEM_PROMPT,
+        messages,
+        max_tokens: 500,
+        temperature: 0.3,
+        stream: true,
+      }),
+    });
+    if (!response.ok || !response.body) throw new Error(`AI provider returned ${response.status}`);
+
+    let full = '';
+    let inputTokens = 0;
+    let outputTokens = 0;
+    let buffer = '';
+
+    const decoder = new TextDecoder();
+    for await (const chunk of response.body) {
+      buffer += decoder.decode(chunk, { stream: true });
+      // Anthropic's SSE frames are separated by a blank line.
+      let split;
+      while ((split = buffer.indexOf('\n\n')) !== -1) {
+        const frame = buffer.slice(0, split);
+        buffer = buffer.slice(split + 2);
+        for (const line of frame.split('\n')) {
+          if (!line.startsWith('data:')) continue;
+          const payload = line.slice(5).trim();
+          if (!payload || payload === '[DONE]') continue;
+          let event;
+          try { event = JSON.parse(payload); } catch { continue; }
+          if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+            full += event.delta.text;
+            onDelta(event.delta.text);
+          } else if (event.type === 'message_start') {
+            inputTokens = Number(event.message?.usage?.input_tokens) || 0;
+          } else if (event.type === 'message_delta') {
+            outputTokens = Number(event.usage?.output_tokens) || outputTokens;
+          }
+        }
+      }
+    }
+    if (!full.trim()) throw new Error('AI provider returned an empty reply');
+    return { reply: full, usage: { inputTokens, outputTokens } };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function completeWithConfiguredProvider(messages, env = process.env, system = FELICAN_SYSTEM_PROMPT) {
   if (env.NODE_ENV === 'test' && env.AI_MOCK_REPLY) return sanitizeText(env.AI_MOCK_REPLY, 2400);
   const asherKey = env.ASHER_API_KEY?.trim();
   const anthropicKey = env.ANTHROPIC_API_KEY?.trim();
@@ -441,7 +561,7 @@ export async function completeWithConfiguredProvider(messages, env = process.env
       signal: controller.signal,
       body: JSON.stringify({
         model: asherKey ? (env.ASHER_MODEL || 'claude-sonnet-4-6') : (env.ANTHROPIC_MODEL || 'claude-sonnet-4-5'),
-        system: FELICAN_SYSTEM_PROMPT,
+        system,
         messages,
         max_tokens: 500,
         temperature: 0.3,
@@ -548,6 +668,7 @@ function staticPath(rootDir, pathname) {
 export function createAppServer({
   rootDir,
   complete = completeWithConfiguredProvider,
+  streamReply = streamWithConfiguredProvider,
   sendContact = sendContactEmail,
   deliverLead,
   voiceBundleFetch = fetch,
@@ -687,7 +808,7 @@ export function createAppServer({
         if (!messages.length || messages.at(-1).role !== 'user') {
           return json(res, 400, { error: 'A user message is required.' });
         }
-        const completion = await complete(messages);
+        const completion = await complete(messages, undefined, FELICAN_VOICE_SYSTEM_PROMPT);
         const reply = sanitizeAssistantReply(typeof completion === 'string' ? completion : completion?.reply);
         if (!reply) throw new Error('empty_voice_reply');
         const id = `chatcmpl-${requestId}`;
@@ -794,6 +915,47 @@ export function createAppServer({
         if (!messages.length || messages.at(-1).role !== 'user') {
           return json(res, 400, { error: 'Please enter a question.' });
         }
+        // Stream when the client asks for it, so text appears as it is generated
+        // instead of the whole answer landing at once after a long pause. The
+        // buffered path is kept for clients that do not, and for the smoke test.
+        const wantsStream = body.stream === true
+          && String(req.headers.accept || '').includes('text/event-stream');
+
+        if (wantsStream) {
+          res.writeHead(200, {
+            ...securityHeaders('text/event-stream; charset=utf-8'),
+            'Cache-Control': 'no-cache, no-transform',
+            Connection: 'keep-alive',
+            // Defeats proxy buffering, which would otherwise hold the whole stream
+            // and defeat the point of streaming at all.
+            'X-Accel-Buffering': 'no',
+          });
+          const send = (event, data) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+          let streamed = '';
+          try {
+            const result = await streamReply(messages, delta => {
+              streamed += delta;
+              send('delta', { text: delta });
+            });
+            const clean = sanitizeAssistantReply(result.reply ?? streamed);
+            send('done', { reply: clean });
+            structuredLog(logger, 'info', 'chat.completed', {
+              requestId,
+              streamed: true,
+              durationMs: Date.now() - startedAt,
+              inputTokens: Number(result.usage?.inputTokens) || 0,
+              outputTokens: Number(result.usage?.outputTokens) || 0,
+            });
+          } catch (error) {
+            structuredLog(logger, 'error', 'chat.failed', {
+              requestId, streamed: true, durationMs: Date.now() - startedAt,
+              reason: error?.message || 'unknown error',
+            });
+            send('failed', { error: 'The assistant is temporarily unavailable.' });
+          }
+          return res.end();
+        }
+
         const completion = await complete(messages);
         const reply = typeof completion === 'string' ? completion : completion?.reply;
         const usage = typeof completion === 'object' ? completion?.usage : undefined;

@@ -79,8 +79,16 @@ describe('generated content pages', () => {
     // The generated pages are plain HTML and must never contain <x-dc> templating.
     // JSON-LD legitimately contains }} where objects nest, so script blocks are
     // stripped before checking the markup.
+    // <dc-import name="ChatAssistant"> is deliberate — it is the shared component
+    // carrying the assistant launcher and the gold credentials bar that every other
+    // page has. Nothing else may be templated: the page's own content must be static.
     const leaking = pages
-      .filter(p => /\{\{|\}\}|<sc-for|<dc-import/.test(p.html.replace(/<script[\s\S]*?<\/script>/g, '')))
+      .filter(p => {
+        const markup = p.html
+          .replace(/<script[\s\S]*?<\/script>/g, '')
+          .replace(/<dc-import name="ChatAssistant"[^>]*><\/dc-import>/g, '');
+        return /\{\{|\}\}|<sc-for|<dc-import/.test(markup);
+      })
       .map(p => p.urlPath);
     expect(leaking).toEqual([]);
   });
