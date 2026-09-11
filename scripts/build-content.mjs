@@ -69,22 +69,24 @@ const sectionsToProse = list => prose(list.map(section));
 
 function productGraph(product) {
   const url = `${ORIGIN}/products/${product.slug}/`;
-  const isSoftware = product.tier !== 'flagship' || ['felican-idp', 'crosscheck-ai', 'relay'].includes(product.slug);
+  // SoftwareApplication, never Product. Google's Product rich result requires one of
+  // offers / review / aggregateRating, and these pages deliberately show no price —
+  // prices live in server/checkout.js and appear only on /starter-pack/. A Product
+  // node here would be invalid by construction; Search Console flagged exactly this
+  // on the pre-existing /products/ markup (19 invalid items, "Either offers, review,
+  // or aggregateRating should be specified"). SoftwareApplication is accurate for
+  // every one of these and carries no offers requirement.
   return [
     {
-      '@type': isSoftware ? 'SoftwareApplication' : 'Product',
+      '@type': 'SoftwareApplication',
       '@id': `${url}#product`,
       name: product.name,
       url,
       description: product.description,
       ...(product.image ? { image: abs(product.image) } : {}),
-      brand: { '@id': `${ORIGIN}/#organization` },
-      ...(isSoftware
-        ? { applicationCategory: 'BusinessApplication', operatingSystem: 'Web' }
-        : {}),
-      // No `offers` node here on purpose. Prices live in server/checkout.js and are
-      // only displayed on /starter-pack/; structured data must match what the page
-      // shows, and these pages show no price.
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web',
+      publisher: { '@id': `${ORIGIN}/#organization` },
     },
   ];
 }

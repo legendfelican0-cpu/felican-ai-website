@@ -161,5 +161,65 @@ const already = [];
   }
 }
 
+
+/* 5. /products/ and /starter-pack/ — make the Product markup valid.
+      Search Console reported 19 invalid items on /products/: "Either offers, review,
+      or aggregateRating should be specified". Google's Product rich result requires
+      one of those three, and /products/ deliberately shows no price — the hard rule is
+      that cart and prices appear only on /starter-pack/.
+
+      So the unpriced entries become SoftwareApplication, which is accurate for all of
+      them and carries no offers requirement. The Starter Pack bundle keeps Product and
+      gains real offers, generated from server/checkout.js — the single source of truth
+      for price — so the markup and the displayed price cannot drift apart. */
+{
+  const { CATALOG } = await import('../server/checkout.js');
+  const money = cents => (cents / 100).toFixed(2);
+
+  // --- /products/: retype the unpriced Product nodes.
+  {
+    const rel = 'public/products/index.html';
+    let html = read(rel);
+    if (html.includes('"@type":"SoftwareApplication"') || html.includes('"@type": "SoftwareApplication"')) {
+      already.push('products Product -> SoftwareApplication');
+    } else {
+      const before = html;
+      // The ItemList entries and the standalone Product block both carry `"@type":"Product"`.
+      html = html.replaceAll('"@type":"Product"', '"@type":"SoftwareApplication"');
+      html = html.replaceAll('"@type": "Product"', '"@type": "SoftwareApplication"');
+      if (html !== before) { save(rel, html); done.push('products Product -> SoftwareApplication'); }
+      else already.push('products Product -> SoftwareApplication');
+    }
+  }
+
+  // --- /starter-pack/: the bundle is genuinely priced and displayed, so it keeps
+  //     Product and gets offers built from CATALOG.
+  {
+    const rel = 'public/starter-pack/index.html';
+    let html = read(rel);
+    if (html.includes('"offers"')) {
+      already.push('starter-pack offers');
+    } else {
+      const pack = CATALOG.pack;
+      const offers = {
+        '@type': 'Offer',
+        price: money(pack.amount),
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: 'https://felican.ai/starter-pack/',
+        seller: { '@id': 'https://felican.ai/#organization' },
+      };
+      const needle = '"@id":"https://felican.ai/starter-pack/#bundle"';
+      if (!html.includes(needle)) throw new Error('starter-pack: bundle node not found');
+      html = html.replace(
+        '"brand":{"@id":"https://felican.ai/#organization"}',
+        `"brand":{"@id":"https://felican.ai/#organization"},"offers":${JSON.stringify(offers)}`,
+      );
+      save(rel, html);
+      done.push(`starter-pack offers ($${money(pack.amount)} from server/checkout.js)`);
+    }
+  }
+}
+
 if (done.length) console.log(`Patched: ${done.join('; ')}`);
 if (already.length) console.log(`Already applied: ${already.join('; ')}`);

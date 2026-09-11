@@ -289,3 +289,69 @@ describe('AGENTS.md copy rules', () => {
     expect(text).not.toContain('"FAQPage"');
   });
 });
+
+// Structured-data validity across the whole site, generated and hand-written alike.
+// Search Console reported 19 invalid Product items on /products/ before this pass.
+describe('structured data validity', () => {
+  const allPages = [join(ROOT, 'index.html'), ...walk(PUBLIC)];
+
+  const blocksIn = file => {
+    const html = readFileSync(file, 'utf8');
+    return [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+      .map(m => ({ file, raw: m[1] }));
+  };
+
+  const nodes = [];
+  const parseErrors = [];
+  for (const file of allPages) {
+    for (const { raw } of blocksIn(file)) {
+      try {
+        const data = JSON.parse(raw.replace(/\\u003c/g, '<'));
+        const visit = node => {
+          if (Array.isArray(node)) return node.forEach(visit);
+          if (!node || typeof node !== 'object') return;
+          nodes.push({ file: file.slice(ROOT.length), node });
+          Object.values(node).forEach(visit);
+        };
+        visit(data);
+      } catch (error) {
+        parseErrors.push(`${file.slice(ROOT.length)}: ${error.message}`);
+      }
+    }
+  }
+
+  const typesOf = node => [].concat(node['@type'] || []);
+
+  it('every JSON-LD block on every page parses', () => {
+    expect(parseErrors).toEqual([]);
+  });
+
+  it('every Product node carries offers, review or aggregateRating', () => {
+    // Google's requirement. Without one of the three the item is invalid and earns no
+    // rich result. Unpriced items must be SoftwareApplication instead.
+    const invalid = nodes
+      .filter(({ node }) => typesOf(node).includes('Product'))
+      .filter(({ node }) => !['offers', 'review', 'aggregateRating'].some(k => k in node))
+      .map(({ file, node }) => `${file}: ${node.name || '(unnamed)'}`);
+    expect(invalid).toEqual([]);
+  });
+
+  it('the Starter Pack offer price matches server/checkout.js', async () => {
+    // The one place a price appears in markup. Generated from the same constant the
+    // server charges from, so the two cannot drift.
+    const { CATALOG } = await import('../server/checkout.js');
+    const expected = (CATALOG.pack.amount / 100).toFixed(2);
+    const bundle = nodes.find(({ node }) => node['@id'] === 'https://felican.ai/starter-pack/#bundle');
+    expect(bundle).toBeTruthy();
+    expect(bundle.node.offers.price).toBe(expected);
+    expect(bundle.node.offers.priceCurrency).toBe('USD');
+  });
+
+  it('no page outside /starter-pack/ emits a price in structured data', () => {
+    const leaked = nodes
+      .filter(({ file }) => !file.includes('/starter-pack/'))
+      .filter(({ node }) => 'price' in node)
+      .map(({ file }) => file);
+    expect([...new Set(leaked)]).toEqual([]);
+  });
+});
