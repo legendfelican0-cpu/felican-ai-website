@@ -323,3 +323,74 @@ describe('chat streaming', () => {
     expect(await response.text()).toContain('event: failed');
   });
 });
+
+describe('assistant abuse limits', () => {
+  // The chat endpoint calls a paid model, so an unthrottled one is a bill waiting to
+  // happen. These pin the limits that already existed, so nobody relaxes them by
+  // accident, plus the scope rule that stops it being used as a free general LLM.
+  it('rejects bot user agents outright', async () => {
+    const base = await start({ complete: async () => 'should not be reached' });
+    for (const ua of ['curl/8.4.0', 'python-requests/2.31', 'Scrapy/2.11', 'Googlebot/2.1', '']) {
+      const response = await fetch(`${base}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'User-Agent': ua },
+        body: JSON.stringify({ messages: [{ role: 'user', content: 'hi' }] }),
+      });
+      expect(response.status).toBe(403);
+    }
+  });
+
+  it('rate limits a single IP', async () => {
+    const base = await start({ complete: async () => 'ok' });
+    const headers = {
+      'Content-Type': 'application/json',
+      'User-Agent': 'Mozilla/5.0 Chrome/126',
+      'CF-Connecting-IP': '203.0.113.42',
+    };
+    const body = JSON.stringify({ messages: [{ role: 'user', content: 'hi' }] });
+    const codes = [];
+    for (let i = 0; i < 14; i += 1) {
+      codes.push((await fetch(`${base}/api/chat`, { method: 'POST', headers, body })).status);
+    }
+    // Ten per minute, then throttled — the caller must not be able to keep going.
+    expect(codes.filter(c => c === 200).length).toBeLessThanOrEqual(10);
+    expect(codes).toContain(429);
+  });
+
+  it('counts the real client IP behind Cloudflare, not the proxy', async () => {
+    // Without this every visitor would share one bucket and one person could lock
+    // everyone else out — or evade the limit entirely.
+    const base = await start({ complete: async () => 'ok' });
+    const send = ip => fetch(`${base}/api/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'User-Agent': 'Mozilla/5.0 Chrome/126', 'CF-Connecting-IP': ip },
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'hi' }] }),
+    });
+    for (let i = 0; i < 11; i += 1) await send('198.51.100.7');
+    expect((await send('198.51.100.7')).status).toBe(429);
+    // A different visitor is unaffected.
+    expect((await send('198.51.100.8')).status).toBe(200);
+  });
+
+  it('caps message size and history length', async () => {
+    const { normalizeMessages } = await import('./app.js');
+    const long = normalizeMessages([{ role: 'user', content: 'x'.repeat(5000) }]);
+    expect(long[0].content.length).toBeLessThanOrEqual(800);
+    const many = normalizeMessages(Array.from({ length: 40 }, () => ({ role: 'user', content: 'hi' })));
+    expect(many.length).toBeLessThanOrEqual(10);
+  });
+
+  it('both prompts refuse anything that is not about Felican AI', async () => {
+    const { FELICAN_SYSTEM_PROMPT, FELICAN_VOICE_SYSTEM_PROMPT } = await import('./app.js');
+    for (const raw of [FELICAN_SYSTEM_PROMPT, FELICAN_VOICE_SYSTEM_PROMPT]) {
+      // The prompts are hard-wrapped, so match against normalised whitespace rather
+      // than depending on where a line happens to break.
+      const prompt = raw.replace(/\s+/g, ' ');
+      expect(prompt).toContain('WHAT YOU WILL AND WILL NOT ANSWER');
+      expect(prompt).toMatch(/only help with questions about Felican AI/i);
+      // Prompt-injection and roleplay attempts are named explicitly.
+      expect(prompt).toMatch(/ignore[^.]{0,40}reveal/i);
+      expect(prompt).toMatch(/roleplay/i);
+    }
+  });
+});
