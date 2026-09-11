@@ -44,6 +44,9 @@
 
 ## Starter Pack project
 
+**Session handoffs go in `docs/SESSION-HANDOFF.md`, not here.** `/handoff` would
+otherwise overwrite the spec below.
+
 **`HANDOFF.md` in this directory is the spec.** Read it in full before writing
 any code. It contains the locked product decisions, pricing, copy rules, what is
 already built, what is not, and the remaining work in priority order.
