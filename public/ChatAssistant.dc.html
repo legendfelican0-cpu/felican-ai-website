@@ -463,9 +463,13 @@ class Component extends DCLogic {
       vapi.setAudioSource(track);
       // Start the live room immediately after microphone permission resolves;
       // no unrelated work sits between the visitor's tap and the voice call.
+      // These override the provisioned assistant config, so they must agree with
+      // scripts/provision-felican-vapi.py. Kept explicit rather than inherited because
+      // DEV and PROD use separate Vapi assistants.
       await vapi.start(this._voiceConfig.assistantId, {
-        firstMessageMode: 'assistant-waits-for-user',
-        firstMessageInterruptionsEnabled: false
+        firstMessage: "Hi, this is Felican AI. How can I help?",
+        firstMessageMode: 'assistant-speaks-first',
+        firstMessageInterruptionsEnabled: true
       });
     } catch (error) {
       this.stopMicMonitor();

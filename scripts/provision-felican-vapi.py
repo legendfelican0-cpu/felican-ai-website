@@ -86,10 +86,14 @@ def assistant_payload(
 ) -> dict:
     return {
         "name": assistant_name,
-        # Begin silently and wait for actual visitor speech before responding.
-        "firstMessage": None,
-        "firstMessageMode": "assistant-waits-for-user",
-        "firstMessageInterruptionsEnabled": False,
+        # Greet first, briefly. Previously the assistant waited silently for the
+        # visitor to speak, which left callers unsure the line was live. The greeting
+        # is a fixed string rather than model-generated so it is identical every time
+        # and starts without waiting on an inference round trip.
+        "firstMessage": "Hi, this is Felican AI. How can I help?",
+        "firstMessageMode": "assistant-speaks-first",
+        # A caller who already knows what they want can talk straight over it.
+        "firstMessageInterruptionsEnabled": True,
         # Match the proven COPS browser voice path exactly: omit browser
         # worklet denoisers instead of sending a disabled plan.
         "backgroundSpeechDenoisingPlan": None,

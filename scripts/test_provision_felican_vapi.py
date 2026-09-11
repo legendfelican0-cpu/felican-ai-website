@@ -16,8 +16,10 @@ class ProvisionFelicanVapiTests(unittest.TestCase):
         self.assertEqual(payload["voice"]["voiceId"], "cgSgspJ2msm6clMCkdW9")
         self.assertEqual(payload["model"]["url"], "https://felican.dev/v1")
         self.assertEqual(payload["model"]["headers"]["x-vapi-secret"], "secret-value")
-        self.assertIsNone(payload["firstMessage"])
-        self.assertEqual(payload["firstMessageMode"], "assistant-waits-for-user")
+        # Greets first, with a fixed string so every session opens identically.
+        self.assertEqual(payload["firstMessage"], "Hi, this is Felican AI. How can I help?")
+        self.assertEqual(payload["firstMessageMode"], "assistant-speaks-first")
+        self.assertTrue(payload["firstMessageInterruptionsEnabled"])
         self.assertFalse(payload["endCallFunctionEnabled"])
         self.assertNotIn("COPS", json_text(payload))
         model_prompt = payload["model"]["messages"][0]["content"]
