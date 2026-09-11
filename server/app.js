@@ -1,5 +1,6 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
+import { ASSISTANT_KNOWLEDGE } from './assistant-knowledge.js';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { createServer } from 'node:http';
 
@@ -25,7 +26,11 @@ const RATE_MAP_CAP = 10_000;
 const COPS_VOICE_BUNDLE_URL = 'https://cops-website.felican.dev/voice-client.bundle.js';
 const COPS_VOICE_BUNDLE_SHA384 = 'sha384-om2+KCCsCWb4oslvQoDmevbN/xaXx9cMxSf4Prw1kdgEFYKx2kOwJqWqDmhG8fKc';
 const MAX_VOICE_BUNDLE_BYTES = 1024 * 1024;
-const ANALYTICS_EVENTS = new Set(['page_view', 'contact_click', 'product_click', 'assistant_open']);
+// 'web_vitals' and 'ai_referral' were added for search monitoring. Core Web Vitals
+// are a confirmed ranking input measured on real visits at the 75th percentile, and
+// there is no console that reports AI-assistant referrals — they arrive looking like
+// ordinary traffic unless the referrer is classified on arrival.
+const ANALYTICS_EVENTS = new Set(['page_view', 'contact_click', 'product_click', 'assistant_open', 'web_vitals', 'ai_referral']);
 const EDUCATION_GUIDES = new Map([
   ['12-ways-ai-can-help-your-business', { title: '12 Ways AI Can Help Your Business', url: 'https://felican.ai/ebooks/12-ways-ai-can-help-your-business' }],
   ['ai-starter-pack-for-kids-teens-and-adults', { title: 'AI Starter Pack for Kids, Teens, and Adults', url: 'https://felican.ai/ebooks/ai-starter-pack-for-kids-teens-and-adults' }],
@@ -48,31 +53,75 @@ const MIME = new Map([
   ['.wav', 'audio/wav'],
   ['.webp', 'image/webp'],
   ['.xml', 'application/xml; charset=utf-8'],
+  ['.avif', 'image/avif'],
 ]);
 
-export const FELICAN_SYSTEM_PROMPT = `You are the Felican AI assistant running on the Felican AI website. Be clear, brief, friendly, and honest. Answer in 2-4 short sentences unless the visitor asks for detail.
+export const FELICAN_SYSTEM_PROMPT = `You are the Felican AI assistant on the Felican AI website.
 
-Felican AI builds useful AI products, custom systems, business automations, integrations, assistants, solutions, and training for businesses in any industry. It is a team of more than ten certified AI professionals with backgrounds across every major industry, led by Lee Felican Jr., a software engineer and enterprise architect with 30+ years of experience.
+HOW TO ANSWER
+Be brief. Two to four short sentences for most questions. A visitor reading a chat
+bubble will not read a wall of text, and a long answer buries the one thing they asked
+for. Only go longer when they explicitly ask for detail.
+Lead with the answer, then the link. Never pad with preamble.
+When a question maps to a page, name the page and give its path so they can read more.
+If a question is broad — "what do you offer?", "what products do you have?" — give the
+shape of the answer and the best two or three examples rather than listing everything,
+then offer to narrow it down. Do not claim there are only a handful when there are many.
+Never invent customers, pricing, awards, features or statistics. If you do not know,
+say so and point to /contact/.
 
-Products and official links:
-- Private AI (the flagship product): enterprise-grade private AI with zero data exposure, deployed securely inside the customer's own network. Self-hosted models under their access controls, no data sent to a public model, and data residency, audit trails, and retention rules they set. Recommend this first for any business worried about sensitive data.
-- Felican Auto: an AI voice and web assistant for dealerships that answers calls and chats, uses live inventory, books test drives, and captures leads. https://auto.felican.ai/
-- Relay: AI field-service software for HVAC, plumbing, and electrical companies. It combines maintenance scheduling, AP invoice OCR and review, AR collections, quotes, crew management, reports, and an AI operations assistant. https://relay.felican.dev/relay
-- Chat AI Assistant: a company-trained AI agent businesses can embed inside a website or app. It answers questions, recommends services, captures inquiries, connects workflows, and hands off to people. The assistant on this site is a live example of the product.
-- World of Agents: a trusted AI presence and AI Twin product that helps people stay available across conversations, circles, messages, and calls while controlling access. https://woa.felican.ai/
+FOLLOW-UP QUESTIONS
+End every reply with two or three short follow-up questions the visitor is likely to
+want next, each on its own line, prefixed exactly with "> ". They must be phrased as
+the visitor would ask them, in the first person, and be answerable from what you know.
+Example:
+> What does Private AI cost?
+> Can it run inside our own network?
+Nothing may come after the follow-up lines.
 
-Services: AI agents and bots, business automation, custom integrations, private AI systems, AI implementation and consulting, business solutions, AI training and workshops.
+STYLE
+Plain text only: no Markdown, no headings, no code blocks, no emoji, no asterisks.
+Always spell the company exactly "Felican AI" — never Felikan, Fell-ih-can or Falcon AI.
+Always spell "Ballas" with two l's and a final s.
+Offer a handoff to a person whenever someone wants a quote, a human, or something you
+cannot answer: the envelope button beside the message box, /contact/, or /booking/.
 
-Education: the /education/ page includes Felican AI eBooks, books by Lee Felican Jr., upcoming courses, Tiny Techs for early learners, nonprofit partnerships, school partnerships, and corporate training. After a visitor enters an email address or phone number, open the specific eBook they selected.
+WHAT YOU KNOW
+Everything below is generated from the live site content, so it is current. Prices are
+in US dollars.
 
-Books by Lee Felican Jr.:
-- The Big Balla's Guide to Making Money with AI: 100 real ways to make money with AI, organized by startup cost and industry, plus beginner AI trading and a legal-business-under-$50 playbook.
-- Don't Be Replaced: a working person's plan for staying valuable in the AI era by separating routine work from the human judgment that matters.
-- Stop Being Nice to AI: a practical guide to better results from AI using the GRRRRR prompting method.
-- The BIG AI Book: a fully illustrated, plain-language explanation of AI for grown-ups, including agents, skills, and tools.
-Book resources: https://felican.ai/Lee-Felican-jr/books/resources/
+${ASSISTANT_KNOWLEDGE}`;
 
-Contact: email ai@felican.ai, or call (561) 235-0799 Monday to Friday, 9am-6pm Eastern. Visitors can also send a message straight to the team from this chat using the envelope button beside the message box, or from the contact page at /contact/. Offer that handoff whenever someone wants a person, a quote, or something you cannot answer. Always spell the company name exactly “Felican AI” in visible text—never Felikan, Fell-ih-can, or Falcon AI. Always spell the name “Ballas” with two l's and a final s. Use plain text only: no Markdown syntax, headings, code blocks, or emoji. Never invent customers, pricing, awards, features, or statistics. When unsure, say so and direct the visitor to /contact/.`;
+
+
+// The voice agent shares the generated knowledge but not the chat formatting. The
+// chat prompt asks for "> " follow-up lines, which a speech engine reads aloud as
+// "greater than"; and URLs are unusable spoken. This variant is written to be heard.
+export const FELICAN_VOICE_SYSTEM_PROMPT = `You are the Felican AI voice assistant, speaking with a caller on the Felican AI website.
+
+HOW TO SPEAK
+This is a phone-style conversation. Keep every answer to one or two sentences unless
+the caller asks for more. Long answers do not work when spoken — the caller cannot skim.
+Answer the question first. Do not list more than three things at once; offer to go
+through the rest if they want.
+Never read out a URL, a file path or an email address unless the caller asks for it
+directly. Say "I can email that over" or "it is on our products page" instead.
+Never say characters like a greater-than sign, an asterisk or a bullet. Speak in plain
+sentences only.
+Ask one short follow-up question at the end of your turn to keep the conversation
+moving, phrased naturally, not as a list.
+Never invent customers, pricing, awards, features or statistics. If you do not know,
+say so and offer to have someone call or email them back.
+
+NAMES
+Always say and spell the company as "Felican AI". Always spell "Ballas" with two l's
+and a final s. Pronunciation is handled by the voice engine; never spell anything
+phonetically in your text.
+
+WHAT YOU KNOW
+Generated from the live site, so it is current. Prices are in US dollars.
+
+${ASSISTANT_KNOWLEDGE}`;
 
 export function sanitizeText(value, maxLength = MAX_MESSAGE_LENGTH) {
   return String(value ?? '')
@@ -414,7 +463,83 @@ export async function sendContactEmail(contact, env = process.env) {
   }
 }
 
-export async function completeWithConfiguredProvider(messages, env = process.env) {
+// Streams the reply token by token. The buffered completeWithConfiguredProvider stays
+// for the non-streaming path and for tests; this shares its provider selection.
+//
+// `onDelta` is called with each text fragment as it arrives. Resolves with the full
+// reply and usage once the stream ends, so logging and sanitising work exactly as
+// before.
+export async function streamWithConfiguredProvider(messages, onDelta, env = process.env) {
+  if (env.NODE_ENV === 'test' && env.AI_MOCK_REPLY) {
+    const reply = sanitizeText(env.AI_MOCK_REPLY, 2400);
+    onDelta(reply);
+    return { reply, usage: { inputTokens: 0, outputTokens: 0 } };
+  }
+  const asherKey = env.ASHER_API_KEY?.trim();
+  const anthropicKey = env.ANTHROPIC_API_KEY?.trim();
+  const endpoint = asherKey ? env.ASHER_BASE_URL?.trim() : 'https://api.anthropic.com/v1/messages';
+  const key = asherKey || anthropicKey;
+  if (!key || !endpoint) throw new Error('AI provider is not configured');
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 60_000);
+  try {
+    const headers = asherKey
+      ? { Authorization: `Bearer ${key}`, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' }
+      : { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' };
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers,
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: asherKey ? (env.ASHER_MODEL || 'claude-sonnet-4-6') : (env.ANTHROPIC_MODEL || 'claude-sonnet-4-5'),
+        system: FELICAN_SYSTEM_PROMPT,
+        messages,
+        max_tokens: 500,
+        temperature: 0.3,
+        stream: true,
+      }),
+    });
+    if (!response.ok || !response.body) throw new Error(`AI provider returned ${response.status}`);
+
+    let full = '';
+    let inputTokens = 0;
+    let outputTokens = 0;
+    let buffer = '';
+
+    const decoder = new TextDecoder();
+    for await (const chunk of response.body) {
+      buffer += decoder.decode(chunk, { stream: true });
+      // Anthropic's SSE frames are separated by a blank line.
+      let split;
+      while ((split = buffer.indexOf('\n\n')) !== -1) {
+        const frame = buffer.slice(0, split);
+        buffer = buffer.slice(split + 2);
+        for (const line of frame.split('\n')) {
+          if (!line.startsWith('data:')) continue;
+          const payload = line.slice(5).trim();
+          if (!payload || payload === '[DONE]') continue;
+          let event;
+          try { event = JSON.parse(payload); } catch { continue; }
+          if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+            full += event.delta.text;
+            onDelta(event.delta.text);
+          } else if (event.type === 'message_start') {
+            inputTokens = Number(event.message?.usage?.input_tokens) || 0;
+          } else if (event.type === 'message_delta') {
+            outputTokens = Number(event.usage?.output_tokens) || outputTokens;
+          }
+        }
+      }
+    }
+    if (!full.trim()) throw new Error('AI provider returned an empty reply');
+    return { reply: full, usage: { inputTokens, outputTokens } };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function completeWithConfiguredProvider(messages, env = process.env, system = FELICAN_SYSTEM_PROMPT) {
   if (env.NODE_ENV === 'test' && env.AI_MOCK_REPLY) return sanitizeText(env.AI_MOCK_REPLY, 2400);
   const asherKey = env.ASHER_API_KEY?.trim();
   const anthropicKey = env.ANTHROPIC_API_KEY?.trim();
@@ -436,7 +561,7 @@ export async function completeWithConfiguredProvider(messages, env = process.env
       signal: controller.signal,
       body: JSON.stringify({
         model: asherKey ? (env.ASHER_MODEL || 'claude-sonnet-4-6') : (env.ANTHROPIC_MODEL || 'claude-sonnet-4-5'),
-        system: FELICAN_SYSTEM_PROMPT,
+        system,
         messages,
         max_tokens: 500,
         temperature: 0.3,
@@ -460,6 +585,71 @@ export async function completeWithConfiguredProvider(messages, env = process.env
   }
 }
 
+// Felican AI is an AI company; being readable by AI assistants is part of the product
+// claim, so the retrieval and search crawlers are named explicitly rather than left to
+// a wildcard that a platform-level default could quietly override. Cloudflare's
+// "managed robots.txt" (zone setting is_robots_txt_managed) used to prepend a block for
+// GPTBot/ClaudeBot/CCBot/Google-Extended here; it is switched off so this file is the
+// single source of truth. If AI crawlers ever disappear from logs, re-check that setting.
+const AI_CRAWLERS_ALLOWED = [
+  'GPTBot',            // OpenAI — training + ChatGPT browsing corpus
+  'OAI-SearchBot',     // OpenAI — ChatGPT search index
+  'ChatGPT-User',      // OpenAI — live fetch when a user asks
+  'ClaudeBot',         // Anthropic
+  'Claude-User',       // Anthropic — live fetch
+  'Claude-SearchBot',  // Anthropic — search index
+  'PerplexityBot',     // Perplexity index
+  'Perplexity-User',   // Perplexity live fetch
+  'Google-Extended',   // Gemini grounding (does not affect Google Search ranking)
+  'Applebot-Extended', // Apple Intelligence
+  'meta-externalagent',
+  'Bingbot',
+  'Amazonbot',
+  'CCBot',             // Common Crawl — feeds many downstream models
+  'cohere-ai',
+  'DuckAssistBot',
+  'MistralAI-User',
+  'YouBot',
+];
+
+const PRODUCTION_ROBOTS = [
+  '# felican.ai — open to search engines and AI assistants alike.',
+  '# Staging (felican.dev) is disallowed; see the host check in server/app.js.',
+  '',
+  'User-agent: *',
+  'Allow: /',
+  '',
+  '# Checkout and order confirmation carry no public content.',
+  'Disallow: /checkout/',
+  'Disallow: /thank-you/',
+  '',
+  ...AI_CRAWLERS_ALLOWED.flatMap(agent => [`User-agent: ${agent}`, 'Allow: /', '']),
+  'Sitemap: https://felican.ai/sitemap.xml',
+  '',
+].join('\n');
+
+const STAGING_ROBOTS = 'User-agent: *\nDisallow: /\n';
+
+// Returns the canonical path a request should be redirected to, or '' when the
+// requested path is already canonical. Pure path arithmetic plus an existsSync check,
+// so it never redirects to a URL that would then 404.
+function canonicalPathFor(rootDir, pathname) {
+  if (pathname === '/') return '';
+
+  if (pathname.endsWith('/index.html')) {
+    return pathname.slice(0, -'index.html'.length);
+  }
+
+  if (pathname.endsWith('/')) return '';
+
+  // No trailing slash and no file extension: if a directory with an index.html is
+  // there, the slashed form is canonical.
+  const last = pathname.slice(pathname.lastIndexOf('/') + 1);
+  if (last.includes('.')) return '';
+  const dir = staticPath(rootDir, `${pathname}/`);
+  return dir && existsSync(dir) ? `${pathname}/` : '';
+}
+
 function staticPath(rootDir, pathname) {
   let decoded;
   try {
@@ -478,6 +668,7 @@ function staticPath(rootDir, pathname) {
 export function createAppServer({
   rootDir,
   complete = completeWithConfiguredProvider,
+  streamReply = streamWithConfiguredProvider,
   sendContact = sendContactEmail,
   deliverLead,
   voiceBundleFetch = fetch,
@@ -617,7 +808,7 @@ export function createAppServer({
         if (!messages.length || messages.at(-1).role !== 'user') {
           return json(res, 400, { error: 'A user message is required.' });
         }
-        const completion = await complete(messages);
+        const completion = await complete(messages, undefined, FELICAN_VOICE_SYSTEM_PROMPT);
         const reply = sanitizeAssistantReply(typeof completion === 'string' ? completion : completion?.reply);
         if (!reply) throw new Error('empty_voice_reply');
         const id = `chatcmpl-${requestId}`;
@@ -650,11 +841,17 @@ export function createAppServer({
         const body = await readJson(req);
         const event = sanitizeText(body.event, 40);
         if (ANALYTICS_EVENTS.has(event)) {
+          // `metric`/`value` carry Core Web Vitals samples; `value` is coerced to a
+          // bounded number so a malformed beacon cannot inflate the log.
+          const value = Number(body.value);
           structuredLog(logger, 'info', 'site.analytics', {
             eventName: event,
             path: sanitizeText(body.path, 180),
             target: sanitizeText(body.target, 180),
             referrer: sanitizeText(body.referrer, 180),
+            ...(body.metric ? { metric: sanitizeText(body.metric, 24) } : {}),
+            ...(Number.isFinite(value) ? { value: Math.max(0, Math.min(600000, Math.round(value * 1000) / 1000)) } : {}),
+            ...(body.rating ? { rating: sanitizeText(body.rating, 12) } : {}),
           });
         }
       } catch (error) {
@@ -718,6 +915,47 @@ export function createAppServer({
         if (!messages.length || messages.at(-1).role !== 'user') {
           return json(res, 400, { error: 'Please enter a question.' });
         }
+        // Stream when the client asks for it, so text appears as it is generated
+        // instead of the whole answer landing at once after a long pause. The
+        // buffered path is kept for clients that do not, and for the smoke test.
+        const wantsStream = body.stream === true
+          && String(req.headers.accept || '').includes('text/event-stream');
+
+        if (wantsStream) {
+          res.writeHead(200, {
+            ...securityHeaders('text/event-stream; charset=utf-8'),
+            'Cache-Control': 'no-cache, no-transform',
+            Connection: 'keep-alive',
+            // Defeats proxy buffering, which would otherwise hold the whole stream
+            // and defeat the point of streaming at all.
+            'X-Accel-Buffering': 'no',
+          });
+          const send = (event, data) => res.write(`event: ${event}\ndata: ${JSON.stringify(data)}\n\n`);
+          let streamed = '';
+          try {
+            const result = await streamReply(messages, delta => {
+              streamed += delta;
+              send('delta', { text: delta });
+            });
+            const clean = sanitizeAssistantReply(result.reply ?? streamed);
+            send('done', { reply: clean });
+            structuredLog(logger, 'info', 'chat.completed', {
+              requestId,
+              streamed: true,
+              durationMs: Date.now() - startedAt,
+              inputTokens: Number(result.usage?.inputTokens) || 0,
+              outputTokens: Number(result.usage?.outputTokens) || 0,
+            });
+          } catch (error) {
+            structuredLog(logger, 'error', 'chat.failed', {
+              requestId, streamed: true, durationMs: Date.now() - startedAt,
+              reason: error?.message || 'unknown error',
+            });
+            send('failed', { error: 'The assistant is temporarily unavailable.' });
+          }
+          return res.end();
+        }
+
         const completion = await complete(messages);
         const reply = typeof completion === 'string' ? completion : completion?.reply;
         const usage = typeof completion === 'object' ? completion?.usage : undefined;
@@ -876,19 +1114,47 @@ export function createAppServer({
       const hostname = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(':')[0].toLowerCase();
       const staging = hostname.endsWith('felican.dev') || hostname === 'localhost' || hostname === '127.0.0.1';
       res.writeHead(200, { ...securityHeaders('text/plain; charset=utf-8'), 'Cache-Control': 'public, max-age=300' });
-      return res.end(staging
-        ? 'User-agent: *\nDisallow: /\n'
-        : 'User-agent: *\nAllow: /\n\nSitemap: https://felican.ai/sitemap.xml\n');
+      return res.end(staging ? STAGING_ROBOTS : PRODUCTION_ROBOTS);
     }
 
     if (!['GET', 'HEAD'].includes(req.method || 'GET')) return json(res, 405, { error: 'Method not allowed' });
+
+    // One URL per page. Directory pages are canonical with a trailing slash, so
+    // /products and /products/index.html both 301 to /products/ instead of serving
+    // a second copy that splits crawl budget and ranking signals.
+    const canonicalRedirect = canonicalPathFor(siteRoot, url.pathname);
+    if (canonicalRedirect) {
+      res.writeHead(301, {
+        ...securityHeaders('text/plain; charset=utf-8'),
+        Location: canonicalRedirect + (url.search || ''),
+        'Cache-Control': 'public, max-age=3600',
+      });
+      return res.end(`Moved to ${canonicalRedirect}\n`);
+    }
+
     const staticRequestPath = url.pathname === '/favicon.ico' ? '/favicon.svg' : url.pathname;
     const filePath = staticPath(siteRoot, staticRequestPath);
     if (!filePath || !existsSync(filePath)) return json(res, 404, { error: 'Not found' });
+
+    // NOTE: do not reintroduce Accept-based image negotiation here. Cloudflare honours
+    // only `Vary: Accept-Encoding` and ignores `Vary: Accept`, so a negotiated response
+    // gets cached once and served to every client — a browser without AVIF support then
+    // receives AVIF and renders a broken image. AVIF/WebP are offered per-URL instead:
+    // <picture> on the generated pages, and public/format-support.js for the
+    // runtime-set images on /products/ and /starter-pack/.
     const contentType = MIME.get(extname(filePath).toLowerCase()) || 'application/octet-stream';
+    // Images, video and fonts are effectively immutable and are the bulk of the bytes
+    // on /products/ and /starter-pack/, so they get a long TTL. HTML and JS stay
+    // no-cache so a deploy is visible immediately.
+    const longLived = contentType.startsWith('image/')
+      || contentType.startsWith('video/')
+      || contentType.startsWith('audio/')
+      || contentType.startsWith('font/');
     const cache = contentType.startsWith('text/html') || contentType.startsWith('text/javascript')
       ? 'no-cache'
-      : 'public, max-age=86400';
+      : longLived
+        ? 'public, max-age=31536000, immutable'
+        : 'public, max-age=86400';
     const fileSize = statSync(filePath).size;
     const canStreamRanges = contentType.startsWith('video/') || contentType.startsWith('audio/');
     const baseHeaders = {

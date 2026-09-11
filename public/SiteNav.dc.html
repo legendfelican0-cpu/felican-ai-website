@@ -29,7 +29,7 @@
 <header style="position:sticky;top:0;z-index:900;background:#080E13;border-bottom:1px solid rgba(47,184,148,0.22);font-family:Inter,system-ui,sans-serif">
   <div style="max-width:1280px;margin:0 auto;padding:0 24px;height:74px;display:flex;align-items:center;justify-content:space-between;gap:24px">
     <a href="/" aria-label="Felican AI home" style="display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0">
-      <img src="/logo-mark.png" alt="" width="28" height="28" style="width:28px;height:28px;display:block">
+      <picture><source srcset="/logo-mark.avif" type="image/avif"><source srcset="/logo-mark.webp" type="image/webp"><img src="/logo-mark.png" alt="" width="28" height="28" style="width:28px;height:28px;display:block" decoding="async"></picture>
       <span style="font-family:Sora,Inter,sans-serif;font-weight:800;font-size:19px;letter-spacing:-0.02em;color:#FFFFFF">Felican<span style="color:#2FB894"> AI</span></span>
     </a>
 
@@ -72,7 +72,7 @@
 </header>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:90},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Home&quot;,&quot;Products&quot;,&quot;Starter Pack&quot;,&quot;Services&quot;,&quot;Education&quot;,&quot;Books&quot;,&quot;About Us&quot;,&quot;Contact&quot;,&quot;Book a Call&quot;],&quot;default&quot;:&quot;Home&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:90},&quot;active&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Home&quot;,&quot;Products&quot;,&quot;Starter Pack&quot;,&quot;Services&quot;,&quot;Industries&quot;,&quot;Guides&quot;,&quot;Work&quot;,&quot;Education&quot;,&quot;Books&quot;,&quot;About Us&quot;,&quot;Contact&quot;,&quot;Book a Call&quot;],&quot;default&quot;:&quot;Home&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
 class Component extends DCLogic {
   state = { open: false, w: typeof window !== 'undefined' ? window.innerWidth : 1400 };
   componentDidMount() {
@@ -82,11 +82,15 @@ class Component extends DCLogic {
   componentWillUnmount() { window.removeEventListener('resize', this._r); }
   renderVals() {
     const active = (this.props.active || 'Home');
+    // Industries, Guides and Work were added when the content pages landed; without
+    // them the ~70 new URLs are reachable only from the sitemap, which is the
+    // difference between an indexed section and an orphaned one.
     const defs = [
       ['Home', '/'], ['Products', '/products/'], ['Starter Pack', '/starter-pack/'], ['Services', '/services/'],
-      ['Education', '/education/'], ['Books', '/books/'], ['About Us', '/about/'], ['Contact', '/contact/']
+      ['Industries', '/industries/'], ['Guides', '/guides/'], ['Work', '/case-studies/'],
+      ['Education', '/education/'], ['About Us', '/about/'], ['Contact', '/contact/']
     ];
-    const mobile = this.state.w < 1024;
+    const mobile = this.state.w < 1180;
     return {
       links: defs.map(([label, href]) => {
         const on = label === active;

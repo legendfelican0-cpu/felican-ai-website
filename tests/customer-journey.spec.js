@@ -91,7 +91,13 @@ test.describe('Customer journey', () => {
     // Every headline product shows artwork that loaded.
     const shots = page.locator('.product-card .product-shot img');
     await expect(shots).toHaveCount(7);
-    expect(await shots.evaluateAll(imgs => imgs.every(i => i.complete && i.naturalWidth > 0))).toBe(true);
+    // Product shots are lazy-loaded now; at mobile viewport most start off-screen.
+    // Scroll each into view the way a reader does, then assert every one decodes.
+    const shotCount = await shots.count();
+    for (let index = 0; index < shotCount; index += 1) await shots.nth(index).scrollIntoViewIfNeeded();
+    await expect
+      .poll(() => shots.evaluateAll(imgs => imgs.every(i => i.complete && i.naturalWidth > 0)), { timeout: 15000 })
+      .toBe(true);
 
     // Withdrawn names must not appear.
     const body = await page.locator('body').innerText();
@@ -183,7 +189,7 @@ test.describe('Customer journey', () => {
   test('services cover the newer engagements', async ({ page }) => {
     await page.goto('/services/', { waitUntil: 'load' });
     const names = (await page.locator('main h2').allTextContents()).join(' | ');
-    for (const service of ['Custom-trained AI models', 'AI auditing', 'AI cost analysis', 'Corporate training']) {
+    for (const service of ['Custom-trained AI models', 'AI auditing', 'AI cost analysis', 'Personal & Employee Training']) {
       expect(names).toContain(service);
     }
   });

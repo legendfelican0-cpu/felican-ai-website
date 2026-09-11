@@ -12,7 +12,14 @@
     "test:e2e": "playwright test",
     "smoke": "node scripts/smoke.mjs",
     "test:booking": "node scripts/verify-booking.mjs",
-    "load:staging": "node scripts/load-test.mjs https://felican.dev/"
+    "load:staging": "node scripts/load-test.mjs https://felican.dev/",
+    "build:images": "node scripts/optimize-images.mjs",
+    "build:content": "node scripts/build-content.mjs",
+    "sync:schema": "node scripts/sync-schema.mjs",
+    "fix:images": "node scripts/fix-images.mjs",
+    "seo": "npm run build:images && npm run build:content && npm run build:assistant && npm run patch:pages && npm run sync:schema && npm run fix:images",
+    "patch:pages": "node scripts/patch-existing-pages.mjs",
+    "build:assistant": "node scripts/build-assistant-knowledge.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
@@ -30,6 +37,7 @@
     "@testing-library/react": "latest",
     "jsdom": "latest",
     "vitest": "latest",
-    "wrangler": "^4.92.0"
+    "wrangler": "^4.92.0",
+    "sharp": "^0.34.5"
   }
 }

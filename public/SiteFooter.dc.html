@@ -14,7 +14,7 @@
   <div style="max-width:1280px;margin:0 auto;padding:72px 24px 40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px, 100%), 1fr));gap:48px 40px">
     <div style="grid-column:span 1;min-width:220px">
       <a href="/" style="display:flex;align-items:center;gap:12px;text-decoration:none;margin-bottom:20px">
-        <img src="/logo-mark.png" alt="" width="30" height="30" style="width:30px;height:30px;display:block">
+        <picture><source srcset="/logo-mark.avif" type="image/avif"><source srcset="/logo-mark.webp" type="image/webp"><img src="/logo-mark.png" alt="" width="30" height="30" style="width:30px;height:30px;display:block" loading="lazy" decoding="async"></picture>
         <span style="font-family:Sora,sans-serif;font-weight:800;font-size:21px;letter-spacing:-0.02em;color:#FFFFFF">Felican<span style="color:#2FB894"> AI</span></span>
       </a>
       <p style="margin:0;font-size:17px;line-height:1.65;max-width:320px;color:#7C9391">Useful AI products, custom systems, automations, integrations, and training — built for how your business actually operates.</p>
@@ -65,12 +65,20 @@ class Component extends DCLogic {
       email: 'ai' + '@' + 'felican.ai',
       emailHref: 'mailto:' + 'ai' + '@' + 'felican.ai',
       bookingUrl: '/booking/',
-      nav: [['Home','/'],['Products','/products/'],['Services','/services/'],['Education','/education/'],['Books','/books/'],['About Us','/about/'],['Contact','/contact/'],['Book a Call','/booking/']].map(([label,href])=>({label,href})),
+      nav: [['Home','/'],['Products','/products/'],['Services','/services/'],['Industries','/industries/'],['Guides','/guides/'],['Client work','/case-studies/'],['Comparisons','/compare/'],['Education','/education/'],['Books','/books/'],['About Us','/about/'],['Contact','/contact/'],['Palm Beach County','/locations/palm-beach-county/'],['Book a Call','/booking/']].map(([label,href])=>({label,href})),
+      // Was four #anchor links into one page. Each product now has a real URL, so
+      // these point at pages that can rank instead of at fragments that cannot.
       prods: [
-        { label: 'Felican Auto', href: '/products/#felican-auto' },
-        { label: 'World of Agents', href: '/products/#world-of-agents' },
-        { label: 'Relay', href: '/products/#relay' },
-        { label: 'Chat AI Assistant', href: '/products/#ai-assistant' }
+        { label: 'Private AI', href: '/products/private-ai/' },
+        { label: 'World of Agents', href: '/products/world-of-agents/' },
+        { label: 'Chat AI Assistant', href: '/products/chat-ai-assistant/' },
+        { label: 'Voice AI', href: '/products/voice-ai/' },
+        { label: 'Felican IDP', href: '/products/felican-idp/' },
+        { label: 'CrossCheck AI', href: '/products/crosscheck-ai/' },
+        { label: 'Relay', href: '/products/relay/' },
+        { label: 'All products', href: '/products/hub/' },
+        { label: 'All services', href: '/services/engagements/' },
+        { label: 'All books', href: '/books/library/' }
       ]
     };
   }

@@ -1,0 +1,25 @@
+{
+  "result": [
+    {
+      "id": "b90d7a051a5e4c9290be9642b52ff30b",
+      "pattern": "felican.ai/grrr",
+      "script": "felican-robots-grrr",
+      "request_limit_fail_open": false
+    },
+    {
+      "id": "1309ee11e3e944d0a2e65e917fbb126d",
+      "pattern": "felican.ai/grrr/",
+      "script": "felican-robots-grrr",
+      "request_limit_fail_open": false
+    },
+    {
+      "id": "90d067c41a17465880e638e993ae9a0d",
+      "pattern": "felican.ai/robots.txt",
+      "script": "felican-robots-grrr",
+      "request_limit_fail_open": false
+    }
+  ],
+  "success": true,
+  "errors": [],
+  "messages": []
+}

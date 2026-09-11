@@ -12,6 +12,22 @@
 
 ## Recent changes
 
+- 2026-09-11: Every product page lists $999 with `Product`/`Offer` markup generated from
+  `server/checkout.js`; services renamed to the owner's four customer-facing names
+  (10 services, two training pages merged) and `/services/` gained a Schedule a call
+  CTA. Google Search Console is verified for `felican.ai` (domain property, DNS TXT,
+  account `felican.ai.inc@gmail.com`) with the sitemap submitted. See `docs/SEO.md`.
+
+- 2026-09-11: **Search visibility overhaul.** A stale Cloudflare Worker was serving a
+  site-wide `Disallow: /` on `felican.ai/robots.txt`, and Cloudflare's managed robots.txt
+  was blocking every AI crawler. Both fixed; `robots.txt` is now owned by
+  `server/app.js`, in git, and guarded by `server/seo.test.js`. Added 74 generated
+  content pages (products, services, industries, guides, comparisons, client work, books,
+  local) rendered from `content/*.js` by `npm run seo`. **Read `docs/SEO.md` before
+  touching anything SEO-related** — it covers the pipeline, the review gate on the client
+  pages, the Cloudflare changes (backups in `.cf-backup/`), and what is still outstanding
+  (social `sameAs` URLs, Search Console, Google Business Profile).
+
 - 2026-09-08: DEV and PROD deployment preflight now require a 32+ character `GENERATOR_HANDOFF_SECRET`, and `/api/ready` fails closed when the secure direct-setup handoff is unavailable.
 - 2026-09-08: `/favicon.ico` serves the existing SVG favicon with the correct MIME type, preventing the conventional browser request from producing a 404.
 - 2026-09-08: Static `.xml` files are served as `application/xml; charset=utf-8`, so search engines receive the sitemap with the correct MIME type.
@@ -21,7 +37,7 @@
 - 2026-09-08: The optimized Starter Pack demo is `public/starter-pack/media/felican-ai-starter-pack-demo-web.mp4`; current copy promises completion in under 90 seconds.
 - 2026-08-19: Production promotion now provisions a dedicated PROD Vapi assistant and validates the AI provider, voice identifiers, verified browser client, and chat before success. DEV and PROD use separate Vapi assistants so later staging deploys cannot redirect production voice traffic. Proxy promotion and rollback change only the main host target, preserving custom path applications.
 - 2026-08-18: Assistant copy now enforces the visible spellings `Felican AI` and `Ballas`. Phonetic pronunciation remains confined to the ElevenLabs voice replacement and is never shown in chat or transcript text; common model misspellings are normalized before delivery.
-- 2026-08-18: The website voice assistant now uses the exact patched browser voice client deployed by the COPS website, served through a same-origin, SHA-384-verified, in-memory-cached endpoint. It opens and meters the visitor microphone, supplies that same verified track to Vapi, consumes local-volume events, and treats visual-observer/Krisp errors as non-fatal. Its five-bar indicator distinguishes quiet listening, detected visitor speech, and assistant speech; permission failures show a clear browser-microphone message, local resources close on Stop, and a fast first tap waits for setup instead of being discarded. The Felican Vapi assistant has no automatic opening message and uses `assistant-waits-for-user`, so a voice session begins silently and responds only after visitor speech. The site CSP explicitly allows Daily's pinned call-engine hosts so Vapi can establish the live microphone room.
+- 2026-08-18: The website voice assistant now uses the exact patched browser voice client deployed by the COPS website, served through a same-origin, SHA-384-verified, in-memory-cached endpoint. It opens and meters the visitor microphone, supplies that same verified track to Vapi, consumes local-volume events, and treats visual-observer/Krisp errors as non-fatal. Its five-bar indicator distinguishes quiet listening, detected visitor speech, and assistant speech; permission failures show a clear browser-microphone message, local resources close on Stop, and a fast first tap waits for setup instead of being discarded. The Felican Vapi assistant greeted nothing and waited for visitor speech; **superseded 2026-09-11** — it now opens with a fixed one-line greeting (`assistant-speaks-first`), interruptible, because a silent line left callers unsure it was live. The greeting is set in BOTH `scripts/provision-felican-vapi.py` and the `vapi.start()` overrides in `public/ChatAssistant.dc.html`; the client override wins, so the two must agree. The site CSP explicitly allows Daily's pinned call-engine hosts so Vapi can establish the live microphone room.
 - 2026-08-18: Voice now preloads before the microphone tap, waits for the visitor to speak, keeps listening until Stop, applies the correct Felican pronunciation, restores the working COPS audio configuration, and visibly animates when the visitor or Felican AI is speaking. The mobile credential marks are centered with a larger OpenAI mark. Specialist product covers now use screenshots captured from their real app repositories.
 - 2026-08-18: Added the one-play homepage handshake background in WebM and MP4, with the existing handshake image as the poster/fallback. It stays silent, does not loop, and holds the final handshake frame.
 - 2026-08-18: Added continuous Vapi browser voice, aligned credential logos, product preview covers, and the interactive Start Here eBook entry.
@@ -45,8 +61,10 @@ Planning notes live at `~/dev/starter-pack/PLAN.md`.
   these pages.
 - **Never name a weekday** in copy. Use elapsed time — "in 2 days",
   "live in 48 hours".
-- **Cart and prices appear only on `/starter-pack/`.** The other products on
-  `/products/` stay unpriced with "Ask about it" CTAs.
+- **Prices.** Superseded 2026-09-11: every product page now lists $999 with Offer
+  markup, generated from `server/checkout.js`. The cart itself still lives only on
+  `/starter-pack/`. See the pricing section in `docs/SEO.md` for the open risk — only
+  three of the nineteen products are actually wired into checkout.
 - **Prices live only in `server/checkout.js`.** The browser may send product ids,
   the buyer email, plan id, and terms acceptance, but never a price, total, or
   amount. The server calculates every charge.
