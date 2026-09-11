@@ -7,7 +7,21 @@
 // copes; text-only retrieval crawlers (GPTBot, ClaudeBot, PerplexityBot) do not.
 // Everything generated here is plain HTML in the response body.
 
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import { ORIGIN, ORG, NAV, FOOTER_COLUMNS, socialLive, companySocial } from '../../content/site.js';
+
+// Cache-busting stamp for the generated pages' stylesheet.
+//
+// content.css is served `public, max-age=86400`. Without a versioned URL, a deploy that
+// changes it leaves Cloudflare serving the previous copy for up to a day — which once
+// made three correct fixes to the mobile nav all appear to fail. Hashing the file means
+// every change is a new URL, so the long cache stays and staleness cannot happen.
+const CSS_PATH = resolve(dirname(fileURLToPath(import.meta.url)), '../../public/content.css');
+const CSS_VERSION = createHash('sha256').update(readFileSync(CSS_PATH)).digest('hex').slice(0, 12);
 
 export const esc = (value = '') =>
   String(value)
@@ -133,7 +147,7 @@ function headTags({ title, description, canonical, ogType = 'website', image, im
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="/support.js?v=20260802"></script>
-<link rel="stylesheet" href="/content.css">
+<link rel="stylesheet" href="/content.css?v=${CSS_VERSION}">
 <script type="application/ld+json">${jsonLd({ '@context': 'https://schema.org', '@graph': graph })}</script>`;
 }
 
@@ -144,10 +158,10 @@ function nav(activeHref) {
   // runtime; these pages ship the nav in the HTML so a text-only crawler sees it, so
   // the same markup is emitted statically and the styling lives in content.css.
   //
-  // The mobile panel is toggled by a three-line inline script using the `hidden`
-  // attribute rather than a checkbox: support.js injects its own full-page CSS, which
-  // overrode a `display:none` class rule and left both navs on screen at once. The
-  // `[hidden]` rule in content.css is !important precisely so that cannot recur.
+  // The mobile panel is toggled by adding an .is-open class. Two earlier attempts
+  // failed: a checkbox (support.js's injected CSS outranked the sibling selector) and
+  // the `hidden` attribute (the <x-dc> runtime re-renders and drops it). The panel is
+  // display:none unless .is-open is present, and nothing but the toggle sets that.
   const items = NAV.map(link => {
     const current = activeHref === link.href || (link.href !== '/' && activeHref.startsWith(link.href));
     return `<li><a href="${link.href}"${current ? ' aria-current="page"' : ''}>${esc(link.label)}</a></li>`;
@@ -170,7 +184,7 @@ function nav(activeHref) {
       <span aria-hidden="true"><i></i><i></i><i></i></span>Menu
     </button>
   </div>
-  <div class="nav-mobile" id="felican-mobile-nav" hidden>
+  <div class="nav-mobile" id="felican-mobile-nav">
     <nav aria-label="Mobile"><ul>${items}<li><a class="mob-cta" href="/booking/">Book a call</a></li></ul></nav>
   </div>
 </header>
@@ -182,7 +196,7 @@ function nav(activeHref) {
     button.addEventListener('click', () => {
       const open = button.getAttribute('aria-expanded') === 'true';
       button.setAttribute('aria-expanded', String(!open));
-      panel.hidden = open;
+      panel.classList.toggle('is-open', !open);
     });
   })();
 </script>`;

@@ -33,6 +33,15 @@
 
 * { box-sizing: border-box; }
 
+/* support.js injects FULL_PAGE_CSS, which pins html, body, #dc-root and .sc-host to
+   height:100%. That traps the whole document in a viewport-height box and the page
+   cannot scroll at all — everything below the fold becomes unreachable. Releasing the
+   height lets the document flow normally. public/SiteNav.dc.html carries the same
+   workaround for the hand-written pages; this is its equivalent for the generated ones.
+   Remove it only if support.js stops injecting that stylesheet. */
+html, body { height: auto !important; min-height: 100%; }
+#dc-root, #dc-root > .sc-host { height: auto !important; min-height: 100%; }
+
 /* support.js injects a full-page stylesheet that can outrank a plain class rule, which
    once left the desktop and mobile navs both visible at once. Toggling visibility via
    the `hidden` attribute with !important cannot be overridden that way. */
@@ -129,13 +138,14 @@ p, ul, ol, dl { margin: 0; }
 .nav-toggle-box span { display: grid; gap: 4px; width: 18px; }
 .nav-toggle-box span i { height: 2px; background: #fff; display: block; }
 .nav-toggle-box span i:nth-child(2) { background: var(--accent); }
-/* Desktop: the panel never shows. Mobile: `hidden` is what controls it. */
+/* The panel is hidden unless the toggle adds .is-open. Never rely on the `hidden`
+   attribute here — the <x-dc> runtime re-renders and strips it. */
 .nav-mobile { display: none; }
-@media (max-width: 1180px) { .nav-mobile { display: block; } }
 
 @media (max-width: 1180px) {
   .site-head nav.desktop, .head-cta { display: none; }
   .nav-toggle-box { display: flex; }
+  .nav-mobile.is-open { display: block; }
   .nav-mobile {
     border-top: 1px solid rgba(47, 184, 148, .25);
     background: var(--foot); padding: 14px 24px 28px;

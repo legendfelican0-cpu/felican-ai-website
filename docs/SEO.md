@@ -52,6 +52,52 @@ npx playwright test --project=desktop --project=mobile
 Run `npm run seo` after editing anything under `content/`. It is idempotent — two
 consecutive runs produce byte-identical output.
 
+## Template parity — read before touching the generated pages
+
+The generated pages reproduce the site template rather than a parallel one. Three traps
+cost real time; all three are guarded now, but they will bite again if the guards go:
+
+1. **`support.js` pins `html, body, #dc-root, .sc-host` to `height:100%`.** That traps
+   the document in a viewport box and the page cannot scroll at all — everything below
+   the fold becomes unreachable. `public/content.css` releases it at the top, the same
+   way `public/SiteNav.dc.html` does for the hand-written pages.
+2. **The `<x-dc>` runtime re-renders and strips the `hidden` attribute.** The mobile nav
+   panel is therefore toggled with an `.is-open` class, never `hidden`, and never a
+   checkbox (support.js's injected CSS outranks a sibling selector).
+3. **`content.css` is served `max-age=86400`.** A deploy that changes it left Cloudflare
+   serving the previous copy for a day, which made three consecutive *correct* fixes all
+   appear to fail. The link is now stamped `?v=<sha256 of the file>`, so every change is
+   a new URL. Do not remove that stamp.
+
+The gold VERIFIED CREDENTIALS bar and the "Talk to Felican AI" launcher come from
+`<dc-import name="ChatAssistant">`, the same shared component the rest of the site uses —
+not a copy. The header, footer, striped hero and certified-platforms strip are
+reproduced in `content.css` from the `.dc.html` components; if those change, change this
+to match.
+
+## The assistants
+
+`server/assistant-knowledge.js` is **generated** by
+`scripts/build-assistant-knowledge.mjs` from the same `content/*.js` files that render
+the site, plus prices from `server/checkout.js`. Add a product, service, guide, industry
+or client there and both assistants know about it on the next `npm run seo`.
+
+This replaced a hardcoded block inside the system prompt that listed five products when
+the site had eighteen, still called Voice AI "Felican Auto", and named services that had
+been renamed. Asking the assistant about the products returned five.
+
+Two prompts share that knowledge:
+
+- `FELICAN_SYSTEM_PROMPT` — chat. Two to four sentences, and every reply ends with two
+  or three `> ` follow-up questions which the widget strips out and renders as chips.
+- `FELICAN_VOICE_SYSTEM_PROMPT` — voice, via `/v1/chat/completions`. One to two
+  sentences, no URLs read aloud, and **no `> ` convention** — a speech engine pronounces
+  it as "greater than".
+
+Chat replies stream. `/api/chat` speaks server-sent events when the client sends
+`stream: true` with `Accept: text/event-stream`; the widget appends each delta to the
+bubble. The buffered path is kept for clients that do not ask and for `npm run smoke`.
+
 ## Architecture note: why the generated pages are plain HTML
 
 The hand-written pages render their body through the `<x-dc>` runtime in
@@ -140,6 +186,14 @@ rename will not leave orphaned URLs behind. It only ever removes a directory who
 `index.html` carries its own banner and which contains nothing else.
 
 ## Still outstanding
+
+**The founder entity.** `/about/` carries a two-paragraph bio under the name he goes by,
+Lee Felican Jr., linking to `/Lehem-Felican-Jr`. That page is served by a separate app on
+the same domain; it was already indexable and canonical but absent from the sitemap, so
+nothing announced it. It is listed now, and the shared `Person` node names it as the
+canonical page about him with `alternateName: "Lehem Felican Jr"`, so a search for either
+spelling resolves to one entity on felican.ai. Adding his LinkedIn to the `person: true`
+entry in `SOCIAL` is the next thing that would strengthen it.
 
 **Social profiles — blocking.** `SOCIAL` in `content/site.js` is a list of empty
 strings. `sameAs` is the primary mechanism search engines use to tell Felican AI apart

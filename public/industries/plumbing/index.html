@@ -26,7 +26,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="/support.js?v=20260802"></script>
-<link rel="stylesheet" href="/content.css">
+<link rel="stylesheet" href="/content.css?v=aef2dab3f93d">
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://felican.ai/#organization","name":"Felican AI","legalName":"Felican AI","url":"https://felican.ai/","logo":{"@type":"ImageObject","url":"https://felican.ai/logo-mark.png"},"image":"https://felican.ai/og.png","description":"Felican AI is a team of more than ten certified AI professionals building practical AI products, private AI systems, custom automations, integrations, and training for businesses in any industry.","email":"ai@felican.ai","telephone":"+1-561-235-0799","address":{"@type":"PostalAddress","addressRegion":"FL","addressCountry":"US"},"areaServed":[{"@type":"AdministrativeArea","name":"Palm Beach County, Florida"},{"@type":"AdministrativeArea","name":"Broward County, Florida"},{"@type":"AdministrativeArea","name":"Miami-Dade County, Florida"},{"@type":"AdministrativeArea","name":"Florida"},{"@type":"AdministrativeArea","name":"United States"}],"founder":{"@id":"https://felican.ai/#founder"},"contactPoint":[{"@type":"ContactPoint","telephone":"+1-561-235-0799","email":"ai@felican.ai","contactType":"sales","areaServed":"US","availableLanguage":"English"}],"knowsAbout":["Artificial intelligence","Private AI deployment","Self-hosted large language models","AI receptionists and voice agents","Intelligent document processing","Business process automation","AI integration","AI governance and auditing","AI cost optimisation","AI training"]},{"@type":"Person","@id":"https://felican.ai/#founder","name":"Lee Felican Jr.","alternateName":"Lehem Felican Jr","jobTitle":"Founder of Felican AI and Director of Artificial Intelligence at Resolution Economics","description":"Founder of Felican AI. Thirty years building systems for regulated industries — federal defense, financial services, healthcare, energy, blockchain and legal technology — and author of four books on AI.","worksFor":{"@id":"https://felican.ai/#organization"},"url":"https://felican.ai/Lehem-Felican-Jr","mainEntityOfPage":"https://felican.ai/Lehem-Felican-Jr"},{"@type":"WebSite","@id":"https://felican.ai/#website","url":"https://felican.ai/","name":"Felican AI","publisher":{"@id":"https://felican.ai/#organization"},"inLanguage":"en-US"},{"@type":"Service","@id":"https://felican.ai/industries/plumbing/#service","name":"AI for Plumbing contractors","url":"https://felican.ai/industries/plumbing/","description":"AI receptionist and back office for plumbing contractors: burst-pipe and no-water triage, scheduling around emergencies, supplier invoice reading and quote follow-up.","provider":{"@id":"https://felican.ai/#organization"},"audience":{"@type":"BusinessAudience","name":"Plumbing contractors"},"areaServed":[{"@type":"AdministrativeArea","name":"Palm Beach County, Florida"},{"@type":"AdministrativeArea","name":"Broward County, Florida"},{"@type":"AdministrativeArea","name":"Miami-Dade County, Florida"},{"@type":"AdministrativeArea","name":"Florida"},{"@type":"AdministrativeArea","name":"United States"}]},{"@type":"BreadcrumbList","@id":"https://felican.ai/industries/plumbing/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://felican.ai/"},{"@type":"ListItem","position":2,"name":"Industries","item":"https://felican.ai/industries/"},{"@type":"ListItem","position":3,"name":"Plumbing","item":"https://felican.ai/industries/plumbing/"}]}]}</script>
 </head>
 <body>
@@ -48,7 +48,7 @@
       <span aria-hidden="true"><i></i><i></i><i></i></span>Menu
     </button>
   </div>
-  <div class="nav-mobile" id="felican-mobile-nav" hidden>
+  <div class="nav-mobile" id="felican-mobile-nav">
     <nav aria-label="Mobile"><ul><li><a href="/products/">Products</a></li><li><a href="/services/">Services</a></li><li><a href="/industries/" aria-current="page">Industries</a></li><li><a href="/guides/">Guides</a></li><li><a href="/case-studies/">Work</a></li><li><a href="/education/">Education</a></li><li><a href="/about/">About</a></li><li><a class="mob-cta" href="/booking/">Book a call</a></li></ul></nav>
   </div>
 </header>
@@ -60,7 +60,7 @@
     button.addEventListener('click', () => {
       const open = button.getAttribute('aria-expanded') === 'true';
       button.setAttribute('aria-expanded', String(!open));
-      panel.hidden = open;
+      panel.classList.toggle('is-open', !open);
     });
   })();
 </script>
