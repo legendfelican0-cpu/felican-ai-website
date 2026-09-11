@@ -195,16 +195,29 @@ canonical page about him with `alternateName: "Lehem Felican Jr"`, so a search f
 spelling resolves to one entity on felican.ai. Adding his LinkedIn to the `person: true`
 entry in `SOCIAL` is the next thing that would strengthen it.
 
-**Social profiles — blocking.** `SOCIAL` in `content/site.js` is a list of empty
+**Company social profiles — the main thing left.** The founder's `sameAs` is done
+(LinkedIn + Resolution Economics). The *company* entries in `SOCIAL` are still empty
 strings. `sameAs` is the primary mechanism search engines use to tell Felican AI apart
 from Felician University, felican.net, felican.in and felican.now.site. Fill in the real
-URLs and re-run `npm run seo`; empty entries are skipped, so nothing fake ships.
+URLs and re-run `npm run seo`; empty entries are skipped, so nothing fake ships. Only
+add a URL that genuinely exists and genuinely belongs to the company — a `sameAs`
+pointing at a similarly-named other entity actively teaches Google the wrong thing.
 
-**Google Search Console and Bing Webmaster Tools — needs an interactive login.** Both
-require a token from a signed-in session. Verify felican.ai as a *domain* property
-(DNS TXT covers every subdomain), submit `https://felican.ai/sitemap.xml`, then use URL
-Inspection on `/`, `/products/` and `/starter-pack/` and compare crawled HTML against
-rendered HTML. Bing also feeds ChatGPT search.
+**Google Search Console — done 2026-09-11.** `felican.ai` is verified as a *domain*
+property under `felican.ai.inc@gmail.com`, by DNS TXT (record
+`google-site-verification=n06P2RMbAl5tCVeudO7akelNgp-N_7A0egiLev_AUgw` on the apex —
+do not delete it or verification is lost). Sitemap submitted; the homepage is indexed.
+Google's Cloudflare OAuth flow was declined deliberately: it wanted write access to the
+whole DNS account, and one TXT record achieves the same thing.
+
+**Bing Webmaster Tools — done 2026-09-11.** Imported from Search Console by the owner;
+sitemap submitted, 0 errors. Bing also feeds ChatGPT search.
+
+**Next in both consoles.** Resubmit the sitemap after this release so they pick up all
+86 URLs instead of the old 10, then use URL Inspection to request indexing on the
+handful of pages that matter most (`/`, `/products/`, `/starter-pack/`,
+`/guides/private-ai/`). Watch the Pages report for "Discovered – currently not indexed",
+which is normal at first on a site this new.
 
 **Google Business Profile.** Configure as a **service-area business** for Palm Beach /
 Broward / Miami-Dade with no street address, matching the `ProfessionalService` markup on
