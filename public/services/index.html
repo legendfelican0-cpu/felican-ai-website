@@ -59,7 +59,7 @@
         <article data-reveal="1" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px, 100%), 1fr));gap:clamp(20px,3vw,56px);padding:clamp(34px,4vw,56px) 0;border-bottom:1px solid #1C2A28;position:relative">
           <div style="display:flex;align-items:flex-start;gap:clamp(16px,2vw,28px)">
             <span aria-hidden="true" style="font-family:Sora,sans-serif;font-size:clamp(28px,3vw,40px);font-weight:800;letter-spacing:-0.03em;color:#2FB894;line-height:1">{{ s.num }}</span>
-            <h2 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(27px,3.2vw,44px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;color:#EEF4F4;text-wrap:balance">{{ s.name }}</h2>
+            <h2 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(27px,3.2vw,44px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;color:#EEF4F4;text-wrap:balance"><a href="{{ s.pageHref }}" style="color:inherit;text-decoration:none" style-hover="color:#8FE0C8">{{ s.name }}</a></h2>
           </div>
           <div>
             <p style="margin:0 0 20px;font-size:clamp(17px,1.4vw,20px);line-height:1.7;color:#C2D2D4;text-wrap:pretty">{{ s.body }}</p>
@@ -110,7 +110,8 @@
         <p style="margin:0;font-size:clamp(17px,1.45vw,20px);line-height:1.7;color:#C2D2D4;max-width:560px;text-wrap:pretty">Describe it in a sentence or two. We'll tell you honestly whether AI is the right fix — and if it isn't, we'll say so.</p>
       </div>
       <div style="display:grid;gap:14px">
-        <a href="/contact/" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:clamp(18px,1.6vw,21px);font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateX(6px)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">Start a conversation <span aria-hidden="true">&#8594;</span></a>
+        <a href="/booking/" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:clamp(18px,1.6vw,21px);font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateX(6px)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">Schedule a call <span aria-hidden="true">&#8594;</span></a>
+        <a href="/contact/" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;border:1px solid #1C2A28;color:#EEF4F4;font-family:Sora,sans-serif;font-size:clamp(18px,1.6vw,21px);font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:rgba(47,184,148,0.14);transform:translateX(6px)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">Start a conversation <span aria-hidden="true">&#8594;</span></a>
       </div>
     </div>
   </section>
@@ -140,20 +141,32 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { if (this._io) this._io.disconnect(); if (this._fallback) clearTimeout(this._fallback); }
   renderVals() {
+    // Each service now has its own page; the card title links there.
+    const SERVICE_SLUGS = {
+      'Custom Agent Development': '/services/custom-agent-development/',
+      'Workflow & Task Automation': '/services/workflow-and-task-automation/',
+      'Custom integrations': '/services/custom-integrations/',
+      'Private AI systems': '/services/private-ai-systems/',
+      'AI implementation and consulting': '/services/ai-implementation-and-consulting/',
+      'AI Solution Services': '/services/ai-solution-services/',
+      'Custom-trained AI models': '/services/custom-trained-ai-models/',
+      'AI auditing': '/services/ai-auditing/',
+      'AI cost analysis and reduction': '/services/ai-cost-analysis-and-reduction/',
+      'Personal & Employee Training': '/services/personal-and-employee-training/'
+    };
     return {
       services: [
-        { num: '01', name: 'AI agents and bots', body: 'Agents that handle one job well — answering customers, qualifying leads, routing requests, chasing follow-ups — and escalate to a person when they should.', tags: ['Customer-facing agents', 'Internal agents', 'Escalation rules'] },
-        { num: '02', name: 'Business automation', body: 'We map the steps your team repeats by hand every week and remove them. Fewer copy-pastes between systems, fewer things forgotten on a Friday.', tags: ['Workflow mapping', 'Document handling', 'Scheduled jobs'] },
+        { num: '01', name: 'Custom Agent Development', body: 'Agents that handle one job well — answering customers, qualifying leads, routing requests, chasing follow-ups — and escalate to a person when they should.', tags: ['Customer-facing agents', 'Internal agents', 'Escalation rules'] },
+        { num: '02', name: 'Workflow & Task Automation', body: 'We map the steps your team repeats by hand every week and remove them. Fewer copy-pastes between systems, fewer things forgotten on a Friday.', tags: ['Workflow mapping', 'Document handling', 'Scheduled jobs'] },
         { num: '03', name: 'Custom integrations', body: 'AI is only useful when it touches your real data. We connect it to your CRM, phone, scheduling, billing, and back-office tools.', tags: ['CRM', 'Scheduling', 'Back office', 'APIs'] },
         { num: '04', name: 'Private AI systems', body: 'For companies that cannot send data to a public model. Your AI runs inside your environment, under your access controls.', tags: ['Self-hosted models', 'Access control', 'Data residency'] },
         { num: '05', name: 'AI implementation and consulting', body: 'A clear plan for what to build, in what order, and what to skip. Written for decision-makers, not for engineers to translate.', tags: ['Roadmap', 'Build vs. buy', 'Risk review'] },
-        { num: '06', name: 'Business solutions', body: 'A complete build aimed at one operational problem — intake, dispatch, quoting, reporting — designed end to end and handed over working.', tags: ['End-to-end build', 'Rollout', 'Handover'] },
+        { num: '06', name: 'AI Solution Services', body: 'A complete build aimed at one operational problem — intake, dispatch, quoting, reporting — designed end to end and handed over working.', tags: ['End-to-end build', 'Rollout', 'Handover'] },
         { num: '07', name: 'Custom-trained AI models', body: 'Models trained and fine-tuned on your own data, language, and rules, so the answers sound like your business instead of the public internet.', tags: ['Fine-tuning', 'Your own data', 'Evaluation'] },
         { num: '08', name: 'AI auditing', body: 'An independent review of the AI already running in your business — what it touches, what it costs, where it is wrong, and where it exposes you.', tags: ['Model review', 'Risk and bias', 'Governance'] },
         { num: '09', name: 'AI cost analysis and reduction', body: 'Most companies overpay for AI without knowing it. We trace spend across models, tools, and licences, then cut it without losing capability.', tags: ['Spend tracing', 'Model right-sizing', 'Licence review'] },
-        { num: '10', name: 'Corporate training', body: 'Structured programs that take a whole organization from cautious to capable, by department, with materials your team keeps.', tags: ['Department programs', 'Certification paths', 'Course materials'] },
-        { num: '11', name: 'AI training and workshops', body: 'Practical sessions for leadership and staff on using AI in the work they already do, so adoption does not stall after launch.', tags: ['Leadership sessions', 'Team workshops', 'Ongoing support'] }
-      ],
+        { num: '10', name: 'Personal & Employee Training', body: 'Structured programs that take a whole organization from cautious to capable, by department, with materials your team keeps.', tags: ['Department programs', 'Certification paths', 'Course materials'] },
+      ].map(s => ({ ...s, pageHref: SERVICE_SLUGS[s.name] || '/services/engagements/' })),
       steps: [
         { num: 'STEP 01', title: 'Understand the operation', body: 'A short working session on how the business runs today and where time disappears.' },
         { num: 'STEP 02', title: 'Scope the smallest useful build', body: 'We pick the one change with the clearest payoff and define it precisely.' },

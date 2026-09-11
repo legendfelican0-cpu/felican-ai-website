@@ -221,5 +221,87 @@ const already = [];
   }
 }
 
+
+/* 6. /services/ — the owner's four customer-facing names, links to each service page,
+      and the Schedule a call CTA the page was missing entirely (it had none).
+
+      Renames applied 2026-09-11: Business solutions -> AI Solution Services,
+      Business automation -> Workflow & Task Automation, AI agents and bots -> Custom
+      Agent Development, and the two training services merged into Personal & Employee
+      Training. content/services.js holds the matching per-service pages. */
+{
+  const rel = 'public/services/index.html';
+  let html = read(rel);
+
+  const RENAMES = [
+    ["name: 'AI agents and bots'", "name: 'Custom Agent Development'"],
+    ["name: 'Business automation'", "name: 'Workflow & Task Automation'"],
+    ["name: 'Business solutions'", "name: 'AI Solution Services'"],
+    ["name: 'Corporate training'", "name: 'Personal & Employee Training'"],
+  ];
+
+  let changed = false;
+  for (const [from, to] of RENAMES) {
+    if (html.includes(from)) { html = html.replace(from, to); changed = true; }
+  }
+
+  // The two training entries collapsed into one; drop the now-duplicate workshops row.
+  const workshops = html.indexOf("{ num: '11', name: 'AI training and workshops'");
+  if (workshops !== -1) {
+    const lineEnd = html.indexOf('\n', workshops);
+    const lineStart = html.lastIndexOf('\n', workshops) + 1;
+    html = html.slice(0, lineStart) + html.slice(lineEnd + 1);
+    changed = true;
+  }
+
+  // The page had zero links to /booking/. Add the scheduling CTA beside the existing one.
+  const contactCta = '<a href="/contact/" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:clamp(18px,1.6vw,21px);font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateX(6px)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">Start a conversation <span aria-hidden="true">&#8594;</span></a>';
+  if (html.includes(contactCta) && !html.includes('href="/booking/"')) {
+    // Booking goes to the first-party /booking/ page, never straight to the scheduler.
+    const bookingCta = '<a href="/booking/" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 26px;background:#2FB894;color:#080E13;font-family:Sora,sans-serif;font-size:clamp(18px,1.6vw,21px);font-weight:700;text-decoration:none;transition:background .2s ease,transform .2s ease" style-hover="background:#59D4B4;transform:translateX(6px)" style-focus="outline:3px solid #59D4B4;outline-offset:4px">Schedule a call <span aria-hidden="true">&#8594;</span></a>';
+    const secondaryContact = contactCta
+      .replace('background:#2FB894;color:#080E13;', 'border:1px solid #1C2A28;color:#EEF4F4;')
+      .replace('style-hover="background:#59D4B4;transform:translateX(6px)"', 'style-hover="background:rgba(47,184,148,0.14);transform:translateX(6px)"');
+    html = html.replace(contactCta, `${bookingCta}\n        ${secondaryContact}`);
+    changed = true;
+  }
+
+  // Link each card title to its own service page, so the hub has real internal links
+  // into the ten service pages instead of being a dead end.
+  if (!html.includes('SERVICE_SLUGS')) {
+    const arrayEnd = "        { num: '10', name: 'Personal & Employee Training'";
+    const closer = '      ],\n      steps: [';
+    if (html.includes(closer)) {
+      html = html.replace(closer, `      ].map(s => ({ ...s, pageHref: SERVICE_SLUGS[s.name] || '/services/engagements/' })),
+      steps: [`);
+      html = html.replace('  renderVals() {\n    return {', `  renderVals() {
+    // Each service now has its own page; the card title links there.
+    const SERVICE_SLUGS = {
+      'Custom Agent Development': '/services/custom-agent-development/',
+      'Workflow & Task Automation': '/services/workflow-and-task-automation/',
+      'Custom integrations': '/services/custom-integrations/',
+      'Private AI systems': '/services/private-ai-systems/',
+      'AI implementation and consulting': '/services/ai-implementation-and-consulting/',
+      'AI Solution Services': '/services/ai-solution-services/',
+      'Custom-trained AI models': '/services/custom-trained-ai-models/',
+      'AI auditing': '/services/ai-auditing/',
+      'AI cost analysis and reduction': '/services/ai-cost-analysis-and-reduction/',
+      'Personal & Employee Training': '/services/personal-and-employee-training/'
+    };
+    return {`);
+      const heading = '<h2 style="margin:0;font-family:Sora,sans-serif;font-size:clamp(27px,3.2vw,44px);font-weight:800;line-height:1.05;letter-spacing:-0.035em;color:#EEF4F4;text-wrap:balance">{{ s.name }}</h2>';
+      if (html.includes(heading)) {
+        html = html.replace(heading, heading.replace('{{ s.name }}',
+          '<a href="{{ s.pageHref }}" style="color:inherit;text-decoration:none" style-hover="color:#8FE0C8">{{ s.name }}</a>'));
+      }
+      changed = true;
+      void arrayEnd;
+    }
+  }
+
+  if (changed) { save(rel, html); done.push('services renames + booking CTA'); }
+  else already.push('services renames + booking CTA');
+}
+
 if (done.length) console.log(`Patched: ${done.join('; ')}`);
 if (already.length) console.log(`Already applied: ${already.join('; ')}`);

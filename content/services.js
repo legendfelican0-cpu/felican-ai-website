@@ -1,5 +1,9 @@
-// Per-service page content. The eleven service names come from the existing array in
-// public/services/index.html and must not be renamed.
+// Per-service page content.
+//
+// Renamed 2026-09-11 at the owner's direction to the four customer-facing names they
+// use when selling: AI Solution Services, Workflow & Task Automation, Custom Agent
+// Development, and Personal & Employee Training (which merges the two former training
+// services). The URLs had never been indexed, so the rename cost nothing.
 //
 // Each page answers the four things a buyer asks before a call: what is in scope, how
 // the engagement runs, what determines the price, and when this is the wrong service.
@@ -45,10 +49,10 @@ export const SERVICES = [
     ],
   },
   {
-    slug: 'ai-agents-and-bots',
-    name: 'AI agents and bots',
+    slug: 'custom-agent-development',
+    name: 'Custom Agent Development',
     tag: 'Build',
-    title: 'AI agents and bots — agents that do work, not chat | Felican AI',
+    title: 'Custom agent development — agents that do work, not chat | Felican AI',
     description:
       'We build AI agents that complete a defined job end to end — researching, triaging, auditing, drafting — and produce output you can act on.',
     lede: 'An agent is only worth building when it finishes a job. We build the ones that do.',
@@ -80,10 +84,10 @@ export const SERVICES = [
     ],
   },
   {
-    slug: 'business-automation',
-    name: 'Business automation',
+    slug: 'workflow-and-task-automation',
+    name: 'Workflow & Task Automation',
     tag: 'Build',
-    title: 'Business automation — remove the steps nobody should be doing | Felican AI',
+    title: 'Workflow & task automation — remove the steps nobody should be doing | Felican AI',
     description:
       'We automate the repetitive, transcription-heavy steps in how your business actually runs, using AI only where AI is genuinely the right tool.',
     lede: 'Most of what looks like an AI problem is a process problem with a transcription step in it.',
@@ -143,7 +147,7 @@ export const SERVICES = [
       'A one-directional export would do. Bidirectional sync is an order of magnitude more work and needs a real reason.',
     ],
     related: [
-      { href: '/services/business-automation/', label: 'Business automation', note: 'The process the integration serves' },
+      { href: '/services/workflow-and-task-automation/', label: 'Workflow & Task Automation', note: 'The process the integration serves' },
       { href: '/products/dendrite/', label: 'Dendrite', note: 'When the source is the web' },
     ],
   },
@@ -180,10 +184,10 @@ export const SERVICES = [
     ],
   },
   {
-    slug: 'business-solutions',
-    name: 'Business solutions',
+    slug: 'ai-solution-services',
+    name: 'AI Solution Services',
     tag: 'Build',
-    title: 'Business solutions — custom software with AI where it earns its place | Felican AI',
+    title: 'AI solution services — custom software with AI where it earns its place | Felican AI',
     description:
       'Custom applications built around how your business actually runs, with AI used where it genuinely helps rather than as the premise.',
     lede: 'Sometimes the answer is software, and AI is one component of it rather than the point.',
@@ -311,65 +315,41 @@ export const SERVICES = [
     ],
   },
   {
-    slug: 'corporate-training',
-    name: 'Corporate training',
+    slug: 'personal-and-employee-training',
+    name: 'Personal & Employee Training',
     tag: 'Training',
-    title: 'Corporate training — AI training for the people in the room | Felican AI',
+    title: 'Personal & employee AI training — for individuals and whole teams | Felican AI',
     description:
-      'Practical AI training built for your staff and your actual work, not a generic vendor course. Delivered on site or remotely.',
+      'Practical AI training built around your people and your real work: structured corporate programmes, hands-on workshops, and one-to-one coaching. On site or remote.',
     lede: 'A licence nobody knows how to use is the most common form of wasted AI spend.',
     scope: [
       'Training built around your tools and your real work, using your own material',
       'Role-specific sessions — what a sales team needs differs from what finance needs',
+      'Hands-on workshops where everyone works, rather than watching a demo',
+      'One-to-one coaching for individuals who need to go deeper than a group session allows',
       'Practical guardrails: what to never paste into a public model, and why',
-      'Prompting as a method rather than a list of tricks',
+      'Prompting as a method rather than a list of tricks that stop working at the next model release',
       'Verification habits, so people check output instead of trusting it',
-      'Reference material they keep',
+      'Reference material each person keeps and actually reuses',
     ],
     engagement: [
       '<strong>Assess.</strong> What people are actually doing with AI now, including the parts they would not put in writing.',
-      '<strong>Build.</strong> Sessions around real tasks from your business.',
-      '<strong>Deliver.</strong> On site or remote, in groups small enough for people to actually try things.',
+      '<strong>Build.</strong> Sessions around real tasks from your business, not a generic vendor curriculum.',
+      '<strong>Deliver.</strong> On site or remote, in groups small enough for people to actually try things. Past roughly twenty people it becomes a lecture, which is a different and less useful thing.',
       '<strong>Follow up.</strong> A session weeks later, against what they hit in practice. This is where the behaviour actually changes.',
     ],
-    pricing: ['Per cohort. Driven by the number of sessions and how much customisation the material needs.'],
+    pricing: [
+      'Per cohort for team programmes, per session for workshops, hourly for one-to-one coaching. The driver is how much of the material has to be built around your specific work.',
+    ],
     notFor: [
       'You want a one-hour all-hands awareness session. Useful, but it will not change how anyone works.',
       'Staff are not permitted to use AI yet. Sort the policy first — training people in a tool they cannot use breeds exactly the shadow usage you were worried about.',
+      'You need a governance framework rather than skills. That is <a href="/services/ai-implementation-and-consulting/">consulting</a>, not training.',
     ],
     related: [
-      { href: '/services/ai-training-and-workshops/', label: 'AI training and workshops', note: 'Shorter, hands-on format' },
-      { href: '/education/', label: 'Education', note: 'Books, courses and programmes' },
-    ],
-  },
-  {
-    slug: 'ai-training-and-workshops',
-    name: 'AI training and workshops',
-    tag: 'Training',
-    title: 'AI training and workshops — hands-on sessions on your real work | Felican AI',
-    description:
-      'Focused, hands-on AI workshops where a team leaves having built something against their own work rather than watching a demo.',
-    lede: 'People learn AI by using it badly for an hour with someone who can tell them why.',
-    scope: [
-      'Half-day and full-day hands-on workshops',
-      'Built on your real tasks and documents',
-      'Everyone works — no lecture format',
-      'Each participant leaves with something they built and will reuse',
-      'Team-specific: leadership, sales, operations, finance, technical',
-    ],
-    engagement: [
-      '<strong>Pick the work.</strong> We choose tasks from your business that are representative and where AI genuinely helps.',
-      '<strong>Run the session.</strong> Short framing, then people work on their own material with us in the room.',
-      '<strong>Capture what worked.</strong> The outputs become your internal reference.',
-    ],
-    pricing: ['Per workshop. Half-day and full-day formats.'],
-    notFor: [
-      'A large audience. Past roughly twenty people it becomes a lecture, which is a different and less useful thing.',
-      'You need a policy and governance framework. That is <a href="/services/ai-implementation-and-consulting/">consulting</a>, not a workshop.',
-    ],
-    related: [
-      { href: '/services/corporate-training/', label: 'Corporate training', note: 'The structured programme' },
-      { href: '/education/', label: 'Education', note: 'Self-directed learning' },
+      { href: '/guides/ai-governance/ai-policy-template/', label: 'A one-page AI policy', note: 'Settle the rules before you train people on the tools' },
+      { href: '/books/stop-being-nice-to-ai/', label: 'Stop Being Nice to AI', note: 'The prompting method, in book form' },
+      { href: '/education/', label: 'Education', note: 'Self-directed learning, books and courses' },
     ],
   },
 ];

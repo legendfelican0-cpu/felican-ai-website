@@ -562,7 +562,7 @@ export const PRODUCTS = [
     related: [
       { href: '/industries/hvac/', label: 'AI for HVAC contractors', note: 'Relay and Voice AI together' },
       { href: '/products/voice-ai/', label: 'Voice AI', note: 'Stop losing the after-hours call' },
-      { href: '/services/business-automation/', label: 'Business automation', note: 'When the process is specific to you' },
+      { href: '/services/workflow-and-task-automation/', label: 'Workflow & Task Automation', note: 'When the process is specific to you' },
     ],
   },
 
@@ -803,7 +803,7 @@ export const PRODUCTS = [
     ],
     related: [
       { href: '/products/private-ai/', label: 'Private AI', note: 'Run inbox triage without sending mail to a public model' },
-      { href: '/services/business-automation/', label: 'Business automation', note: 'When the workflow is bigger than email' },
+      { href: '/services/workflow-and-task-automation/', label: 'Workflow & Task Automation', note: 'When the workflow is bigger than email' },
     ],
   },
 

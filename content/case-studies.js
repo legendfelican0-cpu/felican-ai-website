@@ -212,7 +212,7 @@ export const CASE_STUDIES = [
     note:
       'Healthcare deployments touch protected health information, so the same constraints described on our <a href="/industries/medical-and-dental/">medical and dental page</a> apply: scoped access, audit logging, retention rules, and a clear statement of which compliance obligations remain with the provider.',
     products: [
-      { href: '/services/ai-agents-and-bots/', label: 'AI agents and bots' },
+      { href: '/services/custom-agent-development/', label: 'Custom Agent Development' },
       { href: '/services/custom-integrations/', label: 'Custom integrations' },
     ],
   },
@@ -240,8 +240,8 @@ export const CASE_STUDIES = [
     why:
       'Forecasting is one of the genuinely good applications of machine learning, because the task is well defined, the history is plentiful, and the error is measurable in money. It is a long way from a chat interface and much closer to where the value actually is.',
     products: [
-      { href: '/services/business-automation/', label: 'Business automation' },
-      { href: '/services/ai-agents-and-bots/', label: 'AI agents and bots' },
+      { href: '/services/workflow-and-task-automation/', label: 'Workflow & Task Automation' },
+      { href: '/services/custom-agent-development/', label: 'Custom Agent Development' },
     ],
   },
   {
@@ -268,8 +268,8 @@ export const CASE_STUDIES = [
     why:
       'Utilisation data almost always exists in a business like this and almost never gets used for the next bid. Closing that loop is where the return is, and it needs no new data collection to start.',
     products: [
-      { href: '/services/ai-agents-and-bots/', label: 'AI agents and bots' },
-      { href: '/services/business-automation/', label: 'Business automation' },
+      { href: '/services/custom-agent-development/', label: 'Custom Agent Development' },
+      { href: '/services/workflow-and-task-automation/', label: 'Workflow & Task Automation' },
     ],
   },
   {
@@ -298,7 +298,7 @@ export const CASE_STUDIES = [
     note:
       'As with all healthcare work, the constraints on our <a href="/industries/medical-and-dental/">medical and dental page</a> apply, including scoped access and audit logging, and a clear division of which compliance obligations remain with the provider.',
     products: [
-      { href: '/services/ai-agents-and-bots/', label: 'AI agents and bots' },
+      { href: '/services/custom-agent-development/', label: 'Custom Agent Development' },
       { href: '/services/custom-integrations/', label: 'Custom integrations' },
     ],
   },

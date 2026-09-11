@@ -189,7 +189,7 @@ test.describe('Customer journey', () => {
   test('services cover the newer engagements', async ({ page }) => {
     await page.goto('/services/', { waitUntil: 'load' });
     const names = (await page.locator('main h2').allTextContents()).join(' | ');
-    for (const service of ['Custom-trained AI models', 'AI auditing', 'AI cost analysis', 'Corporate training']) {
+    for (const service of ['Custom-trained AI models', 'AI auditing', 'AI cost analysis', 'Personal & Employee Training']) {
       expect(names).toContain(service);
     }
   });

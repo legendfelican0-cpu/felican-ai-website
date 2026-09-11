@@ -93,7 +93,7 @@ export const FOOTER_COLUMNS = [
       { label: 'Private AI systems', href: '/services/private-ai-systems/' },
       { label: 'AI auditing', href: '/services/ai-auditing/' },
       { label: 'AI cost reduction', href: '/services/ai-cost-analysis-and-reduction/' },
-      { label: 'Business automation', href: '/services/business-automation/' },
+      { label: 'Workflow & Task Automation', href: '/services/workflow-and-task-automation/' },
       { label: 'All services', href: '/services/' },
     ],
   },

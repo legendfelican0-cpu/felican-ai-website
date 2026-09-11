@@ -34,7 +34,7 @@ this repo, in git, covered by tests.
 | Nav and footer on generated pages | `content/site.js` (`NAV`, `FOOTER_COLUMNS`) |
 | Nav and footer on hand-written pages | `public/SiteNav.dc.html`, `public/SiteFooter.dc.html` — **keep in sync with `content/site.js`** |
 | Page content | `content/*.js` — never edit a generated `index.html` |
-| AVIF/WebP variants | `scripts/optimize-images.mjs`, served by content negotiation in `server/app.js` |
+| AVIF/WebP variants | `scripts/optimize-images.mjs`; offered per-URL via `<picture>` and `public/format-support.js` (never Accept negotiation — Cloudflare ignores `Vary: Accept`) |
 
 ## Commands
 
@@ -45,7 +45,7 @@ npm run build:content  #   2. render content/*.js into public/, rewrite sitemap.
 npm run patch:pages    #   3. idempotent patches to the hand-written pages
 npm run sync:schema    #   4. one Organization graph across every hand-written page
 npm run fix:images     #   5. width/height/loading/decoding on every <img>
-npm test               # 199 unit tests, including the robots.txt regression guard
+npm test               # 210 unit tests, including the robots.txt regression guard
 npx playwright test --project=desktop --project=mobile
 ```
 
@@ -68,10 +68,10 @@ Do not convert the new pages to `<x-dc>`. Use it for interactive components only
 
 ## What was built
 
-74 generated pages, ~42,000 words:
+73 generated pages, ~42,000 words:
 
 - 19 product pages (`/products/<slug>/`) plus a static index at `/products/hub/`
-- 11 service pages (`/services/<slug>/`) plus `/services/engagements/`
+- 10 service pages (`/services/<slug>/`) plus `/services/engagements/`
 - 8 industry pages (`/industries/<slug>/`) plus `/industries/`
 - 3 pillar guides with 9 supporting articles (`/guides/...`)
 - 4 comparison pages (`/compare/<slug>/`)
@@ -86,24 +86,58 @@ Structured data emitted: `Organization`, `Person`, `WebSite`, `BreadcrumbList`,
 `FAQPage` is deliberately **not** emitted. Google retired FAQ rich results in May 2026,
 so it buys no SERP space. Question-shaped `<h3>` headings do the real work.
 
-## Review gate on the client pages
+## Client pages
 
-Every entry in `content/case-studies.js` carries `reviewNeeded: true`. The client names,
-industries, locations and business descriptions came from the owner. The **solution**
-descriptions were, in the owner's words, "best inferred from each client's stated
-business needs" and have **not** been verified against what was actually deployed.
-
-`npm run build:content` prints the review list on every run. Before these pages go to
-production, each one needs:
-
-1. the deployment detail checked against what was actually built, and
-2. the client's permission to be named publicly.
-
-Clear `reviewNeeded` per entry as each is confirmed.
+**Confirmed by the owner on 2026-09-11** — all ten cleared to publish, both for the
+deployment detail and for naming each client publicly. The `reviewNeeded` flag has been
+removed. Re-add it to any entry whose detail changes and needs re-checking.
 
 There are **no outcome metrics** on these pages — no "cut call handling by 40%". Add
 figures only when they exist and are sourced. One unverifiable number discredits the
 other nine pages.
+
+## Pricing (changed 2026-09-11)
+
+Every individual product page lists **$999**, with `Product` + `Offer` structured data.
+The figure is read from `CATALOG['private-ai'].amount` in `server/checkout.js` at build
+time, so the displayed price, the Offer markup and the amount the server charges cannot
+drift apart. The Starter Pack bundle keeps its own $2,500 offer from `CATALOG.pack`.
+
+**Open risk, recorded deliberately.** Only `private-ai`, `assistant` and `receptionist`
+are wired into checkout. The other sixteen products display $999 and carry `Offer`
+markup, but their CTA routes to the contact form — a buyer cannot actually complete a
+purchase at that price. Google treats an `Offer` as a real purchasable price, so if
+those stay unbuyable, either:
+
+1. add them to `CATALOG` in `server/checkout.js` so the price becomes true, or
+2. drop those pages back to `SoftwareApplication` markup, which needs no price.
+
+This was the owner's explicit decision after the trade-off was put to them. It is a
+business call, not an oversight — but it should not be left unresolved indefinitely.
+
+This supersedes the former rule that prices appear only on `/starter-pack/`. Guards in
+`scripts/content-pages.test.js` now assert that a price appears **only** on
+`/starter-pack/` and `/products/*`, and that every figure equals the constant in
+`server/checkout.js`.
+
+## Services (renamed 2026-09-11)
+
+Renamed to the owner's four customer-facing names. The URLs had never been indexed, so
+the rename cost nothing. Eleven services became ten — the two training services merged.
+
+| Was | Now |
+|---|---|
+| Business solutions | **AI Solution Services** (`/services/ai-solution-services/`) |
+| Business automation | **Workflow & Task Automation** (`/services/workflow-and-task-automation/`) |
+| AI agents and bots | **Custom Agent Development** (`/services/custom-agent-development/`) |
+| Corporate training + AI training and workshops | **Personal & Employee Training** (`/services/personal-and-employee-training/`) |
+
+`/services/` also gained a **Schedule a call** CTA (it previously had no link to
+`/booking/` at all) and each card title now links to its own service page.
+
+`scripts/build-content.mjs` prunes generated pages it no longer produces, so a future
+rename will not leave orphaned URLs behind. It only ever removes a directory whose
+`index.html` carries its own banner and which contains nothing else.
 
 ## Still outstanding
 

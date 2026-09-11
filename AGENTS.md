@@ -12,6 +12,12 @@
 
 ## Recent changes
 
+- 2026-09-11: Every product page lists $999 with `Product`/`Offer` markup generated from
+  `server/checkout.js`; services renamed to the owner's four customer-facing names
+  (10 services, two training pages merged) and `/services/` gained a Schedule a call
+  CTA. Google Search Console is verified for `felican.ai` (domain property, DNS TXT,
+  account `felican.ai.inc@gmail.com`) with the sitemap submitted. See `docs/SEO.md`.
+
 - 2026-09-11: **Search visibility overhaul.** A stale Cloudflare Worker was serving a
   site-wide `Disallow: /` on `felican.ai/robots.txt`, and Cloudflare's managed robots.txt
   was blocking every AI crawler. Both fixed; `robots.txt` is now owned by
@@ -55,8 +61,10 @@ Planning notes live at `~/dev/starter-pack/PLAN.md`.
   these pages.
 - **Never name a weekday** in copy. Use elapsed time — "in 2 days",
   "live in 48 hours".
-- **Cart and prices appear only on `/starter-pack/`.** The other products on
-  `/products/` stay unpriced with "Ask about it" CTAs.
+- **Prices.** Superseded 2026-09-11: every product page now lists $999 with Offer
+  markup, generated from `server/checkout.js`. The cart itself still lives only on
+  `/starter-pack/`. See the pricing section in `docs/SEO.md` for the open risk — only
+  three of the nineteen products are actually wired into checkout.
 - **Prices live only in `server/checkout.js`.** The browser may send product ids,
   the buyer email, plan id, and terms acceptance, but never a price, total, or
   amount. The server calculates every charge.

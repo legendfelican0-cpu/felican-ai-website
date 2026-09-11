@@ -262,19 +262,29 @@ describe('AGENTS.md copy rules', () => {
     expect(text).not.toMatch(/enterprise offering/i);
   });
 
-  it('shows no price outside /starter-pack/', () => {
-    // Prices live in server/checkout.js and are displayed only on the Starter Pack
-    // page. A figure on a product page would eventually contradict checkout.
+  it('shows a price only on the Starter Pack and product pages', () => {
+    // The owner listed every product at $999 on 2026-09-11, so product pages now
+    // display a price where previously none did. Everywhere else — guides,
+    // comparisons, industries, client work, books — must stay price-free, or the
+    // figure will drift out of sync the first time it changes.
     const priced = pages
-      .filter(p => !p.urlPath.startsWith('/starter-pack/'))
+      .filter(p => !p.urlPath.startsWith('/starter-pack/') && !p.urlPath.startsWith('/products/'))
       .filter(p => /\$\d[\d,]*/.test(p.html.replace(/<script[\s\S]*?<\/script>/g, '')))
       .map(p => p.urlPath);
     expect(priced).toEqual([]);
   });
 
-  it('emits no Offer price in structured data', () => {
-    const withPrice = pages.filter(p => /"price"\s*:/.test(p.html)).map(p => p.urlPath);
-    expect(withPrice).toEqual([]);
+  it('every displayed product price equals the single constant in server/checkout.js', async () => {
+    const { CATALOG } = await import('../server/checkout.js');
+    const expected = `$${Math.round(CATALOG['private-ai'].amount / 100).toLocaleString('en-US')}`;
+    const wrong = [];
+    for (const p of pages.filter(p => p.urlPath.startsWith('/products/') && p.urlPath !== '/products/hub/')) {
+      const visible = p.html.replace(/<script[\s\S]*?<\/script>/g, '');
+      const found = [...visible.matchAll(/\$\d[\d,]*/g)].map(m => m[0]);
+      if (!found.length) wrong.push(`${p.urlPath}: no price shown`);
+      for (const price of found) if (price !== expected) wrong.push(`${p.urlPath}: ${price}`);
+    }
+    expect(wrong).toEqual([]);
   });
 
   it('routes every booking CTA through the first-party /booking/ page', () => {
@@ -347,11 +357,24 @@ describe('structured data validity', () => {
     expect(bundle.node.offers.priceCurrency).toBe('USD');
   });
 
-  it('no page outside /starter-pack/ emits a price in structured data', () => {
-    const leaked = nodes
-      .filter(({ file }) => !file.includes('/starter-pack/'))
-      .filter(({ node }) => 'price' in node)
+  it('every Offer price in markup comes from server/checkout.js', async () => {
+    // Product pages and the Starter Pack are the only places an Offer appears, and
+    // both figures are generated from CATALOG so markup and charge cannot diverge.
+    const { CATALOG } = await import('../server/checkout.js');
+    const product = (CATALOG['private-ai'].amount / 100).toFixed(2);
+    const pack = (CATALOG.pack.amount / 100).toFixed(2);
+    const allowed = new Set([product, pack]);
+
+    const offers = nodes.filter(({ node }) => 'price' in node);
+    expect(offers.length).toBeGreaterThan(0);
+    const wrong = offers
+      .filter(({ node }) => !allowed.has(String(node.price)))
+      .map(({ file, node }) => `${file}: ${node.price}`);
+    expect(wrong).toEqual([]);
+
+    const outside = offers
+      .filter(({ file }) => !file.includes('/starter-pack/') && !file.includes('/products/'))
       .map(({ file }) => file);
-    expect([...new Set(leaked)]).toEqual([]);
+    expect([...new Set(outside)]).toEqual([]);
   });
 });

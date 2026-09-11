@@ -737,7 +737,7 @@ export const GUIDES = [
         faq: [
           { q: 'Can we just use a template?', a: '<p>As a skeleton, yes. The routing table and the data examples have to be yours — a generic template fails precisely at the point where a member of staff needs an answer about a specific document.</p>' },
           { q: 'Who signs it off?', a: '<p>Whoever can say no and make it stick. In a smaller business, an owner.</p>' },
-          { q: 'Do we need staff training on it?', a: '<p>A short session, on real examples from your own work. Handing out a document achieves very little. <a href="/services/corporate-training/">Corporate training</a> covers this properly.</p>' },
+          { q: 'Do we need staff training on it?', a: '<p>A short session, on real examples from your own work. Handing out a document achieves very little. <a href="/services/personal-and-employee-training/">Corporate training</a> covers this properly.</p>' },
         ],
       },
       {

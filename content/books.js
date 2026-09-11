@@ -54,8 +54,8 @@ export const BOOKS = [
       'You are training a team and need something you can hand them.',
     ],
     related: [
-      { href: '/services/ai-training-and-workshops/', label: 'AI training and workshops', note: 'The same method, taught hands-on' },
-      { href: '/services/corporate-training/', label: 'Corporate training', note: 'For a whole team' },
+      { href: '/services/personal-and-employee-training/', label: 'Personal & Employee Training', note: 'The same method, taught hands-on' },
+      { href: '/services/personal-and-employee-training/', label: 'Personal & Employee Training', note: 'For a whole team' },
     ],
   },
   {
@@ -78,7 +78,7 @@ export const BOOKS = [
       'You manage people who are anxious about this and need to talk about it honestly.',
     ],
     related: [
-      { href: '/services/corporate-training/', label: 'Corporate training', note: 'Bringing a team through the change' },
+      { href: '/services/personal-and-employee-training/', label: 'Personal & Employee Training', note: 'Bringing a team through the change' },
       { href: '/education/', label: 'Education', note: 'Programmes and courses' },
     ],
   },
