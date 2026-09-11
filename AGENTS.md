@@ -12,6 +12,16 @@
 
 ## Recent changes
 
+- 2026-09-11: **Search visibility overhaul.** A stale Cloudflare Worker was serving a
+  site-wide `Disallow: /` on `felican.ai/robots.txt`, and Cloudflare's managed robots.txt
+  was blocking every AI crawler. Both fixed; `robots.txt` is now owned by
+  `server/app.js`, in git, and guarded by `server/seo.test.js`. Added 74 generated
+  content pages (products, services, industries, guides, comparisons, client work, books,
+  local) rendered from `content/*.js` by `npm run seo`. **Read `docs/SEO.md` before
+  touching anything SEO-related** — it covers the pipeline, the review gate on the client
+  pages, the Cloudflare changes (backups in `.cf-backup/`), and what is still outstanding
+  (social `sameAs` URLs, Search Console, Google Business Profile).
+
 - 2026-09-08: DEV and PROD deployment preflight now require a 32+ character `GENERATOR_HANDOFF_SECRET`, and `/api/ready` fails closed when the secure direct-setup handoff is unavailable.
 - 2026-09-08: `/favicon.ico` serves the existing SVG favicon with the correct MIME type, preventing the conventional browser request from producing a 404.
 - 2026-09-08: Static `.xml` files are served as `application/xml; charset=utf-8`, so search engines receive the sitemap with the correct MIME type.

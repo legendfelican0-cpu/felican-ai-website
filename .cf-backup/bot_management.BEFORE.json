@@ -1,0 +1,20 @@
+{
+  "result": {
+    "enable_js": false,
+    "fight_mode": false,
+    "ai_bots_protection": "disabled",
+    "content_bots_protection": "disabled",
+    "crawler_protection": "disabled",
+    "ai_training": "disabled",
+    "ai_search": "disabled",
+    "ai_user": "disabled",
+    "is_robots_txt_managed": true,
+    "bot_preference_sync_enabled": false,
+    "cf_robots_variant": "off",
+    "ai_bots_migration_opt_out": false,
+    "using_latest_model": true
+  },
+  "success": true,
+  "errors": [],
+  "messages": []
+}

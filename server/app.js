@@ -25,7 +25,11 @@ const RATE_MAP_CAP = 10_000;
 const COPS_VOICE_BUNDLE_URL = 'https://cops-website.felican.dev/voice-client.bundle.js';
 const COPS_VOICE_BUNDLE_SHA384 = 'sha384-om2+KCCsCWb4oslvQoDmevbN/xaXx9cMxSf4Prw1kdgEFYKx2kOwJqWqDmhG8fKc';
 const MAX_VOICE_BUNDLE_BYTES = 1024 * 1024;
-const ANALYTICS_EVENTS = new Set(['page_view', 'contact_click', 'product_click', 'assistant_open']);
+// 'web_vitals' and 'ai_referral' were added for search monitoring. Core Web Vitals
+// are a confirmed ranking input measured on real visits at the 75th percentile, and
+// there is no console that reports AI-assistant referrals — they arrive looking like
+// ordinary traffic unless the referrer is classified on arrival.
+const ANALYTICS_EVENTS = new Set(['page_view', 'contact_click', 'product_click', 'assistant_open', 'web_vitals', 'ai_referral']);
 const EDUCATION_GUIDES = new Map([
   ['12-ways-ai-can-help-your-business', { title: '12 Ways AI Can Help Your Business', url: 'https://felican.ai/ebooks/12-ways-ai-can-help-your-business' }],
   ['ai-starter-pack-for-kids-teens-and-adults', { title: 'AI Starter Pack for Kids, Teens, and Adults', url: 'https://felican.ai/ebooks/ai-starter-pack-for-kids-teens-and-adults' }],
@@ -48,6 +52,7 @@ const MIME = new Map([
   ['.wav', 'audio/wav'],
   ['.webp', 'image/webp'],
   ['.xml', 'application/xml; charset=utf-8'],
+  ['.avif', 'image/avif'],
 ]);
 
 export const FELICAN_SYSTEM_PROMPT = `You are the Felican AI assistant running on the Felican AI website. Be clear, brief, friendly, and honest. Answer in 2-4 short sentences unless the visitor asks for detail.
@@ -460,6 +465,86 @@ export async function completeWithConfiguredProvider(messages, env = process.env
   }
 }
 
+// Felican AI is an AI company; being readable by AI assistants is part of the product
+// claim, so the retrieval and search crawlers are named explicitly rather than left to
+// a wildcard that a platform-level default could quietly override. Cloudflare's
+// "managed robots.txt" (zone setting is_robots_txt_managed) used to prepend a block for
+// GPTBot/ClaudeBot/CCBot/Google-Extended here; it is switched off so this file is the
+// single source of truth. If AI crawlers ever disappear from logs, re-check that setting.
+const AI_CRAWLERS_ALLOWED = [
+  'GPTBot',            // OpenAI — training + ChatGPT browsing corpus
+  'OAI-SearchBot',     // OpenAI — ChatGPT search index
+  'ChatGPT-User',      // OpenAI — live fetch when a user asks
+  'ClaudeBot',         // Anthropic
+  'Claude-User',       // Anthropic — live fetch
+  'Claude-SearchBot',  // Anthropic — search index
+  'PerplexityBot',     // Perplexity index
+  'Perplexity-User',   // Perplexity live fetch
+  'Google-Extended',   // Gemini grounding (does not affect Google Search ranking)
+  'Applebot-Extended', // Apple Intelligence
+  'meta-externalagent',
+  'Bingbot',
+  'Amazonbot',
+  'CCBot',             // Common Crawl — feeds many downstream models
+  'cohere-ai',
+  'DuckAssistBot',
+  'MistralAI-User',
+  'YouBot',
+];
+
+const PRODUCTION_ROBOTS = [
+  '# felican.ai — open to search engines and AI assistants alike.',
+  '# Staging (felican.dev) is disallowed; see the host check in server/app.js.',
+  '',
+  'User-agent: *',
+  'Allow: /',
+  '',
+  '# Checkout and order confirmation carry no public content.',
+  'Disallow: /checkout/',
+  'Disallow: /thank-you/',
+  '',
+  ...AI_CRAWLERS_ALLOWED.flatMap(agent => [`User-agent: ${agent}`, 'Allow: /', '']),
+  'Sitemap: https://felican.ai/sitemap.xml',
+  '',
+].join('\n');
+
+const STAGING_ROBOTS = 'User-agent: *\nDisallow: /\n';
+
+// Returns the canonical path a request should be redirected to, or '' when the
+// requested path is already canonical. Pure path arithmetic plus an existsSync check,
+// so it never redirects to a URL that would then 404.
+// Picks the best available encoding of a raster image for this request. Returns the
+// path to a variant, or '' to serve the original unchanged.
+function negotiateImage(filePath, acceptHeader) {
+  if (!/\.(png|jpe?g)$/i.test(filePath)) return '';
+  const accept = String(acceptHeader || '');
+  const base = filePath.slice(0, -extname(filePath).length);
+  // Best first. AVIF is materially smaller than WebP on these screenshots.
+  for (const [type, ext] of [['image/avif', '.avif'], ['image/webp', '.webp']]) {
+    if (!accept.includes(type)) continue;
+    const candidate = `${base}${ext}`;
+    if (existsSync(candidate)) return candidate;
+  }
+  return '';
+}
+
+function canonicalPathFor(rootDir, pathname) {
+  if (pathname === '/') return '';
+
+  if (pathname.endsWith('/index.html')) {
+    return pathname.slice(0, -'index.html'.length);
+  }
+
+  if (pathname.endsWith('/')) return '';
+
+  // No trailing slash and no file extension: if a directory with an index.html is
+  // there, the slashed form is canonical.
+  const last = pathname.slice(pathname.lastIndexOf('/') + 1);
+  if (last.includes('.')) return '';
+  const dir = staticPath(rootDir, `${pathname}/`);
+  return dir && existsSync(dir) ? `${pathname}/` : '';
+}
+
 function staticPath(rootDir, pathname) {
   let decoded;
   try {
@@ -650,11 +735,17 @@ export function createAppServer({
         const body = await readJson(req);
         const event = sanitizeText(body.event, 40);
         if (ANALYTICS_EVENTS.has(event)) {
+          // `metric`/`value` carry Core Web Vitals samples; `value` is coerced to a
+          // bounded number so a malformed beacon cannot inflate the log.
+          const value = Number(body.value);
           structuredLog(logger, 'info', 'site.analytics', {
             eventName: event,
             path: sanitizeText(body.path, 180),
             target: sanitizeText(body.target, 180),
             referrer: sanitizeText(body.referrer, 180),
+            ...(body.metric ? { metric: sanitizeText(body.metric, 24) } : {}),
+            ...(Number.isFinite(value) ? { value: Math.max(0, Math.min(600000, Math.round(value * 1000) / 1000)) } : {}),
+            ...(body.rating ? { rating: sanitizeText(body.rating, 12) } : {}),
           });
         }
       } catch (error) {
@@ -876,25 +967,58 @@ export function createAppServer({
       const hostname = String(req.headers['x-forwarded-host'] || req.headers.host || '').split(':')[0].toLowerCase();
       const staging = hostname.endsWith('felican.dev') || hostname === 'localhost' || hostname === '127.0.0.1';
       res.writeHead(200, { ...securityHeaders('text/plain; charset=utf-8'), 'Cache-Control': 'public, max-age=300' });
-      return res.end(staging
-        ? 'User-agent: *\nDisallow: /\n'
-        : 'User-agent: *\nAllow: /\n\nSitemap: https://felican.ai/sitemap.xml\n');
+      return res.end(staging ? STAGING_ROBOTS : PRODUCTION_ROBOTS);
     }
 
     if (!['GET', 'HEAD'].includes(req.method || 'GET')) return json(res, 405, { error: 'Method not allowed' });
+
+    // One URL per page. Directory pages are canonical with a trailing slash, so
+    // /products and /products/index.html both 301 to /products/ instead of serving
+    // a second copy that splits crawl budget and ranking signals.
+    const canonicalRedirect = canonicalPathFor(siteRoot, url.pathname);
+    if (canonicalRedirect) {
+      res.writeHead(301, {
+        ...securityHeaders('text/plain; charset=utf-8'),
+        Location: canonicalRedirect + (url.search || ''),
+        'Cache-Control': 'public, max-age=3600',
+      });
+      return res.end(`Moved to ${canonicalRedirect}\n`);
+    }
+
     const staticRequestPath = url.pathname === '/favicon.ico' ? '/favicon.svg' : url.pathname;
-    const filePath = staticPath(siteRoot, staticRequestPath);
+    let filePath = staticPath(siteRoot, staticRequestPath);
     if (!filePath || !existsSync(filePath)) return json(res, 404, { error: 'Not found' });
+
+    // Serve AVIF/WebP in place of a requested PNG/JPEG when the browser accepts it and
+    // scripts/optimize-images.mjs has produced a variant. Doing the negotiation here
+    // rather than with <picture> in the markup means it also covers the images whose
+    // src is set at runtime by the <x-dc> templates on /products/ and /starter-pack/,
+    // which markup alone cannot reach. Cloudflare Polish would have done this at the
+    // edge, but it is a paid feature and is not active on this zone.
+    const negotiated = negotiateImage(filePath, req.headers.accept);
+    if (negotiated) filePath = negotiated;
+
     const contentType = MIME.get(extname(filePath).toLowerCase()) || 'application/octet-stream';
+    // Images, video and fonts are effectively immutable and are the bulk of the bytes
+    // on /products/ and /starter-pack/, so they get a long TTL. HTML and JS stay
+    // no-cache so a deploy is visible immediately.
+    const longLived = contentType.startsWith('image/')
+      || contentType.startsWith('video/')
+      || contentType.startsWith('audio/')
+      || contentType.startsWith('font/');
     const cache = contentType.startsWith('text/html') || contentType.startsWith('text/javascript')
       ? 'no-cache'
-      : 'public, max-age=86400';
+      : longLived
+        ? 'public, max-age=31536000, immutable'
+        : 'public, max-age=86400';
     const fileSize = statSync(filePath).size;
     const canStreamRanges = contentType.startsWith('video/') || contentType.startsWith('audio/');
     const baseHeaders = {
       ...securityHeaders(contentType),
       'Cache-Control': cache,
       'Content-Length': fileSize,
+      // The image response depends on Accept, so caches must key on it.
+      ...(contentType.startsWith('image/') ? { Vary: 'Accept' } : {}),
       ...(canStreamRanges ? { 'Accept-Ranges': 'bytes' } : {}),
     };
 

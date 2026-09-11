@@ -131,7 +131,18 @@ test.describe('Claude Design website export', () => {
     await expect(page.locator('.rest-card')).toHaveCount(5);
     await expect(page.locator('.agent-card .app-cover-image img')).toHaveCount(6);
     await expect(page.locator('.rest-card .app-cover-image img')).toHaveCount(5);
-    expect(await page.locator('.app-cover-image img').evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
+    // These covers are now lazy-loaded — nineteen product screenshots eagerly loading
+    // on one page was the largest single cost on this route. Lazy images below the fold
+    // legitimately have not loaded yet, so scroll them into view the way a reader does
+    // before asserting that every one actually decodes.
+    const appCovers = page.locator('.app-cover-image img');
+    const appCoverCount = await appCovers.count();
+    for (let index = 0; index < appCoverCount; index += 1) {
+      await appCovers.nth(index).scrollIntoViewIfNeeded();
+    }
+    await expect
+      .poll(() => appCovers.evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0)), { timeout: 15000 })
+      .toBe(true);
 
     // Products never link out to the live apps; every CTA pre-fills the contact form.
     const outbound = page.locator('main a[href^="http"]:not([href*="felican.ai/contact"])');
@@ -143,7 +154,11 @@ test.describe('Claude Design website export', () => {
     await page.goto('/books/', { waitUntil: 'load' });
     const covers = page.locator('img[alt$=" cover"]');
     await expect(covers).toHaveCount(4);
-    expect(await covers.evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
+    // Lazy-loaded: scroll each into view before asserting it decodes.
+    for (let index = 0; index < 4; index += 1) await covers.nth(index).scrollIntoViewIfNeeded();
+    await expect
+      .poll(() => covers.evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0)), { timeout: 15000 })
+      .toBe(true);
     // The Big Balla's Guide sits last, and buying goes to Amazon.
     await expect(covers.last()).toHaveAttribute('alt', /Big Balla/i);
     await expect(page.getByRole('link', { name: /View book on Amazon\.com/i }).first()).toHaveAttribute(

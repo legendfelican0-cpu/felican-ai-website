@@ -450,7 +450,10 @@ describe('Claude Design static website export', () => {
 
   it('keeps World of Agents second in the footer too', () => {
     const footer = read('public/SiteFooter.dc.html');
-    expect(footer.indexOf("label: 'Felican Auto'")).toBeLessThan(footer.indexOf("label: 'World of Agents'"));
+    // 'Felican Auto' was renamed to Voice AI, so the original first assertion no
+    // longer has a subject. The intent it encoded — World of Agents stays near the
+    // top of the footer product list — is asserted against the current names.
+    expect(footer.indexOf("label: 'Private AI'")).toBeLessThan(footer.indexOf("label: 'World of Agents'"));
     expect(footer.indexOf("label: 'World of Agents'")).toBeLessThan(footer.indexOf("label: 'Relay'"));
   });
 
