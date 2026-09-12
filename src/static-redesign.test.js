@@ -247,7 +247,17 @@ describe('Claude Design static website export', () => {
     const thankYou = read('public/thank-you/index.html');
     expect(starterPack).toContain('ready and running in a few minutes');
     expect(thankYou).toContain('ready and running in a few minutes');
-    expect(starterPack).toContain('available as paid add-ons');
+    // Expanded capabilities are add-ons, each with its own stated price.
+    expect(starterPack).toContain('Extra custom model');
+    expect(starterPack).toContain('Extra automation');
+    expect(starterPack).toContain('Image generation');
+    expect(starterPack).toContain('Video generation');
+    expect(starterPack).toContain('$299');
+    expect(starterPack).toContain('$199');
+    expect(starterPack).toContain('$40');
+    expect(starterPack).toContain('$90');
+    // Add-ons are never bundled into the $999 tier's own price.
+    expect(starterPack).toContain('one-time each');
     expect(starterPack).not.toContain('48 hours');
     expect(thankYou).not.toContain('48 hours');
   });

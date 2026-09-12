@@ -79,6 +79,16 @@ html,body{height:auto!important;min-height:100%}#dc-root,#dc-root>.sc-host{heigh
 .incl b{display:block;font-family:Sora,sans-serif;font-size:16px;font-weight:700;letter-spacing:-.015em;margin-bottom:6px}
 .incl span{display:block;font-size:14.5px;line-height:1.5;color:var(--mute)}
 .more{margin:26px 0 0;font-size:16px;line-height:1.65;color:var(--mute)}
+.addons{margin-top:26px;background:#0B171C;border:1px solid var(--line);padding:clamp(24px,3vw,38px)}
+.addons h3{margin:14px 0 0;font-family:Sora,sans-serif;font-size:clamp(22px,2.4vw,30px);font-weight:800;letter-spacing:-.03em;line-height:1.12}
+.addons>p{margin:12px 0 0;font-size:16px;line-height:1.65;color:var(--ink-2);max-width:62ch}
+.addon-list{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:0;border-top:1px solid var(--line)}
+.addon-list li{display:flex;gap:24px;align-items:baseline;justify-content:space-between;padding:16px 0;border-bottom:1px solid var(--line)}
+.addon-list b{display:block;font-family:Sora,sans-serif;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.addon-list span.addon-copy{display:block;margin-top:4px;font-size:14.6px;line-height:1.5;color:var(--mute);max-width:52ch}
+.addon-price{flex:0 0 auto;text-align:right;font-family:Sora,sans-serif;font-size:22px;font-weight:800;letter-spacing:-.025em;color:var(--brand-soft);white-space:nowrap}
+.addon-price i{display:block;margin-top:3px;font-family:Inter,sans-serif;font-size:12px;font-weight:600;font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:var(--mute-2)}
+@media(max-width:560px){.addon-list li{flex-direction:column;gap:10px}.addon-price{text-align:left}}
 .card-body{display:flex;flex-direction:column;gap:11px;padding:20px 20px 19px;flex:1}
 .card-tag{font-family:Sora,sans-serif;font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--brand-soft)}
 .product-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
@@ -255,7 +265,30 @@ html,body{height:auto!important;min-height:100%}#dc-root,#dc-root>.sc-host{heigh
       </div>
     </div>
   </div>
-  <p class="more">Need more models, automations, or image and video generation? Those are available as paid add-ons. <a href="/contact/">Tell us what you need.</a></p>
+  <div class="addons">
+    <span class="kicker">Add-ons</span>
+    <h3>Need more than the $999 tier includes?</h3>
+    <p>Every product comes with one custom model, one free OpenRouter model, one automation, and live web search. Add any of these to a single product or to the pack. One-time items are charged with your purchase; monthly items are added to your hosting plan.</p>
+    <ul class="addon-list">
+      <li>
+        <div><b>Extra custom model</b><span class="addon-copy">A second AI trained on a different part of your business &mdash; separate the sales knowledge from the operations knowledge.</span></div>
+        <span class="addon-price">$299<i>one-time each</i></span>
+      </li>
+      <li>
+        <div><b>Extra automation</b><span class="addon-copy">One more job the AI does on its own, like routing a new lead or summarizing yesterday&rsquo;s calls into your inbox.</span></div>
+        <span class="addon-price">$199<i>one-time each</i></span>
+      </li>
+      <li>
+        <div><b>Image generation</b><span class="addon-copy">Create on-brand images from a description &mdash; social posts, menu art, listing photos, promo graphics.</span></div>
+        <span class="addon-price">$40<i>per month</i></span>
+      </li>
+      <li>
+        <div><b>Video generation</b><span class="addon-copy">Turn a script or a product description into a short video clip without a camera or an editor.</span></div>
+        <span class="addon-price">$90<i>per month</i></span>
+      </li>
+    </ul>
+    <p class="more">Not sure which one you need? <a href="/contact/">Tell us what you&rsquo;re trying to do</a> and we&rsquo;ll tell you which add-on covers it &mdash; or that none of them is necessary.</p>
+  </div>
 </div></section>
 
 <section class="sec" style="padding-bottom:clamp(62px,8vw,104px)"><div class="wrap">
@@ -263,6 +296,7 @@ html,body{height:auto!important;min-height:100%}#dc-root,#dc-root>.sc-host{heigh
   <div class="faq">
     <details><summary>What does monthly hosting cover?</summary><p>Every plan includes hosting, maintenance, usage tracking, and advance limit warnings. Essentials is $50/month, Growth is $100/month, and Scale is $200/month. Each step adds more storage, website-assistant replies, Voice AI minutes, and Private AI processing. Your selected plan appears in Stripe checkout: its first month is charged today with your product purchase, then hosting renews monthly until canceled.</p></details>
     <details><summary>What happens if I reach a monthly limit?</summary><p>Only the feature that reached its limit pauses. Your other products and stored data stay available. You can wait for the next monthly reset or choose a larger fixed plan in your Stripe billing portal. There are no surprise per-message, per-minute, or storage overage charges from Felican AI.</p></details>
+    <details><summary>What if I need more models, automations, or images and video?</summary><p>Those are add-ons. An extra custom model is $299 one-time, an extra automation is $199 one-time, image generation is $40/month, and video generation is $90/month. One-time add-ons are charged with your purchase; monthly ones join your hosting plan. You can add any of them later &mdash; nothing has to be decided today.</p></details>
     <details><summary>Do I really own it?</summary><p>Yes. The AI is trained on your business, branded as your business, and the knowledge base is yours. Your information isn't used to train a public model.</p></details>
     <details><summary>Do I need to be technical?</summary><p>No. You paste your website link, drop in any documents you want it to know, and it builds itself. The website assistant is a single line of code your web person can paste in a minute &mdash; and if you don't have a web person, we'll walk you through it.</p></details>
     <details><summary>What if I only want one of them?</summary><p>Buy one for $999. You can add the others later &mdash; they'll plug into the same knowledge base you already built.</p></details>
