@@ -88,6 +88,22 @@ The deploy scripts mount `/opt/felicanai-site/orders/` at `/data` and set
 `ORDER_STORE_PATH=/data/starter-pack-orders.json`. Keep that host directory in
 server backups: it contains the durable payment record and welcome-email marker.
 
+### 1b. The dev deploy now builds — it used to only check
+
+On 2026-09-11 a DEV deploy reported fully green while serving the previous
+commit's HTML. `deploy-dev.sh` asserted that `dist/client/index.html` existed but
+never built it, so a stale `dist/` from hours earlier satisfied the check, the
+Docker `COPY dist/client/` layer came back `CACHED`, and all sixteen smoke checks
+returned 200 against old content.
+
+This is worse than a dev-only annoyance: `deploy-prod.sh` streams the exact image
+DEV verified, so a stale `dist/` on the operator's workstation reaches production
+through a green gate. `deploy-dev.sh` now runs `npm run build` itself and fails
+the deploy if the build fails. Do not replace that with an existence check again.
+
+If you ever deploy by some other path, confirm the served page actually contains
+your change rather than trusting a 200.
+
 ### 2. The felican.ai proxy host may use custom locations
 
 `felican.ai` serves the marketing site at `/` and roughly nineteen path apps

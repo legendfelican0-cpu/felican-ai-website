@@ -27,7 +27,14 @@ on_error() {
 }
 trap on_error ERR
 
-[[ -f "${PROJECT_ROOT}/dist/client/index.html" ]] || fail "dist/client is missing; run npm run build first"
+# Build, never merely assert. A stale dist/client from an earlier commit still
+# satisfies an existence check, and the Docker COPY layer then comes back CACHED,
+# so the deploy serves old HTML while every smoke check returns 200. deploy-prod.sh
+# streams the exact image DEV verified, so that stale build reaches production
+# through a fully green gate. Building here is what makes the gate mean anything.
+log "building dist/client from $(git -C "${PROJECT_ROOT}" rev-parse --short HEAD)"
+( cd "${PROJECT_ROOT}" && npm run build ) || fail "npm run build failed; nothing was deployed"
+[[ -f "${PROJECT_ROOT}/dist/client/index.html" ]] || fail "npm run build did not produce dist/client/index.html"
 [[ -f "${PROJECT_ROOT}/deploy/Dockerfile.dev" ]] || fail "deploy/Dockerfile.dev is missing"
 [[ -f "${PROJECT_ROOT}/deploy/nginx.dev.conf" ]] || fail "deploy/nginx.dev.conf is missing"
 [[ -f "${PROJECT_ROOT}/scripts/provision-felican-vapi.py" ]] || fail "Vapi provisioner is missing"
