@@ -532,7 +532,10 @@ function paint(){
     b.textContent = inCart ? '✓ In cart — remove' : (b.getAttribute('data-add') === 'pack' ? 'Add the pack to cart' : 'Add to cart');
   });
 
-  var total = cart.reduce(function(s, id){ return s + BY_ID[id].price; }, 0) +
+  var singles = cart.filter(function(id){ return id !== 'pack'; });
+  // Three singles are the pack: checkout charges the pack price, so the bar shows it.
+  var asPack = cart.indexOf('pack') > -1 || singles.length === 3;
+  var total = (asPack ? PACK.price : cart.reduce(function(s, id){ return s + BY_ID[id].price; }, 0)) +
     (cart.length ? BY_PLAN[readPlan()].price : 0);
   document.getElementById('cartTotal').innerHTML = '<small>Due today</small>' + money(total);
   document.getElementById('cartItems').textContent =
@@ -542,9 +545,8 @@ function paint(){
     (cart.length ? '  ·  ' + BY_PLAN[readPlan()].name + ' hosting selected' : '');
   bar.classList.toggle('show', cart.length > 0);
 
-  var singles = cart.filter(function(id){ return id !== 'pack'; });
   if (singles.length === 3) {
-    hint.innerHTML = 'You’ve got all three — <button type="button" id="swap">switch to the pack and save $497</button>.';
+    hint.innerHTML = 'All three selected — priced as the Starter Pack, ' + money(PACK.price) + ' (you save $497). <button type="button" id="swap">Show it as the pack</button>.';
     hint.classList.add('show');
     document.getElementById('swap').onclick = function(){ write(['pack']); paint(); };
   } else { hint.classList.remove('show'); }

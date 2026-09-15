@@ -130,6 +130,10 @@ function read(){
         return Array.isArray(v) ? v.filter(function(id){ return CATALOG[id]; }) : []; }
   catch(e){ return []; }
 }
+var PACK_PRODUCTS = ['private-ai', 'assistant', 'receptionist'];
+// Three singles are the pack: the server charges the pack price, so show the same.
+function coversPack(cart){ return cart.indexOf('pack') > -1 || PACK_PRODUCTS.every(function(id){ return cart.indexOf(id) > -1; }); }
+function priced(cart){ return coversPack(cart) ? ['pack'] : cart; }
 function write(c){ try { localStorage.setItem(KEY, JSON.stringify(c)); } catch(e){} }
 function readPlan(){
   try { var id = localStorage.getItem(PLAN_KEY); return BY_PLAN[id] ? id : 'base'; }
@@ -156,11 +160,15 @@ function paint(){
   document.getElementById('empty').hidden  = cart.length !== 0;
   if (!cart.length) return;
 
-  document.getElementById('lines').innerHTML = cart.map(function(id){
+  var asPack = cart.indexOf('pack') === -1 && coversPack(cart);
+  document.getElementById('lines').innerHTML = (asPack ? '<div class="line"><div class="info"><b>All three selected — priced as the Starter Pack</b>' +
+    '<small>Private AI, Chat AI Assistant and Voice AI together cost ' + money(CATALOG.pack.price) + ', not ' +
+    money(PACK_PRODUCTS.reduce(function(s, id){ return s + CATALOG[id].price; }, 0)) + '. You save $497.</small></div>' +
+    '<div class="amt">' + money(CATALOG.pack.price) + '</div></div>' : '') + cart.map(function(id){
     var p = CATALOG[id];
     return '<div class="line"><div class="info"><b>' + esc(p.name) + '</b><small>' + esc(p.note) +
            '</small><button class="rm" data-rm="' + id + '">Remove</button></div>' +
-           '<div class="amt">' + money(p.price) + '</div></div>';
+           '<div class="amt">' + (asPack ? 'included' : money(p.price)) + '</div></div>';
   }).join('') + (function(){
     var plan = BY_PLAN[readPlan()];
     return '<div class="line"><div class="info"><b>' + esc(plan.name) + ' monthly hosting</b>' +
@@ -168,7 +176,7 @@ function paint(){
       '<div class="amt">' + money(plan.price) + '</div></div>';
   })();
   document.getElementById('total').textContent =
-    money(cart.reduce(function(s, id){ return s + CATALOG[id].price; }, 0) + BY_PLAN[readPlan()].price);
+    money(priced(cart).reduce(function(s, id){ return s + CATALOG[id].price; }, 0) + BY_PLAN[readPlan()].price);
 }
 
 document.addEventListener('click', function(e){

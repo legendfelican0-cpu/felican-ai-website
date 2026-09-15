@@ -6,6 +6,7 @@ import {
   buildWelcomeEmail,
   checkoutIsConfigured,
   createCheckoutSession,
+  itemsAsPack,
   normalizeOrder,
   orderFromCheckoutSession,
   sendWelcomeEmail,
@@ -27,9 +28,25 @@ describe('normalizeOrder', () => {
     expect(r.totalCents).toBe(104_900);
   });
 
-  it('totals three singles at $2,997', () => {
+  // Kyzar's order (2026-09-14) paid $3,047 for the three products the pack sells
+  // at $2,550: three singles ARE the pack, and are charged as it.
+  it('charges three singles as the pack', () => {
     const r = acceptedOrder({ items: withHosting(['private-ai', 'assistant', 'receptionist'], 'growth'), email: 'a@b.com' });
-    expect(r.totalCents).toBe(309_700);
+    expect(r.items).toEqual(['pack']);
+    expect(r.productTotalCents).toBe(250_000);
+    expect(r.totalCents).toBe(260_000);
+  });
+
+  it('still charges two singles individually', () => {
+    const r = acceptedOrder({ items: withHosting(['private-ai', 'receptionist']), email: 'a@b.com' });
+    expect(r.items).toEqual(['private-ai', 'receptionist']);
+    expect(r.totalCents).toBe(204_800);
+  });
+
+  it('itemsAsPack collapses any order of the three, and nothing less', () => {
+    expect(itemsAsPack(['receptionist', 'private-ai', 'assistant'])).toEqual(['pack']);
+    expect(itemsAsPack(['pack', 'assistant'])).toEqual(['pack']);
+    expect(itemsAsPack(['assistant', 'receptionist'])).toEqual(['assistant', 'receptionist']);
   });
 
   it('prices the pack at $2,500', () => {

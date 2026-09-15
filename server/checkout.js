@@ -97,6 +97,15 @@ export function verifyStripeWebhook(rawBody, signatureHeader, env = process.env,
  * Validate a cart posted by the browser.
  * Returns { error } or the normalized product ids, hosting plan, and totals.
  */
+/** Every product the pack contains. Selecting all of them individually is the pack. */
+export const PACK_PRODUCTS = Object.freeze(['private-ai', 'assistant', 'receptionist']);
+
+/** The pack alone when the ids cover the pack (by name or by its three products); else the singles. */
+export function itemsAsPack(items) {
+  if (items.includes('pack') || PACK_PRODUCTS.every(id => items.includes(id))) return ['pack'];
+  return items;
+}
+
 export function normalizeOrder(body) {
   const email = String(body?.email ?? '').trim().slice(0, 200);
   if (!EMAIL_RE.test(email)) return { error: 'Please enter a valid email address.' };
@@ -126,8 +135,10 @@ export function normalizeOrder(body) {
   if (!items.length) return { error: 'Your cart is empty.' };
   if (!hostingPlan) return { error: 'Choose a monthly hosting plan.' };
 
-  // The pack already contains everything, so it never rides along with singles.
-  const finalItems = items.includes('pack') ? ['pack'] : items;
+  // The pack already contains everything, so it never rides along with singles —
+  // and three singles ARE the pack: charged at its price, never $997 more
+  // (Kyzar's order, 2026-09-14, paid $3,047 for what the pack sells at $2,550).
+  const finalItems = itemsAsPack(items);
   const productTotalCents = finalItems.reduce((sum, id) => sum + CATALOG[id].amount, 0);
   const totalCents = productTotalCents + hostingPlan.amount;
   return {
