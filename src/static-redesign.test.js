@@ -10,7 +10,7 @@ describe('Discoverability and link previews', () => {
     'index.html',
     'public/about/index.html', 'public/booking/index.html', 'public/books/index.html',
     'public/contact/index.html', 'public/education/index.html', 'public/privacy/index.html', 'public/products/index.html',
-    'public/services/index.html', 'public/terms/index.html',
+    'public/services/index.html', 'public/terms/index.html', 'public/sms/index.html',
   ];
   const headOf = file => {
     const src = read(file);
@@ -86,6 +86,7 @@ describe('Claude Design static website export', () => {
     ['education', 'AI learning that meets people where they are.'],
     ['privacy', 'Privacy Policy'],
     ['terms', 'Terms of Use'],
+    ['sms', 'SMS Terms &amp; Opt-In'],
   ])('includes the %s page', (route, expectedText) => {
     expect(read(`public/${route}/index.html`)).toContain(expectedText);
   });
@@ -457,6 +458,9 @@ describe('Claude Design static website export', () => {
     expect(read('public/sitemap.xml')).toContain('<loc>https://felican.ai/privacy/</loc>');
     expect(footer).toContain('href="/privacy/"');
     expect(footer).toContain('href="/terms/"');
+    expect(footer).toContain('href="/sms/"');
+    expect(read('public/sms/index.html')).toContain('Reply <code>STOP</code>');
+    expect(read('public/sitemap.xml')).toContain('<loc>https://felican.ai/sms/</loc>');
     expect(assistant).toContain('Please do not share confidential or sensitive information');
     expect(assistant).toContain('Use plain text only');
   });
