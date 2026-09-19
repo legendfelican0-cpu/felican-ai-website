@@ -1,12 +1,60 @@
-# Session handoff — 2026-09-12
+# Session handoff — 2026-09-19
 
-> Last updated: 2026-09-12 by Claude Code (Opus 5, 1M context) · Branch: `main` · Commit: `1667f1f`
+> Last updated: 2026-09-19 by Claude Code (Opus 5, 1M context) · Branch: `feat/animated-assistant` · Commit: see `git log -1`
 > Next session: read this file FIRST, then `git log --oneline -10`. Do not re-scan the codebase.
 
 > **Note on location.** The `/handoff` convention writes to `HANDOFF.md` at the repo
 > root, but in this repo that file is the locked **AI Business Starter Pack product
 > spec**, which `AGENTS.md` says to read in full before writing code. Overwriting it
 > would destroy that spec, so the session handoff lives here instead. Do not move it.
+
+---
+
+## 0. This session (2026-09-19) — assistant overhaul, on DEV, awaiting owner review
+
+Branch `feat/animated-assistant` (pushed; based on `sms-terms` = `main` + the SMS
+terms page, which is what DEV was already running). **Deployed to felican.dev only.**
+Not merged, not in production. Owner asked to see it on DEV first.
+
+What changed, all verified on felican.dev by direct curl and in Chrome:
+
+- **Animated mascot.** `public/bot/{walk,surf,drive,fly}.svg` — one robot, four rides,
+  each SVG animates internally (legs, board, wheels, jet flames) and is loaded via
+  `<img>` because the `<x-dc>` runtime has no inline-SVG precedent. The crossing is CSS
+  (`fa-cross-ltr/rtl`) on `.fa-bot`, fixed at `bottom:76px` = the gold `.fa-cred` bar
+  height, `z-index:940` so it passes behind the launcher. Lap ends on `animationend`
+  (delegated on `document`, so re-mounts are fine) with a 40 s fallback. Rests 18 s,
+  60 s after the chat has been opened; never runs while the panel is open, the tab is
+  hidden, or `prefers-reduced-motion`. Hover pauses + "Click to chat with me".
+  `BOT_VERSION` in `ChatAssistant.dc.html` must be bumped when an SVG changes — the
+  server serves them `immutable` for a year.
+- **Grand open.** Panel 640×780 (was 430×650), spring-scale entrance (`fa-grand`) over a
+  blurred backdrop (`.fa-backdrop`, click closes), expand button ⤢ → `fa-wide`
+  (1100px, full height). Height budget is `100vh − 196px` (shell 94 + launcher 72 +
+  gap 14 + 16 safe); the old `− 124px` overflowed the top on short viewports.
+  `public/starter-pack/index.html` cart-mode cap raised 650 → 780 to match.
+- **Smarter bot — retrieval.** `scripts/build-assistant-knowledge.mjs` now also emits
+  `server/assistant-corpus.js` (67 chunks, full page text incl. product FAQs, guides,
+  comparisons, case studies, the hand-written Starter Pack FAQ). `server/assistant-retrieval.js`
+  scores them with BM25 per request (no deps, <1 ms) and `buildChatSystem()` in
+  `server/app.js` appends the top 3 + the page the visitor is on. Client sends
+  `page: {path, title}`; greeting and starter chips are page-aware (`pageContext()`).
+  History cap 10 → 24, `max_tokens` 500 → 700. Direct-Anthropic path sends the static
+  prompt as a `cache_control` block; **Asher (what DEV/PROD use) gets the plain string**
+  because the block form is unverified there. Regenerate with `npm run build:assistant`.
+- Tests: **245/245** (`npm test`), 3 new files/blocks. TruffleHog 0/0.
+
+**To promote:** owner approves on DEV → merge `feat/animated-assistant` into `main`
+(and `sms-terms` if that is still separate) → `python3 ~/felican-infra/deploy/deploy
+to-prod felicanai`. Prod still runs `ded694e`.
+
+**Chrome-testing gotcha on this Linux box:** the Claude-in-Chrome browser runs on
+another machine, so a local server must be reached via this box's Tailscale IP
+(`100.114.193.123:<port>`), and that Chrome window is usually in the background —
+`document.hidden` is true (the mascot correctly refuses to run) and compositor-driven
+CSS animations do not paint in screenshots even though `getAnimations()` reports them
+running. Spoof `document.hidden`, then pause the animation (`a.pause(); a.currentTime=…`)
+to make the main thread paint it before a screenshot.
 
 ---
 
