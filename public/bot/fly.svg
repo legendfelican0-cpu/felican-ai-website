@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 80" role="img" aria-label="Felican AI bot">
+<style>
+  .eyes { animation: blink 4.2s infinite; transform-origin: 70px 30px; }
+  @keyframes blink { 0%, 92%, 100% { transform: scaleY(1) } 95% { transform: scaleY(.1) } }
+  .tip { animation: tip 1.6s ease-in-out infinite; }
+  @keyframes tip { 0%,100% { opacity: .55 } 50% { opacity: 1 } }
+  .core { animation: tip 2.2s ease-in-out infinite; }
+  .flyer { animation: hover 1.8s ease-in-out infinite; }
+  @keyframes hover { 0%,100% { transform: translateY(0) rotate(-3deg) } 50% { transform: translateY(-5px) rotate(3deg) } }
+  .flame { transform-origin: 50% 0; animation: flame .18s ease-in-out infinite alternate; }
+  .flame.b { animation-delay: -.09s }
+  @keyframes flame { from { transform: scaleY(.7) scaleX(.9); opacity: .8 } to { transform: scaleY(1.15) scaleX(1.1); opacity: 1 } }
+  .trail circle { animation: trail 1.2s linear infinite; }
+  .trail circle:nth-child(2) { animation-delay: -.4s } .trail circle:nth-child(3) { animation-delay: -.8s }
+  @keyframes trail { 0% { opacity: .7; transform: translate(0,0) } 100% { opacity: 0; transform: translate(-30px,8px) } }
+  .bot { transform: translateY(-4px); }
+</style>
+<defs>
+  <linearGradient id="body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B2A2F"/><stop offset="1" stop-color="#0A1216"/></linearGradient>
+  <linearGradient id="visor" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2FB894"/><stop offset="1" stop-color="#8FE0C8"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#D9A944"/><stop offset=".5" stop-color="#F2CE7B"/><stop offset="1" stop-color="#C89435"/></linearGradient>
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+
+  <g class="trail"><circle cx="46" cy="66" r="2.2" fill="#F2CE7B"/><circle cx="46" cy="66" r="1.8" fill="#8FE0C8"/><circle cx="46" cy="66" r="1.4" fill="#F2CE7B"/></g>
+  <g class="flyer">
+    <!-- jetpack -->
+    <rect x="46" y="44" width="10" height="20" rx="4" fill="#1C2A28" stroke="#F2CE7B" stroke-width="1.4"/>
+    <rect x="84" y="44" width="10" height="20" rx="4" fill="#1C2A28" stroke="#F2CE7B" stroke-width="1.4"/>
+    <g transform="translate(51 64)"><path class="flame" d="M-4 0 Q0 14 4 0 Z" fill="#F2CE7B" filter="url(#glow)"/><path class="flame b" d="M-2 0 Q0 9 2 0 Z" fill="#FFF3C4"/></g>
+    <g transform="translate(89 64)"><path class="flame b" d="M-4 0 Q0 14 4 0 Z" fill="#F2CE7B" filter="url(#glow)"/><path class="flame" d="M-2 0 Q0 9 2 0 Z" fill="#FFF3C4"/></g>
+    <!-- tucked legs -->
+    <rect x="60" y="60" width="7" height="9" rx="3" fill="#1C2A28" stroke="#2FB894" stroke-width="1.2" transform="rotate(-30 63 60)"/>
+    <rect x="73" y="60" width="7" height="9" rx="3" fill="#1C2A28" stroke="#2FB894" stroke-width="1.2" transform="rotate(30 77 60)"/>
+    <!-- arms forward (superhero) -->
+    <rect x="86" y="42" width="20" height="6" rx="3" fill="#1C2A28" stroke="#2FB894" stroke-width="1.2" transform="rotate(-28 86 45)"/>
+
+  <g class="bot">
+    <!-- antenna -->
+    <line x1="70" y1="12" x2="70" y2="20" stroke="#8FE0C8" stroke-width="2.4" stroke-linecap="round"/>
+    <circle class="tip" cx="70" cy="10" r="3.2" fill="#F2CE7B" filter="url(#glow)"/>
+    <!-- head -->
+    <rect x="54" y="19" width="32" height="24" rx="8" fill="url(#body)" stroke="#2FB894" stroke-width="1.6"/>
+    <rect x="58" y="25" width="24" height="10" rx="5" fill="#05090C"/>
+    <g class="eyes">
+      <rect x="61" y="27.5" width="6" height="5" rx="2.5" fill="url(#visor)" filter="url(#glow)"/>
+      <rect x="73" y="27.5" width="6" height="5" rx="2.5" fill="url(#visor)" filter="url(#glow)"/>
+    </g>
+    <!-- ear pods -->
+    <rect x="50.5" y="26" width="4" height="9" rx="2" fill="#2FB894"/>
+    <rect x="85.5" y="26" width="4" height="9" rx="2" fill="#2FB894"/>
+    <!-- neck + torso -->
+    <rect x="66" y="43" width="8" height="4" fill="#1C2A28"/>
+    <rect x="57" y="46" width="26" height="20" rx="7" fill="url(#body)" stroke="#2FB894" stroke-width="1.6"/>
+    <circle cx="70" cy="55" r="4" fill="#0A1216" stroke="#F2CE7B" stroke-width="1.4"/>
+    <circle class="core" cx="70" cy="55" r="1.8" fill="#F2CE7B" filter="url(#glow)"/>
+  </g>
+  </g>
+
+</svg>

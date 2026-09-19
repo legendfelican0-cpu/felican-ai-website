@@ -515,7 +515,7 @@ function syncAssistantOffset(cart, bar){
     : window.innerHeight;
   var panelGap = 14;
   var topSafe = 12;
-  var maxPanelHeight = window.innerWidth <= 640 ? 600 : 650;
+  var maxPanelHeight = window.innerWidth <= 640 ? 720 : 780;
   var availablePanelHeight = viewportHeight - bottom - launcherHeight - panelGap - topSafe;
   if (hasCart) assistantShell.style.setProperty('--fa-panel-height', Math.min(maxPanelHeight, Math.max(0, availablePanelHeight)) + 'px');
   else assistantShell.style.removeProperty('--fa-panel-height');

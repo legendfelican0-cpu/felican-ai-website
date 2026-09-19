@@ -274,6 +274,61 @@ describe('Claude Design static website export', () => {
     expect(thankYou).not.toContain('contact/?setup=starter-pack');
   });
 
+  it('sends a mascot across the screen above the credentials bar without being a nuisance', () => {
+    const assistant = read('public/ChatAssistant.dc.html');
+    for (const mode of ['walk', 'surf', 'drive', 'fly']) {
+      const svg = read(`public/bot/${mode}.svg`);
+      expect(svg).toContain('<svg xmlns="http://www.w3.org/2000/svg"');
+      expect(svg).toContain('@keyframes');
+      expect(svg).not.toContain('<script');
+      expect(assistant).toContain(`.fa-bot.fa-bot-${mode} { --fa-lap:`);
+    }
+    expect(assistant).toContain("const BOT_MODES = ['walk', 'surf', 'drive', 'fly']");
+    expect(assistant).toContain("botSrc: '/bot/' + BOT_MODES[this.state.botMode] + '.svg?v=' + BOT_VERSION");
+    // Runs on the strip just above the 76px credentials bar, beneath the launcher.
+    expect(assistant).toContain('.fa-bot { position:fixed;left:0;bottom:76px;z-index:940;');
+    expect(assistant).toContain('@keyframes fa-cross-ltr');
+    expect(assistant).toContain('@keyframes fa-cross-rtl');
+    expect(assistant).toContain('.fa-bot.fa-bot-rtl .fa-bot-img { transform:scaleX(-1) }');
+    // Not annoying: rests between laps, longer once the visitor has opened the chat,
+    // never while the panel is open or the tab is hidden, never for reduced motion.
+    expect(assistant).toContain('const BOT_REST = 18000');
+    expect(assistant).toContain('const BOT_REST_AFTER_OPEN = 60000');
+    expect(assistant).toContain('if (this.state.open || document.hidden || this.state.botVisible) return;');
+    expect(assistant).toContain("document.addEventListener('visibilitychange', this._botVisibility)");
+    expect(assistant).toContain('if (reducedMotion || this._botStarted) return;');
+    expect(assistant).toContain('.fa-bot { display:none }');
+    expect(assistant).toContain('.fa-bot:hover,.fa-bot:focus-visible { animation-play-state:paused }');
+    expect(assistant).toContain('Click to chat with me');
+    expect(assistant).toContain('botClick: () => this.openPanel()');
+    // The lap ends on the real animationend, with a fallback so it cannot get stuck.
+    expect(assistant).toContain("document.addEventListener('animationend', this._botLapEnd)");
+    expect(assistant).toContain('this._botFallback = setTimeout(() => this.finishLap(), 40000)');
+  });
+
+  it('opens the assistant grandly and lets it take more of the screen', () => {
+    const assistant = read('public/ChatAssistant.dc.html');
+    expect(assistant).toContain('@keyframes fa-grand');
+    expect(assistant).toContain('@keyframes fa-halo');
+    expect(assistant).toContain('class="fa-backdrop"');
+    expect(assistant).toContain('backdrop-filter:blur(5px)');
+    expect(assistant).toContain('width:min(640px,calc(100vw - 56px));height:var(--fa-panel-height,min(780px,calc(100vh - 196px)))');
+    expect(assistant).toContain('.fa-shell.fa-wide .fa-panel { width:min(1100px,calc(100vw - 56px));height:calc(100vh - 196px) }');
+    expect(assistant).toContain('class="fa-expand"');
+    expect(assistant).toContain("wideLabel: this.state.wide ? 'Shrink the assistant' : 'Expand the assistant'");
+    expect(assistant).toContain('Felican AI Assistant');
+  });
+
+  it('greets by the page the visitor is on and tells the server which page that is', () => {
+    const assistant = read('public/ChatAssistant.dc.html');
+    expect(assistant).toContain('function pageContext()');
+    expect(assistant).toContain("case 'product': return \"Hi — I'm the Felican AI agent. You're looking at \" + name");
+    expect(assistant).toContain("case 'starter-pack': return [\"What's in the Starter Pack?\", 'Which hosting plan fits me?', 'How fast can I be live?']");
+    expect(assistant).toContain('page: { path: currentPage.path, title: currentPage.title }');
+    expect(assistant).toContain('messages: [{ role: \'assistant\', text: greetingFor(currentPage) }]');
+    expect(assistant).toContain(': starterChipsFor(currentPage).map(chip)');
+  });
+
   it('keeps checkout and the assistant separate even when the assistant mounts late', () => {
     const starterPack = read('public/starter-pack/index.html');
     const checkout = read('public/checkout/index.html');
@@ -286,7 +341,7 @@ describe('Claude Design static website export', () => {
     expect(starterPack).toContain("window.visualViewport.addEventListener('resize', paint)");
     expect(assistant).toContain('class="fa-move"');
     expect(assistant).toContain('height:var(--fa-panel-height');
-    expect(assistant).toContain("sideClass: this.state.side === 'left' ? 'fa-left' : 'fa-right'");
+    expect(assistant).toContain("sideClass: (this.state.side === 'left' ? 'fa-left' : 'fa-right') + (this.state.wide ? ' fa-wide' : '')");
     expect(assistant).toContain("window.sessionStorage.setItem('felican_assistant_side_v1', side)");
     expect(checkout).toContain('Your cart is empty.');
     expect(checkout).toContain('See the Starter Pack');

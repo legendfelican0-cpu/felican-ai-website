@@ -11,17 +11,43 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 @keyframes fa-in { from { opacity:0; transform:translateY(14px) } to { opacity:1; transform:none } }
+@keyframes fa-grand { 0% { opacity:0; transform:scale(.22) translateY(140px); filter:blur(14px) } 55% { opacity:1; filter:blur(0) } 78% { transform:scale(1.015) translateY(-4px) } 100% { transform:none } }
+@keyframes fa-halo { 0% { box-shadow:0 28px 80px rgba(5,9,12,.55),0 0 0 0 rgba(47,184,148,.75) } 100% { box-shadow:0 28px 80px rgba(5,9,12,.55),0 0 0 46px rgba(47,184,148,0) } }
+@keyframes fa-fade { from { opacity:0 } to { opacity:1 } }
+@keyframes fa-sheen { 0% { background-position:0% 50% } 100% { background-position:200% 50% } }
+@keyframes fa-cross-ltr { from { transform:translateX(-170px) } to { transform:translateX(100vw) } }
+@keyframes fa-cross-rtl { from { transform:translateX(100vw) } to { transform:translateX(-170px) } }
+@keyframes fa-bubble { 0% { opacity:0; transform:translate(-50%,6px) scale(.9) } 8%,72% { opacity:1; transform:translate(-50%,0) scale(1) } 86%,100% { opacity:0; transform:translate(-50%,-4px) scale(.96) } }
 @keyframes fa-dot { 0%,80%,100% { opacity:.25 } 40% { opacity:1 } }
 @keyframes fa-pulse { 0%,100% { box-shadow:0 0 0 0 rgba(47,184,148,.42) } 50% { box-shadow:0 0 0 7px rgba(47,184,148,0) } }
 .fa-shell { position:fixed;right:28px;bottom:94px;z-index:1000;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;align-items:flex-end;gap:14px;max-width:calc(100vw - 56px);pointer-events:none }
 .fa-shell.fa-left { left:28px;right:auto;align-items:flex-start }
 .fa-shell.fa-right { left:auto;right:28px;align-items:flex-end }
 .fa-shell > * { pointer-events:auto }
-.fa-panel { position:relative;width:min(430px,calc(100vw - 56px));height:var(--fa-panel-height,min(650px,calc(100vh - 124px)));background:#0C1419;border:1px solid rgba(47,184,148,.3);border-radius:22px;box-shadow:0 28px 80px rgba(5,9,12,.55),0 4px 16px rgba(47,184,148,.12);display:flex;flex-direction:column;overflow:hidden;animation:fa-in .24s cubic-bezier(.2,.8,.2,1) both;transform-origin:bottom right }
+.fa-backdrop { position:fixed;inset:0;z-index:-1;background:radial-gradient(120% 90% at 85% 100%,rgba(47,184,148,.16),rgba(4,8,11,.62) 55%);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);animation:fa-fade .45s ease both;border:0;padding:0;margin:0;cursor:pointer }
+.fa-panel { position:relative;width:min(640px,calc(100vw - 56px));height:var(--fa-panel-height,min(780px,calc(100vh - 196px)));background:#0C1419;border:1px solid rgba(47,184,148,.3);border-radius:24px;box-shadow:0 28px 80px rgba(5,9,12,.55),0 4px 16px rgba(47,184,148,.12);display:flex;flex-direction:column;overflow:hidden;animation:fa-grand .68s cubic-bezier(.16,1,.3,1) both,fa-halo 1.3s ease-out .12s both;transform-origin:bottom right }
+.fa-shell.fa-wide .fa-panel { width:min(1100px,calc(100vw - 56px));height:calc(100vh - 196px) }
+.fa-shell.fa-wide .fa-message { max-width:72% }
+.fa-message { animation:fa-in .3s cubic-bezier(.2,.8,.2,1) both }
+.fa-expand { background:rgba(255,255,255,.06);border:1px solid rgba(238,244,244,.28);color:#EEF4F4;width:36px;height:36px;border-radius:50%;font-size:17px;line-height:1;cursor:pointer;flex-shrink:0;transition:background .18s ease,transform .18s ease }
+.fa-expand:hover { background:rgba(47,184,148,.22);color:#FFFFFF;transform:scale(1.08) }
+.fa-bot { position:fixed;left:0;bottom:76px;z-index:940;width:150px;height:86px;margin:0;padding:0;border:0;background:none;cursor:pointer;will-change:transform;-webkit-tap-highlight-color:transparent }
+.fa-bot.fa-bot-ltr { animation:fa-cross-ltr var(--fa-lap,28s) linear both }
+.fa-bot.fa-bot-rtl { animation:fa-cross-rtl var(--fa-lap,28s) linear both }
+.fa-bot.fa-bot-walk { --fa-lap:34s }.fa-bot.fa-bot-surf { --fa-lap:20s }.fa-bot.fa-bot-drive { --fa-lap:15s }.fa-bot.fa-bot-fly { --fa-lap:17s }
+.fa-bot:hover,.fa-bot:focus-visible { animation-play-state:paused }
+.fa-bot:focus-visible { outline:3px solid #8FE0C8;outline-offset:4px;border-radius:14px }
+.fa-bot-img { display:block;width:150px;height:86px;object-fit:contain;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45)) }
+.fa-bot.fa-bot-rtl .fa-bot-img { transform:scaleX(-1) }
+.fa-bot-bubble { position:absolute;left:50%;bottom:calc(100% - 4px);transform:translate(-50%,0);white-space:nowrap;padding:8px 13px;border-radius:999px;background:#0C1419;border:1px solid rgba(47,184,148,.55);color:#EEF4F4;font:700 13px Sora,Inter,sans-serif;letter-spacing:.01em;box-shadow:0 10px 24px rgba(0,0,0,.45);opacity:0;animation:fa-bubble 7s ease-out .3s both;pointer-events:none }
+.fa-bot-bubble::after { content:'';position:absolute;left:50%;top:100%;width:10px;height:10px;margin-left:-5px;margin-top:-5px;background:#0C1419;border-right:1px solid rgba(47,184,148,.55);border-bottom:1px solid rgba(47,184,148,.55);transform:rotate(45deg) }
+.fa-bot-hint { position:absolute;left:50%;bottom:calc(100% - 4px);transform:translate(-50%,0);white-space:nowrap;padding:8px 13px;border-radius:999px;background:#2FB894;color:#080E13;font:800 13px Sora,Inter,sans-serif;box-shadow:0 10px 24px rgba(0,0,0,.45);opacity:0;transition:opacity .18s ease;pointer-events:none }
+.fa-bot:hover .fa-bot-hint,.fa-bot:focus-visible .fa-bot-hint { opacity:1 }
+.fa-bot:hover .fa-bot-bubble,.fa-bot:focus-visible .fa-bot-bubble { animation:none;opacity:0 }
 .fa-shell.fa-left .fa-panel { transform-origin:bottom left }
-.fa-panel::before { content:'';position:absolute;z-index:2;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#2FB894,#8FE0C8,#2FB894) }
+.fa-panel::before { content:'';position:absolute;z-index:2;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#2FB894,#8FE0C8,#F2CE7B,#2FB894,#8FE0C8);background-size:200% 100%;animation:fa-sheen 3.2s linear infinite }
 .fa-head { background:linear-gradient(135deg,#080E13 0%,#12281F 100%);padding:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0 }
-.fa-head-mark { width:42px;height:42px;padding:8px;border-radius:13px;background:rgba(47,184,148,.16);border:1px solid rgba(143,224,200,.26);box-shadow:inset 0 1px 0 rgba(255,255,255,.08) }
+.fa-head-mark { width:46px;height:46px;padding:8px;border-radius:13px;background:rgba(47,184,148,.16);border:1px solid rgba(143,224,200,.26);box-shadow:inset 0 1px 0 rgba(255,255,255,.08) }
 .fa-head-actions { display:flex;align-items:center;gap:8px;flex-shrink:0 }
 .fa-move { background:rgba(255,255,255,.06);border:1px solid rgba(238,244,244,.28);color:#EEF4F4;width:36px;height:36px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer;flex-shrink:0;transition:background .18s ease,transform .18s ease }
 .fa-move:hover { background:rgba(47,184,148,.22);color:#FFFFFF;transform:translateX(-2px) }
@@ -72,7 +98,12 @@
   .fa-shell { right:10px;bottom:88px;max-width:calc(100vw - 20px) }
   .fa-shell.fa-left { left:10px;right:auto }
   .fa-shell.fa-right { left:auto;right:10px }
-  .fa-panel { width:calc(100vw - 28px);height:var(--fa-panel-height,min(600px,calc(100vh - 104px)));border-radius:19px }
+  .fa-panel { width:calc(100vw - 20px);height:var(--fa-panel-height,min(720px,calc(100vh - 172px)));border-radius:19px }
+  .fa-shell.fa-wide .fa-panel { width:calc(100vw - 20px);height:calc(100vh - 172px) }
+  .fa-expand { display:none }
+  .fa-bot { bottom:78px;width:104px;height:60px }
+  .fa-bot-img { width:104px;height:60px }
+  .fa-bot-bubble,.fa-bot-hint { font-size:12px;padding:6px 10px }
   .fa-launcher { min-height:58px;padding:5px 13px 5px 6px }
   .fa-launch-portrait { width:46px;height:46px;flex-basis:46px }
   .fa-launch-mark { width:29px;height:29px }
@@ -89,12 +120,13 @@
   .fa-voice { padding:13px 14px;gap:10px }.fa-voice-copy strong { font-size:13px }.fa-voice-copy span { font-size:11px }.fa-voice-btn { padding:10px 13px }
 }
 @media (max-width:380px) { .fa-shell { bottom:88px }.fa-launch-copy { min-width:96px } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration:.001ms !important; transition-duration:.001ms !important } .fa-bot { display:none } .fa-backdrop { backdrop-filter:none;-webkit-backdrop-filter:none } }
 </style>
 </helmet>
 <div class="fa-shell {{ sideClass }}" data-assistant-side="{{ side }}">
 
   <sc-if value="{{ open }}" hint-placeholder-val="{{ false }}">
+    <button class="fa-backdrop" type="button" onClick="{{ close }}" aria-label="Close assistant" tabindex="-1"></button>
     <section class="fa-panel" aria-label="Felican AI assistant">
       <div class="fa-head">
         <div style="display:flex;align-items:center;gap:11px">
@@ -102,11 +134,12 @@
             <img src="/logo-mark.png" alt="" style="width:100%;height:100%;object-fit:contain;display:block" width="327" height="322" loading="lazy" decoding="async">
           </span>
           <div>
-            <p style="margin:0;font-family:Sora,sans-serif;font-size:16px;font-weight:700;color:#FFFFFF">Chat AI Assistant</p>
-            <p style="margin:3px 0 0;font-size:13px;color:#9FC0BE">Live agent demo · usually replies instantly</p>
+            <p style="margin:0;font-family:Sora,sans-serif;font-size:17px;font-weight:700;color:#FFFFFF">Felican AI Assistant</p>
+            <p style="margin:3px 0 0;font-size:13px;color:#9FC0BE">Products, pricing, your business · voice or text · replies instantly</p>
           </div>
         </div>
         <div class="fa-head-actions">
+          <button class="fa-expand" type="button" onClick="{{ toggleWide }}" aria-pressed="{{ wideStr }}" aria-label="{{ wideLabel }}" title="{{ wideLabel }}" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">{{ wideGlyph }}</button>
           <button class="fa-move" type="button" onClick="{{ moveSide }}" aria-label="{{ moveLabel }}" title="{{ moveLabel }}" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">&#8596;</button>
           <button class="fa-close" type="button" onClick="{{ close }}" aria-label="Close assistant" style-focus="outline:2px solid #8FE0C8;outline-offset:2px">&#215;</button>
         </div>
@@ -175,6 +208,14 @@
   </button>
 </div>
 
+<sc-if value="{{ botVisible }}" hint-placeholder-val="{{ false }}">
+  <button class="fa-bot {{ botClass }}" data-assistant-bot="1" type="button" onClick="{{ botClick }}" aria-label="Open the Felican AI assistant" title="Chat with Felican AI">
+    <span class="fa-bot-bubble" aria-hidden="true">{{ botSay }}</span>
+    <span class="fa-bot-hint" aria-hidden="true">Click to chat with me</span>
+    <img class="fa-bot-img" src="{{ botSrc }}" alt="" width="140" height="80" decoding="async">
+  </button>
+</sc-if>
+
 <aside class="fa-cred" aria-label="Verified AI credentials">
   <a class="fa-cred-inner" href="/about/#certifications">
     <span class="fa-cred-copy">
@@ -192,7 +233,7 @@
 </aside>
 
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:640}}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:680,&quot;height&quot;:800}}">
 const SYS = `You are the Felican AI assistant running on the Felican AI website. Felican AI builds useful AI products, custom systems, business automations, integrations, assistants, solutions, and training for businesses in any industry. It is led by Lee Felican Jr., a software engineer and enterprise architect with 30+ years of experience.
 
 The current product lineup includes: Private AI, the flagship product (enterprise-grade private AI with zero data exposure, deployed securely inside the customer's own network — recommend this first for any business worried about sensitive data); Felican Auto (connected AI products, automations and workflows for automotive businesses); World of Agents (discover and work with specialized AI agents for focused business tasks); Relay (AI field-service software for HVAC, plumbing, and electrical companies with scheduling, AP invoice OCR, collections, quotes, crew management, and an AI operations assistant); and Chat AI Assistant (a company-trained AI agent businesses can embed inside a website or app to answer questions, recommend services, capture inquiries, connect workflows, and hand off to people). The portfolio is growing, so describe it as the current lineup without stating a fixed product count.
@@ -221,6 +262,74 @@ function initialAssistantPlacement() {
 
 const assistantPlacement = initialAssistantPlacement();
 
+// The mascot's four rides, in the order it cycles through them, and what it says as
+// it sets off. One lap per ride, then a rest, so it draws the eye without nagging.
+const BOT_MODES = ['walk', 'surf', 'drive', 'fly'];
+// Bump when a file in public/bot/ changes: the server marks them immutable for a year.
+const BOT_VERSION = '1';
+const BOT_LINES = [
+  'Ask me anything about Felican AI',
+  'Questions? I reply instantly',
+  'Want to see what AI can do for you?',
+  'Voice or text — your call',
+  'Ask me what it costs',
+  'I can book you a call',
+];
+const BOT_FIRST_DELAY = 5000;
+const BOT_REST = 18000;
+const BOT_REST_AFTER_OPEN = 60000;
+const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// What the visitor is reading, so the greeting, the starter chips and the server-side
+// retrieval can all assume "it" means this page.
+function pageContext() {
+  const path = window.location.pathname || '/';
+  const h1 = document.querySelector('main h1, h1');
+  const heading = h1 ? h1.textContent.replace(/\s+/g, ' ').trim() : '';
+  const title = (document.title || '').replace(/\s*[|·—–-]\s*Felican AI.*$/i, '').trim();
+  let section = '';
+  if (/^\/products\/[^/]+\/?$/.test(path)) section = 'product';
+  else if (/^\/services\/[^/]+\/?$/.test(path)) section = 'service';
+  else if (/^\/industries\/[^/]+\/?$/.test(path)) section = 'industry';
+  else if (/^\/guides\//.test(path)) section = 'guide';
+  else if (/^\/compare\//.test(path)) section = 'comparison';
+  else if (/^\/case-studies\/[^/]+\/?$/.test(path)) section = 'case-study';
+  else if (/^\/books\/[^/]+\/?$/.test(path)) section = 'book';
+  else if (/^\/starter-pack\/?$/.test(path) || /^\/checkout\/?$/.test(path)) section = 'starter-pack';
+  return { path, title: title || heading, heading, section };
+}
+
+function greetingFor(page) {
+  const name = page.heading && page.heading.length <= 60 ? page.heading : page.title;
+  switch (page.section) {
+    case 'product': return "Hi — I'm the Felican AI agent. You're looking at " + name + ". Ask me what it costs, how it's deployed, or whether it fits your business.";
+    case 'service': return "Hi — I'm the Felican AI agent. Ask me how " + name + " works, what it costs, or whether it's the right fit for you.";
+    case 'industry': return "Hi — I'm the Felican AI agent. Ask me what we deploy for businesses like yours, what it costs, or to see a real client example.";
+    case 'guide': return "Hi — I'm the Felican AI agent. I can summarize this guide, answer a specific question from it, or explain how Felican AI helps.";
+    case 'comparison': return "Hi — I'm the Felican AI agent. Ask me about either side of this comparison, or describe your situation and I'll say which fits.";
+    case 'case-study': return "Hi — I'm the Felican AI agent. Ask me what we built here, why it worked, or whether the same would work for your business.";
+    case 'book': return "Hi — I'm the Felican AI agent. Ask me what this book covers, who it's for, or about Lee's other books.";
+    case 'starter-pack': return "Hi — I'm the Felican AI agent. Ask me what's in the Starter Pack, which hosting plan fits you, or how fast you can be live.";
+    default: return "Hi — I'm the Felican AI agent. Ask me about our products, services, pricing, training, or Lee's books.";
+  }
+}
+
+function starterChipsFor(page) {
+  switch (page.section) {
+    case 'product': return ['What does it cost?', 'How is it deployed?', 'Is it right for my business?'];
+    case 'service': return ['How does an engagement run?', 'What does it cost?', 'Is this the right service for me?'];
+    case 'industry': return ['What do you deploy for my industry?', 'Show me a client example', 'What does it cost?'];
+    case 'guide': return ['Summarize this guide', 'How does Felican AI help with this?', 'What does it cost?'];
+    case 'comparison': return ['Which one should I pick?', 'What does Private AI cost?', 'Book a call'];
+    case 'case-study': return ['What did you build here?', 'Would this work for my business?', 'What did it cost?'];
+    case 'book': return ['What is this book about?', 'Who is it for?', 'What are the other books?'];
+    case 'starter-pack': return ["What's in the Starter Pack?", 'Which hosting plan fits me?', 'How fast can I be live?'];
+    default: return ['What products do you offer?', 'Can you automate my business?', 'Tell me about the books'];
+  }
+}
+
+const currentPage = pageContext();
+
 class Component extends DCLogic {
   state = {
     followups: [],
@@ -228,7 +337,9 @@ class Component extends DCLogic {
     side: assistantPlacement.side, sidePinned: assistantPlacement.sidePinned,
     handoff: false, hName: '', hEmail: '', hMsg: '', hBusy: false,
     voiceSupported: false, voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, micDetected: false, liveTranscript: '', voiceError: '',
-    messages: [{ role: 'assistant', text: "Hi — I'm the Felican AI agent. Ask me about our products, services, training, or Lee's books." }]
+    wide: false,
+    botVisible: false, botMode: 0, botDir: 'ltr', botSay: BOT_LINES[0], botLaps: 0, everOpened: false,
+    messages: [{ role: 'assistant', text: greetingFor(currentPage) }]
   };
   scrollRef = React.createRef();
 
@@ -239,6 +350,7 @@ class Component extends DCLogic {
       this.setState({ side });
     };
     window.addEventListener('felican:assistant-side-request', this._assistantSideRequest);
+    this.startBot();
     const preset = window.__FELICAN_VAPI_CONFIG__;
     if (preset && preset.publicKey && preset.assistantId) {
       this._voiceReadyPromise = this.prepareVoice(preset);
@@ -254,7 +366,75 @@ class Component extends DCLogic {
   }
   componentWillUnmount() {
     window.removeEventListener('felican:assistant-side-request', this._assistantSideRequest);
+    this.stopBot();
     this.stopVoice();
+  }
+
+  // ---- The mascot -------------------------------------------------------
+  // A lap is one crossing of the viewport just above the credentials bar. The CSS
+  // animation does the moving; this only decides when a lap starts, which ride it
+  // uses, and hides the mascot between laps. It never runs while the panel is
+  // open, while the tab is hidden, or for visitors who asked for reduced motion.
+  startBot() {
+    if (reducedMotion || this._botStarted) return;
+    this._botStarted = true;
+    this._botLapEnd = event => {
+      if (!event || !event.target || !event.target.classList || !event.target.classList.contains('fa-bot')) return;
+      if (!/^fa-cross-/.test(event.animationName || '')) return;
+      this.finishLap();
+    };
+    document.addEventListener('animationend', this._botLapEnd);
+    this._botVisibility = () => {
+      if (document.hidden) { this.setState({ botVisible: false }); this.clearBotTimer(); }
+      else if (!this.state.open) this.scheduleLap(BOT_REST / 2);
+    };
+    document.addEventListener('visibilitychange', this._botVisibility);
+    this.scheduleLap(BOT_FIRST_DELAY);
+  }
+  stopBot() {
+    this.clearBotTimer();
+    if (this._botLapEnd) document.removeEventListener('animationend', this._botLapEnd);
+    if (this._botVisibility) document.removeEventListener('visibilitychange', this._botVisibility);
+    this._botStarted = false;
+  }
+  clearBotTimer() {
+    if (this._botTimer) clearTimeout(this._botTimer);
+    this._botTimer = null;
+  }
+  scheduleLap(delay) {
+    this.clearBotTimer();
+    this._botTimer = setTimeout(() => this.beginLap(), delay);
+  }
+  beginLap() {
+    this._botTimer = null;
+    if (this.state.open || document.hidden || this.state.botVisible) return;
+    this.setState(state => ({
+      botVisible: true,
+      botMode: (state.botMode + 1) % BOT_MODES.length,
+      botDir: state.botDir === 'ltr' ? 'rtl' : 'ltr',
+      botSay: BOT_LINES[state.botLaps % BOT_LINES.length],
+      botLaps: state.botLaps + 1
+    }));
+    // Safety net: if the browser never fires animationend (an ad blocker stripped the
+    // CSS, say), the mascot must not sit at the edge of the screen forever.
+    this._botFallback = setTimeout(() => this.finishLap(), 40000);
+  }
+  finishLap() {
+    if (this._botFallback) clearTimeout(this._botFallback);
+    this._botFallback = null;
+    if (!this.state.botVisible) return;
+    this.setState({ botVisible: false });
+    this.scheduleLap(this.state.everOpened ? BOT_REST_AFTER_OPEN : BOT_REST);
+  }
+  openPanel() {
+    this.clearBotTimer();
+    if (this._botFallback) clearTimeout(this._botFallback);
+    this.setState({ open: true, botVisible: false, everOpened: true });
+  }
+  closePanel() {
+    this.stopVoice();
+    this.setState({ open: false });
+    if (this._botStarted) this.scheduleLap(BOT_REST_AFTER_OPEN / 2);
   }
   moveSide() {
     this.setState(state => {
@@ -565,7 +745,7 @@ class Component extends DCLogic {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'text/event-stream' },
-        body: JSON.stringify({ messages: history, website: this.state.website, stream: true })
+        body: JSON.stringify({ messages: history, website: this.state.website, stream: true, page: { path: currentPage.path, title: currentPage.title } })
       });
 
       const type = response.headers.get('content-type') || '';
@@ -637,9 +817,18 @@ class Component extends DCLogic {
       open: this.state.open,
       openStr: this.state.open ? 'true' : 'false',
       side: this.state.side,
-      sideClass: this.state.side === 'left' ? 'fa-left' : 'fa-right',
+      sideClass: (this.state.side === 'left' ? 'fa-left' : 'fa-right') + (this.state.wide ? ' fa-wide' : ''),
       moveLabel: this.state.side === 'left' ? 'Move assistant to the right' : 'Move assistant to the left',
       moveSide: () => this.moveSide(),
+      wideStr: this.state.wide ? 'true' : 'false',
+      wideLabel: this.state.wide ? 'Shrink the assistant' : 'Expand the assistant',
+      wideGlyph: this.state.wide ? '\u2921' : '\u2922',
+      toggleWide: () => this.setState(s => ({ wide: !s.wide })),
+      botVisible: this.state.botVisible,
+      botClass: 'fa-bot-' + BOT_MODES[this.state.botMode] + ' fa-bot-' + this.state.botDir,
+      botSrc: '/bot/' + BOT_MODES[this.state.botMode] + '.svg?v=' + BOT_VERSION,
+      botSay: this.state.botSay,
+      botClick: () => this.openPanel(),
       btnLabel: this.state.open ? 'Assistant open' : 'Talk to Felican AI',
       launcherLabel: this.state.open ? 'Close the Felican AI assistant' : 'Open the Felican AI assistant',
       busy: this.state.busy,
@@ -660,7 +849,7 @@ class Component extends DCLogic {
         : { ...m, align: 'flex-start', bg: '#12181C', fg: '#EEF4F4', border: '#1C2A28' }),
       chips: (this.state.followups || []).length
         ? this.state.followups.map(chip)
-        : [chip('What products do you offer?'), chip('Can you automate my business?'), chip('Tell me about the books')],
+        : starterChipsFor(currentPage).map(chip),
       handoff: this.state.handoff,
       handoffNote: 'We email this to the Felican AI team along with the chat above, and a person replies to you directly.',
       hName: this.state.hName,
@@ -674,8 +863,8 @@ class Component extends DCLogic {
       onHEmail: e => this.setState({ hEmail: e.target.value }),
       onHMsg: e => this.setState({ hMsg: e.target.value }),
       sendHandoff: e => this.submitHandoff(e),
-      toggle: () => { if (this.state.open) this.stopVoice(); this.setState(s => ({ open: !s.open })); },
-      close: () => { this.stopVoice(); this.setState({ open: false }); },
+      toggle: () => { if (this.state.open) this.closePanel(); else this.openPanel(); },
+      close: () => this.closePanel(),
       onDraft: e => this.setState({ draft: e.target.value }),
       onWebsite: e => this.setState({ website: e.target.value }),
       submit: e => { e.preventDefault(); this.send(this.state.draft); }

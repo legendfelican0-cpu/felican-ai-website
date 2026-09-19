@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 88" role="img" aria-label="Felican AI bot">
+<style>
+  .eyes { animation: blink 4.2s infinite; transform-origin: 70px 30px; }
+  @keyframes blink { 0%, 92%, 100% { transform: scaleY(1) } 95% { transform: scaleY(.1) } }
+  .tip { animation: tip 1.6s ease-in-out infinite; }
+  @keyframes tip { 0%,100% { opacity: .55 } 50% { opacity: 1 } }
+  .core { animation: tip 2.2s ease-in-out infinite; }
+  .rider { animation: rock 1.4s ease-in-out infinite; transform-origin: 70px 72px; }
+  @keyframes rock { 0%,100% { transform: rotate(-5deg) translateY(0) } 50% { transform: rotate(5deg) translateY(-2px) } }
+  .wave { animation: wave 1.4s ease-in-out infinite; transform-origin: 70px 76px; }
+  @keyframes wave { 0%,100% { transform: translateX(-3px) scaleY(1) } 50% { transform: translateX(3px) scaleY(1.25) } }
+  .spray { animation: spray 1.4s ease-out infinite; transform-origin: 40px 74px; }
+  @keyframes spray { 0% { opacity: 0; transform: translate(0,0) scale(.4) } 30% { opacity: .9 } 100% { opacity: 0; transform: translate(-10px,-10px) scale(1.2) } }
+</style>
+<defs>
+  <linearGradient id="body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B2A2F"/><stop offset="1" stop-color="#0A1216"/></linearGradient>
+  <linearGradient id="visor" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2FB894"/><stop offset="1" stop-color="#8FE0C8"/></linearGradient>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#D9A944"/><stop offset=".5" stop-color="#F2CE7B"/><stop offset="1" stop-color="#C89435"/></linearGradient>
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+
+  <g class="wave">
+    <path d="M6 76 Q18 66 30 76 T54 76 T78 76 T102 76 T126 76 T150 76 V80 H6 Z" fill="#2FB894" opacity=".55"/>
+    <path d="M0 78 Q14 70 28 78 T56 78 T84 78 T112 78 T140 78 V80 H0 Z" fill="#8FE0C8" opacity=".45"/>
+  </g>
+  <g class="spray"><circle cx="40" cy="72" r="2" fill="#EEF4F4"/><circle cx="34" cy="68" r="1.4" fill="#EEF4F4"/><circle cx="44" cy="66" r="1.2" fill="#EEF4F4"/></g>
+  <g class="rider">
+    <path d="M30 71 Q70 60 112 66 Q120 68 118 73 Q116 78 106 79 Q70 82 34 78 Q26 76 30 71 Z" fill="url(#gold)" stroke="#5C4718" stroke-width="1.4"/>
+    <path d="M40 73 Q70 67 108 70" stroke="#0C1419" stroke-width="2" fill="none" opacity=".5"/>
+    <path d="M52 78 L56 86 L62 79 Z" fill="#0C1419" opacity=".85"/>
+    <!-- crouched legs -->
+    <rect x="55" y="63" width="7" height="10" rx="3" fill="#1C2A28" stroke="#2FB894" stroke-width="1.2" transform="rotate(-14 58 63)"/>
+    <rect x="78" y="63" width="7" height="10" rx="3" fill="#1C2A28" stroke="#2FB894" stroke-width="1.2" transform="rotate(14 82 63)"/>
+    <rect x="49" y="70" width="12" height="4" rx="2" fill="#F2CE7B" stroke="#5C4718" stroke-width=".8"/>
+    <rect x="79" y="70" width="12" height="4" rx="2" fill="#F2CE7B" stroke="#5C4718" stroke-width=".8"/>
+    <!-- arms out for balance -->
+    <rect x="40" y="46" width="18" height="6" rx="3" fill="#1C2A28" stroke="#2FB894" stroke-width="1.2" transform="rotate(-18 58 49)"/>
+    <rect x="82" y="46" width="18" height="6" rx="3" fill="#1C2A28" stroke="#2FB894" stroke-width="1.2" transform="rotate(18 82 49)"/>
+
+  <g class="bot">
+    <!-- antenna -->
+    <line x1="70" y1="12" x2="70" y2="20" stroke="#8FE0C8" stroke-width="2.4" stroke-linecap="round"/>
+    <circle class="tip" cx="70" cy="10" r="3.2" fill="#F2CE7B" filter="url(#glow)"/>
+    <!-- head -->
+    <rect x="54" y="19" width="32" height="24" rx="8" fill="url(#body)" stroke="#2FB894" stroke-width="1.6"/>
+    <rect x="58" y="25" width="24" height="10" rx="5" fill="#05090C"/>
+    <g class="eyes">
+      <rect x="61" y="27.5" width="6" height="5" rx="2.5" fill="url(#visor)" filter="url(#glow)"/>
+      <rect x="73" y="27.5" width="6" height="5" rx="2.5" fill="url(#visor)" filter="url(#glow)"/>
+    </g>
+    <!-- ear pods -->
+    <rect x="50.5" y="26" width="4" height="9" rx="2" fill="#2FB894"/>
+    <rect x="85.5" y="26" width="4" height="9" rx="2" fill="#2FB894"/>
+    <!-- neck + torso -->
+    <rect x="66" y="43" width="8" height="4" fill="#1C2A28"/>
+    <rect x="57" y="46" width="26" height="20" rx="7" fill="url(#body)" stroke="#2FB894" stroke-width="1.6"/>
+    <circle cx="70" cy="55" r="4" fill="#0A1216" stroke="#F2CE7B" stroke-width="1.4"/>
+    <circle class="core" cx="70" cy="55" r="1.8" fill="#F2CE7B" filter="url(#glow)"/>
+  </g>
+  </g>
+
+</svg>
