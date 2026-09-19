@@ -12,7 +12,7 @@
 //
 // Run with `npm run build:assistant` (included in `npm run seo`).
 
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -153,4 +153,139 @@ const counts = {
 console.log(
   `Assistant knowledge: ${knowledge.length.toLocaleString()} chars — `
   + Object.entries(counts).map(([k, v]) => `${v} ${k}`).join(', '),
+);
+
+/* ------------------------------------------------------------------ corpus */
+// The block above is the assistant's always-on map of the site: one line per page.
+// The corpus below is the full text of each page, one chunk per page, and it is NOT
+// sent in every request. server/assistant-retrieval.js scores these chunks against
+// the visitor's question and the page they are reading, and injects only the few
+// that match. That is what lets the assistant quote a guide's actual hardware
+// advice or a product's real FAQ answer instead of paraphrasing a one-liner.
+
+const clean = value => String(value ?? '')
+  .replace(/<[^>]*>/g, '')
+  .replace(/&mdash;/g, '—').replace(/&amp;/g, '&').replace(/&nbsp;/g, ' ')
+  .replace(/&#39;|&rsquo;/g, "'").replace(/&quot;|&ldquo;|&rdquo;/g, '"')
+  .replace(/\s+/g, ' ')
+  .trim();
+const para = (h, p) => `${clean(h)}: ${clean(p)}`;
+const bullets = (label, items) => items?.length ? `${label}: ${items.map(clean).join(' ')}` : '';
+const faqText = faq => (faq || []).map(f => `Q: ${clean(f.q)} A: ${clean(f.a)}`).join(' ');
+const sectionText = sections => (sections || [])
+  .map(s => para(s.h, [s.p, ...(s.ul || []).map(li => `- ${li}`)].filter(Boolean).join(' ')))
+  .join(' ');
+
+const corpus = [];
+const chunk = (kind, path, title, parts) => {
+  const text = parts.filter(Boolean).map(clean).join('\n');
+  if (text) corpus.push({ kind, path, title: clean(title), text });
+};
+
+for (const p of PRODUCTS.filter(x => !x.hubOnly)) {
+  chunk('product', `/products/${p.slug}/`, p.name, [
+    `${p.name} — ${p.tag || ''}. Price: ${priceEach} one-time, then a monthly hosting plan.`,
+    p.lede,
+    bullets('Facts', (p.facts || []).map(f => `${f.k}: ${f.v}`)),
+    sectionText(p.sections),
+    faqText(p.faq),
+    bullets('Related', (p.related || []).map(r => `${r.label} (${r.href})`)),
+  ]);
+}
+
+for (const s of SERVICES) {
+  chunk('service', `/services/${s.slug}/`, s.name, [
+    `${s.name} — ${s.tag || ''}.`,
+    s.lede, s.description,
+    bullets('What is in scope', s.scope),
+    bullets('How an engagement runs', s.engagement),
+    bullets('Pricing', s.pricing),
+    bullets('Not a fit when', s.notFor),
+  ]);
+}
+
+for (const i of INDUSTRIES) {
+  chunk('industry', `/industries/${i.slug}/`, i.longName, [
+    i.lede, i.description,
+    bullets('The problem', i.theProblem),
+    bullets('What we deploy', (i.whatWeDeploy || []).map(w => `${w.product} (${w.href}): ${w.detail}`)),
+    sectionText(i.specifics),
+    faqText(i.faq),
+  ]);
+}
+
+for (const g of GUIDES) {
+  chunk('guide', `/guides/${g.slug}/`, g.h1, [g.lede, g.description, sectionText(g.sections), faqText(g.faq)]);
+  for (const c of g.children || []) {
+    chunk('guide', `/guides/${g.slug}/${c.slug}/`, c.h1, [c.lede, c.description, sectionText(c.sections), faqText(c.faq)]);
+  }
+}
+
+for (const c of COMPARISONS) {
+  const table = c.table
+    ? `${clean(c.table.caption || '')} ${(c.table.rows || []).map(r => (Array.isArray(r) ? r : Object.values(r)).map(clean).join(' | ')).join('; ')}`
+    : '';
+  chunk('comparison', `/compare/${c.slug}/`, c.h1, [c.lede, `Verdict: ${c.verdict}`, table, sectionText(c.sections), faqText(c.faq)]);
+}
+
+for (const st of CASE_STUDIES) {
+  chunk('case-study', `/case-studies/${st.slug}/`, st.client, [
+    `${st.client} — ${st.industry}, ${st.location}. Deployed: ${st.deployed.join(', ')}.`,
+    st.summary, st.about,
+    bullets('Situation', st.situation),
+    bullets('What we built', st.built),
+    st.why ? `Why it worked: ${st.why}` : '',
+  ]);
+}
+
+for (const b of BOOKS) {
+  chunk('book', `/books/${b.slug}/`, b.name, [
+    `${b.name} by ${ORG.founder.name} — ${b.tagline}`,
+    bullets('About', b.about),
+    bullets('For you if', b.forYouIf),
+    b.buyUrl ? `Buy: ${b.buyUrl}` : '',
+  ]);
+}
+
+// The Starter Pack page is hand-written HTML rather than content/*.js, so its FAQ and
+// add-on pricing are lifted straight from the served page. If that page moves into
+// content/, replace this with the structured source.
+try {
+  const html = readFileSync(join(ROOT, 'public', 'starter-pack', 'index.html'), 'utf8');
+  const faq = [...html.matchAll(/<details>\s*<summary>(.*?)<\/summary>\s*<p>(.*?)<\/p>\s*<\/details>/gs)]
+    .map(m => `Q: ${clean(m[1])} A: ${clean(m[2])}`);
+  const plans = Object.values(HOSTING_PLANS)
+    .map(plan => `${plan.name} ${money(plan.amount)}/month: ${plan.allowance}`);
+  chunk('bundle', '/starter-pack/', 'AI Business Starter Pack', [
+    `The AI Business Starter Pack is ${money(CATALOG.pack.amount)} one-time and bundles Private AI, the Chat AI Assistant and Voice AI, all generated from one shared source of business knowledge. Any one of the three alone is ${priceEach} one-time.`,
+    `Monthly hosting plans (one is required, first month charged at purchase): ${plans.join('; ')}.`,
+    'Add-ons: extra custom model $299 one-time, extra automation $199 one-time, image generation $40/month, video generation $90/month. One-time add-ons bill with the purchase; monthly add-ons join the hosting plan. No overage charges.',
+    'Per-engine token pricing for Private AI processing: /starter-pack/ai-engines/. Checkout: /checkout/.',
+    faq.join(' '),
+  ]);
+} catch (error) {
+  console.warn(`Starter Pack page not indexed: ${error.message}`);
+}
+
+chunk('company', '/about/', 'About Felican AI', [
+  `${ORG.name} (${ORG.legalName || ORG.name}). ${ORG.description || ''}`,
+  `Founder: ${ORG.founder.name}, ${ORG.founder.jobTitle}. ${ORG.founder.description || ''}`,
+  `Team: more than ten certified AI professionals with backgrounds across every major industry; certifications from AWS, Google Cloud, Microsoft Azure, Anthropic and OpenAI (see /about/#certifications).`,
+  `Contact: ${ORG.email}, ${ORG.telephoneDisplay}, Monday to Friday 9am to 6pm Eastern. Book a call: /booking/. Contact form: /contact/.`,
+  `Service area: ${ORG.areaServed.join(', ')}; remote work nationwide.`,
+  bullets('Knows about', ORG.knowsAbout),
+]);
+
+const corpusFile = `// GENERATED by scripts/build-assistant-knowledge.mjs — do not edit by hand.
+// Regenerate with \`npm run build:assistant\` (part of \`npm run seo\`).
+//
+// Full text of every page the assistant can cite, one chunk per page. Not sent whole:
+// server/assistant-retrieval.js picks the chunks that match the visitor's question.
+
+export const ASSISTANT_CORPUS = ${JSON.stringify(corpus, null, 1)};
+`;
+writeFileSync(join(ROOT, 'server', 'assistant-corpus.js'), corpusFile);
+console.log(
+  `Assistant corpus: ${corpus.length} chunks, ${corpus.reduce((n, c) => n + c.text.length, 0).toLocaleString()} chars — `
+  + Object.entries(corpus.reduce((acc, c) => ({ ...acc, [c.kind]: (acc[c.kind] || 0) + 1 }), {})).map(([k, v]) => `${v} ${k}`).join(', '),
 );

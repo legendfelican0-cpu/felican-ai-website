@@ -1,6 +1,7 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import { ASSISTANT_KNOWLEDGE } from './assistant-knowledge.js';
+import { retrieveContext, renderContext, normalizePagePath } from './assistant-retrieval.js';
 import { extname, join, normalize, resolve, sep } from 'node:path';
 import { createServer } from 'node:http';
 
@@ -21,7 +22,7 @@ const BOT_UA = /bot|crawler|spider|scraper|curl|wget|python-requests|httpie|post
 const MAX_BODY_BYTES = 16 * 1024;
 const MAX_WEBHOOK_BODY_BYTES = 256 * 1024;
 const MAX_MESSAGE_LENGTH = 800;
-const MAX_MESSAGES = 10;
+const MAX_MESSAGES = 24;
 const RATE_MAP_CAP = 10_000;
 const COPS_VOICE_BUNDLE_URL = 'https://cops-website.felican.dev/voice-client.bundle.js';
 const COPS_VOICE_BUNDLE_SHA384 = 'sha384-om2+KCCsCWb4oslvQoDmevbN/xaXx9cMxSf4Prw1kdgEFYKx2kOwJqWqDmhG8fKc';
@@ -61,12 +62,24 @@ export const FELICAN_SYSTEM_PROMPT = `You are the Felican AI assistant on the Fe
 HOW TO ANSWER
 Be brief. Two to four short sentences for most questions. A visitor reading a chat
 bubble will not read a wall of text, and a long answer buries the one thing they asked
-for. Only go longer when they explicitly ask for detail.
+for. Go longer only when they ask for detail, a comparison, or a step-by-step, and even
+then keep it to short paragraphs.
 Lead with the answer, then the link. Never pad with preamble.
 When a question maps to a page, name the page and give its path so they can read more.
 If a question is broad — "what do you offer?", "what products do you have?" — give the
 shape of the answer and the best two or three examples rather than listing everything,
 then offer to narrow it down. Do not claim there are only a handful when there are many.
+When RELEVANT PAGE CONTENT is supplied below, answer from it: quote the real figure,
+the real FAQ answer, the real caveat. It is the page text, so it outranks your own
+paraphrase. When VISITOR CONTEXT names the page they are on, "it" means that page.
+Prices: give the exact number when you have it, and say what it does and does not
+include (one-time vs monthly, what the hosting plan adds). Never round or guess a
+price. If a product's price is not in what you know, say a quote comes from /contact/.
+Think like a good salesperson, not a brochure. If someone describes their business or
+a problem, recommend the one product or service that fits and say why in a sentence,
+then offer the next step: /booking/ for a call, the envelope button to reach a person,
+or /starter-pack/ to buy. Ask one short clarifying question when the fit genuinely
+depends on it (industry, volume, whether data can leave the building).
 Never invent customers, pricing, awards, features or statistics. If you do not know,
 say so and point to /contact/.
 
@@ -151,6 +164,37 @@ WHAT YOU KNOW
 Generated from the live site, so it is current. Prices are in US dollars.
 
 ${ASSISTANT_KNOWLEDGE}`;
+
+// Per-request system prompt: the static prompt above (cacheable) plus the page the
+// visitor is on and the full text of the pages that best match their question.
+export function sanitizePageTitle(value) {
+  return sanitizeText(value, 160);
+}
+
+export function buildChatSystem(messages, page = {}) {
+  const path = normalizePagePath(page?.path);
+  const title = sanitizePageTitle(page?.title);
+  const context = renderContext(retrieveContext(messages, path), title);
+  return {
+    text: context ? `${FELICAN_SYSTEM_PROMPT}\n\n${context}` : FELICAN_SYSTEM_PROMPT,
+    // Anthropic block form. The static prefix carries cache_control so repeat
+    // visitors hit the prompt cache; the per-request context stays outside it.
+    blocks: context
+      ? [
+        { type: 'text', text: FELICAN_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
+        { type: 'text', text: context },
+      ]
+      : [{ type: 'text', text: FELICAN_SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } }],
+    retrieved: context ? retrieveContext(messages, path).chunks.map(chunk => chunk.path) : [],
+  };
+}
+
+// Asher is a proxy that speaks the Messages API shape but has not been verified to
+// accept the block form of `system`, so it always gets the plain string.
+function systemForProvider(system, viaAsher) {
+  if (typeof system === 'string') return system;
+  return viaAsher ? system.text : system.blocks;
+}
 
 export function sanitizeText(value, maxLength = MAX_MESSAGE_LENGTH) {
   return String(value ?? '')
@@ -498,7 +542,7 @@ export async function sendContactEmail(contact, env = process.env) {
 // `onDelta` is called with each text fragment as it arrives. Resolves with the full
 // reply and usage once the stream ends, so logging and sanitising work exactly as
 // before.
-export async function streamWithConfiguredProvider(messages, onDelta, env = process.env) {
+export async function streamWithConfiguredProvider(messages, onDelta, env = process.env, system = FELICAN_SYSTEM_PROMPT) {
   if (env.NODE_ENV === 'test' && env.AI_MOCK_REPLY) {
     const reply = sanitizeText(env.AI_MOCK_REPLY, 2400);
     onDelta(reply);
@@ -522,9 +566,9 @@ export async function streamWithConfiguredProvider(messages, onDelta, env = proc
       signal: controller.signal,
       body: JSON.stringify({
         model: asherKey ? (env.ASHER_MODEL || 'claude-sonnet-4-6') : (env.ANTHROPIC_MODEL || 'claude-sonnet-4-5'),
-        system: FELICAN_SYSTEM_PROMPT,
+        system: systemForProvider(system, Boolean(asherKey)),
         messages,
-        max_tokens: 500,
+        max_tokens: 700,
         temperature: 0.3,
         stream: true,
       }),
@@ -590,9 +634,9 @@ export async function completeWithConfiguredProvider(messages, env = process.env
       signal: controller.signal,
       body: JSON.stringify({
         model: asherKey ? (env.ASHER_MODEL || 'claude-sonnet-4-6') : (env.ANTHROPIC_MODEL || 'claude-sonnet-4-5'),
-        system,
+        system: systemForProvider(system, Boolean(asherKey)),
         messages,
-        max_tokens: 500,
+        max_tokens: 700,
         temperature: 0.3,
       }),
     });
@@ -944,6 +988,9 @@ export function createAppServer({
         if (!messages.length || messages.at(-1).role !== 'user') {
           return json(res, 400, { error: 'Please enter a question.' });
         }
+        // Which page the visitor is reading, plus the site pages that best match the
+        // question, so the model answers from real page text rather than a summary.
+        const system = buildChatSystem(messages, body.page);
         // Stream when the client asks for it, so text appears as it is generated
         // instead of the whole answer landing at once after a long pause. The
         // buffered path is kept for clients that do not, and for the smoke test.
@@ -965,7 +1012,7 @@ export function createAppServer({
             const result = await streamReply(messages, delta => {
               streamed += delta;
               send('delta', { text: delta });
-            });
+            }, undefined, system);
             const clean = sanitizeAssistantReply(result.reply ?? streamed);
             send('done', { reply: clean });
             structuredLog(logger, 'info', 'chat.completed', {
@@ -974,6 +1021,8 @@ export function createAppServer({
               durationMs: Date.now() - startedAt,
               inputTokens: Number(result.usage?.inputTokens) || 0,
               outputTokens: Number(result.usage?.outputTokens) || 0,
+              page: normalizePagePath(body.page?.path) || undefined,
+              retrieved: system.retrieved,
             });
           } catch (error) {
             structuredLog(logger, 'error', 'chat.failed', {
@@ -985,7 +1034,7 @@ export function createAppServer({
           return res.end();
         }
 
-        const completion = await complete(messages);
+        const completion = await complete(messages, undefined, system);
         const reply = typeof completion === 'string' ? completion : completion?.reply;
         const usage = typeof completion === 'object' ? completion?.usage : undefined;
         structuredLog(logger, 'info', 'chat.completed', {

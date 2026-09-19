@@ -377,7 +377,7 @@ describe('assistant abuse limits', () => {
     const long = normalizeMessages([{ role: 'user', content: 'x'.repeat(5000) }]);
     expect(long[0].content.length).toBeLessThanOrEqual(800);
     const many = normalizeMessages(Array.from({ length: 40 }, () => ({ role: 'user', content: 'hi' })));
-    expect(many.length).toBeLessThanOrEqual(10);
+    expect(many.length).toBeLessThanOrEqual(24);
   });
 
   it('both prompts refuse anything that is not about Felican AI', async () => {

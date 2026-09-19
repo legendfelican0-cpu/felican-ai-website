@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { afterEach, describe, expect, it } from 'vitest';
-import { createAppServer, contactIsConfigured, deliverEducationLead, normalizeContact, normalizeMessages, sanitizeAssistantReply, sanitizeText, voiceBundleIntegrity } from './app.js';
+import { buildChatSystem, createAppServer, contactIsConfigured, deliverEducationLead, normalizeContact, normalizeMessages, sanitizeAssistantReply, sanitizeText, voiceBundleIntegrity } from './app.js';
 import { GENERATOR_HANDOFF_COOKIE, verifyGeneratorHandoffCookie } from './handoff.js';
 
 const servers = [];
@@ -311,9 +311,46 @@ describe('Starter Pack generator handoff', () => {
 describe('Felican AI server', () => {
   it('sanitizes visitor input and limits conversation size', () => {
     expect(sanitizeText('<b>Hello</b>\u0000 world')).toBe('Hello world');
-    expect(normalizeMessages(Array.from({ length: 12 }, (_, index) => ({ role: 'user', content: `<b>${index}</b>` })))).toHaveLength(10);
+    expect(normalizeMessages(Array.from({ length: 12 }, (_, index) => ({ role: 'user', content: `<b>${index}</b>` })))).toHaveLength(12);
+    expect(normalizeMessages(Array.from({ length: 30 }, (_, index) => ({ role: 'user', content: `${index}` })))).toHaveLength(24);
     expect(sanitizeAssistantReply('**Relay** — [Open it](https://relay.felican.dev/relay)')).toBe('Relay — Open it (https://relay.felican.dev/relay)');
     expect(sanitizeAssistantReply('Felikan, Fell-ih-can, and Falcon AI met Balas.')).toBe('Felican, Felican, and Felican AI met Ballas.');
+  });
+
+  it('grounds each answer in the page the visitor is on and the pages that match the question', async () => {
+    const seen = [];
+    const base = await start(async (messages, _env, system) => { seen.push(system); return 'Grounded.'; });
+    const response = await fetch(`${base}/api/chat`, {
+      method: 'POST', headers: browserHeaders,
+      body: JSON.stringify({
+        website: '',
+        page: { path: '/products/relay/?utm=x', title: 'Relay <script>' },
+        messages: [{ role: 'user', content: 'how much does it cost and is it hipaa compliant?' }],
+      }),
+    });
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ reply: 'Grounded.' });
+    expect(seen).toHaveLength(1);
+    const system = seen[0];
+    expect(system.text).toContain('You are the Felican AI assistant');
+    expect(system.text).toContain('The visitor is currently reading Relay (/products/relay/)');
+    expect(system.text).toContain('[Relay — /products/relay/]');
+    expect(system.text).toContain('/guides/private-ai/hipaa-and-private-ai/');
+    expect(system.text).not.toContain('<script>');
+    expect(system.retrieved[0]).toBe('/products/relay/');
+    // Static prefix is the cacheable block; the per-request context is separate.
+    expect(system.blocks[0].cache_control).toEqual({ type: 'ephemeral' });
+    expect(system.blocks[0].text).not.toContain('RELEVANT PAGE CONTENT FOR THIS QUESTION');
+    expect(system.blocks[1].text).toContain('RELEVANT PAGE CONTENT FOR THIS QUESTION');
+  });
+
+  it('builds a plain system prompt when nothing is retrievable and rejects bad page paths', () => {
+    const plain = buildChatSystem([{ role: 'user', content: 'zzqx' }], { path: 'javascript:alert(1)', title: '' });
+    expect(plain.text).toBe(plain.blocks[0].text);
+    expect(plain.retrieved).toEqual([]);
+    const traversal = buildChatSystem([{ role: 'user', content: 'relay' }], { path: '/../etc/passwd' });
+    expect(traversal.text).not.toContain('The visitor is currently reading');
+    expect(traversal.retrieved[0]).toBe('/products/relay/');
   });
 
   it('returns a real assistant reply from the configured completion function', async () => {
