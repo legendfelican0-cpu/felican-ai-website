@@ -134,3 +134,76 @@ export function renderContext({ page, chunks }, pageTitle = '') {
   }
   return lines.join('\n').trim();
 }
+
+// ---- Tools the model can call ------------------------------------------------
+// The BM25 pass above is the fast path: the best guesses go into the prompt before
+// the model says a word. These are the second look — the model calls them when what
+// it was handed does not contain the exact fact, the way a person would open the
+// page rather than guess. Same corpus, same scoring; nothing leaves the process.
+
+export const ASSISTANT_TOOLS = [
+  {
+    name: 'search_site',
+    description: 'Search every page on felican.ai and get back the best-matching pages with their full text. Use it when the page content you were given does not contain the exact fact the visitor asked for — a price, a feature, a client, a hosting limit, a guide detail — or when the question is about something no supplied page covers. Ask with a few specific words, not a sentence.',
+    input_schema: {
+      type: 'object',
+      properties: { query: { type: 'string', description: 'Two to six specific words, e.g. "voice ai emergency triage" or "starter pack add-ons"' } },
+      required: ['query'],
+    },
+  },
+  {
+    name: 'read_page',
+    description: 'Read the full text of one felican.ai page by its path, e.g. /products/relay/ or /guides/private-ai/hipaa-and-private-ai/. Use it when you know which page holds the answer.',
+    input_schema: {
+      type: 'object',
+      properties: { path: { type: 'string', description: 'A site path starting with /, as listed in what you know' } },
+      required: ['path'],
+    },
+  },
+];
+
+const TOOL_RESULT_CHARS = 6_000;
+
+export function searchCorpus(query, limit = 3, index = INDEX) {
+  const weighted = new Map();
+  for (const term of tokenize(query)) weighted.set(term, (weighted.get(term) || 0) + 1);
+  if (!weighted.size) return [];
+  return index.docs
+    .map(doc => ({ doc, score: bm25(index, doc, weighted) }))
+    .filter(entry => entry.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(({ doc }) => ({ path: doc.path, title: doc.title, kind: doc.kind, text: doc.text.slice(0, MAX_CHUNK_CHARS) }));
+}
+
+export function readPage(path, index = INDEX) {
+  const normalized = normalizePagePath(path);
+  const doc = normalized ? index.docs.find(entry => entry.path === normalized) : undefined;
+  return doc ? { path: doc.path, title: doc.title, kind: doc.kind, text: doc.text.slice(0, TOOL_RESULT_CHARS) } : null;
+}
+
+// What the visitor is told while a tool runs, and what the model gets back.
+export function runAssistantTool(name, input = {}) {
+  if (name === 'search_site') {
+    const query = String(input.query ?? '').slice(0, 200);
+    const hits = searchCorpus(query);
+    return {
+      status: `Searching felican.ai for “${query.slice(0, 60)}”…`,
+      content: hits.length
+        ? hits.map(hit => `[${hit.title} — ${hit.path}]\n${hit.text}`).join('\n\n').slice(0, TOOL_RESULT_CHARS * 2)
+        : 'No page on felican.ai matches those words. Try different words, or tell the visitor you could not find it and point them to /contact/.',
+      pages: hits.map(hit => hit.path),
+    };
+  }
+  if (name === 'read_page') {
+    const page = readPage(input.path);
+    return {
+      status: page ? `Reading ${page.title}…` : 'Looking that up…',
+      content: page
+        ? `[${page.title} — ${page.path}]\n${page.text}`
+        : `There is no page at ${String(input.path ?? '').slice(0, 120)}. Use search_site to find the right one.`,
+      pages: page ? [page.path] : [],
+    };
+  }
+  return { status: 'Looking that up…', content: `Unknown tool ${String(name).slice(0, 40)}.`, pages: [] };
+}

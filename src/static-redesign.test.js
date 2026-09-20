@@ -285,29 +285,37 @@ describe('Claude Design static website export', () => {
     }
     expect(assistant).toContain("const BOT_MODES = ['walk', 'surf', 'drive', 'fly']");
     expect(assistant).toContain("botSrc: '/bot/' + BOT_MODES[this.state.botMode] + '.svg?v=' + BOT_VERSION");
-    // Runs on the strip just above the 76px credentials bar, beneath the launcher.
-    expect(assistant).toContain('.fa-bot { position:fixed;left:0;bottom:76px;z-index:940;');
-    expect(assistant).toContain('@keyframes fa-cross-ltr');
-    expect(assistant).toContain('@keyframes fa-cross-rtl');
-    expect(assistant).toContain('.fa-bot.fa-bot-rtl .fa-bot-img { transform:scaleX(-1) }');
-    // Not annoying: rests between laps, longer once the visitor has opened the chat,
-    // never while the panel is open or the tab is hidden, never for reduced motion.
-    expect(assistant).toContain('const BOT_REST = 18000');
-    expect(assistant).toContain('const BOT_REST_AFTER_OPEN = 60000');
-    expect(assistant).toContain('if (this.state.open || document.hidden || this.state.botVisible) return;');
-    expect(assistant).toContain("document.addEventListener('visibilitychange', this._botVisibility)");
+    // Rides along the top of the credentials bar (or the cart bar when it shows) and
+    // never leaves the screen: each ride ends in a poof at the edge and the next
+    // character respawns there heading back.
+    expect(assistant).toContain('.fa-bot { --fa-bot-w:150px;--fa-bot-h:86px;position:fixed;left:0;bottom:var(--fa-bot-bottom,76px);z-index:940;');
+    expect(assistant).toContain('@keyframes fa-cross-ltr { from { transform:translateX(12px) } to { transform:translateX(calc(100vw - var(--fa-bot-w,150px) - 12px)) } }');
+    expect(assistant).toContain('@keyframes fa-smoke');
+    expect(assistant).toContain('.fa-bot.fa-poof .fa-bot-img { animation:fa-vanish .4s ease-in forwards }');
+    expect(assistant).toContain("this.setState({ botPhase: 'poof' });\n    this.scheduleRide(BOT_POOF_MS);");
+    expect(assistant).toContain('.fa-bot.fa-bot-rtl .fa-bot-figure { transform:scaleX(-1) }');
+    expect(read('public/starter-pack/index.html')).toContain("document.documentElement.style.setProperty('--fa-bot-bottom'");
+    // Hides while the chat is open and comes straight back when it closes.
+    expect(assistant).toContain("this.setState({ open: true, botVisible: false, botPhase: 'ride' });");
+    expect(assistant).toContain('if (this._botStarted) this.scheduleRide(350);');
+    // Reduced motion: no mascot, the pill launcher instead. Same if an SVG fails.
     expect(assistant).toContain('if (reducedMotion || this._botStarted) return;');
     expect(assistant).toContain('.fa-bot { display:none }');
+    expect(assistant).toContain('const SHOW_LAUNCHER_ALWAYS = false;');
+    expect(assistant).toContain('showLauncher: SHOW_LAUNCHER_ALWAYS || reducedMotion || this.state.botFailed,');
+    expect(assistant).toContain('<sc-if value="{{ showLauncher }}" hint-placeholder-val="{{ true }}">');
+    expect(assistant).toContain("document.addEventListener('error', this._botImgError, true);");
+    expect(assistant).toContain('.fa-shell.fa-nolauncher .fa-panel { height:var(--fa-panel-height,min(780px,calc(100vh - 110px))) }');
     expect(assistant).toContain('.fa-bot:hover,.fa-bot:focus-visible { animation-play-state:paused }');
     expect(assistant).toContain('Click to chat with me');
     expect(assistant).toContain('botClick: () => this.openPanel()');
-    // The lap ends on the real animationend, with a fallback so it cannot get stuck.
     expect(assistant).toContain("document.addEventListener('animationend', this._botLapEnd)");
-    expect(assistant).toContain('this._botFallback = setTimeout(() => this.finishLap(), 40000)');
   });
 
   it('opens the assistant grandly and lets it take more of the screen', () => {
     const assistant = read('public/ChatAssistant.dc.html');
+    expect(assistant).toContain('class="fa-status" aria-live="polite">{{ statusText }}</span>');
+    expect(assistant).toContain("else if (event === 'status' && parsed.text) { this.setState({ statusText: String(parsed.text).slice(0, 120) }); }");
     expect(assistant).toContain('@keyframes fa-grand');
     expect(assistant).toContain('@keyframes fa-halo');
     expect(assistant).toContain('class="fa-backdrop"');

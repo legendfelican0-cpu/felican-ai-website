@@ -15,9 +15,14 @@
 @keyframes fa-halo { 0% { box-shadow:0 28px 80px rgba(5,9,12,.55),0 0 0 0 rgba(47,184,148,.75) } 100% { box-shadow:0 28px 80px rgba(5,9,12,.55),0 0 0 46px rgba(47,184,148,0) } }
 @keyframes fa-fade { from { opacity:0 } to { opacity:1 } }
 @keyframes fa-sheen { 0% { background-position:0% 50% } 100% { background-position:200% 50% } }
-@keyframes fa-cross-ltr { from { transform:translateX(-170px) } to { transform:translateX(100vw) } }
-@keyframes fa-cross-rtl { from { transform:translateX(100vw) } to { transform:translateX(-170px) } }
-@keyframes fa-bubble { 0% { opacity:0; transform:translate(-50%,6px) scale(.9) } 8%,72% { opacity:1; transform:translate(-50%,0) scale(1) } 86%,100% { opacity:0; transform:translate(-50%,-4px) scale(.96) } }
+@keyframes fa-cross-ltr { from { transform:translateX(12px) } to { transform:translateX(calc(100vw - var(--fa-bot-w,150px) - 12px)) } }
+@keyframes fa-cross-rtl { from { transform:translateX(calc(100vw - var(--fa-bot-w,150px) - 12px)) } to { transform:translateX(12px) } }
+@keyframes fa-bubble-a { 0% { opacity:0; transform:translate(-50%,6px) scale(.9) } 8%,72% { opacity:1; transform:translate(-50%,0) scale(1) } 86%,100% { opacity:0; transform:translate(-50%,-4px) scale(.96) } }
+@keyframes fa-bubble-b { 0% { opacity:0; transform:translate(-50%,6px) scale(.9) } 8%,72% { opacity:1; transform:translate(-50%,0) scale(1) } 86%,100% { opacity:0; transform:translate(-50%,-4px) scale(.96) } }
+@keyframes fa-appear-a { 0% { opacity:0; transform:scale(.2) } 100% { opacity:1; transform:scale(1) } }
+@keyframes fa-appear-b { 0% { opacity:0; transform:scale(.2) } 100% { opacity:1; transform:scale(1) } }
+@keyframes fa-vanish { 0% { opacity:1; transform:scale(1) } 100% { opacity:0; transform:scale(.15) translateY(10px) } }
+@keyframes fa-smoke { 0% { opacity:0; transform:translate(0,0) scale(.3) } 25% { opacity:.95 } 100% { opacity:0; transform:translate(var(--dx,0),var(--dy,-30px)) scale(1.6) } }
 @keyframes fa-dot { 0%,80%,100% { opacity:.25 } 40% { opacity:1 } }
 @keyframes fa-pulse { 0%,100% { box-shadow:0 0 0 0 rgba(47,184,148,.42) } 50% { box-shadow:0 0 0 7px rgba(47,184,148,0) } }
 .fa-shell { position:fixed;right:28px;bottom:94px;z-index:1000;font-family:Inter,system-ui,sans-serif;display:flex;flex-direction:column;align-items:flex-end;gap:14px;max-width:calc(100vw - 56px);pointer-events:none }
@@ -29,21 +34,36 @@
 .fa-shell.fa-wide .fa-panel { width:min(1100px,calc(100vw - 56px));height:calc(100vh - 196px) }
 .fa-shell.fa-wide .fa-message { max-width:72% }
 .fa-message { animation:fa-in .3s cubic-bezier(.2,.8,.2,1) both }
+.fa-status { margin-left:8px;color:#8FA3A8;font-size:13px;font-style:italic;animation:fa-fade .25s ease both }
+.fa-status:empty { display:none }
 .fa-expand { background:rgba(255,255,255,.06);border:1px solid rgba(238,244,244,.28);color:#EEF4F4;width:36px;height:36px;border-radius:50%;font-size:17px;line-height:1;cursor:pointer;flex-shrink:0;transition:background .18s ease,transform .18s ease }
 .fa-expand:hover { background:rgba(47,184,148,.22);color:#FFFFFF;transform:scale(1.08) }
-.fa-bot { position:fixed;left:0;bottom:76px;z-index:940;width:150px;height:86px;margin:0;padding:0;border:0;background:none;cursor:pointer;will-change:transform;-webkit-tap-highlight-color:transparent }
+.fa-bot { --fa-bot-w:150px;--fa-bot-h:86px;position:fixed;left:0;bottom:var(--fa-bot-bottom,76px);z-index:940;width:var(--fa-bot-w);height:var(--fa-bot-h);margin:0;padding:0;border:0;background:none;cursor:pointer;will-change:transform;-webkit-tap-highlight-color:transparent;transition:bottom .3s cubic-bezier(.2,.8,.2,1) }
 .fa-bot.fa-bot-ltr { animation:fa-cross-ltr var(--fa-lap,28s) linear both }
 .fa-bot.fa-bot-rtl { animation:fa-cross-rtl var(--fa-lap,28s) linear both }
 .fa-bot.fa-bot-walk { --fa-lap:34s }.fa-bot.fa-bot-surf { --fa-lap:20s }.fa-bot.fa-bot-drive { --fa-lap:15s }.fa-bot.fa-bot-fly { --fa-lap:17s }
 .fa-bot:hover,.fa-bot:focus-visible { animation-play-state:paused }
 .fa-bot:focus-visible { outline:3px solid #8FE0C8;outline-offset:4px;border-radius:14px }
-.fa-bot-img { display:block;width:150px;height:86px;object-fit:contain;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45)) }
-.fa-bot.fa-bot-rtl .fa-bot-img { transform:scaleX(-1) }
-.fa-bot-bubble { position:absolute;left:50%;bottom:calc(100% - 4px);transform:translate(-50%,0);white-space:nowrap;padding:8px 13px;border-radius:999px;background:#0C1419;border:1px solid rgba(47,184,148,.55);color:#EEF4F4;font:700 13px Sora,Inter,sans-serif;letter-spacing:.01em;box-shadow:0 10px 24px rgba(0,0,0,.45);opacity:0;animation:fa-bubble 7s ease-out .3s both;pointer-events:none }
+.fa-bot-img { display:block;width:var(--fa-bot-w);height:var(--fa-bot-h);object-fit:contain;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45));transform-origin:50% 90% }
+.fa-bot-figure { display:block;width:var(--fa-bot-w);height:var(--fa-bot-h) }
+.fa-bot.fa-bot-rtl .fa-bot-figure { transform:scaleX(-1) }
+.fa-bot.fa-lap-a .fa-bot-img { animation:fa-appear-a .55s cubic-bezier(.2,1.4,.4,1) both }
+.fa-bot.fa-lap-b .fa-bot-img { animation:fa-appear-b .55s cubic-bezier(.2,1.4,.4,1) both }
+.fa-bot.fa-poof .fa-bot-img { animation:fa-vanish .4s ease-in forwards }
+.fa-bot-smoke { position:absolute;inset:0;pointer-events:none }
+.fa-bot-smoke i { position:absolute;left:50%;top:55%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#EEF4F4,#9FB3B0 60%,rgba(159,179,176,0) 72%);opacity:0 }
+.fa-bot.fa-poof .fa-bot-smoke i { animation:fa-smoke .9s ease-out both }
+.fa-bot.fa-poof .fa-bot-smoke i:nth-child(1) { --dx:-34px;--dy:-22px }.fa-bot.fa-poof .fa-bot-smoke i:nth-child(2) { --dx:30px;--dy:-26px;animation-delay:.05s }.fa-bot.fa-poof .fa-bot-smoke i:nth-child(3) { --dx:-18px;--dy:16px;animation-delay:.1s }.fa-bot.fa-poof .fa-bot-smoke i:nth-child(4) { --dx:24px;--dy:14px;animation-delay:.08s }.fa-bot.fa-poof .fa-bot-smoke i:nth-child(5) { --dx:0;--dy:-36px;animation-delay:.12s;width:34px;height:34px;margin:-17px 0 0 -17px }.fa-bot.fa-poof .fa-bot-smoke i:nth-child(6) { --dx:-6px;--dy:4px;animation-delay:.02s;width:40px;height:40px;margin:-20px 0 0 -20px }
+.fa-bot-bubble { position:absolute;left:50%;bottom:calc(100% - 4px);transform:translate(-50%,0);white-space:nowrap;padding:8px 13px;border-radius:999px;background:#0C1419;border:1px solid rgba(47,184,148,.55);color:#EEF4F4;font:700 13px Sora,Inter,sans-serif;letter-spacing:.01em;box-shadow:0 10px 24px rgba(0,0,0,.45);opacity:0;pointer-events:none }
+.fa-bot.fa-lap-a .fa-bot-bubble { animation:fa-bubble-a 7s ease-out .5s both }
+.fa-bot.fa-lap-b .fa-bot-bubble { animation:fa-bubble-b 7s ease-out .5s both }
+.fa-bot.fa-poof .fa-bot-bubble { animation:none;opacity:0 }
 .fa-bot-bubble::after { content:'';position:absolute;left:50%;top:100%;width:10px;height:10px;margin-left:-5px;margin-top:-5px;background:#0C1419;border-right:1px solid rgba(47,184,148,.55);border-bottom:1px solid rgba(47,184,148,.55);transform:rotate(45deg) }
 .fa-bot-hint { position:absolute;left:50%;bottom:calc(100% - 4px);transform:translate(-50%,0);white-space:nowrap;padding:8px 13px;border-radius:999px;background:#2FB894;color:#080E13;font:800 13px Sora,Inter,sans-serif;box-shadow:0 10px 24px rgba(0,0,0,.45);opacity:0;transition:opacity .18s ease;pointer-events:none }
 .fa-bot:hover .fa-bot-hint,.fa-bot:focus-visible .fa-bot-hint { opacity:1 }
 .fa-bot:hover .fa-bot-bubble,.fa-bot:focus-visible .fa-bot-bubble { animation:none;opacity:0 }
+.fa-shell.fa-nolauncher .fa-panel { height:var(--fa-panel-height,min(780px,calc(100vh - 110px))) }
+.fa-shell.fa-nolauncher.fa-wide .fa-panel { height:calc(100vh - 110px) }
 .fa-shell.fa-left .fa-panel { transform-origin:bottom left }
 .fa-panel::before { content:'';position:absolute;z-index:2;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,#2FB894,#8FE0C8,#F2CE7B,#2FB894,#8FE0C8);background-size:200% 100%;animation:fa-sheen 3.2s linear infinite }
 .fa-head { background:linear-gradient(135deg,#080E13 0%,#12281F 100%);padding:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0 }
@@ -101,8 +121,9 @@
   .fa-panel { width:calc(100vw - 20px);height:var(--fa-panel-height,min(720px,calc(100vh - 172px)));border-radius:19px }
   .fa-shell.fa-wide .fa-panel { width:calc(100vw - 20px);height:calc(100vh - 172px) }
   .fa-expand { display:none }
-  .fa-bot { bottom:78px;width:104px;height:60px }
-  .fa-bot-img { width:104px;height:60px }
+  .fa-bot { --fa-bot-w:104px;--fa-bot-h:60px;bottom:var(--fa-bot-bottom,78px) }
+  .fa-shell.fa-nolauncher .fa-panel { height:var(--fa-panel-height,min(720px,calc(100vh - 104px))) }
+  .fa-shell.fa-nolauncher.fa-wide .fa-panel { height:calc(100vh - 104px) }
   .fa-bot-bubble,.fa-bot-hint { font-size:12px;padding:6px 10px }
   .fa-launcher { min-height:58px;padding:5px 13px 5px 6px }
   .fa-launch-portrait { width:46px;height:46px;flex-basis:46px }
@@ -158,10 +179,11 @@
           <div class="fa-message" style="align-self:{{ m.align }};background:{{ m.bg }};color:{{ m.fg }};border:1px solid {{ m.border }}">{{ m.text }}</div>
         </sc-for>
         <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}">
-          <div aria-label="Assistant is typing" style="align-self:flex-start;display:flex;gap:5px;padding:14px">
+          <div aria-label="Assistant is typing" style="align-self:flex-start;display:flex;align-items:center;gap:5px;padding:14px">
             <span style="width:7px;height:7px;border-radius:50%;background:#2FB894;animation:fa-dot 1.2s infinite"></span>
             <span style="width:7px;height:7px;border-radius:50%;background:#2FB894;animation:fa-dot 1.2s .18s infinite"></span>
             <span style="width:7px;height:7px;border-radius:50%;background:#2FB894;animation:fa-dot 1.2s .36s infinite"></span>
+            <span class="fa-status" aria-live="polite">{{ statusText }}</span>
           </div>
         </sc-if>
       </div>
@@ -202,17 +224,20 @@
     </section>
   </sc-if>
 
-  <button class="fa-launcher" data-assistant-launcher="1" type="button" onClick="{{ toggle }}" aria-expanded="{{ openStr }}" aria-label="{{ launcherLabel }}" style-focus="outline:3px solid #8FE0C8;outline-offset:3px">
-    <span class="fa-launch-portrait" aria-hidden="true"><img class="fa-launch-mark" src="/logo-mark.png" alt="" width="327" height="322" loading="lazy" decoding="async"><span class="fa-launch-status"></span></span>
-    <span class="fa-launch-copy"><strong>{{ btnLabel }}</strong><small>Voice + text</small></span>
-  </button>
+  <sc-if value="{{ showLauncher }}" hint-placeholder-val="{{ true }}">
+    <button class="fa-launcher" data-assistant-launcher="1" type="button" onClick="{{ toggle }}" aria-expanded="{{ openStr }}" aria-label="{{ launcherLabel }}" style-focus="outline:3px solid #8FE0C8;outline-offset:3px">
+      <span class="fa-launch-portrait" aria-hidden="true"><img class="fa-launch-mark" src="/logo-mark.png" alt="" width="327" height="322" loading="lazy" decoding="async"><span class="fa-launch-status"></span></span>
+      <span class="fa-launch-copy"><strong>{{ btnLabel }}</strong><small>Voice + text</small></span>
+    </button>
+  </sc-if>
 </div>
 
 <sc-if value="{{ botVisible }}" hint-placeholder-val="{{ false }}">
-  <button class="fa-bot {{ botClass }}" data-assistant-bot="1" type="button" onClick="{{ botClick }}" aria-label="Open the Felican AI assistant" title="Chat with Felican AI">
+  <button class="fa-bot {{ botClass }}" data-assistant-bot="1" type="button" onClick="{{ botClick }}" aria-label="Open the Felican AI assistant" aria-expanded="{{ openStr }}" title="Chat with Felican AI">
     <span class="fa-bot-bubble" aria-hidden="true">{{ botSay }}</span>
     <span class="fa-bot-hint" aria-hidden="true">Click to chat with me</span>
-    <img class="fa-bot-img" src="{{ botSrc }}" alt="" width="140" height="80" decoding="async">
+    <span class="fa-bot-figure" aria-hidden="true"><img class="fa-bot-img" src="{{ botSrc }}" alt="" width="140" height="80" decoding="async"></span>
+    <span class="fa-bot-smoke" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
   </button>
 </sc-if>
 
@@ -275,9 +300,11 @@ const BOT_LINES = [
   'Ask me what it costs',
   'I can book you a call',
 ];
-const BOT_FIRST_DELAY = 5000;
-const BOT_REST = 18000;
-const BOT_REST_AFTER_OPEN = 60000;
+const BOT_FIRST_DELAY = 1200;
+const BOT_POOF_MS = 950;
+// The old pill launcher is kept as the fallback: it shows when the mascot cannot run
+// (reduced motion, an SVG that failed to load) or when this flag is flipped back on.
+const SHOW_LAUNCHER_ALWAYS = false;
 const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // What the visitor is reading, so the greeting, the starter chips and the server-side
@@ -337,8 +364,8 @@ class Component extends DCLogic {
     side: assistantPlacement.side, sidePinned: assistantPlacement.sidePinned,
     handoff: false, hName: '', hEmail: '', hMsg: '', hBusy: false,
     voiceSupported: false, voiceActive: false, voiceConnecting: false, speaking: false, userSpeaking: false, micDetected: false, liveTranscript: '', voiceError: '',
-    wide: false,
-    botVisible: false, botMode: 0, botDir: 'ltr', botSay: BOT_LINES[0], botLaps: 0, everOpened: false,
+    wide: false, statusText: '',
+    botVisible: false, botMode: 0, botDir: 'ltr', botPhase: 'ride', botSay: BOT_LINES[0], botLaps: 0, botFailed: false,
     messages: [{ role: 'assistant', text: greetingFor(currentPage) }]
   };
   scrollRef = React.createRef();
@@ -371,70 +398,74 @@ class Component extends DCLogic {
   }
 
   // ---- The mascot -------------------------------------------------------
-  // A lap is one crossing of the viewport just above the credentials bar. The CSS
-  // animation does the moving; this only decides when a lap starts, which ride it
-  // uses, and hides the mascot between laps. It never runs while the panel is
-  // open, while the tab is hidden, or for visitors who asked for reduced motion.
+  // The mascot is on screen the whole time the page is, like the credentials bar
+  // under it. It rides from one edge to the other (CSS does the moving), poofs into
+  // a cloud of smoke at the edge, and respawns there as the next character heading
+  // back. This only decides when a ride ends and what comes next; it never runs for
+  // visitors who asked for reduced motion, and it hides while the panel is open so
+  // the chat has the screen.
   startBot() {
     if (reducedMotion || this._botStarted) return;
     this._botStarted = true;
     this._botLapEnd = event => {
-      if (!event || !event.target || !event.target.classList || !event.target.classList.contains('fa-bot')) return;
-      if (!/^fa-cross-/.test(event.animationName || '')) return;
-      this.finishLap();
+      const target = event && event.target;
+      if (!target || !target.classList || !target.classList.contains('fa-bot')) return;
+      // Only the crossing that is actually running ends the ride; a late event from
+      // the previous direction (background tabs deliver them in batches) is ignored.
+      if (event.animationName !== 'fa-cross-' + this.state.botDir) return;
+      this.poof();
     };
     document.addEventListener('animationend', this._botLapEnd);
-    this._botVisibility = () => {
-      if (document.hidden) { this.setState({ botVisible: false }); this.clearBotTimer(); }
-      else if (!this.state.open) this.scheduleLap(BOT_REST / 2);
+    // A mascot that cannot load must not leave the visitor with no way in: the pill
+    // launcher comes back in its place.
+    this._botImgError = event => {
+      const target = event && event.target;
+      if (target && target.classList && target.classList.contains('fa-bot-img')) this.setState({ botFailed: true, botVisible: false });
     };
-    document.addEventListener('visibilitychange', this._botVisibility);
-    this.scheduleLap(BOT_FIRST_DELAY);
+    document.addEventListener('error', this._botImgError, true);
+    this.scheduleRide(BOT_FIRST_DELAY);
   }
   stopBot() {
     this.clearBotTimer();
     if (this._botLapEnd) document.removeEventListener('animationend', this._botLapEnd);
-    if (this._botVisibility) document.removeEventListener('visibilitychange', this._botVisibility);
+    if (this._botImgError) document.removeEventListener('error', this._botImgError, true);
     this._botStarted = false;
   }
   clearBotTimer() {
     if (this._botTimer) clearTimeout(this._botTimer);
     this._botTimer = null;
   }
-  scheduleLap(delay) {
+  scheduleRide(delay) {
     this.clearBotTimer();
-    this._botTimer = setTimeout(() => this.beginLap(), delay);
+    this._botTimer = setTimeout(() => this.ride(), delay);
   }
-  beginLap() {
+  // Start the next ride from the edge the last one reached: next character, the
+  // other direction, a fresh line in the bubble.
+  ride() {
     this._botTimer = null;
-    if (this.state.open || document.hidden || this.state.botVisible) return;
+    if (this.state.open || this.state.botFailed) return;
     this.setState(state => ({
       botVisible: true,
-      botMode: (state.botMode + 1) % BOT_MODES.length,
-      botDir: state.botDir === 'ltr' ? 'rtl' : 'ltr',
+      botPhase: 'ride',
+      botMode: state.botLaps === 0 ? state.botMode : (state.botMode + 1) % BOT_MODES.length,
+      botDir: state.botLaps === 0 ? state.botDir : (state.botDir === 'ltr' ? 'rtl' : 'ltr'),
       botSay: BOT_LINES[state.botLaps % BOT_LINES.length],
       botLaps: state.botLaps + 1
     }));
-    // Safety net: if the browser never fires animationend (an ad blocker stripped the
-    // CSS, say), the mascot must not sit at the edge of the screen forever.
-    this._botFallback = setTimeout(() => this.finishLap(), 40000);
   }
-  finishLap() {
-    if (this._botFallback) clearTimeout(this._botFallback);
-    this._botFallback = null;
-    if (!this.state.botVisible) return;
-    this.setState({ botVisible: false });
-    this.scheduleLap(this.state.everOpened ? BOT_REST_AFTER_OPEN : BOT_REST);
+  poof() {
+    if (!this.state.botVisible || this.state.botPhase === 'poof') return;
+    this.setState({ botPhase: 'poof' });
+    this.scheduleRide(BOT_POOF_MS);
   }
   openPanel() {
     this.clearBotTimer();
-    if (this._botFallback) clearTimeout(this._botFallback);
-    this.setState({ open: true, botVisible: false, everOpened: true });
+    this.setState({ open: true, botVisible: false, botPhase: 'ride' });
   }
   closePanel() {
     this.stopVoice();
     this.setState({ open: false });
-    if (this._botStarted) this.scheduleLap(BOT_REST_AFTER_OPEN / 2);
+    if (this._botStarted) this.scheduleRide(350);
   }
   moveSide() {
     this.setState(state => {
@@ -725,7 +756,7 @@ class Component extends DCLogic {
     // once after a long silence.
     this.setState(s => ({
       messages: [...s.messages, { role: 'user', text: q }, { role: 'assistant', text: '' }],
-      draft: '', busy: true, followups: []
+      draft: '', busy: true, followups: [], statusText: ''
     }));
 
     const appendToLast = text => this.setState(s => {
@@ -771,7 +802,8 @@ class Component extends DCLogic {
             if (!data) continue;
             let parsed;
             try { parsed = JSON.parse(data); } catch (err) { continue; }
-            if (event === 'delta' && parsed.text) { reply += parsed.text; appendToLast(parsed.text); }
+            if (event === 'delta' && parsed.text) { reply += parsed.text; appendToLast(parsed.text); if (this.state.statusText) this.setState({ statusText: '' }); }
+            else if (event === 'status' && parsed.text) { this.setState({ statusText: String(parsed.text).slice(0, 120) }); }
             else if (event === 'done') { reply = parsed.reply || reply; done = true; }
             else if (event === 'failed') { throw new Error(parsed.error || 'Assistant request failed'); }
           }
@@ -808,7 +840,7 @@ class Component extends DCLogic {
       if (last >= 0 && messages[last].role === 'assistant') {
         messages[last] = { ...messages[last], text: finalReply };
       }
-      return { messages, busy: false, followups: followups.slice(0, 3) };
+      return { messages, busy: false, followups: followups.slice(0, 3), statusText: '' };
     });
   }
   renderVals() {
@@ -817,15 +849,19 @@ class Component extends DCLogic {
       open: this.state.open,
       openStr: this.state.open ? 'true' : 'false',
       side: this.state.side,
-      sideClass: (this.state.side === 'left' ? 'fa-left' : 'fa-right') + (this.state.wide ? ' fa-wide' : ''),
+      sideClass: (this.state.side === 'left' ? 'fa-left' : 'fa-right') + (this.state.wide ? ' fa-wide' : '')
+        + (SHOW_LAUNCHER_ALWAYS || reducedMotion || this.state.botFailed ? '' : ' fa-nolauncher'),
       moveLabel: this.state.side === 'left' ? 'Move assistant to the right' : 'Move assistant to the left',
       moveSide: () => this.moveSide(),
+      statusText: this.state.statusText,
       wideStr: this.state.wide ? 'true' : 'false',
       wideLabel: this.state.wide ? 'Shrink the assistant' : 'Expand the assistant',
       wideGlyph: this.state.wide ? '\u2921' : '\u2922',
       toggleWide: () => this.setState(s => ({ wide: !s.wide })),
       botVisible: this.state.botVisible,
-      botClass: 'fa-bot-' + BOT_MODES[this.state.botMode] + ' fa-bot-' + this.state.botDir,
+      botClass: 'fa-bot-' + BOT_MODES[this.state.botMode] + ' fa-bot-' + this.state.botDir
+        + (this.state.botLaps % 2 ? ' fa-lap-a' : ' fa-lap-b') + (this.state.botPhase === 'poof' ? ' fa-poof' : ''),
+      showLauncher: SHOW_LAUNCHER_ALWAYS || reducedMotion || this.state.botFailed,
       botSrc: '/bot/' + BOT_MODES[this.state.botMode] + '.svg?v=' + BOT_VERSION,
       botSay: this.state.botSay,
       botClick: () => this.openPanel(),

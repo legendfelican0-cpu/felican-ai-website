@@ -508,6 +508,9 @@ function syncAssistantOffset(cart, bar){
   var credentialHeight = window.innerWidth <= 640 ? 78 : 76;
   var bottom = hasCart ? credentialHeight + bar.offsetHeight + 18 : 0;
   assistantShell.style.bottom = hasCart ? bottom + 'px' : '';
+  // The mascot rides along the top of whatever bar is lowest: the cart bar when it
+  // is showing, otherwise the credentials bar.
+  document.documentElement.style.setProperty('--fa-bot-bottom', hasCart ? (credentialHeight + bar.offsetHeight) + 'px' : '');
   var assistantLauncher = assistantShell.querySelector('.fa-launcher');
   var launcherHeight = assistantLauncher ? assistantLauncher.offsetHeight : (window.innerWidth <= 640 ? 58 : 72);
   var viewportHeight = window.visualViewport && window.visualViewport.height
