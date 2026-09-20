@@ -1,6 +1,6 @@
-# Session handoff — 2026-09-19
+# Session handoff — 2026-09-20
 
-> Last updated: 2026-09-19 by Claude Code (Opus 5, 1M context) · Branch: `feat/animated-assistant` · Commit: see `git log -1`
+> Last updated: 2026-09-20 by Claude Code (Opus 5, 1M context) · Branch: `feat/animated-assistant` · Commit: see `git log -1`
 > Next session: read this file FIRST, then `git log --oneline -10`. Do not re-scan the codebase.
 
 > **Note on location.** The `/handoff` convention writes to `HANDOFF.md` at the repo
@@ -10,7 +10,42 @@
 
 ---
 
-## 0. This session (2026-09-19) — assistant overhaul, on DEV, awaiting owner review
+## 0a. 2026-09-20 — owner's five fixes, on DEV (`8af4b6a`)
+
+1–4 (mascot): **never leaves the screen.** Rides edge to edge (`translateX(12px)` ↔
+`calc(100vw − 162px)`), `fa-poof` at the edge (smoke `<i>` puffs + `fa-vanish`), then
+`ride()` respawns the next character at that edge heading back; no rest, no off-screen
+time. Hides only while the panel is open; `closePanel()` brings it back in 350 ms.
+Rides on top of the Starter Pack cart bar via `--fa-bot-bottom` (set in
+`syncAssistantOffset`). **The pill launcher is hidden** (`SHOW_LAUNCHER_ALWAYS = false`)
+and returns on its own for reduced-motion or if a mascot SVG errors (`botFailed`);
+`.fa-nolauncher` on the shell re-budgets panel height (`100vh − 110px`). Lap-end
+guard: only `animationend` for `fa-cross-<current dir>` counts (background tabs
+deliver stale ones late).
+
+5 (from Fiona, `~/Dev/Projects/Wellington/wellingtonwire/api/{agent,chat_guard,output_guard}.py`):
+- **Agentic retrieval**: `ASSISTANT_TOOLS` (`search_site`, `read_page`) in
+  `server/assistant-retrieval.js`; the loop is `streamWithConfiguredProvider` in
+  `server/app.js` (`streamAnthropicRound` decodes tool_use blocks; max 3 rounds, last
+  round without tools). BM25 pre-injection stays as the fast path. **Verified through
+  Asher on DEV**: two parallel `read_page` calls in one round, 12 s total. If a provider
+  400s on `tools`, it retries without and sets `providerRejectsTools` for the process.
+  Kill switch: `ASSISTANT_TOOLS=off`.
+- **Status frames**: SSE `event: status` (narration held ≤100 chars becomes a status,
+  plus each tool's label) → `.fa-status` under the typing dots.
+- **Topic gate** (`server/assistant-guard.js` `offTopicGate`): general-purpose requests
+  with no on-topic term are refused with no model call (logged `chat.offtopic`, 1 ms);
+  follow-ups inside a conversation always pass.
+- **Confidentiality**: `BACKEND_CONFIDENTIALITY` in the prompt + `redactInternals()` in
+  `sanitizeAssistantReply`. Vocabulary is deliberately narrow — the site legitimately
+  says Claude/GPT/OpenAI/Anthropic (Ora, CrossCheck, certifications); do not widen it
+  to vendor names.
+- Tests 252/252 (`server/assistant-agent.test.js` runs the loop against a fake SSE
+  provider; `assistant-guard.test.js`).
+
+Not done / for the owner: mobile layout still unverified in a real phone browser.
+
+## 0. Previous session (2026-09-19) — assistant overhaul, on DEV
 
 Branch `feat/animated-assistant` (pushed; based on `sms-terms` = `main` + the SMS
 terms page, which is what DEV was already running). **Deployed to felican.dev only.**
