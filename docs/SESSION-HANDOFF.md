@@ -10,7 +10,12 @@
 
 ---
 
-## 0a. 2026-09-20 — owner's five fixes, on DEV (`8af4b6a`)
+## 0a. 2026-09-20 — owner's five fixes — **IN PRODUCTION** (`a2e0874`, release `20260920T212347Z`)
+
+Promoted 2026-09-20T21:24Z via `deploy to-prod felicanai`, independently verified (health, ready,
+new component served, /sms/ 200, robots Allow, chat answers Growth plan, all six co-hosted
+routes 200). Rollback: `python3 ~/felican-infra/deploy/deploy rollback felicanai` →
+`felicanai:rollback-20260920-212347`. `main` = `feat/animated-assistant` = `sms-terms` + this work.
 
 1–4 (mascot): **never leaves the screen.** Rides edge to edge (`translateX(12px)` ↔
 `calc(100vw − 162px)`), `fa-poof` at the edge (smoke `<i>` puffs + `fa-vanish`), then
@@ -43,7 +48,7 @@ deliver stale ones late).
 - Tests 252/252 (`server/assistant-agent.test.js` runs the loop against a fake SSE
   provider; `assistant-guard.test.js`).
 
-Not done / for the owner: mobile layout still unverified in a real phone browser.
+Not done / for the owner: mobile layout still unverified in a real phone browser (now live, so check on a phone).
 
 ## 0. Previous session (2026-09-19) — assistant overhaul, on DEV
 
@@ -79,9 +84,7 @@ What changed, all verified on felican.dev by direct curl and in Chrome:
   because the block form is unverified there. Regenerate with `npm run build:assistant`.
 - Tests: **245/245** (`npm test`), 3 new files/blocks. TruffleHog 0/0.
 
-**To promote:** owner approves on DEV → merge `feat/animated-assistant` into `main`
-(and `sms-terms` if that is still separate) → `python3 ~/felican-infra/deploy/deploy
-to-prod felicanai`. Prod still runs `ded694e`.
+(Promoted 2026-09-20 — see 0a.)
 
 **Chrome-testing gotcha on this Linux box:** the Claude-in-Chrome browser runs on
 another machine, so a local server must be reached via this box's Tailscale IP
@@ -220,8 +223,8 @@ bash scripts/preflight-prod.sh              # read-only prod readiness check
 
 | | |
 |---|---|
-| PROD | `https://felican.ai` — commit `ded694e`, release `felicanai-site:20260912T023240Z` (promoted 2026-09-12T02:32:40Z) |
-| PROD rollback | `python3 ~/felican-infra/deploy/deploy rollback felicanai` → `felicanai:rollback-20260912-023240` |
+| PROD | `https://felican.ai` — commit `a2e0874`, release `felicanai-site:20260920T212347Z` (promoted 2026-09-20T21:24Z) |
+| PROD rollback | `python3 ~/felican-infra/deploy/deploy rollback felicanai` → `felicanai:rollback-20260920-212347` |
 | DEV | `https://felican.dev` — same commit; `robots.txt` stays `Disallow: /` |
 | Deploy path | **always** `python3 ~/felican-infra/deploy/deploy to-prod felicanai`. `scripts/deploy-prod.sh` refuses without `FELICAN_CANONICAL_DEPLOY=1` and gates on DEV running the exact local commit. DEV first, always. |
 | Prod env file | `/opt/felicanai-site/config/ai.env` — the deploy does **not** carry Resend/Stripe vars across, they live there permanently |
