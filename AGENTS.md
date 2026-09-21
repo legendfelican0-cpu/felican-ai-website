@@ -12,6 +12,16 @@
 
 ## Recent changes
 
+- 2026-09-21: **Free 24-hour trial request on `/starter-pack/`.** A floating `#openTrial`
+  badge opens `#trialModal`, a form with the purchase-equivalent details (name, work email,
+  phone, company, website, optional industry, product checkboxes keyed by the checkout
+  catalog ids, notes, consent). `POST /api/trial` (`normalizeTrialRequest`, `sendTrialEmail`
+  in `server/app.js`) validates server-side, honeypots on `nickname` (`website` is a real
+  field here), shares the contact form's per-IP limits, and emails `CONTACT_TO` through
+  Resend with reply-to set to the visitor. Injectable as `sendTrial` on `createAppServer`.
+  Tests in `server/app.test.js` and `src/static-redesign.test.js`. On DEV as release
+  `20260921T191519Z` (commit `487acea`); not promoted to production.
+
 - 2026-09-11: Every product page lists $999 with `Product`/`Offer` markup generated from
   `server/checkout.js`; services renamed to the owner's four customer-facing names
   (10 services, two training pages merged) and `/services/` gained a Schedule a call
