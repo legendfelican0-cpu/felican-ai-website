@@ -243,6 +243,23 @@ describe('Claude Design static website export', () => {
     expect(products).toContain('/product-felican-auto.png');
   });
 
+  it('offers a free 24-hour trial badge that opens a purchase-equivalent request form', () => {
+    const starterPack = read('public/starter-pack/index.html');
+    expect(starterPack).toContain('class="trial-badge" id="openTrial"');
+    expect(starterPack).toContain('Free 24-Hour Trial');
+    expect(starterPack).toContain('id="trialModal"');
+    for (const field of ['name', 'email', 'phone', 'company', 'website']) {
+      expect(starterPack).toContain(`name="${field}"`);
+    }
+    for (const id of ['private-ai', 'assistant', 'receptionist', 'pack']) {
+      expect(starterPack).toContain(`name="products" value="${id}"`);
+    }
+    expect(starterPack).toContain("fetch('/api/trial'");
+    expect(starterPack).toContain('One of our certified AI professionals will be contacting you shortly with a link to your free 24-hour trial.');
+    // The honeypot is not the website field, which is a real input on this form.
+    expect(starterPack).toContain('name="nickname"');
+  });
+
   it('states the fast setup promise and prices expanded capabilities separately', () => {
     const starterPack = read('public/starter-pack/index.html');
     const thankYou = read('public/thank-you/index.html');

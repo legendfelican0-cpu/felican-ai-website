@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { afterEach, describe, expect, it } from 'vitest';
-import { buildChatSystem, createAppServer, contactIsConfigured, deliverEducationLead, normalizeContact, normalizeMessages, sanitizeAssistantReply, sanitizeText, voiceBundleIntegrity } from './app.js';
+import { buildChatSystem, createAppServer, contactIsConfigured, deliverEducationLead, normalizeContact, normalizeMessages, normalizeTrialRequest, sanitizeAssistantReply, sanitizeText, TRIAL_PRODUCTS, voiceBundleIntegrity } from './app.js';
 import { GENERATOR_HANDOFF_COOKIE, verifyGeneratorHandoffCookie } from './handoff.js';
 
 const servers = [];
@@ -133,6 +133,96 @@ describe('Felican AI contact endpoint', () => {
       const response = await fetch(`${base}/api/contact`, {
         method: 'POST', headers: browserHeaders, body: JSON.stringify(goodBody),
       });
+      codes.push(response.status);
+    }
+    expect(codes.filter(c => c === 200)).toHaveLength(5);
+    expect(codes.filter(c => c === 429)).toHaveLength(2);
+  });
+});
+
+describe('Felican AI free trial endpoint', () => {
+  const RESEND = { RESEND_API_KEY: 'test-resend-key' };
+  const goodBody = {
+    name: 'Dana Reyes', email: 'dana@example.com', phone: '(561) 555-0100', company: 'Reyes HVAC',
+    website: 'reyeshvac.com', industry: 'HVAC', products: ['assistant', 'receptionist'],
+    notes: 'We miss calls after 5pm.', consent: true, nickname: '',
+  };
+
+  it('requires the purchase-equivalent details and at least one product', () => {
+    const empty = normalizeTrialRequest({});
+    expect(empty.errors).toEqual(['name', 'email', 'phone', 'company', 'website', 'products', 'consent']);
+    const ok = normalizeTrialRequest(goodBody);
+    expect(ok.errors).toEqual([]);
+    expect(ok.value).toMatchObject({
+      name: 'Dana Reyes', company: 'Reyes HVAC', website: 'https://reyeshvac.com/', industry: 'HVAC',
+      products: ['assistant', 'receptionist'], source: 'starter-pack-trial',
+    });
+  });
+
+  it('normalises the website, drops unknown products and collapses to the pack', () => {
+    expect(normalizeTrialRequest({ ...goodBody, website: 'http://Example.com/path' }).value.website).toBe('http://example.com/path');
+    expect(normalizeTrialRequest({ ...goodBody, website: 'not a url' }).errors).toEqual(['website']);
+    expect(normalizeTrialRequest({ ...goodBody, website: 'javascript:alert(1)' }).errors).toEqual(['website']);
+    expect(normalizeTrialRequest({ ...goodBody, products: ['bogus', 'assistant'] }).value.products).toEqual(['assistant']);
+    expect(normalizeTrialRequest({ ...goodBody, products: ['bogus'] }).errors).toEqual(['products']);
+    expect(normalizeTrialRequest({ ...goodBody, products: ['pack', 'private-ai'] }).value.products).toEqual(['pack']);
+    expect(normalizeTrialRequest({ ...goodBody, products: 'assistant' }).errors).toEqual(['products']);
+    expect(normalizeTrialRequest({ ...goodBody, consent: 'true' }).errors).toEqual(['consent']);
+    expect(normalizeTrialRequest({ ...goodBody, phone: '12' }).errors).toEqual(['phone']);
+    expect(Object.values(TRIAL_PRODUCTS)).toEqual(['Private AI', 'Chat AI Assistant', 'Voice AI', 'AI Business Starter Pack']);
+  });
+
+  it('delivers a valid request through the configured sender and never the contact sender', async () => {
+    const sent = [];
+    const contact = [];
+    const base = await start(undefined, {
+      env: RESEND,
+      sendTrial: async request => { sent.push(request); },
+      sendContact: async c => { contact.push(c); },
+    });
+    const response = await fetch(`${base}/api/trial`, { method: 'POST', headers: browserHeaders, body: JSON.stringify(goodBody) });
+    expect(response.status).toBe(200);
+    await expect(response.json()).resolves.toEqual({ ok: true });
+    expect(sent).toHaveLength(1);
+    expect(contact).toHaveLength(0);
+    expect(sent[0]).toMatchObject({ email: 'dana@example.com', website: 'https://reyeshvac.com/', products: ['assistant', 'receptionist'] });
+    expect(sent[0]).not.toHaveProperty('nickname');
+  });
+
+  it('rejects bad input and unsupported methods without sending', async () => {
+    const sent = [];
+    const base = await start(undefined, { env: RESEND, sendTrial: async r => { sent.push(r); } });
+    const bad = await fetch(`${base}/api/trial`, { method: 'POST', headers: browserHeaders, body: JSON.stringify({ ...goodBody, email: 'x', products: [] }) });
+    expect(bad.status).toBe(400);
+    await expect(bad.json()).resolves.toMatchObject({ fields: ['email', 'products'] });
+    const wrongMethod = await fetch(`${base}/api/trial`, { method: 'GET' });
+    expect(wrongMethod.status).toBe(405);
+    expect(sent).toHaveLength(0);
+  });
+
+  it('silently swallows honeypot submissions', async () => {
+    const sent = [];
+    const base = await start(undefined, { env: RESEND, sendTrial: async r => { sent.push(r); } });
+    const response = await fetch(`${base}/api/trial`, { method: 'POST', headers: browserHeaders, body: JSON.stringify({ ...goodBody, nickname: 'bot' }) });
+    expect(response.status).toBe(200);
+    expect(sent).toHaveLength(0);
+  });
+
+  it('returns 503 when unconfigured and 502 when the provider fails', async () => {
+    const unconfigured = await start(undefined, { env: {}, sendTrial: async () => { throw new Error('should not be called'); } });
+    const off = await fetch(`${unconfigured}/api/trial`, { method: 'POST', headers: browserHeaders, body: JSON.stringify(goodBody) });
+    expect(off.status).toBe(503);
+    const failing = await start(undefined, { env: RESEND, sendTrial: async () => { throw new Error('Resend returned 422'); } });
+    const response = await fetch(`${failing}/api/trial`, { method: 'POST', headers: browserHeaders, body: JSON.stringify(goodBody) });
+    expect(response.status).toBe(502);
+    await expect(response.json()).resolves.toMatchObject({ error: expect.stringContaining('ai@felican.ai') });
+  });
+
+  it('rate limits repeated submissions from one address', async () => {
+    const base = await start(undefined, { env: RESEND, sendTrial: async () => {} });
+    const codes = [];
+    for (let i = 0; i < 7; i += 1) {
+      const response = await fetch(`${base}/api/trial`, { method: 'POST', headers: browserHeaders, body: JSON.stringify(goodBody) });
       codes.push(response.status);
     }
     expect(codes.filter(c => c === 200)).toHaveLength(5);

@@ -334,6 +334,65 @@ export function normalizeContact(input = {}) {
   };
 }
 
+// Free 24-hour trial requests from the Starter Pack page. The form asks for the same
+// details a buyer gives at purchase and setup — who they are, the business, and the
+// website the AI will be built from — so the team can generate the trial by hand.
+export const TRIAL_PRODUCTS = Object.freeze({
+  'private-ai': 'Private AI',
+  assistant: 'Chat AI Assistant',
+  receptionist: 'Voice AI',
+  pack: 'AI Business Starter Pack',
+});
+
+const PHONE_RE = /^\+?[\d\s().-]{7,25}$/;
+
+function normalizeWebsite(value) {
+  const raw = sanitizeText(value, 200).replace(/\s+/g, '');
+  if (!raw) return '';
+  const candidate = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  try {
+    const url = new URL(candidate);
+    if (!/^https?:$/.test(url.protocol) || !url.hostname.includes('.')) return '';
+    return url.href;
+  } catch {
+    return '';
+  }
+}
+
+export function normalizeTrialRequest(input = {}) {
+  const name = sanitizeText(input.name, 120);
+  const email = sanitizeText(input.email, 160);
+  const phone = sanitizeText(input.phone, 40);
+  const company = sanitizeText(input.company, 160);
+  const website = normalizeWebsite(input.website);
+  const products = Array.isArray(input.products)
+    ? [...new Set(input.products.map(id => sanitizeText(id, 40)).filter(id => TRIAL_PRODUCTS[id]))]
+    : [];
+  const errors = [];
+  if (!name) errors.push('name');
+  if (!email || !EMAIL_RE.test(email)) errors.push('email');
+  if (!phone || !PHONE_RE.test(phone)) errors.push('phone');
+  if (!company) errors.push('company');
+  if (!website) errors.push('website');
+  if (!products.length) errors.push('products');
+  if (input.consent !== true) errors.push('consent');
+  return {
+    errors,
+    value: {
+      name,
+      email,
+      phone,
+      company,
+      website,
+      // Collapse to the pack when it is chosen, matching how the cart behaves.
+      products: products.includes('pack') ? ['pack'] : products,
+      industry: sanitizeText(input.industry, 120),
+      notes: sanitizeText(input.notes, 2000),
+      source: 'starter-pack-trial',
+    },
+  };
+}
+
 
 function structuredLog(logger, level, event, fields = {}) {
   logger[level]?.(JSON.stringify({ timestamp: new Date().toISOString(), level, event, ...fields }));
@@ -539,6 +598,52 @@ export async function sendContactEmail(contact, env = process.env) {
       headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
       signal: controller.signal,
       body: JSON.stringify({ from, to: [to], reply_to: contact.email, subject, text, html }),
+    });
+    if (!response.ok) {
+      const detail = await response.text().catch(() => '');
+      throw new Error(`Resend returned ${response.status}${detail ? `: ${detail.slice(0, 300)}` : ''}`);
+    }
+    return await response.json().catch(() => ({}));
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function sendTrialEmail(request, env = process.env) {
+  const key = env.RESEND_API_KEY?.trim();
+  if (!key) throw new Error('Trial email is not configured');
+  const to = (env.CONTACT_TO || 'ai@felican.ai').trim();
+  const from = (env.CONTACT_FROM || 'Felican AI Website <website@felican.ai>').trim();
+
+  const productNames = request.products.map(id => TRIAL_PRODUCTS[id]).join(', ');
+  const rows = [
+    ['Name', request.name],
+    ['Email', request.email],
+    ['Phone', request.phone],
+    ['Company', request.company],
+    ['Website', request.website],
+    ['Industry', request.industry],
+    ['Products', productNames],
+    ['Source', request.source],
+  ].filter(([, v]) => v);
+
+  const subject = `Free 24-hour trial request — ${request.company} — ${request.name}`;
+  const intro = 'A visitor asked for a free 24-hour trial from the Starter Pack page. Generate the trial and send them the link.';
+  const text = `${intro}\n\n${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}${request.notes ? `\n\nNotes:\n${request.notes}` : ''}\n`;
+  const html = `<p style="font:15px/1.6 system-ui,sans-serif">${escapeHtml(intro)}</p><table style="font:15px/1.6 system-ui,sans-serif;border-collapse:collapse">${
+    rows.map(([k, v]) => `<tr><td style="padding:3px 14px 3px 0;color:#667"><strong>${escapeHtml(k)}</strong></td><td style="padding:3px 0">${
+      k === 'Website' ? `<a href="${escapeHtml(v)}">${escapeHtml(v)}</a>` : escapeHtml(v)
+    }</td></tr>`).join('')
+  }</table>${request.notes ? `<hr style="border:0;border-top:1px solid #ddd;margin:18px 0"><div style="font:15px/1.65 system-ui,sans-serif;white-space:pre-wrap">${escapeHtml(request.notes)}</div>` : ''}`;
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 15_000);
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({ from, to: [to], reply_to: request.email, subject, text, html }),
     });
     if (!response.ok) {
       const detail = await response.text().catch(() => '');
@@ -862,6 +967,7 @@ export function createAppServer({
   complete = completeWithConfiguredProvider,
   streamReply = streamWithConfiguredProvider,
   sendContact = sendContactEmail,
+  sendTrial = sendTrialEmail,
   deliverLead,
   voiceBundleFetch = fetch,
   voiceBundleIntegrityExpected = COPS_VOICE_BUNDLE_SHA384,
@@ -1212,6 +1318,46 @@ export function createAppServer({
       } catch (error) {
         const status = error?.statusCode || 502;
         structuredLog(logger, 'error', 'contact.failed', {
+          requestId, status, durationMs: Date.now() - startedAt, reason: error?.message || 'unknown error',
+        });
+        return json(res, status, {
+          error: status < 500
+            ? 'Invalid request.'
+            : 'We could not send that just now. Please email ai@felican.ai directly.',
+        });
+      }
+    }
+
+    if (url.pathname === '/api/trial') {
+      if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' }, { Allow: 'POST' });
+      const requestId = randomUUID();
+      const startedAt = Date.now();
+      const ip = requestIp(req);
+      try {
+        const body = await readJson(req);
+        // Honeypot. `website` is a real field on this form, so the trap is `nickname`.
+        if (sanitizeText(body?.nickname, 80)) {
+          structuredLog(logger, 'warn', 'trial.honeypot', { requestId, ip });
+          return json(res, 200, { ok: true });
+        }
+        const { errors, value } = normalizeTrialRequest(body);
+        if (errors.length) return json(res, 400, { error: 'Please check the highlighted fields.', fields: errors });
+        if (!contactIsConfigured(env)) {
+          structuredLog(logger, 'error', 'trial.unconfigured', { requestId });
+          return json(res, 503, { error: 'Trial requests are temporarily unavailable. Please email ai@felican.ai directly.' });
+        }
+        if (!contactHourly(ip) || !contactDaily(ip)) {
+          structuredLog(logger, 'warn', 'trial.rate_limited', { requestId, ip });
+          return json(res, 429, { error: 'Too many requests. Please try again later.' }, { 'Retry-After': '3600' });
+        }
+        await sendTrial(value, env);
+        structuredLog(logger, 'info', 'trial.sent', {
+          requestId, durationMs: Date.now() - startedAt, products: value.products, company: value.company,
+        });
+        return json(res, 200, { ok: true });
+      } catch (error) {
+        const status = error?.statusCode || 502;
+        structuredLog(logger, 'error', 'trial.failed', {
           requestId, status, durationMs: Date.now() - startedAt, reason: error?.message || 'unknown error',
         });
         return json(res, status, {

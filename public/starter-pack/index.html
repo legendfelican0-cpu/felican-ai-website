@@ -49,6 +49,50 @@ html,body{height:auto!important;min-height:100%}#dc-root,#dc-root>.sc-host{heigh
 .demo-close{position:absolute;z-index:2;top:12px;right:12px;width:44px;height:44px;border:1px solid rgba(255,255,255,.52);background:rgba(5,9,12,.9);color:#fff;font:700 25px/1 Inter,sans-serif;cursor:pointer}
 .demo-close:hover,.demo-close:focus-visible{background:var(--brand);border-color:var(--brand);color:var(--bg);outline:none}
 
+/* free trial badge + request modal */
+.trial-badge{position:fixed;z-index:980;top:92px;right:24px;display:inline-flex;align-items:center;gap:12px;padding:12px 16px 12px 14px;background:var(--brand);color:var(--bg);border:0;cursor:pointer;font-family:Sora,sans-serif;text-align:left;box-shadow:0 14px 40px rgba(47,184,148,.38),0 4px 14px rgba(0,0,0,.45);transition:background .2s,transform .2s;animation:trial-pulse 2.8s ease-in-out infinite}
+.trial-badge:hover,.trial-badge:focus-visible{background:var(--brand-hi);transform:translateY(-2px);animation:none;outline:none}
+.trial-badge:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.trial-badge .trial-gift{width:30px;height:30px;flex:none;display:grid;place-items:center;background:rgba(8,14,19,.16);font-size:17px}
+.trial-badge b{display:block;font-size:14px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;line-height:1.1}
+.trial-badge small{display:block;margin-top:3px;font-family:Inter,sans-serif;font-size:12px;font-weight:600;opacity:.85}
+@keyframes trial-pulse{0%,100%{box-shadow:0 14px 40px rgba(47,184,148,.38),0 4px 14px rgba(0,0,0,.45)}50%{box-shadow:0 14px 52px rgba(89,212,180,.62),0 4px 14px rgba(0,0,0,.45)}}
+@media(max-width:640px){.trial-badge{top:auto;bottom:calc(var(--fa-bot-bottom,78px) + 96px);right:12px;padding:10px 13px 10px 11px}.trial-badge small{display:none}.trial-badge b{font-size:12.5px}}
+.trial-modal{position:fixed;z-index:1001;inset:0;display:none;place-items:center;padding:clamp(14px,4vw,48px);background:rgba(2,6,8,.92);backdrop-filter:blur(12px);overflow-y:auto}
+.trial-modal.is-open{display:grid}
+.trial-dialog{position:relative;width:min(640px,100%);max-height:calc(100vh - 28px);overflow-y:auto;background:var(--panel);border:1px solid rgba(89,212,180,.5);box-shadow:0 30px 100px rgba(0,0,0,.72);padding:clamp(24px,4vw,40px)}
+.trial-dialog .kicker{margin-bottom:10px}
+.trial-dialog h2{margin:0;font-family:Sora,sans-serif;font-size:clamp(24px,3vw,32px);font-weight:800;line-height:1.1;letter-spacing:-.03em;text-wrap:balance}
+.trial-dialog p.lede{margin:12px 0 0;color:var(--mute);font-size:15.5px;line-height:1.6}
+.trial-form{margin-top:22px;display:grid;gap:16px}
+.trial-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.trial-grid{grid-template-columns:1fr}}
+.trial-form label{display:block;font-family:Sora,sans-serif;font-size:13px;font-weight:700;margin-bottom:7px}
+.trial-form label .opt{color:var(--mute);font-weight:500}
+.trial-form input[type=text],.trial-form input[type=email],.trial-form input[type=tel],.trial-form input[type=url],.trial-form textarea{width:100%;padding:13px 14px;background:#0B171C;border:1px solid var(--line);color:var(--ink);font-family:Inter,sans-serif;font-size:16px}
+.trial-form textarea{min-height:84px;resize:vertical}
+.trial-form input:focus,.trial-form textarea:focus{outline:0;border-color:var(--brand)}
+.trial-form .is-invalid{border-color:#E36B6B!important}
+.trial-products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media(max-width:560px){.trial-products{grid-template-columns:1fr}}
+.trial-products label{display:flex;align-items:center;gap:10px;margin:0;padding:11px 12px;background:#0B171C;border:1px solid var(--line);font-family:Inter,sans-serif;font-size:14.5px;font-weight:600;cursor:pointer}
+.trial-products label:has(input:checked){border-color:var(--brand);background:rgba(47,184,148,.12)}
+.trial-products input,.trial-consent input{width:17px;height:17px;margin:0;accent-color:var(--brand);flex:none}
+.trial-form .trial-consent{display:flex;margin:0;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.5;color:var(--mute);font-family:Inter,sans-serif;font-weight:400}
+.trial-form .trial-consent input{margin-top:2px}
+.trial-honey{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+.trial-actions{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin-top:4px}
+.trial-error{display:none;padding:11px 14px;background:rgba(227,107,107,.12);border:1px solid #E36B6B;color:#F3B8B8;font-size:14px}
+.trial-error.show{display:block}
+.trial-thanks{display:none;text-align:center;padding:clamp(10px,2vw,20px) 0}
+.trial-thanks.show{display:block}
+.trial-thanks .check{width:64px;height:64px;margin:0 auto 18px;display:grid;place-items:center;background:rgba(47,184,148,.16);border:1px solid var(--brand);color:var(--brand-soft);font-size:30px;font-weight:800}
+.trial-thanks h2{margin:0}
+.trial-thanks p{margin:14px auto 0;max-width:46ch;color:var(--ink-2);font-size:16px;line-height:1.65}
+.trial-thanks .btn{margin-top:22px}
+.trial-close{position:absolute;z-index:2;top:12px;right:12px;width:44px;height:44px;border:1px solid rgba(255,255,255,.52);background:rgba(5,9,12,.9);color:#fff;font:700 25px/1 Inter,sans-serif;cursor:pointer}
+.trial-close:hover,.trial-close:focus-visible{background:var(--brand);border-color:var(--brand);color:var(--bg);outline:none}
+
 .sec{padding:clamp(44px,5vw,72px) 0 0}
 .sec.products-sec{padding-top:0}
 .products-sec>.wrap{border-top:1px solid var(--line);padding-top:clamp(20px,2.5vw,30px)}
@@ -233,6 +277,55 @@ html,body{height:auto!important;min-height:100%}#dc-root,#dc-root>.sc-host{heigh
       <source src="/starter-pack/media/felican-ai-starter-pack-demo-web.mp4" type="video/mp4">
       Your browser does not support embedded video. <a href="/starter-pack/media/felican-ai-starter-pack-demo-web.mp4">Download the demo video.</a>
     </video>
+  </div>
+</div>
+
+<button class="trial-badge" id="openTrial" type="button" aria-haspopup="dialog" aria-controls="trialModal">
+  <span class="trial-gift" aria-hidden="true">&#127873;</span>
+  <span><b>Free 24-Hour Trial</b><small>Try your AI before you buy &#8594;</small></span>
+</button>
+
+<div class="trial-modal" id="trialModal" aria-hidden="true">
+  <div class="trial-dialog" role="dialog" aria-modal="true" aria-labelledby="trialTitle">
+    <button class="trial-close" id="closeTrial" type="button" aria-label="Close">&times;</button>
+    <div id="trialIntro">
+      <span class="kicker">Free 24-hour trial</span>
+      <h2 id="trialTitle">Tell us about your business and we&rsquo;ll build your trial.</h2>
+      <p class="lede">The same details we use to set up a purchase. One of our certified AI professionals generates your trial from your website and sends you the link.</p>
+    </div>
+    <form class="trial-form" id="trialForm" novalidate>
+      <div class="trial-grid">
+        <div><label for="trialName">Your name</label><input type="text" id="trialName" name="name" autocomplete="name" required maxlength="120"></div>
+        <div><label for="trialEmail">Work email</label><input type="email" id="trialEmail" name="email" autocomplete="email" placeholder="you@yourbusiness.com" required maxlength="160"></div>
+        <div><label for="trialPhone">Phone</label><input type="tel" id="trialPhone" name="phone" autocomplete="tel" placeholder="(561) 555-0100" required maxlength="40"></div>
+        <div><label for="trialCompany">Company name</label><input type="text" id="trialCompany" name="company" autocomplete="organization" required maxlength="160"></div>
+        <div><label for="trialWebsite">Company website</label><input type="url" id="trialWebsite" name="website" inputmode="url" autocomplete="url" placeholder="yourbusiness.com" required maxlength="200"></div>
+        <div><label for="trialIndustry">Industry <span class="opt">(optional)</span></label><input type="text" id="trialIndustry" name="industry" placeholder="e.g. Auto repair, Law firm, Dental" maxlength="120"></div>
+      </div>
+      <div>
+        <label id="trialProductsLabel">Which AI would you like to try?</label>
+        <div class="trial-products" role="group" aria-labelledby="trialProductsLabel" id="trialProducts">
+          <label><input type="checkbox" name="products" value="private-ai"> Private AI</label>
+          <label><input type="checkbox" name="products" value="assistant"> Chat AI Assistant</label>
+          <label><input type="checkbox" name="products" value="receptionist"> Voice AI</label>
+          <label><input type="checkbox" name="products" value="pack"> All three &mdash; the Starter Pack</label>
+        </div>
+      </div>
+      <div><label for="trialNotes">Anything we should know? <span class="opt">(optional)</span></label><textarea id="trialNotes" name="notes" maxlength="2000" placeholder="What you want the AI to handle, hours, locations, anything else."></textarea></div>
+      <label class="trial-consent" for="trialConsent"><input type="checkbox" id="trialConsent" name="consent" required><span>I agree to be contacted by Felican AI about my trial by email or phone, and I acknowledge the <a href="/privacy/" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
+      <div class="trial-honey" aria-hidden="true"><label for="trialNickname">Nickname</label><input type="text" id="trialNickname" name="nickname" tabindex="-1" autocomplete="off"></div>
+      <div class="trial-error" id="trialError" role="alert"></div>
+      <div class="trial-actions">
+        <button class="btn btn-p" id="trialSubmit" type="submit">Start my free trial <span aria-hidden="true">&#8594;</span></button>
+        <small style="color:var(--mute);font-size:13px">No credit card. No commitment.</small>
+      </div>
+    </form>
+    <div class="trial-thanks" id="trialThanks" aria-live="polite">
+      <div class="check" aria-hidden="true">&#10003;</div>
+      <h2>Thank you &mdash; welcome to Felican AI.</h2>
+      <p>One of our certified AI professionals will be contacting you shortly with a link to your free 24-hour trial. Keep an eye on your inbox.</p>
+      <button class="btn btn-g" id="trialDone" type="button">Back to the Starter Pack</button>
+    </div>
   </div>
 </div>
 
@@ -569,6 +662,104 @@ document.addEventListener('click', function(e){
   else if (id === 'pack') { cart = ['pack']; }
   else { cart = cart.filter(function(x){ return x !== 'pack'; }); cart.push(id); }
   write(cart); paint();
+});
+
+/* free 24-hour trial */
+var trialModal = document.getElementById('trialModal');
+var trialForm = document.getElementById('trialForm');
+var trialThanks = document.getElementById('trialThanks');
+var trialIntro = document.getElementById('trialIntro');
+var trialError = document.getElementById('trialError');
+var trialSubmit = document.getElementById('trialSubmit');
+var lastTrialFocus = null;
+function showTrial(){
+  lastTrialFocus = document.activeElement;
+  trialModal.classList.add('is-open');
+  trialModal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  var first = trialForm.querySelector('input:not([type=checkbox]):not([tabindex="-1"])');
+  if (trialForm.style.display !== 'none' && first) first.focus(); else document.getElementById('trialDone').focus();
+}
+function hideTrial(){
+  trialModal.classList.remove('is-open');
+  trialModal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  if (lastTrialFocus && lastTrialFocus.focus) lastTrialFocus.focus();
+}
+function trialFieldError(fields){
+  var labels = { name:'your name', email:'a valid work email', phone:'a phone number', company:'your company name', website:'your company website', products:'at least one AI to try', consent:'your agreement to be contacted' };
+  trialForm.querySelectorAll('.is-invalid').forEach(function(el){ el.classList.remove('is-invalid'); });
+  fields.forEach(function(f){
+    var el = trialForm.querySelector('[name="' + f + '"]');
+    if (el && el.type !== 'checkbox') el.classList.add('is-invalid');
+    if (f === 'products') document.getElementById('trialProducts').classList.add('is-invalid');
+  });
+  var missing = fields.map(function(f){ return labels[f] || f; });
+  trialError.textContent = missing.length ? 'Please add ' + missing.join(', ') + '.' : '';
+  trialError.classList.toggle('show', missing.length > 0);
+}
+function trialPayload(){
+  var data = new FormData(trialForm);
+  return {
+    name: data.get('name') || '', email: data.get('email') || '', phone: data.get('phone') || '',
+    company: data.get('company') || '', website: data.get('website') || '', industry: data.get('industry') || '',
+    notes: data.get('notes') || '', products: data.getAll('products'),
+    consent: document.getElementById('trialConsent').checked, nickname: data.get('nickname') || ''
+  };
+}
+function trialValidate(p){
+  var fields = [];
+  if (!p.name.trim()) fields.push('name');
+  if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(p.email.trim())) fields.push('email');
+  if (!/^\+?[\d\s().-]{7,25}$/.test(p.phone.trim())) fields.push('phone');
+  if (!p.company.trim()) fields.push('company');
+  if (!/^(https?:\/\/)?[^\s]+\.[^\s]{2,}$/i.test(p.website.trim())) fields.push('website');
+  if (!p.products.length) fields.push('products');
+  if (!p.consent) fields.push('consent');
+  return fields;
+}
+document.getElementById('openTrial').addEventListener('click', showTrial);
+document.getElementById('closeTrial').addEventListener('click', hideTrial);
+document.getElementById('trialDone').addEventListener('click', hideTrial);
+trialModal.addEventListener('click', function(e){ if (e.target === trialModal) hideTrial(); });
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && trialModal.classList.contains('is-open')) hideTrial(); });
+// Choosing the pack is choosing everything; clear the singles so the request is unambiguous.
+document.getElementById('trialProducts').addEventListener('change', function(e){
+  var boxes = trialForm.querySelectorAll('input[name="products"]');
+  if (e.target.value === 'pack' && e.target.checked) boxes.forEach(function(b){ if (b.value !== 'pack') b.checked = false; });
+  else if (e.target.checked) boxes.forEach(function(b){ if (b.value === 'pack') b.checked = false; });
+  document.getElementById('trialProducts').classList.remove('is-invalid');
+});
+trialForm.addEventListener('submit', function(e){
+  e.preventDefault();
+  var payload = trialPayload();
+  var fields = trialValidate(payload);
+  trialFieldError(fields);
+  if (fields.length) { var bad = trialForm.querySelector('.is-invalid'); if (bad && bad.focus) bad.focus(); return; }
+  trialSubmit.disabled = true;
+  trialSubmit.textContent = 'Sending…';
+  fetch('/api/trial', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) })
+    .then(function(r){ return r.json().catch(function(){ return {}; }).then(function(body){ return { ok: r.ok, status: r.status, body: body }; }); })
+    .then(function(result){
+      if (result.ok) {
+        trialForm.style.display = 'none';
+        trialIntro.style.display = 'none';
+        trialThanks.classList.add('show');
+        document.getElementById('trialDone').focus();
+        return;
+      }
+      if (result.status === 400 && result.body && result.body.fields) { trialFieldError(result.body.fields); return; }
+      trialError.textContent = (result.body && result.body.error) || 'We could not send that just now. Please email ai@felican.ai directly.';
+      trialError.classList.add('show');
+    })
+    .catch(function(){
+      trialError.textContent = 'We could not reach the server. Please check your connection or email ai@felican.ai directly.';
+      trialError.classList.add('show');
+    })
+    .then(function(){
+      trialSubmit.disabled = false;
+      trialSubmit.innerHTML = 'Start my free trial <span aria-hidden="true">&#8594;</span>';
+    });
 });
 
 renderCards(); paintPlans(); paint();
