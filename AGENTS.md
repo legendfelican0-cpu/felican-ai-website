@@ -17,8 +17,9 @@
   phone, company, website, optional industry, product checkboxes keyed by the checkout
   catalog ids, notes, consent). `POST /api/trial` (`normalizeTrialRequest`, `sendTrialEmail`
   in `server/app.js`) validates server-side, honeypots on `nickname` (`website` is a real
-  field here), shares the contact form's per-IP limits, and emails `CONTACT_TO` through
-  Resend with reply-to set to the visitor. Injectable as `sendTrial` on `createAppServer`.
+  field here), shares the contact form's per-IP limits, and emails the request through
+  Resend to `TRIAL_TO` (default `trial@felican.ai`, not the contact inbox) with reply-to set
+  to the visitor. Injectable as `sendTrial` on `createAppServer`.
   Tests in `server/app.test.js` and `src/static-redesign.test.js`. On DEV as release
   `20260921T191519Z` (commit `487acea`); not promoted to production.
 

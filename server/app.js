@@ -612,7 +612,8 @@ export async function sendContactEmail(contact, env = process.env) {
 export async function sendTrialEmail(request, env = process.env) {
   const key = env.RESEND_API_KEY?.trim();
   if (!key) throw new Error('Trial email is not configured');
-  const to = (env.CONTACT_TO || 'ai@felican.ai').trim();
+  // Trial requests have their own inbox, separate from general enquiries.
+  const to = (env.TRIAL_TO || 'trial@felican.ai').trim();
   const from = (env.CONTACT_FROM || 'Felican AI Website <website@felican.ai>').trim();
 
   const productNames = request.products.map(id => TRIAL_PRODUCTS[id]).join(', ');

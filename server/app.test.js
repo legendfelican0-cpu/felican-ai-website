@@ -1,6 +1,6 @@
 import { createHmac } from 'node:crypto';
 import { afterEach, describe, expect, it } from 'vitest';
-import { buildChatSystem, createAppServer, contactIsConfigured, deliverEducationLead, normalizeContact, normalizeMessages, normalizeTrialRequest, sanitizeAssistantReply, sanitizeText, TRIAL_PRODUCTS, voiceBundleIntegrity } from './app.js';
+import { buildChatSystem, createAppServer, contactIsConfigured, deliverEducationLead, normalizeContact, normalizeMessages, normalizeTrialRequest, sanitizeAssistantReply, sanitizeText, sendTrialEmail, TRIAL_PRODUCTS, voiceBundleIntegrity } from './app.js';
 import { GENERATOR_HANDOFF_COOKIE, verifyGeneratorHandoffCookie } from './handoff.js';
 
 const servers = [];
@@ -216,6 +216,27 @@ describe('Felican AI free trial endpoint', () => {
     const response = await fetch(`${failing}/api/trial`, { method: 'POST', headers: browserHeaders, body: JSON.stringify(goodBody) });
     expect(response.status).toBe(502);
     await expect(response.json()).resolves.toMatchObject({ error: expect.stringContaining('ai@felican.ai') });
+  });
+
+  it('emails the trial inbox, not the general contact inbox, with the visitor as reply-to', async () => {
+    const calls = [];
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = async (url, init) => { calls.push({ url, body: JSON.parse(init.body) }); return { ok: true, json: async () => ({ id: 'email_1' }) }; };
+    try {
+      const { value } = normalizeTrialRequest(goodBody);
+      await sendTrialEmail(value, { ...RESEND, CONTACT_TO: 'ai@felican.ai' });
+      await sendTrialEmail(value, { ...RESEND, TRIAL_TO: 'custom@felican.ai' });
+    } finally {
+      globalThis.fetch = realFetch;
+    }
+    expect(calls).toHaveLength(2);
+    expect(calls[0].url).toBe('https://api.resend.com/emails');
+    expect(calls[0].body.to).toEqual(['trial@felican.ai']);
+    expect(calls[1].body.to).toEqual(['custom@felican.ai']);
+    expect(calls[0].body.reply_to).toBe('dana@example.com');
+    expect(calls[0].body.subject).toBe('Free 24-hour trial request — Reyes HVAC — Dana Reyes');
+    expect(calls[0].body.text).toContain('Website: https://reyeshvac.com/');
+    expect(calls[0].body.text).toContain('Products: Chat AI Assistant, Voice AI');
   });
 
   it('rate limits repeated submissions from one address', async () => {
