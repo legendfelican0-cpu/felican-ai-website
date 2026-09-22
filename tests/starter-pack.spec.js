@@ -95,7 +95,33 @@ test.describe('Starter Pack purchase handoff', () => {
     await expect.poll(() => page.evaluate(() => localStorage.getItem('felican_hosting_plan_v1'))).toBe('scale');
   });
 
+  // Since the animated mascot landed (8af4b6a) the pill launcher only renders for
+  // reduced-motion visitors or when the mascot image fails; everyone else opens the
+  // assistant from the mascot riding along the top of the cart bar.
+  test('keeps the mascot clear of the cart checkout action', async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('felican_cart_v1', JSON.stringify(['pack']));
+    });
+    await page.goto('/starter-pack/');
+
+    await expect(page.locator('.fa-shell')).toHaveClass(/fa-left/);
+    await expect(page.locator('[data-assistant-launcher]')).toHaveCount(0);
+    const bot = page.locator('[data-assistant-bot]');
+    await expect(bot).toBeVisible();
+    const checkout = page.locator('#cartbar a[href="/checkout/"]');
+    const [botBox, checkoutBox] = await Promise.all([bot.boundingBox(), checkout.boundingBox()]);
+    expect(botBox).not.toBeNull();
+    expect(checkoutBox).not.toBeNull();
+    // The mascot rides along the top edge of the cart bar, so it ends above the button.
+    expect(botBox.y + botBox.height).toBeLessThanOrEqual(checkoutBox.y + 1);
+
+    await bot.dispatchEvent('click');
+    await expect(page.locator('.fa-panel')).toBeVisible();
+    await expect(bot).toHaveCount(0);
+  });
+
   test('moves the assistant away from the cart checkout action and lets the buyer redock it', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.addInitScript(() => {
       localStorage.setItem('felican_cart_v1', JSON.stringify(['pack']));
     });
@@ -105,6 +131,7 @@ test.describe('Starter Pack purchase handoff', () => {
     const launcher = page.locator('[data-assistant-launcher]');
     const checkout = page.locator('#cartbar a[href="/checkout/"]');
     await expect(shell).toHaveClass(/fa-left/);
+    await expect(launcher).toBeVisible();
 
     const boxes = await Promise.all([launcher.boundingBox(), checkout.boundingBox()]);
     expect(boxes.every(Boolean)).toBe(true);

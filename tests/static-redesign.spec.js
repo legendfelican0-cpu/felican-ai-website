@@ -166,6 +166,9 @@ test.describe('Claude Design website export', () => {
       /^https:\/\/www\.amazon\.com\/dp\//,
     );
 
+    // The pill launcher is the reduced-motion entry point; other visitors get the
+    // animated mascot instead (covered in starter-pack.spec.js).
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/', { waitUntil: 'load' });
     await page.screenshot({ path: testInfo.outputPath(`homepage-${testInfo.project.name}.png`), fullPage: false });
     const assistantButton = page.locator('[data-assistant-launcher]');
@@ -228,6 +231,7 @@ test.describe('Claude Design website export', () => {
       };
     });
 
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/products/', { waitUntil: 'load' });
     await expect.poll(() => page.evaluate(() => window.__vapiTest.constructors)).toBe(1);
     await expect(page.locator('#starter-pack .starter-preview video')).toBeVisible();
@@ -309,6 +313,7 @@ test.describe('Claude Design website export', () => {
       };
     });
 
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/products/', { waitUntil: 'domcontentloaded' });
     await page.locator('[data-assistant-launcher]').click();
     await page.getByRole('button', { name: 'Start voice' }).click();
