@@ -149,6 +149,8 @@ test.describe('Customer journey', () => {
     const captured = [];
     await stubContact(page, captured);
 
+    // The pill launcher exists on the reduced-motion path; otherwise the mascot is the entry point.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/', { waitUntil: 'load' });
     await page.locator('[data-assistant-launcher]').click();
 
