@@ -1,6 +1,6 @@
-# Session handoff — 2026-09-20
+# Session handoff — 2026-09-22
 
-> Last updated: 2026-09-20 by Claude Code (Opus 5, 1M context) · Branch: `feat/animated-assistant` · Commit: see `git log -1`
+> Last updated: 2026-09-22 by Claude Code (Opus 5, 1M context, as Jarvis via the aic-voice Discord channel) · Branch: `main` · Commit: see `git log -1`
 > Next session: read this file FIRST, then `git log --oneline -10`. Do not re-scan the codebase.
 
 > **Note on location.** The `/handoff` convention writes to `HANDOFF.md` at the repo
@@ -9,6 +9,56 @@
 > would destroy that spec, so the session handoff lives here instead. Do not move it.
 
 ---
+
+## 0b. 2026-09-21/22 — Free 24-hour trial request — **IN PRODUCTION** (`60573b1`, release `20260922T010752Z`)
+
+Owner asked by voice in the Discord call (2026-09-21) and by text (2026-09-22: "deploy your
+changes to live felican.ai"). Promoted 2026-09-22T01:08Z via `deploy to-prod felicanai`
+after DEV redeploy from the same commit, `scripts/preflight-prod.sh` green, capacity gate
+and dry-run OK. Verified on prod: `/starter-pack/` 200 with the badge, `POST /api/trial`
+`{"name":""}` → 400 with the field list, health/ready 200, `robots.txt` `Allow: /`, smoke
+`ok:true`. Rollback: `python3 ~/felican-infra/deploy/deploy rollback felicanai` →
+`felicanai:rollback-20260922-010752`.
+
+**What shipped** (`487acea`, `b4ff8a9`):
+- `public/starter-pack/index.html`: fixed `#openTrial` badge ("Free 24-Hour Trial", top-right on
+  desktop, bottom-right above the mascot on mobile) opens `#trialModal` — name, work email,
+  phone, company, website, industry (optional), product checkboxes keyed by the checkout
+  catalog ids (`private-ai`, `assistant`, `receptionist`, `pack`; choosing `pack` clears the
+  singles), notes, consent. Client-side validation mirrors the server; on success the form is
+  replaced by the thank-you ("One of our certified AI professionals will be contacting you
+  shortly with a link to your free 24-hour trial"). Styles follow the Starter Pack palette,
+  square corners. The badge sits at `z-index:980`, below the demo/trial modals (1000/1001) and
+  above the cart bar (970).
+- `server/app.js`: `TRIAL_PRODUCTS`, `normalizeTrialRequest()`, `sendTrialEmail()`, route
+  `POST /api/trial`. Honeypot is **`nickname`** (not `website` — that is a real field here).
+  Shares `contactHourly`/`contactDaily` limits with `/api/contact`; 503 when
+  `RESEND_API_KEY` is absent; 502 with the "email ai@felican.ai directly" copy on provider
+  failure. Email goes to **`TRIAL_TO` (default `trial@felican.ai`)** — deliberately NOT the
+  `CONTACT_TO` enquiry inbox — with `reply_to` = the visitor and subject
+  `Free 24-hour trial request — <company> — <name>`. Injectable as `sendTrial` on
+  `createAppServer` for tests.
+- Tests: `server/app.test.js` (endpoint, normaliser, sender recipient/reply-to/subject/body)
+  and `src/static-redesign.test.js` (badge/modal/fields present). Unit suite **261/261**.
+- `.env.example` documents `TRIAL_TO`. No prod env change was needed (fallback default).
+
+**Also this session** (`e593046`, `60573b1`): five Playwright tests had been failing on every
+commit since the mascot landed (`8af4b6a`) because they waited for `[data-assistant-launcher]`,
+which now renders only for reduced-motion visitors or on mascot image failure. They now
+`page.emulateMedia({ reducedMotion: 'reduce' })` first; a new starter-pack test covers the
+default mascot path (present, above the checkout button, opens the panel). Playwright
+**66/66** on `desktop` + `mobile` (Chromium). Convention noted in `AGENTS.md`.
+
+**Owner to-dos raised in Discord, not yet confirmed done:**
+- **`trial@felican.ai` must exist** as a mailbox or forwarder in the mail provider, or trial
+  requests vanish. The site only sends to it.
+- **Prod disk at 88 % used (19.6 GB free of 161 GB)** at deploy time — passed the gate, but
+  `deploy hygiene` is dev-only, so prod needs a manual look (old release dirs under
+  `/opt/felicanai-site/releases/`, docker images).
+- A DEV oddity: on 2026-09-21 a second DEV release (`191617Z`) appeared ~1 min after ours
+  with identical content — probably a concurrent `deploy to-dev` from another clone on the
+  shared dev box. Harmless, but the dev box is shared; check `docker ps` before assuming
+  your release is the live one.
 
 ## 0a. 2026-09-20 — owner's five fixes — **IN PRODUCTION** (`a2e0874`, release `20260920T212347Z`)
 
@@ -223,16 +273,17 @@ bash scripts/preflight-prod.sh              # read-only prod readiness check
 
 | | |
 |---|---|
-| PROD | `https://felican.ai` — commit `a2e0874`, release `felicanai-site:20260920T212347Z` (promoted 2026-09-20T21:24Z) |
-| PROD rollback | `python3 ~/felican-infra/deploy/deploy rollback felicanai` → `felicanai:rollback-20260920-212347` |
-| DEV | `https://felican.dev` — same commit; `robots.txt` stays `Disallow: /` |
+| PROD | `https://felican.ai` — commit `60573b1`, release `20260922T010752Z` (promoted 2026-09-22T01:08Z) |
+| PROD rollback | `python3 ~/felican-infra/deploy/deploy rollback felicanai` → `felicanai:rollback-20260922-010752` |
+| DEV | `https://felican.dev` — same commit, release `20260922T010547Z`; `robots.txt` stays `Disallow: /` |
 | Deploy path | **always** `python3 ~/felican-infra/deploy/deploy to-prod felicanai`. `scripts/deploy-prod.sh` refuses without `FELICAN_CANONICAL_DEPLOY=1` and gates on DEV running the exact local commit. DEV first, always. |
 | Prod env file | `/opt/felicanai-site/config/ai.env` — the deploy does **not** carry Resend/Stripe vars across, they live there permanently |
 | Order store | `/opt/felicanai-site/orders/` mounted at `/data`, `ORDER_STORE_PATH=/data/starter-pack-orders.json` |
 
 Env var **names** needed on prod (values live in `ai.env`, never in git):
 `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SITE_ORIGIN`, `GENERATOR_HANDOFF_SECRET`,
-`RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`. Do not quote `CONTACT_FROM` — the file is
+`RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM`, and optionally `TRIAL_TO` (defaults to
+`trial@felican.ai` when unset). Do not quote `CONTACT_FROM` — the file is
 read by `docker --env-file`, which takes the line literally.
 
 Google Search Console is verified by a DNS TXT record on the felican.ai apex.
@@ -266,6 +317,11 @@ previous values saved in `.cf-backup/`.
 
 ## History
 
+- **2026-09-22** — Promoted `60573b1` to production: Free 24-hour trial badge/modal on
+  `/starter-pack/` and `POST /api/trial` → `trial@felican.ai`. Fixed five Playwright tests
+  stranded by the mascot change. Owner to confirm the `trial@` mailbox exists; prod disk 88 %.
+- **2026-09-21** — Built the trial request feature by voice request during the team call;
+  DEV releases `191519Z`, `192220Z`. Team notified at ai@felican.ai.
 - **2026-09-12** — Priced the four add-ons, promoted `ded694e` to production and verified
   it directly, and fixed `deploy-dev.sh` so a stale `dist/` can no longer reach prod
   through a green gate. Owner settled: no SMS on Voice AI, no restricted-industry
