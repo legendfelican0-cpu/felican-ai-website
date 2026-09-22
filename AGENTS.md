@@ -20,8 +20,13 @@
   field here), shares the contact form's per-IP limits, and emails the request through
   Resend to `TRIAL_TO` (default `trial@felican.ai`, not the contact inbox) with reply-to set
   to the visitor. Injectable as `sendTrial` on `createAppServer`.
-  Tests in `server/app.test.js` and `src/static-redesign.test.js`. On DEV as release
-  `20260921T191519Z` (commit `487acea`); not promoted to production.
+  Tests in `server/app.test.js` and `src/static-redesign.test.js`. **Promoted to production
+  2026-09-22** as release `20260922T010752Z` (commit `60573b1`) at the owner's request;
+  rollback point `felicanai:rollback-20260922-010752`. Prod disk was 88% used at deploy time.
+- 2026-09-21: Playwright tests follow the assistant entry point: the pill launcher only exists
+  for reduced-motion visitors (or when the mascot image fails), so tests that need it call
+  `page.emulateMedia({ reducedMotion: 'reduce' })`; the default mascot path is covered in
+  `tests/starter-pack.spec.js`.
 
 - 2026-09-11: Every product page lists $999 with `Product`/`Offer` markup generated from
   `server/checkout.js`; services renamed to the owner's four customer-facing names
